@@ -1,0 +1,2239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#4a2f24"/>
+<title>Reading MMO — Goose Alchemist v2</title>
+<style>
+:root{
+  --wood:#4a2f24;--wood2:#684532;--wood3:#2b211c;--parch:#f3e6c9;--paper:#fbf2de;
+  --gold:#c79a3b;--gold2:#e0b85b;--purple:#6d4a8c;--purple2:#8c68a7;--green:#4e6b3a;
+  --green2:#6f914d;--red:#9e4b3c;--orange:#c96b32;--blue:#5a7184;--ink:#3a261c;
+  --cream:#fff8e7;--muted:#746353;--shadow:0 4px 0 rgba(60,35,24,.28);
+}
+*{box-sizing:border-box}
+html{background:#171310}
+body{margin:0;background:#171310;color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+button,input,select,textarea{font:inherit}
+button{-webkit-tap-highlight-color:transparent}
+.app{max-width:600px;margin:0 auto;min-height:100vh;background:#2b231f;padding-bottom:90px}
+header{position:sticky;top:0;z-index:30;background:linear-gradient(#543527,#422a20);color:var(--gold2);border-bottom:3px solid var(--gold);padding:10px 12px 8px;text-align:center}
+header h1{font-size:19px;margin:0;letter-spacing:.4px}
+header .sub{font-size:10px;color:var(--cream);opacity:.88;margin-top:3px}
+.screen{display:none;padding:10px 11px 16px}
+.screen.active{display:block}
+.card{background:var(--paper);border:2px solid var(--gold);box-shadow:var(--shadow);margin:9px 0;padding:11px;border-radius:4px}
+.card.dark{background:#1d1714;color:var(--cream)}
+.card h2,.card h3{margin:0 0 9px;color:var(--wood);font-size:14px}
+.card.dark h3{color:var(--gold2)}
+.section{margin:12px 0 6px;background:var(--purple);color:var(--cream);padding:7px 9px;border-left:5px solid var(--gold);font-weight:900;font-size:12px;letter-spacing:.2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stat{background:var(--parch);border:1px solid #cdbb97;padding:9px 5px;text-align:center;font-size:10px}
+.stat b{display:block;font-size:17px;color:var(--purple);margin-top:2px}
+small,.muted{font-size:10px;color:var(--muted);line-height:1.45}
+label{display:block;font-size:10px;font-weight:900;margin:7px 0 3px;color:var(--wood)}
+input,select,textarea{width:100%;border:1px solid #a98e68;background:#fffaf0;color:var(--ink);padding:9px;border-radius:3px;font-size:12px}
+input[type="range"]{padding:3px}
+textarea{min-height:65px;resize:vertical}
+button{border:2px solid var(--gold);background:var(--wood2);color:var(--cream);padding:10px 8px;font-weight:900;border-radius:3px;box-shadow:var(--shadow);cursor:pointer}
+button:active{transform:translateY(2px);box-shadow:none}
+button:disabled{opacity:.45;filter:grayscale(.5);cursor:not-allowed}
+.btn-green{background:var(--green)}.btn-red{background:var(--red)}.btn-purple{background:var(--purple)}
+.btn-blue{background:var(--blue)}.btn-gold{background:#8a630f}.btn-plain{background:#725a47}
+.row{display:flex;gap:7px}.row>*{flex:1;min-width:0}
+.result{background:#171310;color:#f5e9ca;border:2px solid var(--gold);padding:11px;min-height:68px;white-space:pre-wrap;font-size:11px;line-height:1.45;margin-top:9px}
+.quest{border-left:6px solid var(--gold)}.quest.hunt{border-left-color:var(--red)}.quest.gather{border-left-color:var(--green)}.quest.craft{border-left-color:var(--purple)}
+.tag{display:inline-block;padding:3px 6px;background:#eadcbf;border:1px solid #bda275;font-size:9px;margin:2px}
+.tag.dark{background:#332820;color:var(--cream)}
+.gold{color:#9b6d00;font-weight:900}.legendary{color:#855500;font-weight:900}.epic{color:#684186;font-weight:900}.rare{color:#315b86;font-weight:900}
+.inventory-row{padding:8px 0;border-bottom:1px dashed #cdbb97;font-size:11px}
+.bottomnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:40;width:min(600px,100%);background:var(--wood);border-top:3px solid var(--gold);display:grid;grid-template-columns:repeat(7,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.bottomnav button{border:0;border-right:1px solid #76523d;box-shadow:none;border-radius:0;padding:8px 1px;font-size:9px;line-height:1.25}
+.bottomnav button.active{background:var(--purple);color:white}
+.progress{height:13px;border:1px solid #9b7b56;background:#e5d4b4;margin-top:5px;overflow:hidden}
+.progress>div{height:100%;background:var(--purple);width:0;transition:width .3s}
+.notice{background:#f4e4b8;border:1px solid var(--gold);padding:8px;font-size:10px;line-height:1.45}
+.danger{background:#f2d6cf;border-color:#9e4b3c}
+hr{border:0;border-top:1px dashed #bda275;margin:10px 0}
+details summary{cursor:pointer;font-weight:900;font-size:11px}
+.tabs{display:flex;gap:5px;margin:7px 0;overflow-x:auto;padding-bottom:2px}
+.tabs button{min-width:max-content;padding:7px 8px;font-size:10px;box-shadow:none;background:#725a47}
+.tabs button.active{background:var(--purple)}
+.subpanel{display:none}.subpanel.active{display:block}
+.range-row{display:grid;grid-template-columns:118px 1fr 25px;gap:7px;align-items:center;margin:7px 0}
+.range-row span{font-size:10px;font-weight:900;color:var(--wood)}
+.range-value{text-align:center;background:var(--wood);color:var(--cream);padding:4px 2px;border-radius:3px}
+.collection-card{background:#f8ecd2;border:1px solid #c8ae7e;margin:6px 0;padding:8px;display:grid;grid-template-columns:38px 1fr auto;gap:8px;align-items:center}
+.collection-card.locked{filter:saturate(.4);opacity:.72}
+.item-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:#352820;color:var(--gold2);border:1px solid var(--gold);font-size:20px}
+.item-main{font-size:11px;font-weight:900}.item-sub{font-size:9px;color:var(--muted);margin-top:2px}
+.qty{text-align:right;font-size:9px}
+.map-node{background:var(--paper);border:2px solid var(--gold);padding:10px;margin:7px 0;position:relative}
+.map-node.locked{opacity:.55;filter:grayscale(.45)}
+.map-node.current{outline:3px solid var(--purple);outline-offset:1px}
+.map-node.boss{border-style:double;border-width:4px}
+.map-node .name{font-weight:900;font-size:12px}.map-node .meta{font-size:9px;color:var(--muted);margin-top:3px}
+.map-node .map-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.map-node .map-actions button{flex:1;min-width:120px}
+.region-banner{background:linear-gradient(180deg,#e8d6a9,#d4bd83);border:3px double var(--wood);padding:11px;margin:8px 0;text-align:center}
+.region-banner .region-name{font-family:Georgia,serif;font-weight:900;font-size:15px;color:var(--wood)}
+.map-status{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.map-status>div{background:#fff7df;border:1px solid #c8ad75;padding:7px;text-align:center;font-size:9px}
+.map-status b{display:block;font-size:12px;color:var(--wood)}
+.area-chip{display:inline-block;padding:3px 6px;margin:2px 2px 0 0;border:1px solid #b99b69;background:#fff5d7;font-size:8px;font-weight:800}
+.boss-warning{background:#f1dfbd;border:2px dashed #8b633b;padding:8px;margin-top:8px;font-size:9px}
+.boss-panel{background:linear-gradient(180deg,#ead9b3,#d6bd84);border:4px double #6a4a2b;padding:12px;margin:10px 0}
+.boss-phase{background:#fff7df;border:2px solid #8b633b;padding:11px;margin:8px 0}
+.boss-phase.active{outline:3px solid var(--purple);outline-offset:1px}
+.boss-phase.done{border-color:#5f8045}
+.boss-phase.locked{opacity:.6}
+.boss-phase-title{font-weight:900;color:var(--wood);font-size:12px}
+.boss-secret{font-family:Georgia,serif;font-style:italic;color:#5c4637;margin-top:6px;line-height:1.45}
+.boss-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.boss-actions button{flex:1;min-width:130px}
+.boss-hp{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:9px 0}
+.boss-hp span{height:9px;background:#6f914d;border:1px solid #4b3426}
+.boss-hp span.empty{background:#cdbb93}
+.read-timer{font-size:34px;font-weight:900;text-align:center;letter-spacing:2px;color:var(--purple);padding:8px 0}
+.read-big{font-size:22px;font-weight:900;color:var(--purple)}
+.counter-box{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:8px;align-items:center}
+.counter-box button{font-size:20px;padding:10px}
+.counter-number{text-align:center;font-size:28px;font-weight:900;color:var(--wood)}
+.quick-read{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.simple-status{padding:8px;border:1px solid #c8ad75;background:#fff7df;margin-top:8px;font-size:10px}
+details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);padding:4px 0}
+
+
+.map-arrow{text-align:center;color:var(--gold2);font-size:18px;font-weight:900}
+.slot-card{background:#efe0c0;border:1px solid #bfa36f;padding:8px;margin:6px 0}
+.slot-card b{font-size:11px}
+.potion-chip{display:inline-block;background:#e8dcf0;border:1px solid #a78aba;padding:4px 6px;margin:2px;font-size:9px}
+.badge{display:inline-block;border:1px solid var(--gold);background:#fff5d9;padding:4px 6px;margin:2px;font-size:9px}
+.modal{position:fixed;inset:0;background:rgba(14,10,8,.88);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-card{width:min(520px,100%);background:#1c1613;color:var(--cream);border:3px solid var(--gold);padding:18px;text-align:center;box-shadow:0 0 0 3px #5d3a28,0 14px 40px #000}
+.modal-card .big{font-size:24px;margin:8px 0}.modal-card h2{color:var(--gold2);margin:3px 0 10px}
+.modal-card .modal-text{white-space:pre-wrap;font-size:12px;line-height:1.5}
+.modal-card button{margin-top:14px;width:100%}
+.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);z-index:120;background:#181310;color:var(--cream);border:1px solid var(--gold);padding:8px 12px;font-size:10px;display:none;max-width:90%;text-align:center}
+.toast.show{display:block}
+.kicker{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.bigline{font-size:15px;font-weight:900;color:var(--purple)}
+.checkline{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed #ccb993;font-size:10px}
+.switch{width:auto}
+@media(max-width:390px){
+  .range-row{grid-template-columns:100px 1fr 23px}
+  .bottomnav button{font-size:8px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>🪿 READING MMO</h1>
+  <div class="sub">Goose Alchemist Adventurer • v3.2 • Familiar Story Mode</div>
+</header>
+
+<section id="home" class="screen active">
+  <div class="grid2">
+    <div class="stat">LEVEL<b id="homeLevel">1</b></div>
+    <div class="stat">TOTAL XP<b id="homeXp">0</b></div>
+    <div class="stat">QUESTS<b id="homeQuests">0</b></div>
+    <div class="stat">GOLDENS<b id="homeGoldens">0</b></div>
+  </div>
+  <div class="card">
+    <div class="kicker">Current Rank</div>
+    <div class="bigline" id="homeRank">Page Wanderer</div>
+    <div class="muted" id="homeRegion">🌿 The Mossy Stacks • Levels 1–10</div>
+    <div class="progress"><div id="xpBar"></div></div>
+    <small id="xpText">0 / 1000 XP</small>
+  </div>
+
+  <div class="section">📖 CURRENT READING</div>
+  <div class="card quick-read">
+    <div id="homeReadingSummary"></div>
+    <button class="btn-blue" onclick="go('reading',document.querySelector('.bottomnav button[data-screen=reading]'))">Open<br>Reader</button>
+  </div>
+
+  <div class="section">📜 ACTIVE QUESTS</div>
+  <div id="homeQuestCards"></div>
+  <button class="btn-gold" style="width:100%" onclick="rollAllQuests()">🎲 Roll All 3 Quests</button>
+  <button class="btn-purple" style="width:100%;margin-top:7px" onclick="sendAllQuestsToKWGT()">📡 Send All 3 to Quest Board</button>
+
+  <div class="section">⚔️ CURRENT LOADOUT BONUSES</div>
+  <div class="card" id="homeBonuses"></div>
+
+  <div class="section">🪿 GOOSE STATUS</div>
+  <div class="card notice">
+    The goose has been let loose. We are entirely responsible.<br><br>
+    Goose mechanics may create chaos, risk, strange decisions, or absurd rewards — but never erase normal reading progress.
+  </div>
+</section>
+
+<section id="reading" class="screen">
+  <div class="section">📖 READING DESK</div>
+
+  <div class="card">
+    <label>Book name</label>
+    <input id="readBookName" type="text" placeholder="What are you reading?">
+
+    <label>Reading status</label>
+    <select id="readMode">
+      <option value="first">First time reading</option>
+      <option value="reread">Reread / familiar series — I know the characters and plot</option>
+    </select>
+    <small>Reread mode assumes you already know the characters, major plot beats, twists, and ending. Quests use hindsight, callbacks, foreshadowing, favorite moments, memory, and detail-hunting instead of first-read discovery.</small>
+
+    <div class="row">
+      <div>
+        <label>Book page count</label>
+        <input id="readBookTotal" type="number" min="1" placeholder="e.g. 420">
+      </div>
+      <div>
+        <label>Total pages read — MMO</label>
+        <input id="readMmoPages" type="number" min="0">
+      </div>
+    </div>
+
+    <button class="btn-blue" style="width:100%;margin-top:9px" onclick="saveReadingDesk()">💾 Save Reading Info</button>
+  </div>
+
+  <div class="section">🧮 XTE INK PAGE CALCULATOR</div>
+  <div class="card">
+    <small>Use whichever number your e-ink reader gives you. The other one is calculated from the book's page count.</small>
+
+    <div class="row">
+      <div>
+        <label>Current percentage</label>
+        <input id="readPercent" type="number" min="0" max="100" step="0.1" placeholder="e.g. 42.5">
+      </div>
+      <div>
+        <label>Approx. current page</label>
+        <input id="readCurrentPage" type="number" min="0" placeholder="e.g. 179">
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <button class="btn-purple" onclick="calcPageFromPercent()">% → Page</button>
+      <button class="btn-green" onclick="calcPercentFromPage()">Page → %</button>
+    </div>
+
+    <div id="readPositionResult" class="result">Enter the book page count, then use either calculator button.</div>
+  </div>
+
+  <div class="section">⏱️ READING SESSION</div>
+  <div class="card">
+    <div id="readTimer" class="read-timer">00:00:00</div>
+    <div class="row">
+      <button id="readTimerStartBtn" class="btn-green" onclick="startReadingTimer()">▶ Start</button>
+      <button class="btn-blue" onclick="pauseReadingTimer()">⏸ Pause</button>
+    </div>
+    <button class="btn-plain" style="width:100%;margin-top:8px" onclick="resetReadingTimer()">↺ Reset Timer</button>
+
+    <hr>
+
+    <div class="row">
+      <div>
+        <label>Session start page</label>
+        <input id="readSessionStartPage" type="number" min="0">
+      </div>
+      <div>
+        <label>Pages this session</label>
+        <div id="readPagesSession" class="read-big">0</div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <button class="btn-blue" onclick="setSessionStartFromCurrent()">Set Start = Current Page</button>
+      <button class="btn-gold" onclick="logSessionPages()">+ Add Session Pages to MMO</button>
+    </div>
+
+    <hr>
+
+    <label>Chapters completed this session</label>
+    <div class="counter-box">
+      <button class="btn-plain" onclick="changeChapterCount(-1)">−</button>
+      <div id="readChapterCount" class="counter-number">0</div>
+      <button class="btn-purple" onclick="changeChapterCount(1)">+</button>
+    </div>
+    <button class="btn-plain" style="width:100%;margin-top:8px" onclick="resetChapterCount()">Reset Chapter Counter</button>
+
+    <div id="readSessionSummary" class="result">Timer, pages, and chapters stay saved in this app copy.</div>
+  </div>
+</section>
+
+<section id="quests" class="screen">
+  <div class="section">🎲 QUEST GENERATOR</div>
+  <div class="card">
+    <div class="row">
+      <button class="btn-red" onclick="rollQuest(0)">⚔️ Roll Hunt</button>
+      <button class="btn-green" onclick="rollQuest(1)">🌿 Roll Gather</button>
+      <button class="btn-purple" onclick="rollQuest(2)">⚗️ Roll Alchemy</button>
+    </div>
+    <button class="btn-gold" style="width:100%;margin-top:7px" onclick="gooseDecide()">🪿 LET THE GOOSE DECIDE</button>
+  </div>
+
+  <details class="card simple-details">
+    <summary>🎚️ Advanced Quest Generator Settings</summary>
+
+    <label>Quest Style</label>
+    <select id="questStyle" onchange="saveSettingsFromUI()">
+      <option>Chill</option><option selected>Adventurous</option><option>Challenging</option><option>Unhinged</option>
+    </select>
+    <div class="checkline"><span>Current book first</span><input id="currentBookFirst" class="switch" type="checkbox" checked onchange="saveSettingsFromUI()"></div>
+    <div class="checkline"><span>Hide undiscovered loot names</span><input id="hideSpoilers" class="switch" type="checkbox" checked onchange="saveSettingsFromUI()"></div>
+    <div class="range-row"><span>Genre</span><input id="sGenre" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
+    <div class="range-row"><span>TBR Selection</span><input id="sTbr" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
+    <div class="range-row"><span>Focus</span><input id="sFocus" type="range" min="0" max="5" value="2" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">2</b></div>
+    <div class="range-row"><span>Atmosphere</span><input id="sAtmos" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
+    <div class="range-row"><span>Format / Style</span><input id="sFormat" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
+    <div class="range-row"><span>Time / Deadline</span><input id="sTime" type="range" min="0" max="5" value="2" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">2</b></div>
+    <div class="range-row"><span>Seasonal</span><input id="sSeasonal" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
+    <div class="range-row"><span>Chaos</span><input id="sChaos" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
+    <small>0 = completely off. Higher values make that family more likely and more specific. The generator uses a modifier budget, so it does not glue every category onto every quest.</small>
+  
+  </details>
+
+  <div class="section">📡 QUEST BOARD SYNC</div>
+  <div class="card">
+    <button class="btn-green" style="width:100%" onclick="sendAllQuestsToKWGT()">📡 Sync All 3 Quests to KWGT</button>
+    <div id="kwgtQuickStatus" class="simple-status">KWGT connection is managed in Me → Setup.</div>
+  </div>
+
+  <div class="section">📜 THREE-SLOT QUEST BOARD</div>
+  <div id="replacementNotice" class="card notice" style="display:none"></div>
+  <div id="questCards"></div>
+</section>
+
+<section id="adventure" class="screen">
+  <div class="tabs">
+    <button class="active" onclick="subtab('adv','huntPanel',this)">⚔️ Hunt</button>
+    <button onclick="subtab('adv','gatherPanel',this)">🌿 Gather</button>
+    <button onclick="subtab('adv','alchemyPanel',this)">⚗️ Alchemy</button>
+  </div>
+
+  <div id="huntPanel" class="subpanel active">
+    <div class="section">⚔️ HUNT</div>
+    <div class="card">
+      <label>Target Mob</label>
+      <select id="huntMob" onchange="renderHuntInfo();syncHuntTarget()"></select>
+      <div id="huntInfo" style="margin-top:9px"></div>
+      <button class="btn-red" style="width:100%;margin-top:9px" onclick="completeHunt()">Complete Hunt Quest + Fight</button>
+      <div id="huntResult" class="result">Choose the creature you actually want to farm.</div>
+    </div>
+  </div>
+
+  <div id="gatherPanel" class="subpanel">
+    <div class="section">🌿 GATHER / FORAGE</div>
+    <div class="card">
+      <label>Forage Area</label>
+      <select id="gatherArea" onchange="syncGatherArea()">
+        <option>Front Stacks</option>
+        <option disabled>Glowcap Galleries — locked</option>
+        <option disabled>Whispering Annex — locked</option>
+        <option disabled>Inner Stacks — locked</option>
+      </select>
+      <button class="btn-green" style="width:100%;margin-top:9px" onclick="completeGather()">Complete Gather Quest + Forage</button>
+      <div id="gatherResult" class="result">Gathering materials feed your Goose Alchemy Lab.</div>
+    </div>
+    <div class="card"><h3>Material Pouch</h3><div id="materialList"></div></div>
+  </div>
+
+  <div id="alchemyPanel" class="subpanel">
+    <div class="section">⚗️ GOOSE ALCHEMY LAB</div>
+    <div class="card">
+      <label>Recipe</label><select id="potionSelect" onchange="renderPotion();syncPotionQuest()"></select>
+      <div id="potionInfo" style="margin-top:9px"></div>
+      <button class="btn-purple" style="width:100%;margin-top:9px" onclick="brewPotion()">Complete Alchemy Quest + Brew</button>
+      <div id="alchemyResult" class="result">Brew first. Enchant later. The goose has read zero safety manuals.</div>
+    </div>
+    <div class="card">
+      <h3>Use a Potion</h3>
+      <label>Potion in Bag</label><select id="usePotionSelect"></select>
+      <label>Target Collectible</label><select id="targetItem"></select>
+      <label>Variant</label><select id="targetVariant"><option>Normal</option><option>Golden</option></select>
+      <button class="btn-gold" style="width:100%;margin-top:9px" onclick="applyPotion()">Apply Potion to Collectible</button>
+      <div id="applyResult" class="result">One enchantment slot per collectible variant. New enchantments overwrite the old one.</div>
+    </div>
+  </div>
+</section>
+
+<section id="world" class="screen">
+  <div class="tabs">
+    <button class="active" onclick="subtab('world','mapPanel',this)">🗺️ Map</button>
+    <button onclick="subtab('world','bestiaryPanel',this)">📚 Bestiary</button>
+    <button onclick="subtab('world','eventsPanel',this)">🎃 Events</button>
+  </div>
+
+  <div id="mapPanel" class="subpanel active">
+    <div class="section">🗺️ THE MOSSY STACKS</div>
+    <div id="mapList"></div>
+  </div>
+
+  <div id="bestiaryPanel" class="subpanel">
+    <div class="section">📚 BESTIARY</div>
+    <div id="bestiaryList"></div>
+  </div>
+
+  <div id="eventsPanel" class="subpanel">
+    <div class="section">🎃 SEASONAL & WORLD EVENTS</div>
+    <div class="card">
+      <h3>Seasonal Event Board</h3>
+      <div class="notice">Seasonal loot and temporary event enemies are supported by the save system. We have not locked an official event loot table yet, so nothing here will invent limited items behind your back.</div>
+    </div>
+    <div class="card">
+      <h3>🪿 Gooseboss</h3>
+      <div class="muted">Status: Dormant</div>
+      <p style="font-size:11px">When Gooseboss rules are finalized, this screen becomes the invasion warning and acceptance screen.</p>
+    </div>
+  </div>
+</section>
+
+<section id="bag" class="screen">
+  <div class="tabs">
+    <button class="active" onclick="subtab('bag','collectionPanel',this)">🎒 Loot</button>
+    <button onclick="subtab('bag','potionBagPanel',this)">⚗️ Potions</button>
+    <button onclick="subtab('bag','equipPanel',this)">🛡️ Equip</button>
+  </div>
+
+  <div id="collectionPanel" class="subpanel active">
+    <div class="section">🎒 COLLECTIONS</div>
+    <div id="collectionList"></div>
+  </div>
+
+  <div id="potionBagPanel" class="subpanel">
+    <div class="section">⚗️ POTION BAG</div>
+    <div class="card" id="potionBag"></div>
+    <div class="section">✨ ACTIVE ENCHANTMENTS</div>
+    <div class="card" id="enchantmentList"></div>
+  </div>
+
+  <div id="equipPanel" class="subpanel">
+    <div class="section">🛡️ EQUIPMENT / LOADOUT</div>
+    <div class="card notice">Only equipped enchanted collectibles activate their magical effects.</div>
+    <div class="card" id="equipmentList"></div>
+    <div class="card"><h3>Active Bonuses</h3><div id="equipBonuses"></div></div>
+  </div>
+</section>
+
+<section id="profile" class="screen">
+  <div class="tabs">
+    <button class="active" onclick="subtab('profile','statsPanel',this)">🧙 Stats</button>
+    <button onclick="subtab('profile','setupPanel',this)">⚙️ Setup</button>
+    <button onclick="subtab('profile','journalPanel',this)">📖 Journal</button>
+    <button onclick="subtab('profile','achievementsPanel',this)">🏆 Titles</button>
+    <button onclick="subtab('profile','savePanel',this)">💾 Save</button>
+  </div>
+
+  <div id="statsPanel" class="subpanel active">
+    <div class="section">🧙 CHARACTER / READING STATS</div>
+    <div class="card">
+      <label>Pages — Current</label><input id="pagesCurrent" type="number">
+      <label>Books — Current</label><input id="booksCurrent" type="number">
+      <label>Days Read — Current</label><input id="daysCurrent" type="number">
+      <label>Manual Bonus Adjustment</label><input id="manualBonus" type="number">
+      <button class="btn-blue" style="width:100%;margin-top:9px" onclick="saveProfile()">Save Reading Stats</button>
+      <hr>
+      <small>Frozen baselines: 3,411 pages • 9 books • 1,740 days. Quest XP is bonus XP on top of normal page/day/book XP.</small>
+    </div>
+    <div class="card">
+      <h3>Character Summary</h3>
+      <div id="profileSummary"></div>
+    </div>
+    <div class="card">
+      <h3>🧹 Completion Safety</h3>
+      <button id="undoCompletionBtn" class="btn-red" style="width:100%" onclick="undoLastCompletion()">Undo Last Completion</button>
+      <div id="undoCompletionStatus" class="muted" style="margin-top:8px"></div>
+      <small>This reverses only the most recent quest completion reward/progression. It does not touch your normal page, book, or reading-day progress.</small>
+    </div>
+  </div>
+
+
+  <div id="setupPanel" class="subpanel">
+    <div class="section">⚙️ SIMPLE SETUP</div>
+
+    <div class="card">
+      <h3>📡 KWGT Connection</h3>
+      <div id="kwgtTokenState" class="simple-status">No token saved for this app copy.</div>
+      <label>Kustom Remote Message token</label>
+      <input id="kwgtToken" type="password" autocomplete="off" placeholder="Paste token once for this downloaded app copy">
+      <button class="btn-purple" style="width:100%;margin-top:8px" onclick="saveKustomToken()">🔐 Save KWGT Token</button>
+      <button class="btn-green" style="width:100%;margin-top:8px" onclick="sendAllQuestsToKWGT()">📡 Sync Current Quest Board</button>
+      <div id="kwgtStatus" class="muted" style="margin-top:8px"></div>
+      <div id="kwgtCooldown" class="muted" style="margin-top:4px"></div>
+      <button id="clearStaleCooldownBtn" class="btn-plain" style="width:100%;margin-top:8px;display:none" onclick="clearStaleKustomCooldown()">🧹 Clear Stale Local Cooldown</button>
+      <small>New downloaded HTML copies may need the token entered once. Your token is not included in exported game saves.</small>
+    </div>
+
+    <div class="card notice">
+      <div class="checkline">
+        <span><b>Test Mode</b><br><small>Preview quest completions and boss fights without changing real XP, loot, kills, journal entries, or world progress.</small></span>
+        <input id="testMode" class="switch" type="checkbox" onchange="setTestMode(this.checked)">
+      </div>
+      <div id="testModeStatus" class="muted" style="margin-top:7px"></div>
+    </div>
+  </div>
+
+  <div id="journalPanel" class="subpanel">
+    <div class="section">📖 QUEST JOURNAL</div>
+    <div class="card notice">Every completed Hunt, Gather, and Alchemy quest is recorded here automatically.</div>
+    <div id="questJournal"></div>
+  </div>
+
+  <div id="achievementsPanel" class="subpanel">
+    <div class="section">🏆 TITLES & ACHIEVEMENTS</div>
+    <div id="achievementList"></div>
+  </div>
+
+  <div id="savePanel" class="subpanel">
+    <div class="section">💾 SAVE / BACKUP</div>
+    <div class="card">
+      <div class="row">
+        <button class="btn-blue" onclick="exportSave()">Export Save</button>
+        <button class="btn-green" onclick="document.getElementById('importFile').click()">Import Save</button>
+      </div>
+      <input id="importFile" type="file" accept=".json,application/json" style="display:none" onchange="importSave(event)">
+      <small>Your progress also saves automatically in this browser. Exporting gives you a portable backup.</small>
+    </div>
+    <details class="card danger">
+      <summary>Danger Zone</summary>
+      <button class="btn-red" style="width:100%;margin-top:9px" onclick="resetGame()">Reset This Browser Save</button>
+    </details>
+  </div>
+</section>
+
+<nav class="bottomnav">
+  <button data-screen="home" class="active" onclick="go('home',this)">🏠<br>Home</button>
+  <button data-screen="reading" onclick="go('reading',this)">📖<br>Read</button>
+  <button data-screen="quests" onclick="go('quests',this)">📜<br>Quests</button>
+  <button data-screen="adventure" onclick="go('adventure',this)">⚔️<br>Play</button>
+  <button data-screen="world" onclick="go('world',this)">🗺️<br>World</button>
+  <button data-screen="bag" onclick="go('bag',this)">🎒<br>Bag</button>
+  <button data-screen="profile" onclick="go('profile',this)">🧙<br>Me</button>
+</nav>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-card">
+    <div class="big" id="modalIcon">✨</div>
+    <h2 id="modalTitle">RESULT</h2>
+    <div class="modal-text" id="modalText"></div>
+    <button id="modalContinue" class="btn-gold" onclick="nextModal()">Continue</button>
+    <div id="completionActions" style="display:none;margin-top:10px">
+      <button class="btn-purple" style="width:100%" onclick="rollNextCompletedQuest()">🎲 Roll New Quest + Send to Widget</button>
+      <button class="btn-plain" style="width:100%;margin-top:8px" onclick="clearCompletedQuest()">🧹 Clear Slot + Blank Widget</button>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const BASE={pages:3411,books:9,days:1740};
+const slots=["Head","Body","Back","Weapon / Focus","Charm","Relic","Familiar"];
+const ranks=[
+ [100,"Eternal Librarian"],[96,"Keeper of Infinity"],[91,"Legendary Reader"],[86,"Celestial Scribe"],
+ [81,"Elder Book Mage"],[76,"Story Oracle"],[71,"Warden of Words"],[66,"Grand Bibliomancer"],
+ [61,"Mythkeeper"],[56,"Keeper of Lost Lore"],[51,"Storyweaver"],[46,"Grimoire Guardian"],
+ [41,"Arcane Archivist"],[36,"Chapter Keeper"],[31,"Rune Reader"],[26,"Spellbound Scribe"],
+ [21,"Master of Tomes"],[16,"Archive Witch"],[12,"Lore Keeper"],[8,"Book Mage"],
+ [5,"Shelf Scholar"],[3,"Story Seeker"],[1,"Page Wanderer"]
+];
+
+const mobs={
+ "Mushroom Goblin":{
+  icon:"🍄",area:"Front Stacks",tier:"Basic Mob",gold:5,
+  drops:[
+   ["Mossy Button","Common",20,"Relic"],["Bent Copper Coin","Common",20,"Relic"],["Spotted Mushroom Cap","Common",20,"Head"],
+   ["Goblin Reading Satchel","Uncommon",13,"Back"],["Glowcap Charm","Uncommon",12,"Charm"],["Understack Key","Rare",10,"Relic"],
+   ["Lantern of the Understacks","Epic",4,"Weapon / Focus"],["Crown of the Mushroom King","Legendary",1,"Head"]
+  ]
+ },
+ "Book Imp":{
+  icon:"📕",area:"Front Stacks",tier:"Basic Mob",gold:5,
+  drops:[
+   ["Torn Spellpage","Common",20,"Relic"],["Ink-Stained Claw","Common",20,"Relic"],["Crooked Bookmark","Common",20,"Relic"],
+   ["Impish Quill","Uncommon",13,"Weapon / Focus"],["Charmed Bookstrap","Uncommon",12,"Charm"],["Scholar's Inkstone","Rare",10,"Relic"],
+   ["The Devoured Bookmark","Epic",4,"Charm"],["Grimoire of Minor Inconveniences","Legendary",1,"Weapon / Focus"]
+  ]
+ },
+ "Dust Sprite":{
+  icon:"✨",area:"Front Stacks",tier:"Basic Mob",gold:5,
+  drops:[
+   ["Sparkling Dust","Common",20,"Relic"],["Silver Thread","Common",20,"Relic"],["Tiny Glass Vial","Common",20,"Relic"],
+   ["Sprite Lantern","Uncommon",13,"Weapon / Focus"],["Whispering Page","Uncommon",12,"Relic"],["Moon-Dust Charm","Rare",10,"Charm"],
+   ["Starbound Reading Glasses","Epic",4,"Head"],["Wings of the Forgotten Shelf","Legendary",1,"Back"]
+  ]
+ },
+ "Pageworm":{
+  icon:"🐛",area:"Front Stacks",tier:"Basic Mob",gold:5,
+  drops:[
+   ["Chewed Page Fragment","Common",20,"Relic"],["Bookworm Silk","Common",20,"Relic"],["Tiny Ivory Fang","Common",20,"Relic"],
+   ["Silken Bookmark","Uncommon",13,"Charm"],["Scholar's Cocoon","Uncommon",12,"Relic"],["Bottomless Bookbag","Rare",10,"Back"],
+   ["First Edition Compass","Epic",4,"Relic"],["The First Edition","Legendary",1,"Weapon / Focus"]
+  ],
+  hoard:[
+   ["Pressed Clover",25],["Forgotten Library Card",18],["Tiny Brass Bell",16],["Cracked Monocle",14],
+   ["Bottle of Blue Ink",9],["Half a Treasure Map — Left",6],["Half a Treasure Map — Right",6],
+   ["Miniature Book Key",3],["Clockwork Beetle",2],["Golden Bookworm",0.8],["The Page That Wasn't There",0.2]
+  ]
+ }
+};
+
+const materials=["Moss Fiber","Glowcap Spores","Scrap Parchment","Whisper Ink","Sprite Dust","Bookworm Silk","Root Resin","Moonlit Dew"];
+const materialWeights={
+ "Front Stacks":[["Moss Fiber",24],["Glowcap Spores",20],["Scrap Parchment",20],["Whisper Ink",12],["Sprite Dust",10],["Bookworm Silk",8],["Root Resin",4],["Moonlit Dew",2]]
+};
+
+const recipes={
+ "Forager's Infusion":{level:1,effect:{type:"gather",amount:8,label:"+8% extra gathering-material roll chance"},ing:[["Moss Fiber",3],["Glowcap Spores",2],["Moonlit Dew",1]]},
+ "Hunter's Tonic":{level:1,effect:{type:"loot",amount:5,label:"+5% bonus standard monster-loot roll chance"},ing:[["Scrap Parchment",2],["Whisper Ink",2],["Root Resin",1]]},
+ "Treasureseeker Oil":{level:2,effect:{type:"treasure",amount:5,label:"+5% oddity / hidden-treasure check chance"},ing:[["Bookworm Silk",2],["Sprite Dust",2],["Glowcap Spores",1]]},
+ "Scholar's Elixir":{level:3,effect:{type:"xp",amount:5,label:"+5% quest bonus XP"},ing:[["Whisper Ink",2],["Sprite Dust",1],["Scrap Parchment",3]]},
+ "Gilded Goosebrew":{level:5,effect:{type:"gold",amount:1,label:"+1% Golden variant roll chance"},ing:[["Moonlit Dew",2],["Sprite Dust",3],["Root Resin",2]]},
+ "Oopsie Goosie":{level:4,effect:{type:"reroll",amount:0,label:"Reroll the current enchantment into a random aura of similar potency"},ing:[["Glowcap Spores",2],["Whisper Ink",1],["Bookworm Silk",1]]},
+ "Big Oopsie Goosie":{level:8,effect:{type:"big-reroll",amount:0,label:"Reroll enchantment effect and potency; may improve or worsen"},ing:[["Moonlit Dew",2],["Root Resin",2],["Whisper Ink",2]]},
+ "Bossbane Draught":{level:6,effect:{type:"boss",amount:5,label:"+5% boss-specific bonus loot roll chance"},ing:[["Root Resin",3],["Sprite Dust",2],["Moonlit Dew",1]]}
+};
+
+const questPools={
+ hunt:[
+  ["Storybreak","Read until you reach the next natural turning point — a reveal, new location, important conversation, major decision, or chapter cliffhanger. Then make one prediction about what happens next.","discovery"],
+  ["Cliffhanger Hunt","Read until the next real cliffhanger or strong stopping point. Decide whether your prediction changed before continuing.","discovery"],
+  ["Blind Progress","Read for {MIN} minutes without checking page count or percentage. Guess your progress before you look.","mystery"],
+  ["Choice of Paths","Choose one route: read {PAGES} pages in one go, OR split the same goal across two sessions.","choice"],
+  ["Momentum Chain","Clear {CHAPTERS} chapters. After each one, name the single thing pulling you into the next chapter.","chain"],
+  ["Character Bounty","Read until your opinion of a character changes, or for {PAGES} pages — whichever happens first. Name the moment that did it.","character"],
+  ["Treasure Line","Read {PAGES} pages and find one line, image, or moment worth saving.","treasure"],
+  ["Milestone Push","Advance roughly {PCT}% farther in your current book. Stop at a natural story break, not an arbitrary sentence.","milestone"],
+  ["Focused Assault","Complete {SESSIONS} focused reading session(s) of {MIN} minutes. No need to change books or reading location.","focus"],
+  ["Prediction Trial","Before your next chapter, make one prediction. Read until the session naturally ends and check whether the story moved toward or away from it.","prediction"]
+ ],
+ gather:[
+  ["Forage Run","Read {PAGES} pages of whatever you are currently enjoying. Your reading progress becomes a forage search through the area.","pages"],
+  ["Shelf Sweep","Complete {SESSIONS} reading session(s) of {MIN} minutes. Each finished session earns another material draw.","sessions"],
+  ["Chapter Harvest","Clear {CHAPTERS} chapters. The chapter count is your gathering route.","chapters"],
+  ["Milestone Gathering","Move about {PCT}% farther through your current book, then return with whatever the stacks surrender.","milestone"],
+  ["Quiet Scavenge","Read continuously for {MIN} minutes. No extra ritual required — just gather while you read.","time"]
+ ],
+ craft:[
+  ["Steady the Cauldron","Read {PAGES} pages while the brew simmers. Finish the reading goal to complete the potion.","pages"],
+  ["Three-Stir Brew","Read {CHAPTERS} chapters. Imagine one stir of the cauldron after each chapter.","chapters"],
+  ["Low Flame Infusion","Complete {SESSIONS} reading session(s) of {MIN} minutes. The potion finishes with the last session.","sessions"],
+  ["Storyheat Distillation","Read until the next meaningful turning point, then finish one additional chapter to seal the brew.","discovery"],
+  ["Measured Concoction","Advance around {PCT}% through your current book to complete the recipe.","milestone"]
+ ]
+};
+
+const genres={
+ 1:["fantasy","romance","thriller","mystery","horror","science fiction","historical fiction"],
+ 2:["dark fantasy","cozy fantasy","romantic suspense","urban fantasy","psychological thriller","gothic fiction"],
+ 3:["gothic romance","paranormal romance","epic fantasy","dark romance","mythology retelling","magical realism"],
+ 4:["dark fantasy with vampires","gothic mystery with romance","fantasy with court intrigue","thriller with a morally gray lead","romance with forced proximity"],
+ 5:["dark fantasy with a morally gray vampire lead","gothic horror-thriller with a cursed setting","fantasy with deadly trials and court intrigue","villain romance with secret identity","mythology retelling with betrayal and prophecy"]
+};
+const atmosphere={
+ 1:["make the reading spot a little cozier","use whatever lighting feels nicest","read by a window if you already want to"],
+ 2:["read somewhere other than your usual spot","pair the session with a cozy drink","use soft lighting"],
+ 3:["read after sunset with soft lamp light","use instrumental or library ambience","read outside if the weather suits you"],
+ 4:["match the ambience to the book's setting","change location once between sessions","build a deliberately cozy reading setup"],
+ 5:["read after sunset with candle/faux-candle light and matching ambience","use a themed reading environment that matches the book","split the quest between two contrasting reading locations"]
+};
+const focusMods={
+ 1:["put notifications on silent for the session","keep the phone face-down while reading"],
+ 2:["use Do Not Disturb","keep the phone out of reach","complete one uninterrupted session"],
+ 3:["no social media until the session ends","put the phone in another room for one session","complete two distraction-free blocks"],
+ 4:["complete the main goal before checking social media again","use two focused sessions with no multitasking"],
+ 5:["complete three distraction-free reading blocks","keep all non-reading apps closed until the quest is complete"]
+};
+const timeMods={
+ 1:["sometime today","during your next free reading block","tonight if that already fits your plans"],
+ 2:["within 48 hours","by the end of the weekend","across two days"],
+ 3:["within 24 hours","split across two planned sessions","before your next book is finished"],
+ 4:["within 12 hours","finish half today and half tomorrow","complete it before starting another entertainment activity"],
+ 5:["within 6 hours","before midnight","complete it in a single day across multiple sessions"]
+};
+const formatMods={
+ 1:["use whichever reading format you already prefer","stay with one book for the quest"],
+ 2:["use your least-used format if convenient","finish the current chapter before switching books"],
+ 3:["use two formats if the book supports it","alternate between two current reads by session"],
+ 4:["split progress between two formats","alternate books after each planned session"],
+ 5:["use two different formats and track which felt faster","alternate between two reads at fixed checkpoints"]
+};
+
+function fresh(){
+ let ms={};materials.forEach(x=>ms[x]=0);
+ let eq={};slots.forEach(s=>eq[s]="");
+ let pots={};Object.keys(recipes).forEach(x=>pots[x]=0);
+ return {
+  version:2,pages:3411,books:9,days:1740,manualBonus:0,questBonus:0,questsCompleted:0,
+  kills:Object.fromEntries(Object.keys(mobs).map(m=>[m,0])),
+  items:{},materials:ms,potions:pots,enchantments:{},equipment:eq,
+  world:{frontHunts:0,mossbackUnlocked:false,mossbackDefeated:false,glowcapUnlocked:false,activeArea:"Front Stacks",glowcapProgress:0,whisperUnlocked:false,whisperProgress:0,innerUnlocked:false,mossbackWins:0,mossbackAttempt:null},
+  history:[],firstFind:{},firstGolden:{},lastCompletionUndo:null,
+  reading:{bookName:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false},
+  settings:{style:"Adventurous",currentBookFirst:true,hideSpoilers:true,testMode:false,genre:1,tbr:0,focus:2,atmos:0,format:1,time:2,seasonal:1,chaos:0},
+  quests:[
+   {role:"Hunt",id:"",name:"",objective:"",difficulty:"Normal",xp:0,status:"Empty",extra:"Mushroom Goblin",structure:""},
+   {role:"Gather",id:"",name:"",objective:"",difficulty:"Normal",xp:0,status:"Empty",extra:"Front Stacks",structure:""},
+   {role:"Craft / Alchemy",id:"",name:"",objective:"",difficulty:"Normal",xp:0,status:"Empty",extra:"Forager's Infusion",structure:""}
+  ]
+ };
+}
+function migrate(x){
+ const n=fresh();
+ if(!x||typeof x!=="object") return n;
+ Object.assign(n,x);
+ n.version=2;
+ n.settings=Object.assign(fresh().settings,x.settings||{});
+ n.world=Object.assign(fresh().world,x.world||{});
+ if(!("mossbackWins" in n.world))n.world.mossbackWins=0;
+ if(!("mossbackAttempt" in n.world))n.world.mossbackAttempt=null;
+ n.potions=Object.assign(fresh().potions,x.potions||{});
+ n.equipment=Object.assign(fresh().equipment,x.equipment||{});
+ n.history=Array.isArray(x.history)?x.history:[];
+ n.firstFind=x.firstFind||{};
+ n.firstGolden=x.firstGolden||{};
+ n.lastCompletionUndo=x.lastCompletionUndo||null;
+ n.reading=Object.assign(fresh().reading,x.reading||{});
+ n.quests=(x.quests&&x.quests.length===3)?x.quests:fresh().quests;
+ n.quests.forEach((q,i)=>{if(!q.status)q.status=q.name?"Active":"Empty";if(!q.structure)q.structure="";});
+ materials.forEach(m=>{if(n.materials[m]==null)n.materials[m]=0});
+ Object.keys(mobs).forEach(m=>{if(n.kills[m]==null)n.kills[m]=0});
+ return n;
+}
+let S=migrate(JSON.parse(localStorage.getItem("readingMMO_save_v2")||localStorage.getItem("readingMMO_save")||"null"));
+function persistSilent(){localStorage.setItem("readingMMO_save_v2",JSON.stringify(S))}
+function save(){persistSilent();renderAll()}
+function totalXp(){return (S.pages-BASE.pages)+((S.books-BASE.books)*150)+((S.days-BASE.days)*35)+S.manualBonus+S.questBonus}
+function levelFor(xp){return Math.floor((-7+Math.sqrt(49+(4*xp/125)))/2)+1}
+function lvlNeed(l){return 1000+((l-1)*250)}
+function lvlXp(xp,l){return xp-(125*(l-1)*(l+6))}
+function rankFor(l){for(const [n,r] of ranks)if(l>=n)return r;return "Page Wanderer"}
+function regionFor(l){return l>=11?"🌙 Moonlit Marsh • Levels 11–20":"🌿 The Mossy Stacks • Levels 1–10"}
+function goldCount(){return Object.values(S.items).reduce((a,x)=>a+(x.golden>0?1:0),0)}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function round5(n){return Math.round(n/5)*5}
+function uid(prefix){return `${prefix}-${String(Date.now()).slice(-6)}-${Math.floor(Math.random()*90+10)}`}
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function rarityClass(r){r=String(r).toLowerCase();if(r.includes("legend"))return"legendary";if(r.includes("epic"))return"epic";if(r.includes("rare"))return"rare";return""}
+function rollWeighted(arr,weightIndex=2){let total=arr.reduce((a,x)=>a+Number(x[weightIndex]),0),r=Math.random()*total;for(const x of arr){r-=Number(x[weightIndex]);if(r<=0)return x}return arr[arr.length-1]}
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
+function rangeUpdate(el){el.nextElementSibling.textContent=el.value}
+function go(id,btn){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll(".bottomnav button").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");window.scrollTo(0,0);renderAll()}
+function subtab(group,id,btn){btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");const root=btn.closest(".screen");root.querySelectorAll(".subpanel").forEach(x=>x.classList.remove("active"));$(id).classList.add("active")}
+let modalQueue=[];
+let pendingCompletionSlot=null;
+function showSequence(steps,completionSlot=null){
+ modalQueue=[...steps];
+ pendingCompletionSlot=completionSlot;
+ const actions=$("completionActions");if(actions)actions.style.display="none";
+ const cont=$("modalContinue");if(cont)cont.style.display="block";
+ nextModal();
+}
+function nextModal(){
+ const m=$("modal");
+ if(!modalQueue.length){
+  if(pendingCompletionSlot!==null){
+   const q=S.quests[pendingCompletionSlot];
+   $("modalIcon").textContent="📜";
+   $("modalTitle").textContent="WHAT NEXT?";
+   $("modalText").textContent=`${q.role} quest recorded in your journal.\n\nRoll a replacement and send it immediately, or clear this slot and return the widget parchment to blank.`;
+   $("modalContinue").style.display="none";
+   $("completionActions").style.display="block";
+   m.classList.add("show");
+   return;
+  }
+  m.classList.remove("show");
+  $("modalContinue").style.display="block";
+  $("completionActions").style.display="none";
+  return;
+ }
+ const s=modalQueue.shift();
+ $("modalIcon").textContent=s.icon||"✨";
+ $("modalTitle").textContent=s.title||"RESULT";
+ $("modalText").textContent=s.text||"";
+ $("modalContinue").style.display="block";
+ $("completionActions").style.display="none";
+ m.classList.add("show");
+}
+async function rollNextCompletedQuest(){
+ if(pendingCompletionSlot===null)return;
+ const i=pendingCompletionSlot;
+ pendingCompletionSlot=null;
+ $("modal").classList.remove("show");
+ $("modalContinue").style.display="block";
+ $("completionActions").style.display="none";
+
+ rollQuest(i);
+ const q=S.quests[i];
+ const sent=await sendQuestToKWGT(i);
+
+ const questNav=document.querySelector('.bottomnav button[data-screen="quests"]');
+ go("quests",questNav);
+
+ const notice=$("replacementNotice");
+ if(notice){
+  notice.style.display="block";
+  notice.innerHTML=`<b>✨ Replacement Quest Ready</b><br>
+  <strong>${esc(q.name)}</strong><br>
+  <small>${q.role} • ${q.difficulty} • +${q.xp} XP<br>
+  ${sent?"📡 Already synced to KWGT.":"⚠️ Rolled in the app, but the KWGT sync did not confirm."}</small>`;
+ }
+
+ setTimeout(()=>{
+  const cards=$("questCards");
+  if(cards&&cards.children[i]){
+   cards.children[i].style.outline="3px solid var(--gold)";
+   cards.children[i].scrollIntoView({behavior:"smooth",block:"center"});
+   setTimeout(()=>cards.children[i].style.outline="",1800);
+  }
+ },120);
+}
+async function clearCompletedQuest(){
+ if(pendingCompletionSlot===null)return;
+ const i=pendingCompletionSlot;
+ pendingCompletionSlot=null;
+ $("modal").classList.remove("show");
+ $("modalContinue").style.display="block";
+ $("completionActions").style.display="none";
+ await clearQuestAndWidget(i);
+}
+
+function saveSettingsFromUI(){
+ S.settings.style=$("questStyle").value;
+ S.settings.currentBookFirst=$("currentBookFirst").checked;
+ S.settings.hideSpoilers=$("hideSpoilers").checked;
+ S.settings.genre=+$("sGenre").value;S.settings.tbr=+$("sTbr").value;S.settings.focus=+$("sFocus").value;
+ S.settings.atmos=+$("sAtmos").value;S.settings.format=+$("sFormat").value;S.settings.time=+$("sTime").value;
+ S.settings.seasonal=+$("sSeasonal").value;S.settings.chaos=+$("sChaos").value;
+ save();
+}
+function loadSettingsUI(){
+ $("questStyle").value=S.settings.style;$("currentBookFirst").checked=S.settings.currentBookFirst;$("hideSpoilers").checked=S.settings.hideSpoilers;
+ [["sGenre","genre"],["sTbr","tbr"],["sFocus","focus"],["sAtmos","atmos"],["sFormat","format"],["sTime","time"],["sSeasonal","seasonal"],["sChaos","chaos"]].forEach(([id,k])=>{$(id).value=S.settings[k];$(id).nextElementSibling.textContent=S.settings[k]})
+}
+
+function difficultyRoll(role){
+ const style=S.settings.style;
+ const pools={
+  Chill:["Easy","Easy","Normal","Normal"],
+  Adventurous:["Easy","Normal","Normal","Normal","Hard"],
+  Challenging:["Normal","Normal","Hard","Hard","Elite"],
+  Unhinged:["Normal","Hard","Hard","Elite","Mini Boss"]
+ };
+ if(role!=="hunt") return pick(style==="Chill"?["Easy","Normal","Normal"]:style==="Adventurous"?["Normal","Normal","Hard"]:style==="Challenging"?["Normal","Hard","Hard","Elite"]:["Hard","Elite","Mini Boss"]);
+ return pick(pools[style]);
+}
+function challengeVals(diff){
+ const p={
+  Easy:{pages:[35,70],min:[20,35],chap:[1,3],pct:[5,10],sessions:[1,1]},
+  Normal:{pages:[75,140],min:[35,60],chap:[2,5],pct:[10,18],sessions:[1,2]},
+  Hard:{pages:[140,220],min:[60,90],chap:[4,8],pct:[18,28],sessions:[2,3]},
+  Elite:{pages:[180,280],min:[75,120],chap:[6,10],pct:[25,40],sessions:[2,3]},
+  "Mini Boss":{pages:[250,350],min:[100,150],chap:[8,12],pct:[35,55],sessions:[3,4]},
+  Boss:{pages:[350,500],min:[150,220],chap:[10,16],pct:[50,75],sessions:[3,5]},
+  "World Boss":{pages:[600,900],min:[240,360],chap:[18,28],pct:[80,120],sessions:[5,8]},
+  Gooseboss:{pages:[500,900],min:[240,420],chap:[16,30],pct:[75,130],sessions:[4,8]}
+ }[diff]||{};
+ const rand=(r)=>Math.round(r[0]+Math.random()*(r[1]-r[0]));
+ return {PAGES:round5(rand(p.pages)),MIN:round5(rand(p.min)),CHAPTERS:rand(p.chap),PCT:round5(rand(p.pct)),SESSIONS:rand(p.sessions)};
+}
+function fillTemplate(t,v){return t.replaceAll("{PAGES}",v.PAGES).replaceAll("{MIN}",v.MIN).replaceAll("{CHAPTERS}",v.CHAPTERS).replaceAll("{PCT}",v.PCT).replaceAll("{SESSIONS}",v.SESSIONS)}
+function rewardFor(diff){
+ const l=levelFor(Math.max(0,totalXp())),need=lvlNeed(l);
+ const ranges={Easy:[.045,.075],Normal:[.08,.12],Hard:[.13,.18],Elite:[.17,.22],"Mini Boss":[.21,.28],Boss:[.28,.38],"World Boss":[.4,.55],Gooseboss:[.55,.8]};
+ const r=ranges[diff]||ranges.Normal;return round5(need*(r[0]+Math.random()*(r[1]-r[0])));
+}
+function modifierBudget(){
+ const b={Chill:0,Adventurous:1,Challenging:2,Unhinged:3}[S.settings.style]||1;
+ return clamp(b+(S.settings.chaos>=4?1:0),0,4);
+}
+function modifierCandidates(){
+ let c=[];
+ const reread=S.reading?.readMode==="reread";
+ const push=(key,intensity,fn)=>{if(intensity>0)c.push({key,w:intensity,text:fn(intensity)})};
+ if(!reread)push("genre",S.settings.genre,i=>{
+  const g=pick(genres[i]||genres[1]);
+  if(S.settings.currentBookFirst&&i<4)return `Book flavor: keep your current read; if you choose to switch, lean toward ${g}.`;
+  return `Book flavor: choose ${g}.`;
+ });
+ if(!reread)push("tbr",S.settings.tbr,i=>{
+  const t=[null,"if you happen to switch books, choose any unread book","choose from three TBR options","choose a book you have been meaning to return to","choose a neglected or intimidating TBR book","choose the oldest neglected unread book you still genuinely want to read"][i];
+  return `TBR twist: ${t}.`;
+ });
+ push("focus",S.settings.focus,i=>`Focus: ${pick(focusMods[i]||focusMods[1])}.`);
+ push("atmos",S.settings.atmos,i=>`Atmosphere: ${pick(atmosphere[i]||atmosphere[1])}.`);
+ push("format",S.settings.format,i=>{
+  if(reread){
+   const rr={
+    1:["use whichever reading format feels easiest for this reread","stay with your current book for the quest"],
+    2:["use your preferred e-ink, print, or audio format","keep the same book across the whole quest"],
+    3:["if multiple formats of this same book are available, switch only if convenient","keep the reread itself as the focus"],
+    4:["try a second format of the same book only if you already have access to it","compare how one familiar scene feels in a different format"],
+    5:["use two formats of this same book if available and notice whether familiar scenes feel different","keep all progress inside the same reread"]
+   };
+   return `Reading style: ${pick(rr[i]||rr[1])}.`;
+  }
+  return `Reading style: ${pick(formatMods[i]||formatMods[1])}.`;
+ });
+ push("time",S.settings.time,i=>`Timing: ${pick(timeMods[i]||timeMods[1])}.`);
+ if(S.settings.seasonal>0)c.push({key:"seasonal",w:S.settings.seasonal,text:S.settings.seasonal>=4?"Seasonal flavor: let the current season strongly influence your reading vibe.":"Seasonal flavor: optional — let the current season influence the mood if it fits."});
+ if(S.settings.chaos>0)c.push({key:"chaos",w:S.settings.chaos,text:S.settings.chaos>=4?"🪿 Goose twist: choose between two random ways to complete the final third of the quest. No takebacks once you choose.":"🪿 Goose twist: add one harmless wildcard of your choice."});
+ return c;
+}
+function chooseModifiers(){
+ let c=modifierCandidates(),out=[],budget=modifierBudget();
+ while(c.length&&out.length<budget){
+  const weighted=[];c.forEach((x,idx)=>weighted.push([idx,x.key,x.w]));
+  const idx=rollWeighted(weighted)[0];out.push(c[idx].text);c.splice(idx,1);
+ }
+ return out;
+}
+const rereadQuestPools={
+ hunt:[
+  ["Foreshadowing Trail","Read until the next natural break. Find one setup, clue, or bit of foreshadowing that means more because you already know where the story goes.","foreshadowing"],
+  ["Payoff Echo","Read until you reach a scene or detail you remember paying off later. Notice what the author planted before the payoff became obvious.","payoff"],
+  ["Memory Check","Before the next chapter, briefly recall what you remember happening. Read it and notice what you remembered, forgot, or remembered differently.","memory"],
+  ["Character Arc Watch","Follow a familiar character through {PAGES} pages. Notice one choice, line, or reaction that reads differently when you know their full arc.","character"],
+  ["Detail You Missed","Read {PAGES} pages and hunt for one small detail you either forgot or never noticed the first time.","detail"],
+  ["Favorite Scene Return","Read until you reach the next scene you remember clearly or particularly like. Notice one thing about it that lands differently now.","favorite"],
+  ["Series Echo","Read {PAGES} pages and spot one callback, parallel, motif, or piece of setup that connects to something later in the series.","callback"],
+  ["Hindsight Hunt","Read until the next turning point. Instead of predicting it, identify what makes the outcome feel inevitable in hindsight.","hindsight"],
+  ["Blind Progress","Read for {MIN} minutes without checking page count or percentage. Guess your progress before you look.","mystery"],
+  ["Choice of Paths","Choose one route: read {PAGES} pages in one go, OR split the same goal across two sessions.","choice"],
+  ["Focused Assault","Complete {SESSIONS} focused reading session(s) of {MIN} minutes. Stay with the reread you are already enjoying.","focus"],
+  ["Milestone Push","Advance roughly {PCT}% farther in your current reread. Stop at a natural story break, not an arbitrary sentence.","milestone"]
+ ],
+ gather:[
+  ["Familiar Path Forage","Read {PAGES} pages of your current reread. Gather while you travel through familiar territory.","pages"],
+  ["Echo Harvest","Clear {CHAPTERS} chapters. Notice one callback, recurring image, or repeated idea along the way.","callback"],
+  ["Memory Forage","Complete {SESSIONS} reading session(s) of {MIN} minutes. At the end, name one detail you had forgotten.","memory"],
+  ["Milestone Gathering","Move about {PCT}% farther through your current reread, then return with whatever the stacks surrender.","milestone"],
+  ["Quiet Scavenge","Read continuously for {MIN} minutes. No analysis required — just enjoy the familiar story and gather while you go.","time"]
+ ],
+ craft:[
+  ["Steady the Cauldron","Read {PAGES} pages while the brew simmers. Familiar story knowledge is allowed; just finish the reading goal.","pages"],
+  ["Callback Infusion","Read {CHAPTERS} chapters. Each time you notice a callback, motif, or bit of setup, imagine another stir of the cauldron.","callback"],
+  ["Low Flame Infusion","Complete {SESSIONS} reading session(s) of {MIN} minutes. The potion finishes with the last session.","sessions"],
+  ["Hindsight Distillation","Read until the next meaningful turning point. Notice one detail that foreshadows or reframes what you already know happens later, then finish one additional chapter.","hindsight"],
+  ["Measured Concoction","Advance around {PCT}% through your current reread to complete the recipe.","milestone"]
+ ]
+};
+
+const rereadQuestSwaps={
+ "Storybreak":{
+  name:"Foreshadowing Hunt",
+  structure:"discovery",
+  objective:"Read until the next natural turning point. Spot one clue, setup, or piece of foreshadowing whose meaning lands differently now that you know what is coming."
+ },
+ "Cliffhanger Hunt":{
+  name:"Payoff Hunt",
+  structure:"discovery",
+  objective:"Read until the next strong stopping point. Identify one setup or tension beat you remember paying off later, and notice how the reread changes it."
+ },
+ "Prediction Trial":{
+  name:"Memory Check",
+  structure:"memory",
+  objective:"Before your next chapter, jot down what you remember happening in it. Read the chapter and see what you remembered correctly, what you forgot, and what feels different this time."
+ }
+};
+function applyRereadQuestSwap(template){
+ if(S.reading?.readMode!=="reread")return {name:template[0],objective:template[1],structure:template[2]};
+ const swap=rereadQuestSwaps[template[0]];
+ return swap ? swap : {name:template[0],objective:template[1],structure:template[2]};
+}
+function rereadBossText(kind,original){
+ if(S.reading?.readMode!=="reread")return original;
+ const swaps={
+  prediction:"Read until the next meaningful turning point. Notice one piece of foreshadowing, setup, or irony that hits differently because you already know what follows.",
+  cliff:"Read until the story reaches a strong tension point. Instead of guessing what comes next, identify what the author is quietly setting up for the later payoff.",
+  opinion:"Read until you notice a familiar character choice whose meaning changes with hindsight. Name what you understand differently now that you know their full arc.",
+  discovery:"Read until you notice a detail, line, image, or setup you had forgotten or did not appreciate the first time. Keep going a little farther before ending the phase.",
+  wildcard:"The shelves shift. Read until you reach a scene you remember having a strong reaction to the first time, then continue through its payoff and compare how it lands now."
+ };
+ return swaps[kind]||original;
+}
+
+function rollQuest(i,goose=false){
+ const role=i===0?"hunt":i===1?"gather":"craft";
+ let diff=goose?pick(["Normal","Hard","Elite","Mini Boss"]):difficultyRoll(role);
+ if(role!=="hunt"&&["Elite","Mini Boss"].includes(diff))diff=diff==="Elite"?"Hard":"Elite";
+ const pool=(S.reading?.readMode==="reread" ? (rereadQuestPools[role]||questPools[role]) : questPools[role]);
+ const t=pick(pool),vals=challengeVals(diff);
+ const adapted=applyRereadQuestSwap(t);
+ let objective=fillTemplate(adapted.objective,vals);
+ const mods=chooseModifiers();
+ if(mods.length)objective+=`\n${mods.join("\n")}`;
+ if(goose)objective+=`\n\n🪿 Goose clause: the quest is locked once accepted, but failure never removes normal reading progress.`;
+ const q=S.quests[i];
+ q.id=uid(role==="hunt"?"H":role==="gather"?"G":"A");q.name=adapted.name;q.objective=objective;q.structure=adapted.structure;
+ q.difficulty=diff;q.xp=rewardFor(diff);q.status="Active";
+ const rn=$("replacementNotice");if(rn)rn.style.display="none";
+ if(i===0)q.extra=$("huntMob").value||"Mushroom Goblin";
+ if(i===1)q.extra=S.world.activeArea||"Front Stacks";
+ if(i===2){
+  const unlocked=Object.keys(recipes).filter(n=>levelFor(Math.max(0,totalXp()))>=recipes[n].level);
+  q.extra=unlocked.length?pick(unlocked):"Forager's Infusion";
+ }
+ save();toast(`${q.role} quest rolled: ${q.name}`);
+}
+function rollAllQuests(){rollQuest(0);rollQuest(1);rollQuest(2)}
+function gooseDecide(){const i=Math.floor(Math.random()*3);rollQuest(i,true);showSequence([{icon:"🪿",title:"THE GOOSE HAS DECIDED",text:`Slot ${i+1} has been rewritten.\n\n${S.quests[i].name}\n${S.quests[i].difficulty} • +${S.quests[i].xp} XP`}])}
+
+function readingTimerMs(){
+ const r=S.reading;
+ return Math.max(0,Number(r.timerElapsedMs||0)+(r.timerRunning&&r.timerStartedAt?Date.now()-Number(r.timerStartedAt):0));
+}
+function fmtTimer(ms){
+ const total=Math.floor(ms/1000),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
+ return [h,m,s].map(x=>String(x).padStart(2,"0")).join(":");
+}
+function saveReadingDesk(){
+ const r=S.reading;
+ r.bookName=$("readBookName").value.trim();
+ r.readMode=$("readMode").value||"first";
+ r.bookTotal=Math.max(0,Number($("readBookTotal").value)||0);
+ r.currentPage=Math.max(0,Number($("readCurrentPage").value)||0);
+ r.percent=Math.max(0,Math.min(100,Number($("readPercent").value)||0));
+ r.sessionStartPage=Math.max(0,Number($("readSessionStartPage").value)||0);
+ S.pages=Math.max(0,Number($("readMmoPages").value)||0);
+ persistSilent();
+ renderReading();
+ renderHome();
+ renderProfile();
+ toast("Reading info saved.");
+}
+function calcPageFromPercent(){
+ const total=Math.max(0,Number($("readBookTotal").value)||0);
+ const pct=Math.max(0,Math.min(100,Number($("readPercent").value)||0));
+ if(!total){toast("Enter the book page count first.");return}
+ const page=Math.max(0,Math.min(total,Math.round(total*pct/100)));
+ $("readCurrentPage").value=page;
+ S.reading.bookTotal=total;S.reading.percent=pct;S.reading.currentPage=page;
+ persistSilent();
+ updateReadingLive();
+ $("readPositionResult").textContent=`${pct}% of ${total.toLocaleString()} pages ≈ page ${page.toLocaleString()}.`;
+}
+function calcPercentFromPage(){
+ const total=Math.max(0,Number($("readBookTotal").value)||0);
+ const page=Math.max(0,Number($("readCurrentPage").value)||0);
+ if(!total){toast("Enter the book page count first.");return}
+ const pct=Math.max(0,Math.min(100,(page/total)*100));
+ $("readPercent").value=pct.toFixed(1);
+ S.reading.bookTotal=total;S.reading.currentPage=page;S.reading.percent=Number(pct.toFixed(1));
+ persistSilent();
+ updateReadingLive();
+ $("readPositionResult").textContent=`Page ${page.toLocaleString()} of ${total.toLocaleString()} ≈ ${pct.toFixed(1)}%.`;
+}
+function setSessionStartFromCurrent(){
+ const page=Math.max(0,Number($("readCurrentPage").value)||0);
+ S.reading.currentPage=page;
+ S.reading.sessionStartPage=page;
+ $("readSessionStartPage").value=page;
+ persistSilent();
+ updateReadingLive();
+ toast(`Session starts at page ${page}.`);
+}
+function sessionPagesNow(){
+ const current=Math.max(0,Number($("readCurrentPage")?.value)||Number(S.reading.currentPage)||0);
+ const start=Math.max(0,Number($("readSessionStartPage")?.value)||Number(S.reading.sessionStartPage)||0);
+ return Math.max(0,current-start);
+}
+function logSessionPages(){
+ const r=S.reading;
+ r.currentPage=Math.max(0,Number($("readCurrentPage").value)||0);
+ r.sessionStartPage=Math.max(0,Number($("readSessionStartPage").value)||0);
+ const added=Math.max(0,r.currentPage-r.sessionStartPage);
+ if(!added){toast("No new pages to add yet.");return}
+ S.pages+=added;
+ r.sessionStartPage=r.currentPage;
+ $("readMmoPages").value=S.pages;
+ $("readSessionStartPage").value=r.sessionStartPage;
+ persistSilent();
+ renderReading();
+ renderHome();
+ renderProfile();
+ toast(`+${added} pages added to your MMO total.`);
+}
+function startReadingTimer(){
+ const r=S.reading;
+ if(r.timerRunning){toast("Timer is already running.");return}
+ r.timerRunning=true;
+ r.timerStartedAt=Date.now();
+ if((r.sessionStartPage||0)===0&&(Number($("readCurrentPage")?.value)||0)>0){
+  r.sessionStartPage=Number($("readCurrentPage").value);
+ }
+ persistSilent();
+ updateReadingLive();
+}
+function pauseReadingTimer(){
+ const r=S.reading;
+ if(!r.timerRunning)return;
+ r.timerElapsedMs=readingTimerMs();
+ r.timerRunning=false;
+ r.timerStartedAt=null;
+ persistSilent();
+ updateReadingLive();
+}
+function resetReadingTimer(){
+ const r=S.reading;
+ r.timerElapsedMs=0;r.timerStartedAt=null;r.timerRunning=false;
+ persistSilent();
+ updateReadingLive();
+ toast("Reading timer reset.");
+}
+function changeChapterCount(delta){
+ S.reading.chapters=Math.max(0,Number(S.reading.chapters||0)+delta);
+ persistSilent();
+ updateReadingLive();
+}
+function resetChapterCount(){
+ S.reading.chapters=0;
+ persistSilent();
+ updateReadingLive();
+}
+function updateReadingLive(){
+ const r=S.reading;
+ const timer=$("readTimer");if(timer)timer.textContent=fmtTimer(readingTimerMs());
+ const startBtn=$("readTimerStartBtn");if(startBtn)startBtn.textContent=r.timerRunning?"▶ Running":"▶ Start";
+ const pages=$("readPagesSession");if(pages)pages.textContent=sessionPagesNow().toLocaleString();
+ const chapters=$("readChapterCount");if(chapters)chapters.textContent=Number(r.chapters||0);
+ const summary=$("readSessionSummary");
+ if(summary)summary.textContent=`${fmtTimer(readingTimerMs())} • ${sessionPagesNow()} pages • ${Number(r.chapters||0)} chapters`;
+}
+function renderReading(){
+ const r=S.reading;
+ if(!$("readBookName"))return;
+ $("readBookName").value=r.bookName||"";
+ $("readMode").value=r.readMode||"first";
+ $("readBookTotal").value=r.bookTotal||"";
+ $("readMmoPages").value=S.pages;
+ $("readCurrentPage").value=r.currentPage||"";
+ $("readPercent").value=(r.percent||r.percent===0)?r.percent:"";
+ $("readSessionStartPage").value=r.sessionStartPage||"";
+ updateReadingLive();
+}
+function renderHomeReading(){
+ const el=$("homeReadingSummary");if(!el)return;
+ const r=S.reading,total=Number(r.bookTotal||0),page=Number(r.currentPage||0),pct=Number(r.percent||0);
+ el.innerHTML=`<b>${esc(r.bookName||"No current book saved")}</b>${r.readMode==="reread"?` <span class="tag">REREAD</span>`:""}<br>
+ <small>${total?`Page ${page.toLocaleString()} / ${total.toLocaleString()} • ${pct.toFixed(1)}%`:"Add your book in the Read tab"}<br>
+ ${S.pages.toLocaleString()} total MMO pages • ${Number(r.chapters||0)} chapters this session • ${fmtTimer(readingTimerMs())}</small>`;
+}
+function startReadingUiClock(){
+ setInterval(()=>{updateReadingLive();renderHomeReading()},1000);
+}
+
+function renderHome(){
+ const xp=Math.max(0,totalXp()),l=levelFor(xp),lx=Math.max(0,lvlXp(xp,l)),need=lvlNeed(l);
+ $("homeLevel").textContent=l;$("homeXp").textContent=xp.toLocaleString();$("homeQuests").textContent=S.questsCompleted;$("homeGoldens").textContent=goldCount();
+ $("homeRank").textContent=rankFor(l);$("homeRegion").textContent=`${regionFor(l)} • ${S.world.activeArea||"Front Stacks"}`;$("xpText").textContent=`${lx.toLocaleString()} / ${need.toLocaleString()} XP`;
+ $("xpBar").style.width=Math.min(100,(lx/need)*100)+"%";
+ $("homeQuestCards").innerHTML=S.quests.map((q,i)=>`<div class="card quest ${i===0?"hunt":i===1?"gather":"craft"}"><b>${i===0?"⚔️":i===1?"🌿":"⚗️"} ${q.role}</b><span style="float:right" class="tag">${q.status}</span><br><strong>${q.name||"No quest loaded"}</strong><br><small>${esc(q.objective||"Roll a quest from the Quest screen.")}</small>${q.name?`<hr><small>${q.difficulty} • +${q.xp} XP</small>`:""}</div>`).join("");
+ $("homeBonuses").innerHTML=bonusSummaryHtml();
+ renderHomeReading();
+}
+function renderQuestCards(){
+ $("questCards").innerHTML=S.quests.map((q,i)=>`<div class="card quest ${i===0?"hunt":i===1?"gather":"craft"}">
+ <h3>${i===0?"⚔️ SLOT 1 — HUNT":i===1?"🌿 SLOT 2 — GATHER":"⚗️ SLOT 3 — ALCHEMY"}</h3>
+ <div class="kicker">${q.id||"No quest ID"}</div>
+ <div class="bigline">${esc(q.name||"Empty Slot")}</div>
+ <p style="white-space:pre-wrap;font-size:11px;line-height:1.45">${esc(q.objective||"Roll a quest above.")}</p>
+ ${q.name?`<span class="tag">${q.difficulty}</span><span class="tag">+${q.xp} XP</span><span class="tag">${q.status}</span>`:""}
+ <div class="row" style="margin-top:8px">
+   <button class="btn-blue" onclick="rollQuest(${i})">Reroll</button>
+   <button class="btn-plain" onclick="clearQuest(${i})">Clear</button>
+   <button class="${i===0?"btn-red":i===1?"btn-green":"btn-purple"}" onclick="sendQuestToKWGT(${i})">📡 Send to Slot ${i+1}</button>
+ </div></div>`).join("");
+}
+function kwgtClean(x){return String(x??"").replace(/\|\|\|/g,"—").trim()}
+function kwgtPayload(q){
+ if(!q||!q.name)return ["","","","","OFF",""].join("|||");
+ const timed=q.timed?"ON":"OFF";
+ const due=q.due||"";
+ return [kwgtClean(q.name),kwgtClean(q.objective),kwgtClean(q.difficulty),String(Math.round(Number(q.xp)||0)),timed,kwgtClean(due)].join("|||");
+}
+function kustomToken(){
+ const field=$("kwgtToken");
+ return (field&&field.value.trim()) || localStorage.getItem("kustomRemoteToken") || "";
+}
+function setKwgtStatus(msg){
+ const el=$("kwgtStatus");
+ if(el)el.textContent=msg;
+}
+function saveKustomToken(){
+ const token=($("kwgtToken")?.value||"").trim();
+ if(!token){toast("Paste your Kustom Remote Message token first.");return}
+ localStorage.setItem("kustomRemoteToken",token);
+ setKwgtStatus("✅ Token saved for this app copy.");
+ loadKustomToken();
+ toast("Kustom token saved.");
+}
+function loadKustomToken(){
+ const token=localStorage.getItem("kustomRemoteToken")||"";
+ const field=$("kwgtToken");if(field)field.value=token;
+ const state=$("kwgtTokenState");if(state)state.textContent=token?"✅ Token saved for this app copy.":"⚠️ No KWGT token saved for this app copy.";
+ const quick=$("kwgtQuickStatus");if(quick)quick.textContent=token?"✅ KWGT token is saved. Tap Sync All 3 when you want the widget updated.":"⚠️ KWGT token missing. Go to Me → Setup and paste it once.";
+}
+const KUSTOM_MIN_GAP_MS=15000;
+const KUSTOM_429_FALLBACK_MS=75000;
+let kustomSending=false;
+let kustomUiTimer=null;
+
+function getQueuedKustom(){
+ try{return JSON.parse(localStorage.getItem("kustomPendingData")||"null")}catch(e){return null}
+}
+function mergeQueuedKustom(data){
+ const old=getQueuedKustom()||{};
+ const merged=Object.assign({},old,data);
+ try{localStorage.setItem("kustomPendingData",JSON.stringify(merged))}catch(e){}
+ updateKustomCooldownUI();
+ return merged;
+}
+function clearQueuedKustom(){
+ try{localStorage.removeItem("kustomPendingData")}catch(e){}
+ updateKustomCooldownUI();
+}
+function kustomNextAllowed(){
+ return Number(localStorage.getItem("kustomNextAllowedAt")||0);
+}
+function setKustomNextAllowed(msFromNow){
+ const at=Date.now()+Math.max(0,msFromNow);
+ try{localStorage.setItem("kustomNextAllowedAt",String(at))}catch(e){}
+ updateKustomCooldownUI();
+ return at;
+}
+function formatWait(ms){
+ const sec=Math.max(0,Math.ceil(ms/1000));
+ if(sec<=0)return "ready";
+ if(sec<60)return `${sec}s`;
+ const m=Math.floor(sec/60),s=sec%60;
+ return `${m}m ${s}s`;
+}
+function retryDelayFromResponse(res){
+ const ra=res.headers.get("Retry-After");
+ if(ra){
+  const seconds=Number(ra);
+  if(Number.isFinite(seconds)&&seconds>=0)return Math.max(15000,seconds*1000);
+  const when=Date.parse(ra);
+  if(Number.isFinite(when))return Math.max(15000,when-Date.now());
+ }
+ // If the browser exposes no usable reset header, use a conservative fixed cooldown.
+ return KUSTOM_429_FALLBACK_MS;
+}
+function updateKustomCooldownUI(){
+ const el=$("kwgtCooldown");
+ if(!el)return;
+ const pending=getQueuedKustom();
+ const wait=kustomNextAllowed()-Date.now();
+ const staleBtn=$("clearStaleCooldownBtn");
+
+ // This app never intentionally creates a local cooldown longer than 75 seconds.
+ // Anything still more than 90 seconds in the future is stale state from an older build.
+ if(staleBtn)staleBtn.style.display=wait>90000?"block":"none";
+
+ if(pending&&wait>0){
+  el.textContent=`Latest board state saved locally • Kustom cooldown ${formatWait(wait)}.`;
+ }else if(pending){
+  el.textContent="Latest board state saved locally • ready to sync.";
+ }else if(wait>0){
+  el.textContent=`Kustom cooldown ${formatWait(wait)}.`;
+ }else{
+  el.textContent="";
+ }
+}
+function clearStaleKustomCooldown(){
+ const wait=kustomNextAllowed()-Date.now();
+ if(wait<=90000){
+  setKwgtStatus("Cooldown is not stale yet. Let it finish normally.");
+  updateKustomCooldownUI();
+  return;
+ }
+ try{localStorage.setItem("kustomNextAllowedAt","0")}catch(e){}
+ setKwgtStatus("✅ Stale local cooldown cleared. You can now tap Sync Current Board Now once.");
+ updateKustomCooldownUI();
+}
+function startKustomUiClock(){
+ if(kustomUiTimer)clearInterval(kustomUiTimer);
+ kustomUiTimer=setInterval(updateKustomCooldownUI,1000);
+ updateKustomCooldownUI();
+}
+function currentBoardPayload(){
+ const data={};
+ S.quests.forEach((q,i)=>{data[`q${i+1}data`]=kwgtPayload(q)});
+ return data;
+}
+async function postToKustom(data){
+ const token=kustomToken();
+ if(!token){
+  setKwgtStatus("Paste and save your Kustom Remote Message token first.");
+  toast("Kustom token needed.");
+  return false;
+ }
+ try{localStorage.setItem("kustomRemoteToken",token)}catch(e){}
+
+ // Always preserve the newest requested state locally first.
+ mergeQueuedKustom(data);
+
+ const wait=kustomNextAllowed()-Date.now();
+ if(wait>0){
+  setKwgtStatus(`⏳ Saved locally. Wait ${formatWait(wait)}, then tap Sync Current Board Now once.`);
+  return "queued";
+ }
+ if(kustomSending){
+  setKwgtStatus("⏳ A Kustom request is already in progress. Latest state is saved locally.");
+  return "queued";
+ }
+
+ kustomSending=true;
+ setKwgtStatus("📡 Sending one bundled update…");
+ try{
+  const payload=getQueuedKustom()||data;
+  const res=await fetch("https://api.kustom.rocks/msg",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({tokens:[token],data:payload})
+  });
+  const body=await res.text().catch(()=>"");
+
+  if(res.status===429){
+   const waitMs=retryDelayFromResponse(res);
+   setKustomNextAllowed(waitMs);
+   setKwgtStatus(`⚠️ KWGT did not accept this send. First make sure the token is saved in Me → Setup. If it is, wait ${formatWait(waitMs)} and try one sync.`);
+   toast("KWGT rate limited — board state saved locally.");
+   return "queued";
+  }
+
+  if(!res.ok){
+   setKwgtStatus(`❌ Kustom returned HTTP ${res.status}${body?" • "+body:""}`);
+   toast("KWGT send failed — latest board state is still saved locally.");
+   return false;
+  }
+
+  clearQueuedKustom();
+  setKustomNextAllowed(KUSTOM_MIN_GAP_MS);
+  setKwgtStatus("✅ Sent — all queued Quest Board changes are now synced.");
+  toast("KWGT Quest Board synced.");
+  return true;
+ }catch(err){
+  setKwgtStatus(`❌ Could not reach Kustom. Latest board state is saved locally. Tap Sync Current Board Now later.`);
+  toast("KWGT send paused — board state saved locally.");
+  return false;
+ }finally{
+  kustomSending=false;
+  updateKustomCooldownUI();
+ }
+}
+async function syncCurrentBoardNow(){
+ // Replace any stale partial queue with the actual current board,
+ // then use exactly one Kustom call when allowed.
+ mergeQueuedKustom(currentBoardPayload());
+ const wait=kustomNextAllowed()-Date.now();
+ if(wait>0){
+  setKwgtStatus(`⏳ Not sending yet. Kustom cooldown has ${formatWait(wait)} left.`);
+  updateKustomCooldownUI();
+  return "queued";
+ }
+ return await postToKustom(currentBoardPayload());
+}
+
+async function sendQuestToKWGT(i){
+ const q=S.quests[i];
+ const data={};
+ data[`q${i+1}data`]=kwgtPayload(q);
+ const role=q?.role || fresh().quests[i].role;
+ const result=await postToKustom(data);
+ if(result===true){
+  toast(q&&q.name ? `${role} sent to Quest Board.` : `${role} slot blanked on Quest Board.`);
+ }else if(result==="queued"){
+  toast(`${role} widget update queued.`);
+ }
+ return result;
+}
+async function sendAllQuestsToKWGT(){
+ const result=await postToKustom(currentBoardPayload());
+ if(result==="queued")toast("Latest Quest Board state saved for sync.");
+ return result;
+}
+async function blankQuestSlotInKWGT(i){
+ const data={};
+ data[`q${i+1}data`]=kwgtPayload(null);
+ return await postToKustom(data);
+}
+async function clearQuestAndWidget(i){
+ const role=S.quests[i]?.role || fresh().quests[i].role;
+ S.quests[i]=fresh().quests[i];
+ save();
+ const ok=await blankQuestSlotInKWGT(i);
+ toast(ok?`${role} slot cleared on app + widget.`:`${role} slot cleared in app; widget send failed.`);
+}
+async function clearQuest(i){await clearQuestAndWidget(i)}
+function syncHuntTarget(){S.quests[0].extra=$("huntMob").value;save()}
+function syncGatherArea(){S.quests[1].extra=$("gatherArea").value;save()}
+function syncPotionQuest(){S.quests[2].extra=$("potionSelect").value;save()}
+
+function activeEffectTotals(){
+ const totals={gold:0,gather:0,loot:0,treasure:0,xp:0,boss:0};
+ for(const slot of slots){
+  const key=S.equipment[slot];if(!key)continue;
+  const e=S.enchantments[key];if(!e||!e.effect)continue;
+  if(totals[e.effect.type]!=null)totals[e.effect.type]+=Number(e.effect.amount)||0;
+ }
+ return totals;
+}
+function bonusSummaryHtml(){
+ const b=activeEffectTotals();
+ const rows=[["✨ Golden",b.gold,"%"],["🌿 Gather",b.gather,"%"],["⚔️ Bonus Loot",b.loot,"%"],["🔎 Treasure",b.treasure,"%"],["📚 Quest XP",b.xp,"%"],["👑 Boss Loot",b.boss,"%"]];
+ return rows.map(x=>`<div class="inventory-row"><b>${x[0]}</b><span style="float:right">+${x[1]}${x[2]}</span></div>`).join("")||"<small>No active bonuses.</small>";
+}
+function itemSlot(name){
+ for(const o of Object.values(mobs)){const d=o.drops.find(x=>x[0]===name);if(d)return d[3]||"Relic"}return"Relic";
+}
+function itemRarity(name){
+ for(const o of Object.values(mobs)){const d=o.drops.find(x=>x[0]===name);if(d)return d[1]}return"Oddity";
+}
+function addItem(name,variant="Normal",killNo=null){
+ if(!S.items[name])S.items[name]={normal:0,golden:0};
+ const k=variant==="Golden"?"golden":"normal";S.items[name][k]++;
+ const key=`${variant}|${name}`;
+ if(k==="normal"&&!S.firstFind[key])S.firstFind[key]=killNo||"—";
+ if(k==="golden"&&!S.firstGolden[key])S.firstGolden[key]=killNo||"—";
+}
+function removeItem(name,variant="Normal",qty=1){
+ if(!S.items[name])return;
+ const k=variant==="Golden"?"golden":"normal";
+ S.items[name][k]=Math.max(0,(S.items[name][k]||0)-qty);
+ const key=`${variant}|${name}`;
+ if((S.items[name][k]||0)===0){
+  if(k==="normal")delete S.firstFind[key];
+  else delete S.firstGolden[key];
+ }
+ if((S.items[name].normal||0)===0&&(S.items[name].golden||0)===0)delete S.items[name];
+}
+function setTestMode(on){
+ S.settings.testMode=!!on;
+ save();
+ toast(on?"🧪 Test Mode ON — progress is protected.":"Test Mode OFF — completions are real.");
+}
+function renderCompletionSafety(){
+ const cb=$("testMode");
+ if(cb)cb.checked=!!S.settings.testMode;
+ const st=$("testModeStatus");
+ if(st)st.textContent=S.settings.testMode
+  ?"🧪 TEST MODE ACTIVE — completion results are simulated only."
+  :"⚔️ LIVE MODE — completion rewards will be saved.";
+ const u=$("undoCompletionStatus");
+ if(u){
+  if(S.lastCompletionUndo)u.textContent=`Available: ${S.lastCompletionUndo.label||"last quest completion"}`;
+  else if(S.history.length)u.textContent="A legacy completion is present. Undo can reverse the latest Hunt test if needed.";
+  else u.textContent="Nothing to undo.";
+ }
+ const b=$("undoCompletionBtn");
+ if(b)b.disabled=!S.lastCompletionUndo&&!S.history.length;
+}
+function beginCompletionTest(){
+ if(!S.settings.testMode)return null;
+ const real=S;
+ S=JSON.parse(JSON.stringify(S));
+ return real;
+}
+function endCompletionTest(real,steps){
+ if(!real)return false;
+ S=real;
+ steps.push({icon:"🧪",title:"TEST MODE — NO SAVE CHANGES",text:"The entire result above was a simulation. No XP, loot, kills, materials, potions, journal entries, quest status, or world progress were saved."});
+ renderAll();
+ showSequence(steps,null);
+ return true;
+}
+function recordCompletionUndo(data){
+ S.lastCompletionUndo=Object.assign({at:new Date().toISOString()},data);
+}
+async function undoLastCompletion(){
+ if(S.lastCompletionUndo){
+  const u=S.lastCompletionUndo;
+  if(u.questBefore&&Number.isInteger(u.slot))S.quests[u.slot]=u.questBefore;
+  S.questBonus=Math.max(0,S.questBonus-(u.xp||0));
+  S.questsCompleted=Math.max(0,S.questsCompleted-1);
+
+  if(u.kind==="Hunt"){
+   if(u.mob)S.kills[u.mob]=Math.max(0,(S.kills[u.mob]||0)-1);
+   if(u.frontHuntsDelta)S.world.frontHunts=Math.max(0,(S.world.frontHunts||0)-u.frontHuntsDelta);
+   if(typeof u.mossbackUnlockedBefore==="boolean")S.world.mossbackUnlocked=u.mossbackUnlockedBefore;
+   (u.items||[]).forEach(x=>removeItem(x.name,x.variant,x.qty||1));
+  }else if(u.kind==="Gather"){
+   Object.entries(u.materials||{}).forEach(([m,n])=>S.materials[m]=Math.max(0,(S.materials[m]||0)-n));
+  }else if(u.kind==="Alchemy"){
+   Object.entries(u.ingredients||{}).forEach(([m,n])=>S.materials[m]=(S.materials[m]||0)+n);
+   if(u.potion)S.potions[u.potion]=Math.max(0,(S.potions[u.potion]||0)-1);
+  }
+
+  if(u.historyDate){
+   const idx=S.history.findIndex(h=>h.date===u.historyDate);
+   if(idx>=0)S.history.splice(idx,1);
+  }else if(S.history.length){
+   S.history.shift();
+  }
+
+  const label=u.label||"Last completion";
+  S.lastCompletionUndo=null;
+  save();
+  await sendAllQuestsToKWGT();
+  toast(`${label} undone.`);
+  return;
+ }
+
+ // One-time fallback for the Hunt completion created before v2.6 existed.
+ const h=S.history[0];
+ if(!h){toast("Nothing to undo.");return}
+ if(h.type!=="Hunt"){
+  toast("This older completion cannot be safely auto-undone. Future completions are fully undoable.");
+  return;
+ }
+ const q=S.quests[0];
+ S.questBonus=Math.max(0,S.questBonus-(Number(h.xp)||0));
+ S.questsCompleted=Math.max(0,S.questsCompleted-1);
+ if(h.target&&S.kills[h.target]!=null)S.kills[h.target]=Math.max(0,S.kills[h.target]-1);
+ S.world.frontHunts=Math.max(0,(S.world.frontHunts||0)-1);
+ if(S.world.frontHunts<3&&!S.world.mossbackDefeated)S.world.mossbackUnlocked=false;
+
+ const parts=String(h.drop||"").split(" • ").filter(Boolean);
+ for(const part of parts){
+  let raw=part.trim(),variant="Normal";
+  raw=raw.replace(/^Hunter bonus:\s*/,"").replace(/^Hoard:\s*/,"");
+  if(raw.startsWith("Golden ")){variant="Golden";raw=raw.slice(7);}
+  if(raw)removeItem(raw,variant,1);
+ }
+ if(q&&q.status==="Completed"&&q.name===h.quest)q.status="Active";
+ S.history.shift();
+ save();
+ await sendAllQuestsToKWGT();
+ toast("Legacy Hunt test completion undone.");
+}
+function renderHuntSelect(){
+ const current=$("huntMob").value;
+ $("huntMob").innerHTML=Object.entries(mobs).map(([m,o])=>`<option value="${m}">${o.icon} ${m}</option>`).join("");
+ $("huntMob").value=(current&&mobs[current])?current:(S.quests[0].extra&&mobs[S.quests[0].extra]?S.quests[0].extra:"Mushroom Goblin");
+}
+function renderHuntInfo(){
+ const mob=$("huntMob").value;if(!mob||!mobs[mob])return;
+ const k=S.kills[mob]||0,d=mobs[mob].drops;
+ const found=d.filter(x=>S.items[x[0]]?.normal>0).length,gf=d.filter(x=>S.items[x[0]]?.golden>0).length;
+ $("huntInfo").innerHTML=`<span class="tag">Kills ${k}</span><span class="tag">Normal ${found}/8</span><span class="tag">Golden ${gf}/8</span><br><small>${mobs[mob].area} • Pick the mob you actually want to farm. No pity. No escalating odds.</small>`;
+}
+function unlockedAchievementNames(){
+ return achievementData().filter(x=>x[2]).map(x=>x[0]);
+}
+function newlyUnlocked(before){
+ const old=new Set(before);
+ return unlockedAchievementNames().filter(x=>!old.has(x));
+}
+function journalEntry(role,q,target,xp,reward){
+ return {
+  type:role,
+  date:new Date().toISOString(),
+  quest:q.name,
+  questId:q.id||"",
+  difficulty:q.difficulty||"Normal",
+  target:target||"",
+  xp:Number(xp)||0,
+  drop:reward||""
+ };
+}
+function completionTitleSteps(before){
+ return newlyUnlocked(before).map(name=>({icon:"🏆",title:"TITLE UNLOCKED",text:name}));
+}
+function completeHunt(){
+ if(!S.quests[0].name||S.quests[0].status!=="Active"){toast("You need an active Hunt quest first.");return}
+ const realState=beginCompletionTest();
+ const q=S.quests[0],mob=$("huntMob").value,questBefore=JSON.parse(JSON.stringify(q));
+ const before=unlockedAchievementNames();
+ const mossbackUnlockedBefore=!!S.world.mossbackUnlocked;
+ const nextKill=(S.kills[mob]||0)+1,drop=rollWeighted(mobs[mob].drops),base=drop[0],rar=drop[1];
+ const b=activeEffectTotals(),goldChance=mobs[mob].gold+b.gold,golden=Math.random()*100<goldChance;
+ const awarded=[{name:base,variant:golden?"Golden":"Normal",qty:1}];
+ addItem(base,golden?"Golden":"Normal",nextKill);
+ S.kills[mob]=nextKill;
+ S.world.frontHunts++;
+
+ let rewardParts=[`${golden?"Golden ":""}${base}`];
+ let steps=[
+  {icon:"⚔️",title:"QUEST COMPLETE",text:`${q.name}\n${q.difficulty} • reading objective cleared`},
+  {icon:mobs[mob].icon,title:"ENCOUNTER",text:`${mob}\nDefeat #${nextKill}\n\nThe creature notices the suspiciously well-read adventurer.`},
+  {icon:"💥",title:`${mob.toUpperCase()} DEFEATED`,text:"The loot roll begins..."},
+  {icon:golden?"✨":"🎁",title:golden?"GOLDEN DROP!":"LOOT DROP",text:`${golden?"Golden ":""}${base}\n${rar}\nGolden roll: ${golden?"SUCCESS":"failed"} (${goldChance.toFixed(1)}%)`}
+ ];
+
+ if(Math.random()*100<b.loot){
+  const extra=rollWeighted(mobs[mob].drops);
+  addItem(extra[0],"Normal",nextKill);
+  awarded.push({name:extra[0],variant:"Normal",qty:1});
+  rewardParts.push(`Hunter bonus: ${extra[0]}`);
+  steps.push({icon:"⚔️",title:"HUNTER BONUS",text:`Bonus standard drop: ${extra[0]}`});
+ }
+
+ if(mob==="Pageworm"){
+  const hc=20+b.treasure;
+  if(Math.random()*100<hc){
+   const odd=rollWeighted(mobs[mob].hoard.map(x=>[x[0],"Oddity",x[1]])),og=Math.random()*100<2;
+   addItem(odd[0],og?"Golden":"Normal",nextKill);
+   awarded.push({name:odd[0],variant:og?"Golden":"Normal",qty:1});
+   rewardParts.push(`Hoard: ${og?"Golden ":""}${odd[0]}`);
+   steps.push({icon:"🐛",title:"PAGEWORM HOARD!",text:`${og?"✨ Golden ":""}${odd[0]}\nBonus hoard roll succeeded (${hc.toFixed(1)}%).`});
+  }
+ }
+
+ const xp=Math.round(q.xp*(1+b.xp/100));
+ S.questBonus+=xp;
+ S.questsCompleted++;
+ q.status="Completed";
+ const entry=journalEntry("Hunt",q,mob,xp,rewardParts.join(" • "));
+ S.history.unshift(entry);
+
+ if(!S.world.mossbackUnlocked&&S.world.frontHunts>=3){
+  S.world.mossbackUnlocked=true;
+  steps.push({icon:"🌿",title:"AREA BOSS UNLOCKED",text:"The Mossback Shelfkeeper now guards the path deeper into the Mossy Stacks.\n\nIts battle and loot table remains intentionally pending until we design it together."});
+ }
+
+ steps.push({icon:"📚",title:"XP GAINED",text:`+${xp} bonus XP\nTotal quest clears: ${S.questsCompleted}`});
+ steps.push(...completionTitleSteps(before));
+ steps.push({icon:"📖",title:"JOURNAL UPDATED",text:`${q.name}\nHunt • ${q.difficulty}\nTarget: ${mob}\nReward: ${rewardParts.join(" • ")}`});
+
+ $("huntResult").textContent=`${mob} defeated.\n${rewardParts.join("\n")}\n+${xp} XP`;
+
+ if(endCompletionTest(realState,steps))return;
+
+ recordCompletionUndo({
+  kind:"Hunt",slot:0,label:`Hunt — ${q.name}`,questBefore,xp,mob,
+  frontHuntsDelta:1,mossbackUnlockedBefore,items:awarded,historyDate:entry.date
+ });
+ save();
+ showSequence(steps,0);
+}
+
+function renderMaterials(){
+ $("materialList").innerHTML=materials.map(x=>`<div class="inventory-row"><b>${x}</b><span style="float:right">${S.materials[x]||0}</span></div>`).join("");
+}
+function completeGather(){
+ if(!S.quests[1].name||S.quests[1].status!=="Active"){toast("You need an active Gather quest first.");return}
+ const realState=beginCompletionTest();
+ const q=S.quests[1],questBefore=JSON.parse(JSON.stringify(S.quests[1]));
+ const before=unlockedAchievementNames();
+ const diff=q.difficulty||"Normal",picks={Easy:2,Normal:3,Hard:4,Elite:5,"Mini Boss":6,Boss:7}[diff]||3,b=activeEffectTotals();
+ let rolls=picks+(Math.random()*100<b.gather?1:0),found={};
+ for(let i=0;i<rolls;i++){
+  const x=rollWeighted(materialWeights["Front Stacks"].map(y=>[y[0],"Material",y[1]]))[0];
+  const qty=1+(Math.random()<.25?1:0);
+  found[x]=(found[x]||0)+qty;
+  S.materials[x]=(S.materials[x]||0)+qty;
+ }
+ const xp=Math.round(q.xp*(1+b.xp/100));
+ S.questBonus+=xp;
+ S.questsCompleted++;
+ q.status="Completed";
+ const reward=Object.entries(found).map(([k,v])=>`${k} ×${v}`).join(", ");
+ const entry=journalEntry("Gather",q,q.extra,xp,reward);
+ S.history.unshift(entry);
+
+ $("gatherResult").textContent=`Forage complete: ${q.extra}\n\n${Object.entries(found).map(([k,v])=>`${k} ×${v}`).join("\n")}\n\n+${xp} quest XP`;
+
+ const steps=[
+  {icon:"🌿",title:"QUEST COMPLETE",text:`${q.name}\n${q.difficulty} • reading objective cleared`},
+  {icon:"🧺",title:"FORAGE COMPLETE",text:`${q.extra}\n\n${Object.entries(found).map(([k,v])=>`${k} ×${v}`).join("\n")}`},
+  {icon:"📚",title:"XP GAINED",text:`+${xp} bonus XP\nTotal quest clears: ${S.questsCompleted}`},
+  ...completionTitleSteps(before),
+  {icon:"📖",title:"JOURNAL UPDATED",text:`${q.name}\nGather • ${q.difficulty}\n${reward}`}
+ ];
+
+ if(endCompletionTest(realState,steps))return;
+
+ recordCompletionUndo({
+  kind:"Gather",slot:1,label:`Gather — ${q.name}`,questBefore,xp,
+  materials:found,historyDate:entry.date
+ });
+ save();
+ showSequence(steps,1);
+}
+
+function renderPotionSelectors(){
+ const lvl=levelFor(Math.max(0,totalXp())),names=Object.keys(recipes);
+ $("potionSelect").innerHTML=names.map(n=>`<option value="${n}" ${lvl<recipes[n].level?"disabled":""}>${n}${lvl<recipes[n].level?` — Lv ${recipes[n].level}`:""}</option>`).join("");
+ let preferred=S.quests[2].extra;if(preferred&&recipes[preferred]&&lvl>=recipes[preferred].level)$("potionSelect").value=preferred;
+ const owned=names.filter(n=>(S.potions[n]||0)>0);
+ $("usePotionSelect").innerHTML=owned.length?owned.map(n=>`<option>${n}</option>`).join(""):`<option value="">No potions brewed</option>`;
+}
+function renderPotion(){
+ const name=$("potionSelect").value;if(!name||!recipes[name])return;
+ const r=recipes[name],l=levelFor(Math.max(0,totalXp())),ok=l>=r.level&&r.ing.every(([m,q])=>(S.materials[m]||0)>=q);
+ $("potionInfo").innerHTML=`<b>${name}</b><br><small>Unlock Level ${r.level}</small><br><br>${r.effect.label}<hr>${r.ing.map(([m,q])=>`${m}: <b>${S.materials[m]||0}</b> / ${q}`).join("<br>")}<hr><b>${ok?"✅ CAN BREW":"🔒 NOT READY"}</b>`;
+}
+function brewPotion(){
+ if(!S.quests[2].name||S.quests[2].status!=="Active"){toast("You need an active Alchemy quest first.");return}
+ const name=$("potionSelect").value,r=recipes[name],lvl=levelFor(Math.max(0,totalXp()));
+ if(!r||lvl<r.level){toast("That recipe is still locked.");return}
+ if(!r.ing.every(([m,n])=>(S.materials[m]||0)>=n)){toast("You do not have the ingredients yet.");return}
+
+ const realState=beginCompletionTest();
+ const q=S.quests[2],questBefore=JSON.parse(JSON.stringify(S.quests[2]));
+ const before=unlockedAchievementNames();
+ const spent={};
+ r.ing.forEach(([m,n])=>{spent[m]=n;S.materials[m]-=n});
+ S.potions[name]=(S.potions[name]||0)+1;
+
+ const b=activeEffectTotals(),xp=Math.round(q.xp*(1+b.xp/100));
+ S.questBonus+=xp;
+ S.questsCompleted++;
+ q.status="Completed";
+ const entry=journalEntry("Alchemy",q,name,xp,name);
+ S.history.unshift(entry);
+
+ $("alchemyResult").textContent=`Brewed: ${name}\nPotion added to bag.\n\n${r.effect.label}\n\n+${xp} quest XP`;
+
+ const steps=[
+  {icon:"⚗️",title:"QUEST COMPLETE",text:`${q.name}\n${q.difficulty} • reading objective cleared`},
+  {icon:"🪿",title:"CAULDRON ENGAGED",text:`The goose adds ingredients with a level of confidence unsupported by any certification.`},
+  {icon:"🧪",title:"POTION BREWED",text:`${name}\n\n${r.effect.label}\n\nStored in your potion bag. It is NOT applied automatically.`},
+  {icon:"📚",title:"XP GAINED",text:`+${xp} bonus XP\nTotal quest clears: ${S.questsCompleted}`},
+  ...completionTitleSteps(before),
+  {icon:"📖",title:"JOURNAL UPDATED",text:`${q.name}\nAlchemy • ${q.difficulty}\nBrewed: ${name}`}
+ ];
+
+ if(endCompletionTest(realState,steps))return;
+
+ recordCompletionUndo({
+  kind:"Alchemy",slot:2,label:`Alchemy — ${q.name}`,questBefore,xp,
+  ingredients:spent,potion:name,historyDate:entry.date
+ });
+ save();
+ showSequence(steps,2);
+}
+function randomAura(big=false){
+ const pool=[
+  {type:"gather",amount:big?Math.floor(5+Math.random()*11):8,label:"extra gathering-material roll chance"},
+  {type:"loot",amount:big?Math.floor(3+Math.random()*9):5,label:"bonus standard monster-loot roll chance"},
+  {type:"treasure",amount:big?Math.floor(3+Math.random()*9):5,label:"oddity / hidden-treasure check chance"},
+  {type:"xp",amount:big?Math.floor(3+Math.random()*9):5,label:"quest bonus XP"},
+  {type:"gold",amount:big?Number((Math.random()*2.5+.25).toFixed(2)):1,label:"Golden variant roll chance"}
+ ];
+ const p=pick(pool);return {...p,label:`+${p.amount}% ${p.label}`};
+}
+function applyPotion(){
+ const potion=$("usePotionSelect").value,item=$("targetItem").value,variant=$("targetVariant").value;
+ if(!potion||!(S.potions[potion]>0)){toast("You do not have that potion.");return}
+ if(!item){toast("Choose a collectible first.");return}
+ const owned=S.items[item]||{normal:0,golden:0};if((variant==="Normal"?owned.normal:owned.golden)<=0){toast(`You do not own a ${variant} ${item}.`);return}
+ const key=`${variant}|${item}`,r=recipes[potion],old=S.enchantments[key],effect=r.effect.type==="reroll"?randomAura(false):r.effect.type==="big-reroll"?randomAura(true):{...r.effect};
+ S.potions[potion]--;S.enchantments[key]={potion,effect,applied:new Date().toISOString()};
+ $("applyResult").textContent=`Applied: ${potion}\nTarget: ${variant} ${item}\n\n${effect.label}${old?`\n\nOverwrote: ${old.effect.label}`:""}`;
+ save();showSequence([{icon:"✨",title:"ENCHANTMENT APPLIED",text:`${variant} ${item}\n\n${effect.label}${old?`\n\nPrevious enchantment overwritten.`:""}`}])
+}
+function renderPotionBag(){
+ const rows=Object.keys(recipes).filter(n=>(S.potions[n]||0)>0);
+ $("potionBag").innerHTML=rows.length?rows.map(n=>`<div class="inventory-row"><b>${n}</b><span style="float:right">×${S.potions[n]}</span><br><small>${recipes[n].effect.label}</small></div>`).join(""):"<small>No potions brewed yet.</small>";
+ const es=Object.entries(S.enchantments);
+ $("enchantmentList").innerHTML=es.length?es.map(([k,e])=>`<div class="inventory-row"><b>${esc(k.replace("|"," • "))}</b><br><small>${esc(e.potion)} — ${esc(e.effect.label)}</small></div>`).join(""):"<small>No enchanted collectibles yet.</small>";
+}
+function renderTargets(){
+ const names=Object.entries(S.items).filter(([_,v])=>v.normal>0||v.golden>0).map(([k])=>k);
+ $("targetItem").innerHTML=names.length?names.map(x=>`<option>${x}</option>`).join(""):`<option value="">No collectibles yet</option>`;
+}
+function renderEquipment(){
+ let available=[];
+ for(const [name,v] of Object.entries(S.items)){
+  if(v.normal>0)available.push({key:`Normal|${name}`,name:`${name}`,slot:itemSlot(name)});
+  if(v.golden>0)available.push({key:`Golden|${name}`,name:`✨ Golden ${name}`,slot:itemSlot(name)});
+ }
+ $("equipmentList").innerHTML=slots.map(slot=>{
+  const opts=available.filter(x=>x.slot===slot),cur=S.equipment[slot]||"";
+  return `<div class="slot-card"><b>${slot}</b><select onchange="equip('${esc(slot)}',this.value)" style="margin-top:5px"><option value="">— Empty —</option>${opts.map(o=>`<option value="${esc(o.key)}" ${o.key===cur?"selected":""}>${esc(o.name)}</option>`).join("")}</select>${cur&&S.enchantments[cur]?`<small>✨ ${esc(S.enchantments[cur].effect.label)}</small>`:`<small>${cur?"No enchantment on this item.":"No active item."}</small>`}</div>`
+ }).join("");
+ $("equipBonuses").innerHTML=bonusSummaryHtml();
+}
+function equip(slot,key){S.equipment[slot]=key;save();toast(key?"Equipped.":"Slot cleared.")}
+
+function renderCollections(){
+ let out="";
+ for(const [mob,o] of Object.entries(mobs)){
+  out+=`<div class="section">${o.icon} ${mob}</div>`;
+  o.drops.forEach(([name,rar,ch,slot])=>{
+   const it=S.items[name]||{normal:0,golden:0},found=it.normal>0||it.golden>0,hide=S.settings.hideSpoilers&&!found;
+   const shown=hide?`Unknown ${rar} Drop`:name;
+   const icon=found?(it.golden>0?"✨":"📦"):"?";
+   const first=S.firstFind[`Normal|${name}`]||"—",fg=S.firstGolden[`Golden|${name}`]||"—";
+   out+=`<div class="collection-card ${found?"":"locked"} ${rarityClass(rar)}"><div class="item-icon">${icon}</div><div><div class="item-main">${esc(shown)}</div><div class="item-sub">${rar} • ${ch}% base • ${slot}${found?`<br>First normal: #${first} • First golden: #${fg}`:""}</div></div><div class="qty">N×${it.normal}<br>✨×${it.golden}</div></div>`;
+  });
+  if(mob==="Pageworm"){
+   out+=`<details class="card"><summary>🐛 Pageworm Hoard & ???</summary><div style="margin-top:7px">${o.hoard.map(([name])=>{const it=S.items[name]||{normal:0,golden:0},found=it.normal>0||it.golden>0;return `<div class="inventory-row"><b>${found||!S.settings.hideSpoilers?esc(name):"???"}</b><span style="float:right">N×${it.normal} ✨×${it.golden}</span></div>`}).join("")}</div></details>`;
+  }
+ }
+ $("collectionList").innerHTML=out;
+
+ let bossOut=`<div class="section">🌿 AREA BOSS COLLECTION</div>`;
+ const anyBoss=mossbackLoot.some(([name])=>{
+  const it=S.items[name]||{normal:0,golden:0};
+  return it.normal>0||it.golden>0;
+ });
+ mossbackLoot.forEach(([name,rar,ch])=>{
+  const it=S.items[name]||{normal:0,golden:0};
+  const found=it.normal>0||it.golden>0;
+  const hide=S.settings.hideSpoilers&&!found;
+  const shown=hide?`Unknown ${rar} Boss Drop`:name;
+  bossOut+=`<div class="collection-card ${found?"":"locked"} ${rarityClass(rar)}">
+    <div class="item-icon">${found?(it.golden>0?"✨":"🌿"):"?"}</div>
+    <div><div class="item-main">${esc(shown)}</div>
+    <div class="item-sub">${rar} • ${ch}% base • Area Boss${found?`<br>Mossback wins: ${S.world.mossbackWins||0}`:""}</div></div>
+    <div class="qty">N×${it.normal}<br>✨×${it.golden}</div>
+  </div>`;
+ });
+ bossOut+=`<div class="card"><small>Golden variant roll: 6.5% after the boss item is rolled. Golden items are prestige/collection variants and are never required for progression.</small></div>`;
+ $("collectionList").innerHTML+=bossOut;
+}
+
+function areaUnlocked(area){
+ if(area==="Front Stacks")return true;
+ if(area==="Glowcap Galleries")return !!S.world.glowcapUnlocked;
+ if(area==="Whispering Annex")return !!S.world.whisperUnlocked;
+ if(area==="Rootbound Archive")return !!S.world.innerUnlocked;
+ return false;
+}
+function travelTo(area){
+ if(!areaUnlocked(area)){toast("That area is still locked.");return}
+ S.world.activeArea=area;
+ if(S.quests[1]&&S.quests[1].status!=="Active")S.quests[1].extra=area;
+ save();
+ toast(`Traveled to ${area}.`);
+}
+function renderGatherAreas(){
+ const el=$("gatherArea");if(!el)return;
+ const areas=["Front Stacks","Glowcap Galleries","Whispering Annex","Rootbound Archive"];
+ const current=S.quests[1]?.extra||S.world.activeArea||"Front Stacks";
+ el.innerHTML=areas.map(a=>`<option ${areaUnlocked(a)?"":"disabled"} ${a===current?"selected":""}>${a}${areaUnlocked(a)?"":" — locked"}</option>`).join("");
+}
+const mossbackLoot=[
+ ["Mossbound Bookmark","Common",20],
+ ["Bark-Scratched Library Token","Common",20],
+ ["Shelfkeeper's Twine","Common",20],
+ ["Rootglass Charm","Uncommon",13],
+ ["Ledger of the Living Stacks","Uncommon",12],
+ ["Key of the Rooted Shelf","Rare",10],
+ ["Mantle of Living Ivy","Epic",4],
+ ["Heartwood Grimoire","Legendary",1]
+];
+
+// Hidden encounter pool. The UI only reveals the current phase.
+const mossbackChallengePools={
+  1:[
+    {k:"blind",t:"Read without checking page count or percentage. When you decide to stop, guess your progress before you look."},
+    {k:"sprint",t:"Complete one focused reading sprint, then continue to the next satisfying scene or chapter break."},
+    {k:"discovery",t:"Read until you find one line, detail, or idea worth remembering. Keep going a little farther before ending the phase."},
+    {k:"choice",t:"Choose your route: one longer reading session, or two shorter sessions separated by a genuine break."},
+    {k:"chapter",t:"Read through the next natural stopping point, then push one section beyond where you first wanted to stop."},
+    {k:"progress",t:"Make a meaningful chunk of progress in your current book, then stop only at a natural break."}
+  ],
+  2:[
+    {k:"prediction",t:"Read until the next meaningful turning point. Before continuing, make one prediction about what happens next."},
+    {k:"endurance",t:"Complete two focused reading sessions. The second must happen after a real break away from the book."},
+    {k:"cliff",t:"Read until the story gives you a strong reason to keep going. Stop there on purpose, then return later and continue through the payoff."},
+    {k:"opinion",t:"Read until your opinion of a character, relationship, mystery, or idea changes. Identify what caused the shift."},
+    {k:"blind",t:"Read for a substantial stretch without checking progress. Guess your page or percentage gain before you look."},
+    {k:"choice",t:"Choose one: a single demanding push, or three smaller sessions completed before this phase ends."}
+  ],
+  3:[
+    {k:"finishline",t:"Push through a major stretch of your current book. If you are close enough to finish, finish it instead."},
+    {k:"endurance",t:"Complete a boss-length reading session with one planned break. Return after the break and finish the phase strong."},
+    {k:"milestone",t:"Reach the next major milestone in your current book, then continue far enough beyond it that stopping feels earned."},
+    {k:"discovery",t:"Read deeply enough to find both a memorable passage and one thing you now understand differently than before."},
+    {k:"risk",t:"Choose your challenge: one very long session, or two demanding sessions. Once chosen, finish that route."},
+    {k:"wildcard",t:"The shelves shift. Read until you hit a genuine 'I have to know what happens next' moment, then keep going through the payoff."}
+  ]
+};
+
+function chooseMossbackChallenge(phase,usedKinds){
+ const pool=mossbackChallengePools[phase]||[];
+ const freshPool=pool.filter(x=>!usedKinds.includes(x.k));
+ const choices=freshPool.length?freshPool:pool;
+ return JSON.parse(JSON.stringify(choices[Math.floor(Math.random()*choices.length)]));
+}
+function makeMossbackAttempt(testPreview=false){
+ const used=[],phases=[];
+ for(let p=1;p<=3;p++){
+  const c=chooseMossbackChallenge(p,used);
+  used.push(c.k);
+  phases.push({phase:p,kind:c.k,text:rereadBossText(c.k,c.t),revealed:false,complete:false});
+ }
+ return {startedAt:new Date().toISOString(),phase:1,phases,testPreview:!!testPreview};
+}
+function startMossbackAttempt(){
+ const preview=!S.world.mossbackUnlocked && !!S.settings.testMode;
+ if(!S.world.mossbackUnlocked && !preview){toast("The Mossback gate is still locked.");return}
+ if(!S.world.mossbackAttempt)S.world.mossbackAttempt=makeMossbackAttempt(preview);
+ save();
+ const el=$("mossbackEncounter");
+ if(el)el.scrollIntoView({behavior:"smooth",block:"center"});
+ toast(preview?"🧪 Boss preview started. Phase 1 is still hidden.":"⚔️ Mossback encounter started.");
+}
+function revealMossbackPhase(n){
+ const a=S.world.mossbackAttempt;
+ if(!a||!a.phases[n-1])return;
+ if(n>1&&!a.phases[n-2].complete){toast("The previous phase still blocks the path.");return}
+ a.phases[n-1].revealed=true;
+ a.phase=n;
+ save();
+}
+function completeMossbackPhase(n){
+ const a=S.world.mossbackAttempt;
+ if(!a||!a.phases[n-1]||!a.phases[n-1].revealed)return;
+ a.phases[n-1].complete=true;
+ if(n<3){
+  a.phase=n+1;
+  save();
+  showSequence([
+   {icon:"🌿",title:`PHASE ${n} CLEARED`,text:"The Shelfkeeper recoils. Roots withdraw from the next aisle."},
+   {icon:"❓",title:`PHASE ${n+1} — ???`,text:"The next challenge remains hidden until you choose to reveal it."}
+  ]);
+ }else{
+  resolveMossbackVictory();
+ }
+}
+function retreatMossback(){
+ if(!S.world.mossbackAttempt){toast("No active Mossback attempt.");return}
+ S.world.mossbackAttempt=null;
+ save();
+ showSequence([{icon:"🪶",title:"SAFE RETREAT",text:"You leave the Rootbound gate and the encounter resets.\n\nNormal page, day, book, and reading XP are untouched. No loot or progress is taken away."}]);
+}
+function resolveMossbackVictory(){
+ const firstWin=!S.world.mossbackDefeated;
+ const nextWin=(S.world.mossbackWins||0)+1;
+ const drop=rollWeighted(mossbackLoot);
+ const item=drop[0],rar=drop[1];
+ const golden=Math.random()*100<6.5;
+ const steps=[
+  {icon:"🌿",title:"MOSSBACK SHELFKEEPER DEFEATED",text:`Area Boss victory #${nextWin}`},
+  {icon:golden?"✨":"🎁",title:golden?"GOLDEN BOSS DROP!":"BOSS LOOT",text:`${golden?"Golden ":""}${item}\n${rar}\nGolden roll: ${golden?"SUCCESS":"failed"} (6.5%)`}
+ ];
+
+ const previewOnly=!!S.world.mossbackAttempt?.testPreview;
+ if(S.settings.testMode || previewOnly){
+  steps.push({icon:"🧪",title:"TEST MODE — NO SAVE CHANGES",text:`Simulation only.\n\nNo boss XP, loot, journal entry, boss win, gate progress, or area unlock was saved.`});
+  S.world.mossbackAttempt=null;
+  save();
+  showSequence(steps);
+  return;
+ }
+
+ addItem(item,golden?"Golden":"Normal",nextWin);
+ let xp=0;
+ if(firstWin){
+  xp=300;
+  S.questBonus+=xp;
+  S.world.mossbackDefeated=true;
+  S.world.glowcapUnlocked=true;
+  steps.push({icon:"📚",title:"FIRST CLEAR REWARD",text:"+300 Boss XP"});
+  steps.push({icon:"🍄",title:"AREA UNLOCKED",text:"Glowcap Galleries is now open.\n\nThe Front Stacks and Mossback remain permanently revisitable."});
+ }else{
+  steps.push({icon:"♻️",title:"REPEAT VICTORY",text:"Mossback remains farmable for its collection and Golden variants. First-clear XP is not repeated."});
+ }
+ S.world.mossbackWins=nextWin;
+ S.world.mossbackAttempt=null;
+
+ const entry={
+  type:"Area Boss",
+  date:new Date().toISOString(),
+  quest:"Mossback Shelfkeeper",
+  questId:"boss_mossback",
+  difficulty:"Area Boss",
+  target:"Mossback Shelfkeeper",
+  xp,
+  drop:`${golden?"Golden ":""}${item}`
+ };
+ S.history.unshift(entry);
+ steps.push({icon:"📖",title:"JOURNAL UPDATED",text:`Mossback Shelfkeeper\nArea Boss victory #${nextWin}\nReward: ${golden?"Golden ":""}${item}`});
+
+ save();
+ showSequence(steps);
+}
+function renderMossbackEncounter(){
+ const el=$("mossbackEncounter");
+ if(!el)return;
+
+ const a=S.world.mossbackAttempt;
+
+ // When Test Mode starts a preview while the real gate is locked,
+ // the active attempt must render instead of falling back to the locked preview card.
+ if(!S.world.mossbackUnlocked && !a){
+  if(S.settings.testMode){
+   el.innerHTML=`<div class="boss-panel">
+    <div class="boss-phase-title">🌿 Mossback Shelfkeeper — Test Preview</div>
+    <div class="boss-secret">Your real gate is still locked at ${S.world.frontHunts||0}/3. Test Mode can preview the encounter without changing that progress.</div>
+    <div class="boss-hp"><span></span><span></span><span></span></div>
+    <div class="boss-actions">
+      <button class="btn-purple" onclick="startMossbackAttempt()">🧪 Preview Boss Encounter</button>
+    </div>
+    <small>This preview can reveal and complete all three mystery phases, including the simulated loot/victory sequence, without saving boss rewards or unlocks.</small>
+   </div>`;
+  }else{
+   el.innerHTML=`<div class="boss-panel">
+    <div class="boss-phase-title">🌿 Mossback Shelfkeeper</div>
+    <p class="muted">Complete 3 Front Stacks Hunt clears to unlock this Area Boss.</p>
+   </div>`;
+  }
+  return;
+ }
+ if(!a){
+  el.innerHTML=`<div class="boss-panel">
+   <div class="boss-phase-title">🌿 Mossback Shelfkeeper</div>
+   <div class="boss-secret">Three hidden phases. Each attempt rerolls the challenge sequence, and you only see a phase when you reach it.</div>
+   <div class="boss-hp"><span></span><span></span><span></span></div>
+   <p><b>${S.world.mossbackDefeated?"Refight available":"First clear available"}</b></p>
+   <small>Retreat is always safe. Rare drops never gate progression.</small>
+   <div class="boss-actions"><button class="btn-red" onclick="startMossbackAttempt()">⚔️ ${S.world.mossbackDefeated?"Challenge Again":"Begin Encounter"}</button></div>
+  </div>`;
+  return;
+ }
+
+ const phaseCards=a.phases.map((p,i)=>{
+  const available=(i===0||a.phases[i-1].complete);
+  const cls=p.complete?"done":(a.phase===p.phase?"active":"locked");
+  const body=p.revealed
+    ? `<div class="boss-secret">${esc(p.text)}</div>`
+    : `<div class="boss-secret">??? — challenge hidden</div>`;
+  let action="";
+  if(!p.revealed&&available){
+    action=`<button class="btn-purple" onclick="revealMossbackPhase(${p.phase})">👁 Reveal Phase ${p.phase}</button>`;
+  }else if(p.revealed&&!p.complete&&a.phase===p.phase){
+    action=`<button class="btn-green" onclick="completeMossbackPhase(${p.phase})">✅ Complete Phase ${p.phase}</button>`;
+  }else if(p.complete){
+    action=`<span class="tag">CLEARED</span>`;
+  }
+  return `<div class="boss-phase ${cls}">
+    <div class="boss-phase-title">Phase ${p.phase} — ${p.revealed?(p.complete?"Cleared":"Revealed"):"???"}</div>
+    ${body}
+    <div class="boss-actions">${action}</div>
+  </div>`;
+ }).join("");
+
+ el.innerHTML=`<div class="boss-panel">
+  <div class="boss-phase-title">🌿 Mossback Shelfkeeper — Active Attempt</div>
+  <div class="boss-hp">${a.phases.map(p=>`<span class="${p.complete?"empty":""}"></span>`).join("")}</div>
+  ${phaseCards}
+  <div class="boss-actions"><button class="btn-plain" onclick="retreatMossback()">🪶 Retreat Safely</button></div>
+ </div>`;
+}
+function inspectMossbackGate(){
+ if(!S.world.mossbackUnlocked){
+  if(S.settings.testMode){
+   startMossbackAttempt();
+   return;
+  }
+  showSequence([{icon:"🔒",title:"AREA BOSS GATE LOCKED",text:`Complete ${Math.max(0,3-(S.world.frontHunts||0))} more Front Stacks Hunt quest${Math.max(0,3-(S.world.frontHunts||0))===1?"":"s"} to draw out the Mossback Shelfkeeper.`}]);
+  return;
+ }
+ startMossbackAttempt();
+}
+
+function renderMap(){
+ const f=S.world.frontHunts||0;
+ const lvl=levelFor(Math.max(0,totalXp()));
+ const active=S.world.activeArea||"Front Stacks";
+ const bossReady=!!S.world.mossbackUnlocked;
+ const bossDone=!!S.world.mossbackDefeated;
+
+ $("mapList").innerHTML=`
+ <div class="region-banner">
+   <div class="region-name">🌿 THE MOSSY STACKS</div>
+   <div class="muted">Region I • Levels 1–10 • Old unlocked areas remain revisitable forever</div>
+ </div>
+
+ <div class="map-status">
+   <div><b>${active}</b>Current Area</div>
+   <div><b>${Math.min(f,3)} / 3</b>First Boss Gate</div>
+   <div><b>${bossReady?"READY":"LOCKED"}</b>Mossback</div>
+ </div>
+
+ <div class="map-node ${active==="Front Stacks"?"current":""}">
+   <div class="name">📚 1. Front Stacks</div>
+   <div class="meta">Starting sub-area • Basic farming grounds</div>
+   <div>
+     <span class="area-chip">🍄 Mushroom Goblin</span>
+     <span class="area-chip">📕 Book Imp</span>
+     <span class="area-chip">✨ Dust Sprite</span>
+     <span class="area-chip">🐛 Pageworm</span>
+   </div>
+   <div class="progress"><div style="width:${Math.min(100,f/3*100)}%"></div></div>
+   <small>${Math.min(f,3)} / 3 Hunt clears toward the Area Boss gate</small>
+   <div class="map-actions">
+     <button class="${active==="Front Stacks"?"btn-purple":"btn-green"}" onclick="travelTo('Front Stacks')">${active==="Front Stacks"?"📍 Current Area":"🧭 Travel Here"}</button>
+   </div>
+ </div>
+
+ <div class="map-arrow">↓</div>
+
+ <div class="map-node boss ${bossReady?"":"locked"}">
+   <div class="name">🌿 AREA BOSS — Mossback Shelfkeeper</div>
+   <div class="meta">${bossDone?"Defeated":bossReady?"Gate open — encounter available for design":"Locked — complete 3 Front Stacks Hunt quests"}</div>
+   <div class="boss-warning">
+     Progression gate: participation only. No Legendary, Golden, oddity, or secret drop will ever be required to unlock this boss.
+   </div>
+   <div class="map-actions">
+     <button class="${bossReady?"btn-red":"btn-plain"}" onclick="inspectMossbackGate()">${bossReady?"⚔️ Inspect Boss Gate":"🔒 Check Gate"}</button>
+   </div>
+ </div>
+
+ <div id="mossbackEncounter"></div>
+
+ <div class="map-arrow">↓</div>
+
+ <div class="map-node ${S.world.glowcapUnlocked?"":"locked"} ${active==="Glowcap Galleries"?"current":""}">
+   <div class="name">🍄 2. Glowcap Galleries</div>
+   <div class="meta">${S.world.glowcapUnlocked?"Unlocked":"Locked behind Mossback Shelfkeeper"} • Bioluminescent archive caverns</div>
+   <div>
+     <span class="area-chip">Planned Area Boss: Sporebound Curator</span>
+     <span class="area-chip">New mobs: not finalized</span>
+   </div>
+   <div class="map-actions">
+     ${S.world.glowcapUnlocked?`<button class="${active==="Glowcap Galleries"?"btn-purple":"btn-green"}" onclick="travelTo('Glowcap Galleries')">${active==="Glowcap Galleries"?"📍 Current Area":"🧭 Travel Here"}</button>`:""}
+   </div>
+ </div>
+
+ <div class="map-arrow">↓</div>
+
+ <div class="map-node ${S.world.whisperUnlocked?"":"locked"} ${active==="Whispering Annex"?"current":""}">
+   <div class="name">🕯️ 3. Whispering Annex</div>
+   <div class="meta">${S.world.whisperUnlocked?"Unlocked":"Locked — deeper region progression not finalized"} • Quiet shelves with something distinctly unquiet inside them</div>
+   <div>
+     <span class="area-chip">Recurring Elite: Candle Wraith</span>
+     <span class="area-chip">Planned Boss: Inkbound Scriptor</span>
+   </div>
+   <div class="map-actions">
+     ${S.world.whisperUnlocked?`<button class="${active==="Whispering Annex"?"btn-purple":"btn-green"}" onclick="travelTo('Whispering Annex')">${active==="Whispering Annex"?"📍 Current Area":"🧭 Travel Here"}</button>`:""}
+   </div>
+ </div>
+
+ <div class="map-arrow">↓</div>
+
+ <div class="map-node ${S.world.innerUnlocked?"":"locked"} ${active==="Rootbound Archive"?"current":""}">
+   <div class="name">🐉 4. Inner Stacks / Rootbound Archive</div>
+   <div class="meta">${S.world.innerUnlocked?"Unlocked":"Locked — deepest Mossy Stacks progression"} • Region-end territory</div>
+   <div>
+     <span class="area-chip">Mini Boss: Archivist Mimic</span>
+     <span class="area-chip">Region Boss: Tome Eater</span>
+   </div>
+   <div class="map-actions">
+     ${S.world.innerUnlocked?`<button class="${active==="Rootbound Archive"?"btn-purple":"btn-green"}" onclick="travelTo('Rootbound Archive')">${active==="Rootbound Archive"?"📍 Current Area":"🧭 Travel Here"}</button>`:""}
+   </div>
+ </div>
+
+ <div class="section">🌙 NEXT REGION</div>
+ <div class="map-node ${lvl>=11?"":"locked"}">
+   <div class="name">🌙 Moonlit Marsh</div>
+   <div class="meta">${lvl>=11?"Level requirement met — region content still awaiting design":"Requires Reader Level 11"} • The Mossy Stacks always remains revisitable</div>
+ </div>
+
+ <div class="card notice">
+   <b>🪿 Map Rule</b><br>
+   Rare loot is for collection prestige and secrets — never mandatory progression. Area gates unlock through participation, boss victories, and level requirements.
+ </div>`;
+
+ renderGatherAreas();
+ renderMossbackEncounter();
+}
+function renderBestiary(){
+ $("bestiaryList").innerHTML=Object.entries(mobs).map(([m,o])=>{
+  const k=S.kills[m]||0,found=o.drops.filter(x=>S.items[x[0]]?.normal>0).length,gold=o.drops.filter(x=>S.items[x[0]]?.golden>0).length;
+  let lore=k===0?"Undiscovered in battle.":k<10?"Basic entry unlocked.":k<25?"Lore II: repeated encounters have revealed more habits.":k<50?"Lore III: this creature is becoming very familiar.":"Lore IV: veteran hunter notes unlocked.";
+  return `<div class="card"><h3>${o.icon} ${m}</h3><span class="tag">Defeats ${k}</span><span class="tag">Normal ${found}/8</span><span class="tag">Golden ${gold}/8</span><p class="muted">${lore}</p></div>`
+ }).join("")+`
+ <div class="card">
+   <h3>🌿 Mossback Shelfkeeper</h3>
+   <span class="tag">Area Boss</span><span class="tag">${S.world.mossbackUnlocked?"Gate Ready":"Locked"}</span>
+   <p class="muted">First Area Boss of the Mossy Stacks. Unlocks through 3 Front Stacks Hunt clears. Battle structure and loot table intentionally remain unfinalized until we design them together.</p>
+ </div>
+ <div class="card locked">
+   <h3>🍄 Sporebound Curator</h3><span class="tag">Planned Area Boss</span>
+   <p class="muted">Glowcap Galleries boss. Name is established; mechanics and drops are not.</p>
+ </div>
+ <div class="card locked">
+   <h3>🕯️ Inkbound Scriptor</h3><span class="tag">Planned Boss</span>
+   <p class="muted">Whispering Annex progression boss. Mechanics and drops are not finalized.</p>
+ </div>
+ <div class="card locked">
+   <h3>📚 Archivist Mimic / Tome Eater</h3><span class="tag">Mini Boss + Region Boss</span>
+   <p class="muted">Deep Mossy Stacks encounters. Names and roles are established; battle systems remain to be designed.</p>
+ </div>`;
+}
+
+function achievementData(){
+ const q=S.questsCompleted;
+ const countSet=mob=>mobs[mob].drops.filter(x=>S.items[x[0]]?.normal>0).length;
+ const countGold=mob=>mobs[mob].drops.filter(x=>S.items[x[0]]?.golden>0).length;
+ return [
+  ["Quest Novice","Complete 5 quests",q>=5],
+  ["Adventurer","Complete 10 quests",q>=10],
+  ["Quest Keeper","Complete 25 quests",q>=25],
+  ["Guild Veteran","Complete 50 quests",q>=50],
+  ["Legendary Adventurer","Complete 100 quests",q>=100],
+  ["Keeper of the Glowcaps","Complete Mushroom Goblin standard collection",countSet("Mushroom Goblin")>=8],
+  ["Sovereign of Spores","Complete Mushroom Goblin Golden collection",countGold("Mushroom Goblin")>=8],
+  ["Imp Tamer","Complete Book Imp standard collection",countSet("Book Imp")>=8],
+  ["Keeper of Stardust","Complete Dust Sprite standard collection",countSet("Dust Sprite")>=8],
+  ["Keeper of the Hoard","Complete Pageworm standard collection",countSet("Pageworm")>=8],
+  ["Gilded Bookwyrm","Complete Pageworm Golden collection",countGold("Pageworm")>=8]
+ ];
+}
+function renderJournal(){
+ const el=$("questJournal");if(!el)return;
+ if(!S.history.length){
+  el.innerHTML=`<div class="card"><h3>📖 The journal is empty.</h3><small>Complete a quest and the guild clerk will begin pretending this paperwork was always organized.</small></div>`;
+  return;
+ }
+ el.innerHTML=S.history.map((h,idx)=>{
+  const d=new Date(h.date);
+  const when=isNaN(d)?String(h.date||""):d.toLocaleString();
+  return `<div class="card">
+    <div class="kicker">#${S.history.length-idx} • ${esc(h.type||"Quest")}</div>
+    <div class="bigline">${esc(h.quest||"Unnamed Quest")}</div>
+    <span class="tag">${esc(h.difficulty||"—")}</span><span class="tag">+${Number(h.xp||0).toLocaleString()} XP</span>
+    ${h.target?`<p><b>Target / Recipe:</b> ${esc(h.target)}</p>`:""}
+    ${h.drop?`<p><b>Reward:</b> ${esc(h.drop)}</p>`:""}
+    <small>${esc(when)}</small>
+  </div>`;
+ }).join("");
+}
+function renderAchievements(){
+ $("achievementList").innerHTML=achievementData().map(([n,c,u])=>`<div class="card ${u?"":"locked"}"><h3>${u?"🏆":"🔒"} ${n}</h3><small>${c}</small></div>`).join("");
+}
+function renderProfile(){
+ $("pagesCurrent").value=S.pages;$("booksCurrent").value=S.books;$("daysCurrent").value=S.days;$("manualBonus").value=S.manualBonus;
+ const xp=Math.max(0,totalXp()),l=levelFor(xp);
+ $("profileSummary").innerHTML=`<div class="inventory-row"><b>Level</b><span style="float:right">${l}</span></div><div class="inventory-row"><b>Rank</b><span style="float:right">${rankFor(l)}</span></div><div class="inventory-row"><b>Quest Bonus XP</b><span style="float:right">${S.questBonus.toLocaleString()}</span></div><div class="inventory-row"><b>Quests Completed</b><span style="float:right">${S.questsCompleted}</span></div>`;
+}
+function saveProfile(){S.pages=Number($("pagesCurrent").value)||0;S.books=Number($("booksCurrent").value)||0;S.days=Number($("daysCurrent").value)||0;S.manualBonus=Number($("manualBonus").value)||0;save();toast("Reading stats saved.")}
+
+function renderHistoryHint(){
+ // reserved for a future full journal screen; history is already saved.
+}
+function exportSave(){
+ const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download=`reading-mmo-save-v2-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href)
+}
+function importSave(ev){
+ const f=ev.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{try{S=migrate(JSON.parse(r.result));save();toast("Save imported.")}catch(e){alert("That save file could not be read.")}};r.readAsText(f)
+}
+function resetGame(){if(confirm("Reset this browser's Reading MMO save? This cannot be undone unless you exported a backup.")){S=fresh();save()}}
+function renderAll(){
+ loadSettingsUI();renderHome();renderReading();renderQuestCards();renderHuntSelect();renderHuntInfo();renderMaterials();renderPotionSelectors();renderPotion();renderTargets();renderPotionBag();renderEquipment();renderCollections();renderMap();renderGatherAreas();renderBestiary();renderJournal();renderAchievements();renderProfile();renderCompletionSafety();loadKustomToken();
+}
+renderAll();
+if(kustomNextAllowed()-Date.now()>90000){
+ try{localStorage.setItem("kustomNextAllowedAt","0")}catch(e){}
+ setKwgtStatus("✅ Cleared a stale cooldown left by an older build.");
+}
+startKustomUiClock();
+startReadingUiClock();
+</script>
+</body>
+</html>
