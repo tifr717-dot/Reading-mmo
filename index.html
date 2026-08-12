@@ -4,7 +4,14 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#4a2f24"/>
-<title>Reading MMO — Goose Alchemist v2</title>
+<link rel="manifest" href="./manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Reading MMO"/>
+
+<title>Reading MMO</title>
 <style>
 :root{
   --wood:#4a2f24;--wood2:#684532;--wood3:#2b211c;--parch:#f3e6c9;--paper:#fbf2de;
@@ -2235,5 +2242,14 @@ if(kustomNextAllowed()-Date.now()>90000){
 startKustomUiClock();
 startReadingUiClock();
 </script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+  });
+}
+</script>
+
 </body>
 </html>
