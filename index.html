@@ -56,7 +56,7 @@ button:disabled{opacity:.45;filter:grayscale(.5);cursor:not-allowed}
 .tag.dark{background:#332820;color:var(--cream)}
 .gold{color:#9b6d00;font-weight:900}.legendary{color:#855500;font-weight:900}.epic{color:#684186;font-weight:900}.rare{color:#315b86;font-weight:900}
 .inventory-row{padding:8px 0;border-bottom:1px dashed #cdbb97;font-size:11px}
-.bottomnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:40;width:min(600px,100%);background:var(--wood);border-top:3px solid var(--gold);display:grid;grid-template-columns:repeat(7,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.bottomnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:40;width:min(600px,100%);background:var(--wood);border-top:3px solid var(--gold);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
 .bottomnav button{border:0;border-right:1px solid #76523d;box-shadow:none;border-radius:0;padding:8px 1px;font-size:9px;line-height:1.25}
 .bottomnav button.active{background:var(--purple);color:white}
 .progress{height:13px;border:1px solid #9b7b56;background:#e5d4b4;margin-top:5px;overflow:hidden}
@@ -118,6 +118,15 @@ details summary{cursor:pointer;font-weight:900;font-size:11px}
 .book-progress-head{display:flex;justify-content:space-between;gap:8px;font-size:10px;font-weight:900}
 .health-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #cdbb97;font-size:10px}
 .health-row:last-child{border-bottom:0}.health-row b{color:var(--wood)}
+.quest-mini{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed #cdbb97}
+.quest-mini:last-child{border-bottom:0}
+.quest-mini-main{min-width:0}
+.quest-mini-main b{display:block;font-size:11px}
+.quest-mini-main small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.calm-note{font-size:9px;line-height:1.45;opacity:.82;margin-top:7px}
+.hub-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hub-buttons button{min-height:48px}
+
 .card.soft{background:#f8edd3}
 button.primary-wide{width:100%;min-height:46px;font-size:12px}
 @media (max-width:390px){.bottomnav button{font-size:8px;padding:8px 0}.action-grid{grid-template-columns:1fr}}
@@ -152,7 +161,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 <div class="app">
 <header>
   <h1>🪿 READING MMO</h1>
-  <div class="sub">Duck-Tuned Adventurer • v3.5 • Polished Edition</div>
+  <div class="sub">Duck-Tuned Adventurer • v3.7 • Truthful KWGT Sync</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -162,12 +171,6 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 </header>
 
 <section id="home" class="screen active">
-  <div class="grid2">
-    <div class="stat">LEVEL<b id="homeLevel">1</b></div>
-    <div class="stat">TOTAL XP<b id="homeXp">0</b></div>
-    <div class="stat">QUESTS<b id="homeQuests">0</b></div>
-    <div class="stat">GOLDENS<b id="homeGoldens">0</b></div>
-  </div>
   <div class="card">
     <div class="kicker">Current Rank</div>
     <div class="bigline" id="homeRank">Page Wanderer</div>
@@ -176,20 +179,11 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
     <small id="xpText">0 / 1000 XP</small>
   </div>
 
-  <div class="section">⚡ QUICK ACTIONS</div>
-  <div class="card soft">
-    <div class="action-grid">
-      <button class="btn-blue" onclick="go('reading',document.querySelector('.bottomnav button[data-screen=reading]'))">📖 Resume Reading</button>
-      <button class="btn-green" onclick="sendAllWidgetsToKWGT()">📡 Sync Both Widgets</button>
-    </div>
-    <div id="homeSaveMini" class="muted" style="margin-top:8px;text-align:center">Progress saves automatically.</div>
-  </div>
-
   <div class="section">📖 CURRENT READING</div>
   <div class="card">
     <div class="quick-read">
       <div id="homeReadingSummary"></div>
-      <button class="btn-blue" onclick="go('reading',document.querySelector('.bottomnav button[data-screen=reading]'))">Open<br>Reader</button>
+      <button class="btn-blue" onclick="go('reading')">Open<br>Reader</button>
     </div>
     <div id="homeBookProgressWrap" class="book-progress-wrap" style="display:none">
       <div class="book-progress-head"><span>BOOK PROGRESS</span><span id="homeBookProgressText">0%</span></div>
@@ -198,26 +192,37 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
   </div>
 
   <div class="section">📜 ACTIVE QUESTS</div>
-  <div id="homeQuestCards"></div>
-  <button class="btn-gold" style="width:100%" onclick="rollAllQuests()">🎲 Roll All 3 Quests</button>
-  <button class="btn-purple" style="width:100%;margin-top:7px" onclick="sendAllWidgetsToKWGT()">📡 Sync Quest Board + Reader Level</button>
-
-  <div class="section">⚔️ CURRENT LOADOUT BONUSES</div>
-  <div class="card" id="homeBonuses"></div>
-
-  <div class="section">🪿 GOOSE STATUS</div>
-  <div class="card notice">
-    The goose has been let loose. We are entirely responsible.<br><br>
-    Goose mechanics may create chaos, risk, strange decisions, or absurd rewards — but never erase normal reading progress.
+  <div class="card" id="homeQuestCards"></div>
+  <div class="row">
+    <button class="btn-gold" onclick="go('quests')">Open Quests</button>
+    <button class="btn-green" onclick="sendAllWidgetsToKWGT()">📡 Sync Widgets Once</button>
   </div>
+  <div id="homeSaveMini" class="calm-note" style="text-align:center">Progress saves automatically.</div>
+
+  <details class="card simple-details" style="margin-top:12px">
+    <summary>✨ More character info</summary>
+    <div class="grid2" style="margin-top:9px">
+      <div class="stat">LEVEL<b id="homeLevel">1</b></div>
+      <div class="stat">TOTAL XP<b id="homeXp">0</b></div>
+      <div class="stat">QUESTS<b id="homeQuests">0</b></div>
+      <div class="stat">GOLDENS<b id="homeGoldens">0</b></div>
+    </div>
+    <div class="section">⚔️ LOADOUT BONUSES</div>
+    <div id="homeBonuses"></div>
+    <div class="calm-note">🪿 Goose rule: chaos may change rewards or challenge structure, but normal reading progress is never erased.</div>
+  </details>
 </section>
 
 <section id="reading" class="screen">
   <div class="section">📖 READING DESK</div>
 
   <div class="card">
-    <label>Book name</label>
-    <input id="readBookName" type="text" placeholder="What are you reading?">
+    <label>Current book</label>
+    <input id="readBookName" type="text" placeholder="What are you reading now?">
+
+    <label>Last book finished</label>
+    <input id="readLastFinishedBook" type="text" placeholder="Most recently finished book">
+    <small>This is what your Reader Level widget shows as <b>Last Read</b>.</small>
 
     <label>Reading status</label>
     <select id="readMode">
@@ -238,7 +243,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
     </div>
 
     <button class="btn-blue primary-wide" style="margin-top:9px" onclick="saveReadingDesk()">💾 Save Reading Info</button>
-    <button class="btn-gold primary-wide" style="margin-top:8px" onclick="saveReadingAndSync()">📡 Save + Sync Reader Level</button>
+    <div class="calm-note">Widget syncing lives in one place now: Home → Sync Widgets.</div>
     <div id="readBookProgressWrap" class="book-progress-wrap" style="display:none">
       <div class="book-progress-head">
         <span id="readBookProgressPages">BOOK PROGRESS</span>
@@ -344,19 +349,20 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
   
   </details>
 
-  <div class="section">📡 WIDGET SYNC</div>
-  <div class="card">
-    <button class="btn-green" style="width:100%" onclick="sendAllWidgetsToKWGT()">📡 Sync Quest Board + Reader Level</button>
-    <button class="btn-plain" style="width:100%;margin-top:8px" onclick="sendAllQuestsToKWGT()">Quest Board Only</button>
-    <div id="kwgtQuickStatus" class="simple-status">KWGT connection is managed in Me → Setup.</div>
-  </div>
-
   <div class="section">📜 THREE-SLOT QUEST BOARD</div>
   <div id="replacementNotice" class="card notice" style="display:none"></div>
   <div id="questCards"></div>
 </section>
 
 <section id="adventure" class="screen">
+  <div class="section">🧭 ADVENTURE HUB</div>
+  <div class="card">
+    <div class="hub-buttons">
+      <button class="btn-green" onclick="go('world')">🗺️ World & Bestiary</button>
+      <button class="btn-purple" onclick="go('bag')">🎒 Bag & Equipment</button>
+    </div>
+  </div>
+
   <div class="tabs">
     <button class="active" onclick="subtab('adv','huntPanel',this)">⚔️ Hunt</button>
     <button onclick="subtab('adv','gatherPanel',this)">🌿 Gather</button>
@@ -410,6 +416,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 </section>
 
 <section id="world" class="screen">
+  <button class="btn-plain" style="width:100%;margin-bottom:9px" onclick="go('adventure')">← Back to Play</button>
   <div class="tabs">
     <button class="active" onclick="subtab('world','mapPanel',this)">🗺️ Map</button>
     <button onclick="subtab('world','bestiaryPanel',this)">📚 Bestiary</button>
@@ -441,6 +448,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 </section>
 
 <section id="bag" class="screen">
+  <button class="btn-plain" style="width:100%;margin-bottom:9px" onclick="go('adventure')">← Back to Play</button>
   <div class="tabs">
     <button class="active" onclick="subtab('bag','collectionPanel',this)">🎒 Loot</button>
     <button onclick="subtab('bag','potionBagPanel',this)">⚗️ Potions</button>
@@ -484,7 +492,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
       <label>Days Read — Current</label><input id="daysCurrent" type="number">
       <label>Manual Bonus Adjustment</label><input id="manualBonus" type="number">
       <button class="btn-blue" style="width:100%;margin-top:9px" onclick="saveProfile()">Save Reading Stats</button>
-      <button class="btn-gold" style="width:100%;margin-top:8px" onclick="saveProfileAndSync()">📡 Save + Sync Reader Level</button>
+      <div class="calm-note">Save stats here; sync widgets from Home.</div>
       <hr>
       <small>Frozen baselines: 3,411 pages • 9 books • 1,740 days. Quest XP is bonus XP on top of normal page/day/book XP.</small>
     </div>
@@ -502,34 +510,35 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 
 
   <div id="setupPanel" class="subpanel">
-    <div class="section">⚙️ SIMPLE SETUP</div>
+    <div class="section">⚙️ SETTINGS & CONNECTIONS</div>
 
     <div class="card">
       <h3>📡 KWGT Connection</h3>
       <div id="kwgtTokenState" class="simple-status">Checking KWGT setup…</div>
       <label>Kustom Remote Message token</label>
-      <input id="kwgtToken" type="password" autocomplete="off" placeholder="Paste token once for this downloaded app copy">
+      <input id="kwgtToken" type="password" autocomplete="off" placeholder="Paste token from KWGT Remote Message">
       <button class="btn-purple" style="width:100%;margin-top:8px" onclick="saveKustomToken()">🔐 Save KWGT Token</button>
-      <button class="btn-green" style="width:100%;margin-top:8px" onclick="sendAllWidgetsToKWGT()">📡 Sync ALL Widgets</button>
-      <div class="row" style="margin-top:8px">
-        <button class="btn-plain" onclick="sendAllQuestsToKWGT()">Quest Board Only</button>
-        <button class="btn-gold" onclick="sendReaderLevelToKWGT()">Reader Level Only</button>
-      </div>
-      <div id="readerSyncPreview" class="simple-status" style="margin-top:8px"></div>
-      <div id="kwgtStatus" class="muted" style="margin-top:8px"></div>
-      <div id="kwgtCooldown" class="muted" style="margin-top:4px"></div>
-      <button id="clearStaleCooldownBtn" class="btn-plain" style="width:100%;margin-top:8px;display:none" onclick="clearStaleKustomCooldown()">🧹 Clear Stale Local Cooldown</button>
-      <small>Your KWGT token stays in this installed app and is stored separately from exported game saves.</small>
+      <small>Normal widget syncing now lives on Home → <b>Sync Widgets</b>.</small>
 
       <details class="simple-details" style="margin-top:10px">
-        <summary>Reader Level widget — one-time KWGT hookup</summary>
-        <small>Keep your existing XP/level formulas. Change only these five globals so they receive the app's values:</small>
+        <summary>🛠 KWGT troubleshooting</summary>
+        <button class="btn-blue" style="width:100%;margin-top:8px" onclick="testKustomConnection()">Test connection once</button>
+        <div id="kwgtStatus" class="simple-status" style="margin-top:8px"></div>
+        <div id="kwgtRateInfo" class="muted" style="margin-top:6px"></div>
+        <div id="kwgtCooldown" class="muted" style="margin-top:4px"></div>
+        <button id="clearStaleCooldownBtn" class="btn-plain" style="width:100%;margin-top:8px;display:none" onclick="clearStaleKustomCooldown()">🧹 Clear App's Local Cooldown</button>
+        <small>Clearing the app's local cooldown does <b>not</b> clear a Kustom server rate limit.</small>
+      </details>
+
+      <details class="simple-details" style="margin-top:10px">
+        <summary>Reader Level widget — one-time hookup</summary>
+        <div id="readerSyncPreview" class="simple-status" style="margin-top:8px"></div>
+        <small>Keep your existing XP/level formulas. These five globals receive the app values:</small>
         <div class="result" style="margin-top:7px;white-space:pre-wrap">pages → $br(remote,pages)$
 books → $br(remote,books)$
 streak → $br(remote,streak)$
 bonus → $br(remote,bonus)$
 lastread → $br(remote,lastread)$</div>
-        <small>The app sends manual bonus + quest bonus together as <b>bonus</b>, so your existing Reader Level XP formula stays correct.</small>
       </details>
     </div>
 
@@ -582,8 +591,6 @@ lastread → $br(remote,lastread)$</div>
   <button data-screen="reading" onclick="go('reading',this)">📖<br>Read</button>
   <button data-screen="quests" onclick="go('quests',this)">📜<br>Quests</button>
   <button data-screen="adventure" onclick="go('adventure',this)">⚔️<br>Play</button>
-  <button data-screen="world" onclick="go('world',this)">🗺️<br>World</button>
-  <button data-screen="bag" onclick="go('bag',this)">🎒<br>Bag</button>
   <button data-screen="profile" onclick="go('profile',this)">🧙<br>Me</button>
 </nav>
 </div>
@@ -781,7 +788,7 @@ function fresh(){
   world:{frontHunts:0,mossbackUnlocked:false,mossbackDefeated:false,glowcapUnlocked:false,activeArea:"Front Stacks",glowcapProgress:0,whisperUnlocked:false,whisperProgress:0,innerUnlocked:false,mossbackWins:0,mossbackAttempt:null},
   history:[],firstFind:{},firstGolden:{},lastCompletionUndo:null,recentQuestNames:[],
   meta:{lastSavedAt:0,lastBackupAt:0},
-  reading:{bookName:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false},
+  reading:{bookName:"",lastFinishedBook:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false},
   settings:{style:"Adventurous",currentBookFirst:true,hideSpoilers:true,testMode:false,genre:1,tbr:0,focus:2,atmos:0,format:1,time:2,seasonal:1,chaos:0},
   quests:[
    {role:"Hunt",id:"",name:"",objective:"",difficulty:"Normal",xp:0,status:"Empty",extra:"Mushroom Goblin",structure:""},
@@ -893,7 +900,20 @@ function rarityClass(r){r=String(r).toLowerCase();if(r.includes("legend"))return
 function rollWeighted(arr,weightIndex=2){let total=arr.reduce((a,x)=>a+Number(x[weightIndex]),0),r=Math.random()*total;for(const x of arr){r-=Number(x[weightIndex]);if(r<=0)return x}return arr[arr.length-1]}
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
 function rangeUpdate(el){el.nextElementSibling.textContent=el.value}
-function go(id,btn){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll(".bottomnav button").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");window.scrollTo(0,0);renderAll()}
+function go(id,btn){
+ document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+ $(id).classList.add("active");
+ document.querySelectorAll(".bottomnav button").forEach(x=>x.classList.remove("active"));
+ if(btn&&btn.matches&&btn.matches(".bottomnav button")){
+  btn.classList.add("active");
+ }else{
+  const navId=(id==="world"||id==="bag")?"adventure":id;
+  const nav=document.querySelector(`.bottomnav button[data-screen="${navId}"]`);
+  if(nav)nav.classList.add("active");
+ }
+ window.scrollTo(0,0);
+ renderAll();
+}
 function subtab(group,id,btn){btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");const root=btn.closest(".screen");root.querySelectorAll(".subpanel").forEach(x=>x.classList.remove("active"));$(id).classList.add("active")}
 let modalQueue=[];
 let pendingCompletionSlot=null;
@@ -1177,6 +1197,7 @@ function fmtTimer(ms){
 function saveReadingDesk(silent=false){
  const r=S.reading;
  r.bookName=$("readBookName").value.trim();
+ r.lastFinishedBook=$("readLastFinishedBook").value.trim();
  r.readMode=$("readMode").value||"first";
  r.bookTotal=Math.max(0,Number($("readBookTotal").value)||0);
  r.currentPage=Math.max(0,Number($("readCurrentPage").value)||0);
@@ -1314,6 +1335,7 @@ function renderReading(){
  const r=S.reading;
  if(!$("readBookName"))return;
  $("readBookName").value=r.bookName||"";
+ $("readLastFinishedBook").value=r.lastFinishedBook||"";
  $("readMode").value=r.readMode||"first";
  $("readBookTotal").value=r.bookTotal||"";
  $("readMmoPages").value=S.pages;
@@ -1340,7 +1362,13 @@ function renderHome(){
  $("homeLevel").textContent=l;$("homeXp").textContent=xp.toLocaleString();$("homeQuests").textContent=S.questsCompleted;$("homeGoldens").textContent=goldCount();
  $("homeRank").textContent=rankFor(l);$("homeRegion").textContent=`${regionFor(l)} • ${S.world.activeArea||"Front Stacks"}`;$("xpText").textContent=`${lx.toLocaleString()} / ${need.toLocaleString()} XP`;
  $("xpBar").style.width=Math.min(100,(lx/need)*100)+"%";
- $("homeQuestCards").innerHTML=S.quests.map((q,i)=>`<div class="card quest ${i===0?"hunt":i===1?"gather":"craft"}"><b>${i===0?"⚔️":i===1?"🌿":"⚗️"} ${q.role}</b><span style="float:right" class="tag">${q.status}</span><br><strong>${q.name||"No quest loaded"}</strong><br><small>${esc(q.objective||"Roll a quest from the Quest screen.")}</small>${q.name?`<hr><small>${q.difficulty} • +${q.xp} XP</small>`:""}</div>`).join("");
+ $("homeQuestCards").innerHTML=S.quests.map((q,i)=>`<div class="quest-mini">
+   <div class="quest-mini-main">
+     <b>${i===0?"⚔️ Hunt":i===1?"🌿 Gather":"⚗️ Alchemy"}</b>
+     <small>${esc(q.name||"No quest loaded")}</small>
+   </div>
+   <span class="tag">${q.name?`${q.difficulty} • ${q.status}`:"Empty"}</span>
+ </div>`).join("");
  $("homeBonuses").innerHTML=bonusSummaryHtml();
  renderHomeReading();
 }
@@ -1421,16 +1449,44 @@ function formatWait(ms){
  const m=Math.floor(sec/60),s=sec%60;
  return `${m}m ${s}s`;
 }
-function retryDelayFromResponse(res){
- const ra=res.headers.get("Retry-After");
- if(ra){
-  const seconds=Number(ra);
-  if(Number.isFinite(seconds)&&seconds>=0)return Math.max(15000,seconds*1000);
-  const when=Date.parse(ra);
-  if(Number.isFinite(when))return Math.max(15000,when-Date.now());
+function headerValue(res,name){
+ try{return res.headers.get(name)||""}catch(e){return""}
+}
+function rateInfoFromResponse(res){
+ const limit=headerValue(res,"X-RateLimit-Limit");
+ const remaining=headerValue(res,"X-RateLimit-Remaining");
+ const reset=headerValue(res,"X-RateLimit-Reset");
+ const retryAfter=headerValue(res,"Retry-After");
+ return {limit,remaining,reset,retryAfter};
+}
+function resetHeaderDelay(raw){
+ if(!raw)return 0;
+ const n=Number(raw);
+ if(Number.isFinite(n)){
+  if(n>1e12)return Math.max(0,n-Date.now());
+  if(n>1e9)return Math.max(0,n*1000-Date.now());
+  if(n>=0&&n<86400)return n*1000;
  }
- // If the browser exposes no usable reset header, use a conservative fixed cooldown.
- return KUSTOM_429_FALLBACK_MS;
+ const date=Date.parse(raw);
+ if(Number.isFinite(date))return Math.max(0,date-Date.now());
+ return 0;
+}
+function retryDelayFromResponse(res){
+ const info=rateInfoFromResponse(res);
+ let wait=resetHeaderDelay(info.retryAfter);
+ if(!wait)wait=resetHeaderDelay(info.reset);
+ if(!wait)wait=KUSTOM_429_FALLBACK_MS;
+ return Math.max(5000,wait+2000);
+}
+function showKustomRateInfo(res){
+ const el=$("kwgtRateInfo");if(!el)return;
+ const info=rateInfoFromResponse(res);
+ const parts=[];
+ if(info.limit)parts.push(`Limit: ${info.limit}`);
+ if(info.remaining)parts.push(`Remaining: ${info.remaining}`);
+ if(info.reset)parts.push(`Reset: ${info.reset}`);
+ if(info.retryAfter)parts.push(`Retry-After: ${info.retryAfter}`);
+ el.textContent=parts.length?`Kustom server info • ${parts.join(" • ")}`:"Kustom did not expose rate-limit headers to this browser.";
 }
 function updateKustomCooldownUI(){
  const el=$("kwgtCooldown");
@@ -1461,7 +1517,7 @@ function clearStaleKustomCooldown(){
   return;
  }
  try{localStorage.setItem("kustomNextAllowedAt","0")}catch(e){}
- setKwgtStatus("✅ Stale local cooldown cleared. You can now tap Sync Current Board Now once.");
+ setKwgtStatus("✅ The app-only cooldown was cleared. This does not affect Kustom's server-side rate limit.");
  updateKustomCooldownUI();
 }
 function startKustomUiClock(){
@@ -1480,7 +1536,7 @@ function readerLevelPayload(){
  const need=lvlNeed(level);
  const inLevel=Math.max(0,lvlXp(xp,level));
  const bonus=Number(S.manualBonus||0)+Number(S.questBonus||0);
- const lastRead=(S.reading?.bookName||"").trim();
+ const lastRead=(S.reading?.lastFinishedBook||"").trim();
 
  // Compatibility keys match the existing Reader Level globals.
  // Extra reader* keys are included for future direct-display/debug use.
@@ -1508,7 +1564,7 @@ function currentAllWidgetsPayload(){
 function renderReaderSyncPreview(){
  const el=$("readerSyncPreview");if(!el)return;
  const xp=Math.max(0,totalXp()),level=levelFor(xp),inLevel=Math.max(0,lvlXp(xp,level)),need=lvlNeed(level);
- el.innerHTML=`<b>Reader Level packet</b><br>${S.pages.toLocaleString()} pages • ${S.books.toLocaleString()} books • ${S.days.toLocaleString()} days<br>Level ${level} ${esc(rankFor(level))} • ${inLevel.toLocaleString()} / ${need.toLocaleString()} XP<br>Last Read: ${esc((S.reading?.bookName||"").trim()||"—")}`;
+ el.innerHTML=`<b>Reader Level packet</b><br>${S.pages.toLocaleString()} pages • ${S.books.toLocaleString()} books • ${S.days.toLocaleString()} days<br>Level ${level} ${esc(rankFor(level))} • ${inLevel.toLocaleString()} / ${need.toLocaleString()} XP<br>Last Read: ${esc((S.reading?.lastFinishedBook||"").trim()||"—")}`;
 }
 async function postToKustom(data){
  const token=kustomToken();
@@ -1542,24 +1598,31 @@ async function postToKustom(data){
    body:JSON.stringify({tokens:[token],data:payload})
   });
   const body=await res.text().catch(()=>"");
+  showKustomRateInfo(res);
 
   if(res.status===429){
    const waitMs=retryDelayFromResponse(res);
    setKustomNextAllowed(waitMs);
-   setKwgtStatus(`⚠️ KWGT did not accept this send. First make sure the token is saved in Me → Setup. If it is, wait ${formatWait(waitMs)} and try one sync.`);
-   toast("KWGT rate limited — board state saved locally.");
+   setKwgtStatus(`⏳ Kustom returned HTTP 429: server rate limit. This is NOT a bad-token message. Your widget data is saved locally. Wait for the server reset (${formatWait(waitMs)} based on the response), then send once.`);
+   toast("Kustom server rate limit — nothing lost.");
    return "queued";
   }
 
+  if([400,401,403].includes(res.status)){
+   setKwgtStatus(`🔐 Kustom rejected the request (HTTP ${res.status}). This is when re-copying the Remote Message token is worth trying.${body?" Server: "+body.slice(0,180):""}`);
+   toast("KWGT connection/token rejected.");
+   return false;
+  }
+
   if(!res.ok){
-   setKwgtStatus(`❌ Kustom returned HTTP ${res.status}${body?" • "+body:""}`);
-   toast("KWGT send failed — latest board state is still saved locally.");
+   setKwgtStatus(`❌ Kustom returned HTTP ${res.status}${body?" • "+body.slice(0,180):""}`);
+   toast("KWGT send failed — latest widget state is still saved locally.");
    return false;
   }
 
   clearQueuedKustom();
   setKustomNextAllowed(KUSTOM_MIN_GAP_MS);
-  setKwgtStatus("✅ Sent — the latest queued KWGT data is synced.");
+  setKwgtStatus("✅ Kustom accepted the send. Widget data synced.");
   return true;
  }catch(err){
   setKwgtStatus(`❌ Could not reach Kustom. Latest board state is saved locally. Tap Sync Current Board Now later.`);
@@ -1596,6 +1659,21 @@ async function sendQuestToKWGT(i){
  }
  return result;
 }
+async function testKustomConnection(){
+ const token=kustomToken();
+ if(!token){
+  setKwgtStatus("🔐 No token is saved yet.");
+  toast("Save the KWGT token first.");
+  return false;
+ }
+ const wait=kustomNextAllowed()-Date.now();
+ if(wait>0){
+  setKwgtStatus(`⏳ The app is still honoring the last server cooldown for ${formatWait(wait)}. Wait rather than spending another request.`);
+  return "queued";
+ }
+ return await postToKustom({readingmmo_ping:String(Date.now())});
+}
+
 async function sendAllQuestsToKWGT(){
  const result=await postToKustom(currentBoardPayload());
  if(result===true)toast("Quest Board synced.");
