@@ -1,4 +1,4 @@
-const CACHE = "reading-mmo-shell-v5";
+const CACHE = "reading-mmo-shell-v7";
 const SHELL = [
   "./",
   "./index.html",

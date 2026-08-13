@@ -161,7 +161,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 <div class="app">
 <header>
   <h1>🪿 READING MMO</h1>
-  <div class="sub">Duck-Tuned Adventurer • v3.7 • Truthful KWGT Sync</div>
+  <div class="sub">Duck-Tuned Adventurer • v3.8 • Rate-Safe Sync</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -195,7 +195,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
   <div class="card" id="homeQuestCards"></div>
   <div class="row">
     <button class="btn-gold" onclick="go('quests')">Open Quests</button>
-    <button class="btn-green" onclick="sendAllWidgetsToKWGT()">📡 Sync Widgets Once</button>
+    <button id="homeKwgtSyncBtn" class="btn-green" onclick="sendAllWidgetsToKWGT()">📡 Sync Widgets Once</button>
   </div>
   <div id="homeSaveMini" class="calm-note" style="text-align:center">Progress saves automatically.</div>
 
@@ -522,12 +522,12 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 
       <details class="simple-details" style="margin-top:10px">
         <summary>🛠 KWGT troubleshooting</summary>
-        <button class="btn-blue" style="width:100%;margin-top:8px" onclick="testKustomConnection()">Test connection once</button>
+        <div class="simple-status" style="margin-top:8px">Normal widget sync doubles as the connection test, so troubleshooting no longer spends an extra API call.</div>
         <div id="kwgtStatus" class="simple-status" style="margin-top:8px"></div>
         <div id="kwgtRateInfo" class="muted" style="margin-top:6px"></div>
         <div id="kwgtCooldown" class="muted" style="margin-top:4px"></div>
         <button id="clearStaleCooldownBtn" class="btn-plain" style="width:100%;margin-top:8px;display:none" onclick="clearStaleKustomCooldown()">🧹 Clear App's Local Cooldown</button>
-        <small>Clearing the app's local cooldown does <b>not</b> clear a Kustom server rate limit.</small>
+        <small>The app now allows at most one Kustom network send every 90 seconds, merges newer changes locally, and skips duplicate packets entirely.</small>
       </details>
 
       <details class="simple-details" style="margin-top:10px">
@@ -1414,8 +1414,8 @@ function loadKustomToken(){
  const state=$("kwgtTokenState");if(state)state.textContent=token?"✅ Token saved for this app copy.":"⚠️ No KWGT token saved for this app copy.";
  const quick=$("kwgtQuickStatus");if(quick)quick.textContent=token?"✅ KWGT token saved. One tap can sync both widgets.":"⚠️ KWGT token missing. Go to Me → Setup and paste it once.";
 }
-const KUSTOM_MIN_GAP_MS=15000;
-const KUSTOM_429_FALLBACK_MS=75000;
+const KUSTOM_MIN_GAP_MS=90000;
+const KUSTOM_429_FALLBACK_MS=120000;
 let kustomSending=false;
 let kustomUiTimer=null;
 
@@ -1508,6 +1508,7 @@ function updateKustomCooldownUI(){
  }else{
   el.textContent="";
  }
+ renderKustomSyncButton();
 }
 function clearStaleKustomCooldown(){
  const wait=kustomNextAllowed()-Date.now();
@@ -1566,6 +1567,31 @@ function renderReaderSyncPreview(){
  const xp=Math.max(0,totalXp()),level=levelFor(xp),inLevel=Math.max(0,lvlXp(xp,level)),need=lvlNeed(level);
  el.innerHTML=`<b>Reader Level packet</b><br>${S.pages.toLocaleString()} pages • ${S.books.toLocaleString()} books • ${S.days.toLocaleString()} days<br>Level ${level} ${esc(rankFor(level))} • ${inLevel.toLocaleString()} / ${need.toLocaleString()} XP<br>Last Read: ${esc((S.reading?.lastFinishedBook||"").trim()||"—")}`;
 }
+function kustomPayloadSignature(data){
+ const ordered={};
+ Object.keys(data||{}).sort().forEach(k=>ordered[k]=data[k]);
+ return JSON.stringify(ordered);
+}
+function lastKustomSignature(){
+ try{return localStorage.getItem("kustomLastSuccessfulSignature")||""}catch(e){return""}
+}
+function setLastKustomSignature(sig){
+ try{localStorage.setItem("kustomLastSuccessfulSignature",sig)}catch(e){}
+}
+function renderKustomSyncButton(){
+ const btn=$("homeKwgtSyncBtn");
+ if(!btn)return;
+ const wait=kustomNextAllowed()-Date.now();
+ const pending=!!getQueuedKustom();
+ if(wait>0){
+  btn.disabled=true;
+  btn.textContent=`⏳ Sync in ${formatWait(wait)}`;
+ }else{
+  btn.disabled=false;
+  btn.textContent=pending?"📡 Sync Latest Changes":"📡 Sync Widgets Once";
+ }
+}
+
 async function postToKustom(data){
  const token=kustomToken();
  if(!token){
@@ -1577,6 +1603,15 @@ async function postToKustom(data){
 
  // Always preserve the newest requested state locally first.
  mergeQueuedKustom(data);
+
+ // If Kustom already accepted these exact values, skip the request entirely.
+ const requestedSig=kustomPayloadSignature(getQueuedKustom()||data);
+ if(requestedSig===lastKustomSignature()){
+  clearQueuedKustom();
+  setKwgtStatus("✅ These widget values are already synced. No Kustom API call was used.");
+  renderKustomSyncButton();
+  return true;
+ }
 
  const wait=kustomNextAllowed()-Date.now();
  if(wait>0){
@@ -1601,7 +1636,7 @@ async function postToKustom(data){
   showKustomRateInfo(res);
 
   if(res.status===429){
-   const waitMs=retryDelayFromResponse(res);
+   const waitMs=Math.max(120000,retryDelayFromResponse(res));
    setKustomNextAllowed(waitMs);
    setKwgtStatus(`⏳ Kustom returned HTTP 429: server rate limit. This is NOT a bad-token message. Your widget data is saved locally. Wait for the server reset (${formatWait(waitMs)} based on the response), then send once.`);
    toast("Kustom server rate limit — nothing lost.");
@@ -1620,9 +1655,11 @@ async function postToKustom(data){
    return false;
   }
 
+  setLastKustomSignature(kustomPayloadSignature(payload));
   clearQueuedKustom();
   setKustomNextAllowed(KUSTOM_MIN_GAP_MS);
-  setKwgtStatus("✅ Kustom accepted the send. Widget data synced.");
+  setKwgtStatus("✅ Kustom accepted the send. Next network sync is intentionally held for 90 seconds to protect the rate limit.");
+  renderKustomSyncButton();
   return true;
  }catch(err){
   setKwgtStatus(`❌ Could not reach Kustom. Latest board state is saved locally. Tap Sync Current Board Now later.`);
@@ -1659,21 +1696,6 @@ async function sendQuestToKWGT(i){
  }
  return result;
 }
-async function testKustomConnection(){
- const token=kustomToken();
- if(!token){
-  setKwgtStatus("🔐 No token is saved yet.");
-  toast("Save the KWGT token first.");
-  return false;
- }
- const wait=kustomNextAllowed()-Date.now();
- if(wait>0){
-  setKwgtStatus(`⏳ The app is still honoring the last server cooldown for ${formatWait(wait)}. Wait rather than spending another request.`);
-  return "queued";
- }
- return await postToKustom({readingmmo_ping:String(Date.now())});
-}
-
 async function sendAllQuestsToKWGT(){
  const result=await postToKustom(currentBoardPayload());
  if(result===true)toast("Quest Board synced.");

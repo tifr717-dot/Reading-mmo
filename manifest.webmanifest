@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Reading MMO",
   "short_name": "Reading MMO",
-  "description": "A calm cozy Reading MMO with duck-tuned quests, truthful KWGT diagnostics, reading tools, loot, and widget sync.",
+  "description": "A calm cozy Reading MMO with duck-tuned quests and rate-safe one-call KWGT widget syncing.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
