@@ -1,14 +1,9 @@
-Reading MMO v4.5 — Crisp Widget Home
+Reading MMO v4.6 — Crisp Illustrated Desk
 
 Home-only visual rebuild.
-
-Why this version exists:
-- v4.3/v4.4 used large generated scene images. Android scaled those images down, which created blurry/noisy “pixel soup” artifacts.
-- v4.5 removes those large scene images entirely.
-- Home structure is now crisp CSS with flat widget-like parchment/wood shapes.
-- Only the existing small hand-drawn pixel sprites are used for accents.
-- Quest preview intentionally shows role, title, difficulty and XP only; full objective remains on the Quests tab.
-- Reader Level, open journal, actions, and nav use clean live text instead of text baked into imagery.
-- Existing save state, reading mechanics, quest system, and rate-safe KWGT sync logic are preserved.
-
-Upload every file in this folder to the GitHub Pages repo root, replacing matching files.
+- Restores the illustrated candlelit desk composition from v4.3/v4.4.
+- Replaces generated/painterly scene rasters with hand-drawn crisp pixel assets.
+- No important words are baked into image assets: header, quest labels/data, rank data, journal labels/data, and buttons are live HTML text.
+- Artwork uses hard pixel edges / nearest-neighbor scaling only. No blur filters.
+- Keeps the v4.4 app/game/save/KWGT logic.
+- Read, Quests, Play, and Me are intentionally not redesigned yet.
