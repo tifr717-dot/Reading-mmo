@@ -877,13 +877,86 @@ header .appstatus{
   .v43-rank-region{font-size:clamp(6.1px,1.72vw,8.4px)!important}
 }
 
+
+
+/* ===== v4.5 CRISP WIDGET HOME =====
+   Large generated scene images are intentionally gone from Home.
+   Everything structural is flat CSS; only the small hand-drawn pixel sprites remain.
+   This prevents blurred/soupy raster detail when Android scales the PWA. */
+header{
+  position:relative!important;height:auto!important;min-height:74px!important;padding:11px 64px 10px!important;
+  background:repeating-linear-gradient(0deg,#4d3022 0 10px,#42291e 10px 20px)!important;
+  border:0!important;border-bottom:3px solid #c08a32!important;box-shadow:inset 0 -6px 0 #251610,0 3px 0 #120b08!important;
+  overflow:hidden!important;
+}
+header .header-title{visibility:visible!important;height:auto!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important}
+header .header-goose{width:30px!important;height:30px!important;image-rendering:pixelated!important;filter:none!important}
+header h1{font-family:Georgia,'Times New Roman',serif!important;font-size:20px!important;letter-spacing:1.3px!important;color:#f0c768!important;text-shadow:2px 2px 0 #25160f!important;white-space:nowrap}
+header .sub{visibility:visible!important;height:auto!important;margin-top:2px!important;font-family:ui-monospace,monospace!important;font-size:8px!important;letter-spacing:.45px!important;color:#ead5ad!important}
+header .appstatus{position:static!important;margin-top:4px!important;font-family:ui-monospace,monospace!important;font-size:8px!important;color:#d9c59f!important;text-shadow:none!important;white-space:nowrap!important}
+header:before,header:after{display:block!important;content:""!important;position:absolute!important;top:10px!important;width:48px!important;height:48px!important;image-rendering:pixelated!important;background-repeat:no-repeat!important;background-position:center!important;opacity:.92!important}
+header:before{left:8px!important;background-image:url('./asset-gem.png')!important;background-size:32px 32px!important}
+header:after{right:8px!important;background-image:url('./asset-books-stack.png')!important;background-size:47px auto!important}
+
+#home.v45-home{padding:0 0 16px!important;overflow:hidden!important;background:#261711!important}
+.v45-stage{position:relative;padding:15px 0 22px;background:repeating-linear-gradient(0deg,#2e1d15 0 18px,#281912 18px 36px)}
+.v45-board-wrap{position:relative;padding:10px 18px 0}
+.v45-quest-board{position:relative;margin:0 auto;padding:26px 12px 26px;background:#5b3a28;border:4px solid #2b1b13;box-shadow:0 0 0 3px #b47e2d,5px 6px 0 #120b08}
+.v45-quest-board:before,.v45-quest-board:after{content:"";position:absolute;width:34px;height:34px;background:url('./asset-ivy.png') center/34px no-repeat;image-rendering:pixelated;pointer-events:none}
+.v45-quest-board:before{left:-14px;top:-12px}.v45-quest-board:after{right:-14px;bottom:-14px;transform:scaleX(-1)}
+.v45-board-title{position:absolute;left:50%;top:-16px;transform:translateX(-50%);padding:7px 16px 6px;background:#4b3022;border:2px solid #24160f;box-shadow:0 0 0 2px #ba8432,2px 3px 0 #120b08;color:#f4dfb6;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:1.1px;white-space:nowrap}
+.v45-quest-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:stretch}
+.v45-quest-note{position:relative;min-height:121px;padding:23px 9px 10px;background:#f1dfb5;border:2px solid #8f6937;box-shadow:3px 4px 0 #2b1a12;clip-path:polygon(2px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px)}
+.v45-quest-note:nth-child(1){transform:translateY(2px) rotate(-.7deg)}.v45-quest-note:nth-child(2){transform:translateY(-2px) rotate(.5deg)}.v45-quest-note:nth-child(3){transform:translateY(2px) rotate(-.4deg)}
+.v45-pin{position:absolute;left:50%;top:5px;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:#d39b32;box-shadow:0 0 0 2px #322017,inset -2px -2px 0 rgba(0,0,0,.25)}
+.v45-quest-note.hunt .v45-pin{background:#c15b43}.v45-quest-note.gather .v45-pin{background:#6f914d}.v45-quest-note.craft .v45-pin{background:#8060b5}
+.v45-role{display:flex;align-items:center;gap:4px;font-family:ui-monospace,monospace;font-size:8px;font-weight:900;letter-spacing:.55px;color:#765039;white-space:nowrap}
+.v45-role img{width:18px;height:18px;object-fit:contain;image-rendering:pixelated}.v45-quest-note.hunt .v45-role{color:#97493c}.v45-quest-note.gather .v45-role{color:#567742}.v45-quest-note.craft .v45-role{color:#6f4c91}
+.v45-qtitle{margin-top:8px;font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.05;font-weight:800;color:#3b271e;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;min-height:28px}
+.v45-hidden-objective{display:none!important}.v45-qfooter{position:absolute;left:9px;right:9px;bottom:10px;display:flex;justify-content:space-between;gap:4px;border-top:1px solid #c9ab77;padding-top:6px;font-family:ui-monospace,monospace;font-size:8px;color:#5c4434;white-space:nowrap}.v45-qfooter b{color:#3b271e}
+
+.v45-rank-card{position:relative;z-index:4;width:79%;margin:-11px auto 0;padding:18px 15px 13px;text-align:center;background:#f0ddb0;border:3px solid #4b3426;box-shadow:0 0 0 3px #b47e2d,4px 5px 0 #120b08}
+.v45-rank-card:before{content:"";position:absolute;inset:5px;border:1px solid #c7a56a;pointer-events:none}
+.v45-rank-gem{position:absolute;left:50%;top:-18px;transform:translateX(-50%);width:36px;height:36px;image-rendering:pixelated}
+.v45-level-badge{position:absolute;left:12px;top:17px;padding:5px 7px;background:#684a82;border:2px solid #3b271e;box-shadow:0 0 0 1px #c08a32;color:#f6e4bd;font-family:ui-monospace,monospace;font-size:8px;font-weight:900}
+.v45-rank-label{font-family:ui-monospace,monospace;font-size:7px;letter-spacing:1px;color:#8060b5;font-weight:900}
+.v45-rank-title{margin-top:3px;font-family:Georgia,'Times New Roman',serif;font-size:20px;line-height:1.05;font-weight:800;color:#3b271e}
+.v45-rank-region{margin:7px 34px 9px;font-family:ui-monospace,monospace;font-size:8px;font-weight:800;color:#72518f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v45-xp-track{height:12px;margin:0 9px;background:#d8bc82;border:2px solid #4b3426;box-shadow:inset 0 0 0 1px #b48c50}.v45-xp-track>div{height:100%;width:0;background:#8060b5}
+.v45-xp-text{margin-top:4px;font-family:ui-monospace,monospace;font-size:8px;font-weight:900;color:#4b3426}
+.v45-desk-line{height:9px;margin-top:20px;background:#4c3021;border-top:3px solid #b47e2d;border-bottom:3px solid #160d09;box-shadow:0 5px 0 #100907}
+
+.v45-journal-wrap{position:relative;padding:24px 12px 8px}
+.v45-prop{position:absolute;z-index:1;image-rendering:pixelated;pointer-events:none}.v45-candle{left:-3px;top:56px;width:33px;height:auto}.v45-quill{right:2px;bottom:36px;width:34px;height:auto}
+.v45-journal-cover{position:relative;z-index:2;width:92%;margin:0 auto;padding:9px;background:#503765;border:3px solid #281a20;box-shadow:0 6px 0 #160e0b,0 0 0 3px #6b4930;clip-path:polygon(3% 2%,47% 0,50% 3%,53% 0,97% 2%,100% 7%,98% 94%,54% 99%,50% 96%,46% 99%,2% 94%,0 7%)}
+.v45-journal-pages{display:grid;grid-template-columns:1fr 1fr;min-height:270px;background:linear-gradient(90deg,transparent 49%,#b59361 49%,#d7bc83 50%,#89653f 51%,transparent 51%),repeating-linear-gradient(0deg,#f5e5bc 0 23px,#edd7aa 23px 24px);border:2px solid #b5945d;clip-path:polygon(2% 1%,47% 0,50% 2%,53% 0,98% 1%,100% 6%,98% 97%,54% 100%,50% 98%,46% 100%,2% 97%,0 6%)}
+.v45-page{position:relative;min-width:0;padding:24px 17px 18px}.v45-left-page{padding-right:13px}.v45-right-page{padding-left:16px;padding-right:36px}
+.v45-book-heading{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:center}.v45-book-heading img{width:30px;height:30px;image-rendering:pixelated}.v45-book-title{font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.03;font-weight:800;color:#342219;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.v45-read-mode{display:inline-block;margin:9px 0 6px;padding:4px 7px;background:#dcc08e;color:#6d4a8c;font-family:ui-monospace,monospace;font-size:7px;font-weight:900;letter-spacing:.45px;clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 50%,calc(100% - 5px) 100%,5px 100%,0 50%);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v45-rule{height:1px;background:#c8a876;margin:5px 0 9px}.v45-stat{margin:12px 0;color:#3f2a20}.v45-stat span{display:block;font-family:ui-monospace,monospace;font-size:7px;color:#73528d;font-weight:900;letter-spacing:.3px}.v45-stat b{display:block;margin-top:3px;font-family:ui-monospace,monospace;font-size:10px;color:#342219}.v45-page-sprig{position:absolute;left:12px;bottom:9px;width:31px;height:31px;image-rendering:pixelated;opacity:.8}
+.v45-progress-label{text-align:center;font-family:ui-monospace,monospace;font-size:7px;color:#8060b5;font-weight:900;letter-spacing:1px}.v45-page-text{margin-top:14px;text-align:center;font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.1;font-weight:800;color:#342219;white-space:nowrap}.v45-book-progress{height:10px;margin:13px 1px 0;background:#d2b477;border:2px solid #4b3426}.v45-book-progress>div{height:100%;width:0;background:#8060b5}.v45-percent{text-align:center;margin-top:8px;font-family:ui-monospace,monospace;font-size:10px;font-weight:900;color:#342219}.v45-last-finished{position:absolute;left:16px;right:36px;bottom:23px;border-top:1px solid #c6a570;padding-top:7px}.v45-last-finished span{display:block;font-family:ui-monospace,monospace;font-size:7px;color:#8060b5;font-weight:900}.v45-last-finished b{display:block;margin-top:4px;font-family:Georgia,'Times New Roman',serif;font-size:10px;line-height:1.12;color:#342219;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.v45-bookmark{position:absolute;z-index:5;right:-13px;top:44px;width:51px;min-height:96px;padding:10px 4px 18px;border:2px solid #34221a;border-radius:0;background:#684889;color:#f6e5bd;box-shadow:0 0 0 2px #b47e2d,3px 4px 0 #140c09;clip-path:polygon(0 0,100% 0,100% 86%,50% 100%,0 86%);font-family:ui-monospace,monospace;font-size:7px;font-weight:900;line-height:1.25}.v45-bookmark img{display:block;width:22px;height:22px;margin:0 auto 7px;image-rendering:pixelated}
+
+.v45-actions{width:78%;margin:13px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:10px}.v45-plaque{display:flex;align-items:center;justify-content:center;gap:6px;min-height:41px;padding:7px;border:2px solid #24160f;border-radius:0;background:#5a3929;color:#f3dfb6;box-shadow:0 0 0 2px #b47e2d,3px 4px 0 #120b08;font-family:ui-monospace,monospace;font-size:8px;font-weight:900;letter-spacing:.4px}.v45-plaque img{width:18px;height:18px;object-fit:contain;image-rendering:pixelated}.v45-plaque.sync{background:#49643c}.v45-sync-state{min-height:11px;margin:6px auto 0;width:78%;text-align:right;font-family:ui-monospace,monospace;font-size:7px;color:#cbb38a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v45-ledger-tab{width:58%;margin:11px auto 0;display:flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:7px 12px;border:2px solid #24160f;border-radius:0;background:#493126;color:#f3dfb6;box-shadow:0 0 0 2px #8b6338,3px 4px 0 #120b08;font-family:Georgia,'Times New Roman',serif;font-size:11px}.v45-ledger-tab img{width:28px;height:20px;object-fit:contain;image-rendering:pixelated}.v45-ledger-tab b{margin-left:auto;color:#d39b32;font-family:ui-monospace,monospace}.v45-ledger-panel{margin-top:4px!important}.v45-save{text-align:center;margin-top:12px;font-family:ui-monospace,monospace;font-size:7px;color:#a99271}
+
+/* Navigation uses only the small, hand-drawn pixel icons. */
+.bottomnav{height:62px!important;background:#3c261b!important;border-top:3px solid #b47e2d!important;box-shadow:0 -3px 0 #160d09!important}.bottomnav button{padding:31px 1px 6px!important;background:transparent!important;color:#ead8b5!important;font-family:Georgia,'Times New Roman',serif!important;font-size:8px!important;text-shadow:none!important;border-right:1px solid #694632!important}.bottomnav button:before{top:5px!important;width:26px!important;height:26px!important;background-size:26px!important;image-rendering:pixelated!important}.bottomnav button.active{background:#493450!important;box-shadow:inset 0 4px 0 #8f68b2!important}.bottomnav button.active:after{display:none!important}
+
+@media(max-width:390px){
+  header{padding-left:54px!important;padding-right:54px!important}header h1{font-size:18px!important}header:before{left:5px!important}header:after{right:4px!important}
+  .v45-board-wrap{padding-left:12px;padding-right:12px}.v45-quest-board{padding-left:8px;padding-right:8px}.v45-quest-grid{gap:5px}.v45-quest-note{min-height:113px;padding-left:7px;padding-right:7px}.v45-qtitle{font-size:11px}.v45-qfooter{left:7px;right:7px;font-size:7px}
+  .v45-rank-card{width:82%;padding-left:12px;padding-right:12px}.v45-rank-title{font-size:18px}.v45-rank-region{font-size:7px;margin-left:34px;margin-right:18px}
+  .v45-journal-cover{width:95%;padding:7px}.v45-journal-pages{min-height:258px}.v45-page{padding-left:13px;padding-right:10px}.v45-right-page{padding-left:13px;padding-right:31px}.v45-book-title{font-size:14px}.v45-page-text{font-size:13px}.v45-bookmark{right:-10px;width:45px;font-size:6.5px}.v45-actions{width:82%}.v45-ledger-tab{width:64%}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
   <div class="header-title"><img src="./asset-goose.png" class="header-goose" alt=""><h1>READING MMO</h1></div>
-  <div class="sub">Enchanted Library • v4.4 • Widget Polish</div>
+  <div class="sub">Enchanted Library • v4.5 • Crisp Widget Home</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -892,57 +965,86 @@ header .appstatus{
   </div>
 </header>
 
-<section id="home" class="screen active v43-home">
-  <div class="v43-home-stage">
-    <div class="v43-piece v43-quest-piece">
-      <img src="./v44-quest-board.png" alt="Illustrated wooden quest board with three pinned parchment notes">
-      <div id="homeQ1Title" class="v43-overlay v43-quest-title v43-q1-title">Empty Slot</div>
-      <div id="homeQ1Objective" class="v43-overlay v43-quest-objective v43-q1-obj">Roll a Hunt quest.</div>
-      <div id="homeQ1Meta" class="v43-overlay v43-quest-meta v43-q1-meta"></div>
-      <div id="homeQ1Xp" class="v43-overlay v43-quest-meta v43-q1-xp"></div>
+<section id="home" class="screen active v45-home">
+  <div class="v45-stage">
+    <div class="v45-board-wrap">
+      <div class="v45-quest-board">
+        <div class="v45-board-title">ACTIVE QUESTS</div>
+        <div class="v45-quest-grid">
+          <article class="v45-quest-note hunt">
+            <div class="v45-pin"></div>
+            <div class="v45-role"><img src="./asset-scroll.png" alt="">HUNT</div>
+            <div id="homeQ1Title" class="v45-qtitle">Empty Slot</div>
+            <div id="homeQ1Objective" class="v45-hidden-objective" aria-hidden="true"></div>
+            <div class="v45-qfooter"><span id="homeQ1Meta">Waiting</span><b id="homeQ1Xp"></b></div>
+          </article>
+          <article class="v45-quest-note gather">
+            <div class="v45-pin"></div>
+            <div class="v45-role"><img src="./asset-ivy.png" alt="">GATHER</div>
+            <div id="homeQ2Title" class="v45-qtitle">Empty Slot</div>
+            <div id="homeQ2Objective" class="v45-hidden-objective" aria-hidden="true"></div>
+            <div class="v45-qfooter"><span id="homeQ2Meta">Waiting</span><b id="homeQ2Xp"></b></div>
+          </article>
+          <article class="v45-quest-note craft">
+            <div class="v45-pin"></div>
+            <div class="v45-role"><img src="./asset-potion.png" alt="">ALCHEMY</div>
+            <div id="homeQ3Title" class="v45-qtitle">Empty Slot</div>
+            <div id="homeQ3Objective" class="v45-hidden-objective" aria-hidden="true"></div>
+            <div class="v45-qfooter"><span id="homeQ3Meta">Waiting</span><b id="homeQ3Xp"></b></div>
+          </article>
+        </div>
+      </div>
 
-      <div id="homeQ2Title" class="v43-overlay v43-quest-title v43-q2-title">Empty Slot</div>
-      <div id="homeQ2Objective" class="v43-overlay v43-quest-objective v43-q2-obj">Roll a Gather quest.</div>
-      <div id="homeQ2Meta" class="v43-overlay v43-quest-meta v43-q2-meta"></div>
-      <div id="homeQ2Xp" class="v43-overlay v43-quest-meta v43-q2-xp"></div>
-
-      <div id="homeQ3Title" class="v43-overlay v43-quest-title v43-q3-title">Empty Slot</div>
-      <div id="homeQ3Objective" class="v43-overlay v43-quest-objective v43-q3-obj">Roll an Alchemy quest.</div>
-      <div id="homeQ3Meta" class="v43-overlay v43-quest-meta v43-q3-meta"></div>
-      <div id="homeQ3Xp" class="v43-overlay v43-quest-meta v43-q3-xp"></div>
+      <div class="v45-rank-card">
+        <img class="v45-rank-gem" src="./asset-gem.png" alt="">
+        <div class="v45-level-badge">LV. <span id="homeLevel">1</span></div>
+        <div class="v45-rank-label">READER LEVEL</div>
+        <div id="homeRank" class="v45-rank-title">Page Wanderer</div>
+        <div id="homeRegion" class="v45-rank-region">The Mossy Stacks • Front Stacks</div>
+        <div class="v45-xp-track"><div id="xpBar"></div></div>
+        <div id="xpText" class="v45-xp-text">0 / 1,000 XP</div>
+      </div>
     </div>
 
-    <div class="v43-piece v43-rank-piece">
-      <img src="./v44-rank-placard.png" alt="Illustrated Reader Level placard">
-      <div class="v43-overlay v43-rank-level">LV.<br><span id="homeLevel">1</span></div>
-      <div id="homeRank" class="v43-overlay v43-rank-title">Page Wanderer</div>
-      <div id="homeRegion" class="v43-overlay v43-rank-region">The Mossy Stacks • Front Stacks</div>
-      <div class="v43-xp-track"><div id="xpBar" class="v43-xp-fill"></div></div>
-      <div id="xpText" class="v43-overlay v43-rank-xp">0 / 1,000 XP</div>
+    <div class="v45-desk-line"></div>
+
+    <div class="v45-journal-wrap">
+      <img class="v45-prop v45-candle" src="./asset-candle.png" alt="">
+      <img class="v45-prop v45-quill" src="./asset-quill.png" alt="">
+      <div class="v45-journal-cover">
+        <div class="v45-journal-pages">
+          <div class="v45-page v45-left-page">
+            <div class="v45-book-heading">
+              <img src="./asset-book.png" alt="">
+              <div id="homeBookTitle" class="v45-book-title">No current book</div>
+            </div>
+            <div id="homeReadMode" class="v45-read-mode">CURRENT READ</div>
+            <div class="v45-rule"></div>
+            <div class="v45-stat"><span>THIS SESSION</span><b id="homeSessionTime">00:00:00</b></div>
+            <div class="v45-stat"><span>CHAPTERS THIS SESSION</span><b id="homeSessionChapters">0 chapters</b></div>
+            <img class="v45-page-sprig" src="./asset-ivy.png" alt="">
+          </div>
+          <div class="v45-page v45-right-page">
+            <div class="v45-progress-label">PROGRESS</div>
+            <div id="homePageText" class="v45-page-text">Page 0 of 0</div>
+            <div class="v45-book-progress"><div id="homeBookProgressBar"></div></div>
+            <div id="homePercentText" class="v45-percent">0.0%</div>
+            <div class="v45-last-finished"><span>LAST FINISHED</span><b id="homeLastFinished">Nothing logged yet</b></div>
+            <button class="v45-bookmark" aria-label="Open Reader" onclick="go('reading')"><img src="./asset-book.png" alt=""><span>OPEN<br>READER</span></button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="v43-piece v43-journal-piece">
-      <img src="./v44-journal-scene.png" alt="Open candlelit reading journal on a wooden desk">
-      <div id="homeBookTitle" class="v43-overlay v43-book-title">No current book</div>
-      <div id="homeReadMode" class="v43-overlay v43-read-mode">CURRENT READ</div>
-      <div id="homeSessionTime" class="v43-overlay v43-session-time">00:00:00</div>
-      <div id="homeSessionChapters" class="v43-overlay v43-session-chapters">0 chapters</div>
-      <div id="homePageText" class="v43-overlay v43-page-text">Page 0 of 0</div>
-      <div class="v43-book-progress"><div id="homeBookProgressBar"></div></div>
-      <div id="homePercentText" class="v43-overlay v43-percent">0.0%</div>
-      <div id="homeLastFinished" class="v43-overlay v43-last-finished">Nothing logged yet</div>
-      <button class="v43-hit v43-open-reader" aria-label="Open Reader" onclick="go('reading')">Open Reader</button>
+    <div class="v45-actions">
+      <button class="v45-plaque" onclick="go('quests')"><img src="./asset-scroll.png" alt="">VIEW BOARD</button>
+      <button id="homeKwgtSyncBtn" class="v45-plaque sync" onclick="sendAllWidgetsToKWGT()"><img src="./asset-ivy.png" alt="">SYNC WIDGETS</button>
     </div>
+    <div id="homeKwgtSyncState" class="v45-sync-state"></div>
 
-    <div class="v43-piece v43-actions-piece">
-      <img src="./v44-actions-ledger.png" alt="Wooden View Board, Sync Widgets, and Character Ledger controls">
-      <button class="v43-hit v43-view-board" aria-label="View Board" onclick="go('quests')">View Board</button>
-      <button id="homeKwgtSyncBtn" class="v43-hit v43-sync" aria-label="Sync Widgets" onclick="sendAllWidgetsToKWGT()">Sync Widgets</button>
-      <div id="homeKwgtSyncState" class="v43-sync-state"></div>
-      <button class="v43-hit v43-ledger-hit" aria-label="Open Character Ledger" onclick="toggleHomeLedger()">Character Ledger</button>
-    </div>
+    <button class="v45-ledger-tab" aria-label="Open Character Ledger" onclick="toggleHomeLedger()"><img src="./asset-ledger.png" alt=""><span>Character Ledger</span><b>⌄</b></button>
 
-    <div id="homeLedgerPanel" class="v43-ledger-panel" hidden>
+    <div id="homeLedgerPanel" class="v43-ledger-panel v45-ledger-panel" hidden>
       <button class="v43-ledger-close btn-plain" onclick="toggleHomeLedger(false)">Close</button>
       <div class="v43-ledger-grid">
         <div><span>XP</span><b id="homeXp">0</b></div>
@@ -951,7 +1053,7 @@ header .appstatus{
       </div>
       <div id="homeBonuses"></div>
     </div>
-    <div id="homeSaveMini" class="v43-save">Progress saves automatically.</div>
+    <div id="homeSaveMini" class="v45-save">Progress saves automatically.</div>
   </div>
 </section>
 

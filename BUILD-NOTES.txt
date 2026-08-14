@@ -1,12 +1,14 @@
-Reading MMO v4.4 — Widget Polish
+Reading MMO v4.5 — Crisp Widget Home
 
-Home-only visual polish over v4.3 Candlelit Desk.
-- brighter, calmer parchment art
-- roomier quest note typography with 2-line objective previews
-- simplified Home region line so the placard does not overflow
-- refined rank/XP hierarchy
-- roomier journal text and progress placement
-- tighter Open Reader bookmark tap target
-- quieter View Board / Sync Widgets / Character Ledger controls
-- subtler active bottom-nav treatment
-- existing save data, quest mechanics, reading tools, and rate-safe KWGT sync preserved
+Home-only visual rebuild.
+
+Why this version exists:
+- v4.3/v4.4 used large generated scene images. Android scaled those images down, which created blurry/noisy “pixel soup” artifacts.
+- v4.5 removes those large scene images entirely.
+- Home structure is now crisp CSS with flat widget-like parchment/wood shapes.
+- Only the existing small hand-drawn pixel sprites are used for accents.
+- Quest preview intentionally shows role, title, difficulty and XP only; full objective remains on the Quests tab.
+- Reader Level, open journal, actions, and nav use clean live text instead of text baked into imagery.
+- Existing save state, reading mechanics, quest system, and rate-safe KWGT sync logic are preserved.
+
+Upload every file in this folder to the GitHub Pages repo root, replacing matching files.
