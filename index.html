@@ -680,7 +680,7 @@ header .sub{font-size:8px;margin-top:3px;color:#efd9af;letter-spacing:.6px}
 /* ===== v4.3 CANDLELIT DESK — CONCEPT ART AS LIVE UI ===== */
 header{
   min-height:0;height:clamp(64px,17.58vw,92px);padding:0!important;
-  background:url('./v43-header.png') center/100% 100% no-repeat!important;
+  background:url('./v44-header.png') center/100% 100% no-repeat!important;
   border:0!important;box-shadow:0 4px 0 #100a07!important;overflow:hidden;
 }
 header .header-title,header .sub{visibility:hidden;height:0;margin:0!important}
@@ -749,13 +749,141 @@ header .appstatus{
   .v43-rank-piece{width:82%}.v43-actions-piece{width:86%}.v43-quest-piece{width:105%}.v43-journal-piece{width:106%}
 }
 
+
+
+/* ===== v4.4 WIDGET POLISH — SAME DESK, CLEANER + SOFTER ===== */
+/* Calm the scene without flattening it. */
+#home.v43-home{
+  background-color:#291a12!important;
+  background-image:url('./v43-wood-tile.png')!important;
+}
+.v43-home-stage{
+  padding:10px 0 20px!important;
+  background:
+    radial-gradient(circle at 49% 43%,rgba(239,183,93,.13),transparent 35%),
+    linear-gradient(180deg,rgba(255,220,145,.025),transparent 38%,rgba(12,7,5,.08))!important;
+}
+.v43-piece>img{
+  filter:drop-shadow(0 3px 0 rgba(12,7,4,.18));
+}
+
+/* Give the illustrated objects a little breathing room. */
+.v43-quest-piece{width:99%!important;margin-top:6px!important}
+.v43-rank-piece{width:76%!important;margin-top:-10px!important}
+.v43-journal-piece{width:100%!important;margin-top:4px!important}
+.v43-actions-piece{width:78%!important;margin-top:1px!important}
+
+/* Quest notes: readable at a glance, still like real pinned scraps. */
+.v43-quest-title{
+  font-size:clamp(9px,2.85vw,14px)!important;
+  line-height:1.08!important;
+  letter-spacing:.01em;
+}
+.v43-quest-objective{
+  font-size:clamp(7.2px,2.16vw,10.5px)!important;
+  line-height:1.22!important;
+  color:#51382a!important;
+  -webkit-line-clamp:2!important;
+}
+.v43-quest-meta{
+  font-size:clamp(7px,2.05vw,10px)!important;
+  color:#543a2b!important;
+}
+.v43-q1-title,.v43-q2-title,.v43-q3-title{top:37.2%!important}
+.v43-q1-obj,.v43-q2-obj,.v43-q3-obj{top:50.8%!important}
+.v43-q1-meta,.v43-q2-meta,.v43-q3-meta,
+.v43-q1-xp,.v43-q2-xp,.v43-q3-xp{top:73.4%!important}
+
+/* Rank placard: cleaner hierarchy, less crowded region line. */
+.v43-rank-level{top:27%!important;font-size:clamp(7.5px,2.1vw,10px)!important}
+.v43-rank-title{
+  left:27%!important;right:9%!important;top:24.5%!important;
+  font-size:clamp(12.5px,3.8vw,21px)!important;
+  letter-spacing:.01em;
+}
+.v43-rank-region{
+  left:21%!important;right:7%!important;top:51.5%!important;
+  font-size:clamp(6.3px,1.82vw,9px)!important;
+  letter-spacing:.015em;
+}
+.v43-xp-track{left:13.7%!important;top:70.5%!important;width:70.1%!important;height:7.1%!important}
+.v43-xp-fill{background:#765493!important;box-shadow:inset 0 1px rgba(224,193,239,.28)!important}
+.v43-rank-xp{top:83.1%!important;font-size:clamp(6.8px,1.92vw,9.5px)!important}
+
+/* Journal: the hero. Brighter paper + roomier live text over the illustration. */
+.v43-book-title{
+  left:23.8%!important;top:19.1%!important;width:28.6%!important;
+  font-size:clamp(10.5px,3.15vw,16.5px)!important;
+  line-height:1.06!important;
+  letter-spacing:.005em;
+}
+.v43-read-mode{
+  left:23.0%!important;top:36.1%!important;width:22.6%!important;
+  font-size:clamp(6px,1.72vw,8.6px)!important;
+}
+.v43-session-time{left:23.0%!important;top:53.9%!important;font-size:clamp(7.4px,2.15vw,10.7px)!important}
+.v43-session-chapters{left:23.0%!important;top:70.6%!important;font-size:clamp(7.4px,2.1vw,10.7px)!important}
+.v43-page-text{
+  left:52.2%!important;top:25.0%!important;width:20.7%!important;
+  font-size:clamp(9px,2.72vw,14px)!important;
+}
+.v43-book-progress{left:52.8%!important;top:38.2%!important;width:19.3%!important;height:2.2%!important}
+.v43-book-progress>div{background:#755292!important}
+.v43-percent{left:56.6%!important;top:45.1%!important;width:12%!important;font-size:clamp(7.5px,2.12vw,10.7px)!important}
+.v43-last-finished{
+  left:52.6%!important;top:68.8%!important;width:21.2%!important;
+  font-size:clamp(7.2px,2.05vw,10.5px)!important;
+  line-height:1.14!important;
+}
+/* Keep the ribbon feeling like a page-edge bookmark by making its tap area precise, not oversized. */
+.v43-open-reader{left:74.6%!important;top:16.2%!important;width:10.8%!important;height:31.5%!important}
+
+/* Utility controls stay clear, but visually quieter than the journal. */
+.v43-actions-piece{filter:saturate(.94) brightness(1.02)}
+.v43-view-board{left:11.4%!important;top:9%!important;width:36.8%!important;height:29.5%!important}
+.v43-sync{left:54.8%!important;top:9%!important;width:36.8%!important;height:29.5%!important}
+.v43-ledger-hit{left:21%!important;top:58.5%!important;width:58%!important;height:33%!important}
+.v43-sync-state{
+  top:41.5%!important;color:#d7bf92!important;
+  font-size:clamp(5.8px,1.55vw,7.5px)!important;
+}
+.v43-save{color:#c4ae88!important;font-size:7.2px!important;margin-top:5px!important}
+
+/* Open ledger: parchment rather than another heavy dashboard box. */
+.v43-ledger-panel{
+  width:72%!important;
+  background:#f0dfb6!important;
+  box-shadow:0 0 0 2px #2b1b13,0 0 0 4px #8a6338,3px 4px 0 rgba(15,9,6,.5)!important;
+}
+.v43-ledger-grid{background:#b4915c!important}
+.v43-ledger-grid>div{background:#f6e7c4!important}
+
+/* Furniture nav: active page gets a bookmark-like accent, not a giant purple tile. */
+.bottomnav button.active{
+  background:linear-gradient(180deg,rgba(118,79,151,.26),rgba(67,42,75,.08))!important;
+  box-shadow:inset 0 4px 0 #8f68b2,inset 0 1px 0 rgba(244,220,168,.08)!important;
+}
+.bottomnav button.active:after{
+  content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);
+  width:18px;height:5px;background:#8f68b2;box-shadow:0 2px 0 #3e294a;
+}
+
+@media(max-width:390px){
+  .v43-quest-piece{width:99%!important}
+  .v43-rank-piece{width:78%!important}
+  .v43-journal-piece{width:101%!important}
+  .v43-actions-piece{width:80%!important}
+  .v43-quest-objective{font-size:clamp(7px,2.08vw,9.5px)!important}
+  .v43-rank-region{font-size:clamp(6.1px,1.72vw,8.4px)!important}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
   <div class="header-title"><img src="./asset-goose.png" class="header-goose" alt=""><h1>READING MMO</h1></div>
-  <div class="sub">Enchanted Library • v4.3 • Candlelit Desk</div>
+  <div class="sub">Enchanted Library • v4.4 • Widget Polish</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -767,7 +895,7 @@ header .appstatus{
 <section id="home" class="screen active v43-home">
   <div class="v43-home-stage">
     <div class="v43-piece v43-quest-piece">
-      <img src="./v43-quest-board.png" alt="Illustrated wooden quest board with three pinned parchment notes">
+      <img src="./v44-quest-board.png" alt="Illustrated wooden quest board with three pinned parchment notes">
       <div id="homeQ1Title" class="v43-overlay v43-quest-title v43-q1-title">Empty Slot</div>
       <div id="homeQ1Objective" class="v43-overlay v43-quest-objective v43-q1-obj">Roll a Hunt quest.</div>
       <div id="homeQ1Meta" class="v43-overlay v43-quest-meta v43-q1-meta"></div>
@@ -785,7 +913,7 @@ header .appstatus{
     </div>
 
     <div class="v43-piece v43-rank-piece">
-      <img src="./v43-rank-placard.png" alt="Illustrated Reader Level placard">
+      <img src="./v44-rank-placard.png" alt="Illustrated Reader Level placard">
       <div class="v43-overlay v43-rank-level">LV.<br><span id="homeLevel">1</span></div>
       <div id="homeRank" class="v43-overlay v43-rank-title">Page Wanderer</div>
       <div id="homeRegion" class="v43-overlay v43-rank-region">The Mossy Stacks • Front Stacks</div>
@@ -794,7 +922,7 @@ header .appstatus{
     </div>
 
     <div class="v43-piece v43-journal-piece">
-      <img src="./v43-journal-scene.png" alt="Open candlelit reading journal on a wooden desk">
+      <img src="./v44-journal-scene.png" alt="Open candlelit reading journal on a wooden desk">
       <div id="homeBookTitle" class="v43-overlay v43-book-title">No current book</div>
       <div id="homeReadMode" class="v43-overlay v43-read-mode">CURRENT READ</div>
       <div id="homeSessionTime" class="v43-overlay v43-session-time">00:00:00</div>
@@ -807,7 +935,7 @@ header .appstatus{
     </div>
 
     <div class="v43-piece v43-actions-piece">
-      <img src="./v43-actions-ledger.png" alt="Wooden View Board, Sync Widgets, and Character Ledger controls">
+      <img src="./v44-actions-ledger.png" alt="Wooden View Board, Sync Widgets, and Character Ledger controls">
       <button class="v43-hit v43-view-board" aria-label="View Board" onclick="go('quests')">View Board</button>
       <button id="homeKwgtSyncBtn" class="v43-hit v43-sync" aria-label="Sync Widgets" onclick="sendAllWidgetsToKWGT()">Sync Widgets</button>
       <div id="homeKwgtSyncState" class="v43-sync-state"></div>
@@ -1985,7 +2113,7 @@ function startReadingUiClock(){
 function renderHome(){
  const xp=Math.max(0,totalXp()),l=levelFor(xp),lx=Math.max(0,lvlXp(xp,l)),need=lvlNeed(l);
  $('homeLevel').textContent=l;$('homeXp').textContent=xp.toLocaleString();$('homeQuests').textContent=S.questsCompleted;$('homeGoldens').textContent=goldCount();
- $('homeRank').textContent=rankFor(l);$('homeRegion').textContent=`${regionFor(l).replace(/^🌿\s*/,"")} • ${S.world.activeArea||"Front Stacks"}`;$('xpText').textContent=`${lx.toLocaleString()} / ${need.toLocaleString()} XP`;
+ $('homeRank').textContent=rankFor(l);const homeRegionName=regionFor(l).replace(/^[^A-Za-z]*/,"").replace(/\s*•\s*Levels.*$/i,"");$('homeRegion').textContent=`${homeRegionName} • ${S.world.activeArea||"Front Stacks"}`;$('xpText').textContent=`${lx.toLocaleString()} / ${need.toLocaleString()} XP`;
  $('xpBar').style.width=Math.min(100,(lx/need)*100)+'%';
  S.quests.forEach((q,i)=>{
    const n=i+1;

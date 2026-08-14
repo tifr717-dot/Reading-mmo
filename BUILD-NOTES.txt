@@ -1,0 +1,12 @@
+Reading MMO v4.4 — Widget Polish
+
+Home-only visual polish over v4.3 Candlelit Desk.
+- brighter, calmer parchment art
+- roomier quest note typography with 2-line objective previews
+- simplified Home region line so the placard does not overflow
+- refined rank/XP hierarchy
+- roomier journal text and progress placement
+- tighter Open Reader bookmark tap target
+- quieter View Board / Sync Widgets / Character Ledger controls
+- subtler active bottom-nav treatment
+- existing save data, quest mechanics, reading tools, and rate-safe KWGT sync preserved

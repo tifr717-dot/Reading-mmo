@@ -1,10 +1,10 @@
-const CACHE = 'reading-mmo-v4-3-candlelit-desk';
+const CACHE = 'reading-mmo-v4-4-widget-polish';
 const CORE = [
   './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
   './asset-book.png','./asset-gem.png','./asset-goose.png','./asset-ivy.png','./asset-potion.png','./asset-scroll.png',
   './asset-candle.png','./asset-mug.png','./asset-quill.png','./asset-books-stack.png','./asset-plant.png','./asset-ledger.png','./asset-crystal-lamp.png',
   './nav-home.png','./nav-read.png','./nav-quests.png','./nav-play.png','./nav-me.png',
-  './v43-header.png','./v43-quest-board.png','./v43-rank-placard.png','./v43-journal-scene.png','./v43-actions-ledger.png','./v43-wood-tile.png'
+  './v44-header.png','./v44-quest-board.png','./v44-rank-placard.png','./v44-journal-scene.png','./v44-actions-ledger.png','./v43-wood-tile.png'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
