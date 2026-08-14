@@ -1,46 +1,27 @@
-const CACHE = "reading-mmo-shell-v8";
-const SHELL = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./asset-book.png",
-  "./asset-scroll.png",
-  "./asset-potion.png",
-  "./asset-goose.png",
-  "./asset-ivy.png",
-  "./asset-gem.png"
+const CACHE = 'reading-mmo-v4-3-candlelit-desk';
+const CORE = [
+  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
+  './asset-book.png','./asset-gem.png','./asset-goose.png','./asset-ivy.png','./asset-potion.png','./asset-scroll.png',
+  './asset-candle.png','./asset-mug.png','./asset-quill.png','./asset-books-stack.png','./asset-plant.png','./asset-ledger.png','./asset-crystal-lamp.png',
+  './nav-home.png','./nav-read.png','./nav-quests.png','./nav-play.png','./nav-me.png',
+  './v43-header.png','./v43-quest-board.png','./v43-rank-placard.png','./v43-journal-scene.png','./v43-actions-ledger.png','./v43-wood-tile.png'
 ];
-
-self.addEventListener("install", event => {
-  self.skipWaiting();
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
-
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
+self.addEventListener('activate', event => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
-
-self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
-
-  // Network-first keeps future GitHub updates fresh, with offline fallback.
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        const copy = response.clone();
-        caches.open(CACHE).then(cache => cache.put(event.request, copy)).catch(() => {});
-        return response;
-      })
-      .catch(() =>
-        caches.match(event.request).then(cached =>
-          cached || caches.match("./index.html")
-        )
-      )
-  );
+self.addEventListener('fetch', event => {
+  const req = event.request;
+  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  if (req.mode === 'navigate') {
+    event.respondWith(fetch(req).then(res => {
+      const copy=res.clone(); caches.open(CACHE).then(c=>c.put('./index.html',copy)); return res;
+    }).catch(() => caches.match('./index.html')));
+    return;
+  }
+  event.respondWith(caches.match(req).then(cached => cached || fetch(req).then(res => {
+    const copy=res.clone(); caches.open(CACHE).then(c=>c.put(req,copy)); return res;
+  })));
 });

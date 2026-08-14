@@ -1,31 +1,14 @@
 {
-  "id": "./",
   "name": "Reading MMO",
   "short_name": "Reading MMO",
-  "description": "A cozy pixel-art fantasy library Reading MMO with duck-tuned quests, enchanted reading tools, loot, and KWGT sync.",
+  "description": "A cozy enchanted reading MMO with quests, reading tools, loot, and KWGT sync.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#15100d",
-  "theme_color": "#3d281e",
-  "orientation": "portrait-primary",
-  "categories": [
-    "books",
-    "games",
-    "productivity"
-  ],
+  "background_color": "#17100d",
+  "theme_color": "#4a2f24",
   "icons": [
-    {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    {"src":"./icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"./icon-512.png","sizes":"512x512","type":"image/png"}
   ]
 }

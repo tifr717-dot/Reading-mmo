@@ -378,13 +378,384 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--purple);outline-
 details.simple-details summary{color:#4c3020;font-weight:900}
 hr{border:0;border-top:2px dashed #b69866;margin:14px 0}
 .pixel-inline{width:24px;height:24px;image-rendering:pixelated;vertical-align:middle;margin-right:5px}
+
+/* ===== v4.1 HOME (legacy overrides retained below) ===== */
+#home{padding:12px 13px 24px}
+.home-desk{position:relative;padding:2px 0 8px}
+.home-desk:before{
+  content:"";position:absolute;left:3px;right:3px;top:0;height:5px;
+  background:linear-gradient(90deg,#20150f,#8b622f 18%,#c79a3b 50%,#8b622f 82%,#20150f);
+  opacity:.7;
+}
+.artifact-label{
+  position:absolute;left:16px;top:-13px;z-index:3;
+  padding:5px 9px 4px;font-size:9px;font-weight:900;letter-spacing:.8px;color:#f6e7c1;
+  background:#493023;box-shadow:0 0 0 2px #21150f,0 0 0 4px #b9862f,2px 3px 0 #120b08;
+}
+.home-rank-artifact,.home-reading-artifact,.home-quest-board{position:relative;margin:25px 8px 28px}
+.home-rank-artifact{
+  padding:18px 17px 13px;
+  background:url("./asset-ivy.png") calc(100% - 8px) calc(100% - 6px)/34px 34px no-repeat,
+             repeating-linear-gradient(0deg,#f1dfb7 0 12px,#ecd6a8 12px 13px);
+  box-shadow:0 0 0 2px #24160f,0 0 0 5px #553725,0 0 0 7px #b9862f,4px 6px 0 #100a07;
+}
+.rank-topline{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.rank-level{font-size:9px;color:#73553e;font-weight:900;letter-spacing:.5px}
+.home-rank-title{font-size:18px;line-height:1.05;color:#6b4a8c;text-shadow:1px 1px 0 #d9c291;margin-top:2px}
+.rank-gem{width:34px;height:34px;image-rendering:pixelated}
+.rank-region{font-size:9px;color:#6d5b46;margin:7px 0 9px}
+.home-xp-track{height:13px;margin:0}
+.rank-xp{font-size:9px;color:#5f4938;margin-top:6px}
+
+.home-reading-artifact{padding:8px 0 0;background:transparent}
+.artifact-label-book:before{
+  content:"";display:inline-block;width:18px;height:18px;vertical-align:middle;margin:-4px 5px -3px -3px;
+  background:url("./asset-book.png") center/18px 18px no-repeat;image-rendering:pixelated;
+}
+.reading-paper{
+  position:relative;min-height:124px;padding:18px 86px 14px 55px;
+  background:linear-gradient(90deg,rgba(93,61,39,.08) 1px,transparent 1px),
+             repeating-linear-gradient(0deg,#f6e8c5 0 14px,#ead7aa 14px 15px);
+  background-size:22px 100%,100% 15px;
+  box-shadow:0 0 0 2px #5c3c28,0 0 0 4px #b9862f,3px 5px 0 #130d09;
+}
+.reading-paper:before{
+  content:"";position:absolute;left:13px;top:12px;bottom:12px;width:2px;background:#d4b979;
+  box-shadow:5px 0 0 rgba(186,138,74,.25);
+}
+.reading-book-sprite{position:absolute;left:17px;top:24px;width:31px;height:31px;image-rendering:pixelated}
+.home-reading-summary b{font-size:14px;color:#3f2a20}
+.home-reading-summary small{font-size:9px;line-height:1.45;color:#74604d}
+.bookmark-action{
+  position:absolute;right:11px;top:19px;width:67px;min-height:67px;padding:7px 3px;
+  background:#6c4b88;color:#fff0cf;font-size:9px;font-weight:900;line-height:1.3;
+  box-shadow:0 0 0 2px #281b13,0 0 0 4px #b9862f,2px 3px 0 #120b08;
+}
+.bookmark-action:after{
+  content:"";position:absolute;left:17px;right:17px;bottom:-10px;height:10px;
+  background:linear-gradient(135deg,transparent 49%,#6c4b88 50%) left,
+             linear-gradient(225deg,transparent 49%,#6c4b88 50%) right;
+  background-size:50% 100%;background-repeat:no-repeat;
+}
+.home-reading-progress{margin-top:12px;padding-top:8px;border-top:1px dashed #c0a36b}
+.home-reading-progress .book-progress-head{font-size:8px;color:#6d5139}
+
+.home-quest-board{
+  padding:22px 13px 13px;
+  background:linear-gradient(rgba(35,23,17,.05),rgba(35,23,17,.05)),
+             repeating-linear-gradient(90deg,#533726 0 18px,#4a3022 18px 36px);
+  box-shadow:0 0 0 2px #160f0b,0 0 0 5px #2f2119,0 0 0 7px #b9862f,4px 6px 0 #100a07;
+}
+.artifact-label-scroll:before{
+  content:"";display:inline-block;width:18px;height:18px;vertical-align:middle;margin:-4px 5px -3px -3px;
+  background:url("./asset-scroll.png") center/18px 18px no-repeat;image-rendering:pixelated;
+}
+.home-quest-slips{display:grid;gap:9px}
+.home-quest-slip{
+  position:relative;padding:10px 12px 9px 37px;
+  background:repeating-linear-gradient(0deg,#f3e3bc 0 12px,#ead5a5 12px 13px);
+  box-shadow:0 0 0 1px #2a1b13,0 0 0 3px #aa7e38;
+}
+.home-quest-slip:before{
+  content:"";position:absolute;left:50%;top:-5px;transform:translateX(-50%);
+  width:9px;height:9px;background:#d9a13a;box-shadow:inset -2px -2px 0 #8e6724,0 0 0 1px #3b281b;
+}
+.home-quest-slip.hunt{border-left:4px solid #9b5142}
+.home-quest-slip.gather{border-left:4px solid #6f914d}
+.home-quest-slip.craft{border-left:4px solid #8060b5}
+.home-quest-icon{position:absolute;left:10px;top:11px;width:19px;height:19px;image-rendering:pixelated}
+.home-quest-slip .q-role{font-size:8px;color:#7d5d42;font-weight:900;letter-spacing:.5px}
+.home-quest-slip .q-title{font-size:11px;color:#4a3022;font-weight:900;margin-top:1px}
+.home-quest-slip .q-meta{font-size:8px;color:#6e543e;margin-top:3px}
+.quest-board-actions{display:flex;gap:8px;margin-top:11px}
+.small-plaque{flex:1;min-height:38px;font-size:8px;font-weight:900;padding:7px 5px;margin:0}
+.gold-plaque{background:#7c5d18;color:#fff0c8}
+.moss-plaque{background:#496638;color:#fff0c8}
+
+.home-ledger-drawer{
+  position:relative;margin:7px 14px 10px;padding:0;background:#ead8ad;color:#4a3022;
+  box-shadow:0 0 0 1px #5d3d29,0 0 0 3px #9c7738;
+}
+.home-ledger-drawer summary{
+  cursor:pointer;list-style:none;padding:8px 11px;font-size:9px;font-weight:900;letter-spacing:.5px;background:#d7bc82;
+}
+.home-ledger-drawer summary:before{content:"▸ ";color:#6b4a8c}
+.home-ledger-drawer[open] summary:before{content:"▾ "}
+.home-ledger-drawer[open]{padding-bottom:10px}
+.ledger-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:9px 10px;background:#b79863}
+.ledger-grid>div{background:#f2e2bc;padding:8px 5px;text-align:center}
+.ledger-grid span{display:block;font-size:7px;color:#80684f;text-transform:uppercase}
+.ledger-grid b{display:block;font-size:12px;color:#6b4a8c;margin-top:2px}
+.ledger-rule{height:1px;background:#b79863;margin:8px 10px}
+.home-ledger-drawer #homeBonuses{padding:0 10px 2px;font-size:8px}
+.ledger-note{padding:6px 10px 0;font-size:8px;color:#7b6958}
+.home-save-whisper{text-align:center;font-size:8px;color:#8f7b66;margin:13px 0 2px}
+
+/* ===== v4.2 COZY DESK HOME — SCENE FIRST ===== */
+header{
+  position:sticky;top:0;z-index:30;min-height:78px;padding:9px 66px 8px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.035),transparent 34%),
+    repeating-linear-gradient(0deg,#4f3325 0 8px,#452b20 8px 16px);
+  border-bottom:0;box-shadow:inset 0 -3px 0 #1b120e,inset 0 -5px 0 #b9862f,0 4px 0 #0e0907;
+}
+header:before{left:5px;top:8px;width:48px;height:48px;background:url('./asset-crystal-lamp.png') center/38px auto no-repeat;opacity:1;transform:none}
+header:after{right:5px;top:7px;width:54px;height:52px;background:url('./asset-books-stack.png') center/52px auto no-repeat;opacity:1;transform:none}
+.header-title{display:flex;align-items:center;justify-content:center;gap:7px}
+.header-goose{width:29px;height:29px;image-rendering:pixelated;filter:drop-shadow(2px 2px 0 #25160f)}
+header h1{font-size:20px;letter-spacing:1.2px;line-height:1;margin:0;color:#f0c768}
+header .sub{font-size:8px;margin-top:3px;color:#efd9af;letter-spacing:.6px}
+.appstatus{font-size:8px;margin-top:4px;color:#decaa4}
+
+#home{padding:0 0 30px;overflow:hidden;background:#17100d}
+.home-scene{
+  position:relative;min-height:700px;padding-top:13px;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.10) 1px,transparent 1px),
+    repeating-linear-gradient(0deg,#2a1b15 0 10px,#241813 10px 20px);
+  background-size:36px 100%,100% 20px;
+}
+.home-scene:before{
+  content:"";position:absolute;left:0;right:0;top:0;height:55%;pointer-events:none;
+  background:linear-gradient(180deg,rgba(15,9,7,.06),rgba(15,9,7,.36));
+}
+.home-scene:after{
+  content:"";position:absolute;left:0;right:0;top:48%;bottom:0;pointer-events:none;z-index:0;
+  background:
+    linear-gradient(180deg,#6b432c 0 3px,#1a100c 3px 7px,transparent 7px),
+    repeating-linear-gradient(0deg,#3b261c 0 13px,#342118 13px 26px);
+  box-shadow:inset 0 5px 0 #b9862f,inset 0 8px 0 #1a110d;
+}
+
+/* wall quest board */
+.quest-wall-wrap{position:relative;z-index:2;padding:12px 18px 0}
+.quest-board-scene{
+  position:relative;margin:0 auto;width:94%;padding:18px 13px 22px;
+  background:
+    linear-gradient(rgba(22,14,10,.08),rgba(22,14,10,.08)),
+    repeating-linear-gradient(90deg,#62422e 0 17px,#563825 17px 34px);
+  box-shadow:
+    0 0 0 3px #1b110d,
+    0 0 0 7px #714c31,
+    0 0 0 9px #b9862f,
+    6px 7px 0 #0f0907;
+}
+.quest-board-scene:before,.quest-board-scene:after{
+  content:"";position:absolute;width:42px;height:42px;background:url('./asset-ivy.png') center/42px no-repeat;image-rendering:pixelated;z-index:3;pointer-events:none
+}
+.quest-board-scene:before{left:-16px;top:-13px}
+.quest-board-scene:after{right:-16px;bottom:-17px;transform:scaleX(-1)}
+.board-title-plaque{
+  position:absolute;left:50%;top:-15px;transform:translateX(-50%);z-index:5;
+  padding:5px 13px 4px;background:#503223;color:#f5dfb7;font-size:8px;font-weight:900;letter-spacing:1px;
+  box-shadow:0 0 0 2px #20140f,0 0 0 4px #b9862f,2px 3px 0 #100a07;
+}
+.home-quest-slips{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;align-items:start}
+.home-quest-slip{
+  position:relative;min-height:118px;padding:21px 8px 12px;
+  background:
+    radial-gradient(circle at 92% 88%,rgba(111,145,77,.14) 0 2px,transparent 3px),
+    repeating-linear-gradient(0deg,#f4e3b8 0 12px,#ecd4a1 12px 13px);
+  border:0!important;box-shadow:2px 3px 0 #21150f,0 0 0 1px #9a743d;
+  clip-path:polygon(2% 2%,98% 0,100% 96%,96% 100%,3% 98%,0 5%);
+  transform-origin:50% 8%;
+}
+.home-quest-slip:nth-child(1){transform:rotate(-1.7deg) translateY(2px);z-index:1}
+.home-quest-slip:nth-child(2){transform:rotate(.8deg) translateY(-2px);z-index:2}
+.home-quest-slip:nth-child(3){transform:rotate(-.6deg) translateY(3px);z-index:1}
+.home-quest-slip:before{
+  content:"";position:absolute;left:50%;top:5px;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;
+  background:#d39b32;box-shadow:inset -2px -2px 0 #7e5719,0 0 0 2px #2a1a12;
+}
+.home-quest-slip.hunt:before{background:#c15b43}.home-quest-slip.gather:before{background:#6f914d}.home-quest-slip.craft:before{background:#8060b5}
+.home-quest-icon{position:relative;display:block;left:auto;top:auto;width:20px;height:20px;margin:0 0 4px;image-rendering:pixelated}
+.home-quest-slip .q-role{font-size:7px;font-weight:900;letter-spacing:.65px;color:#7a5037}
+.home-quest-slip.hunt .q-role{color:#97493c}.home-quest-slip.gather .q-role{color:#52713e}.home-quest-slip.craft .q-role{color:#6d4b8f}
+.home-quest-slip .q-title{font-size:10px;line-height:1.13;color:#3b271e;font-weight:900;margin:4px 0;min-height:23px}
+.home-quest-slip .q-meta{font-size:7px;line-height:1.25;color:#67503c;margin-top:5px}
+
+/* rank placard overlaps the quest board like the concept */
+.home-rank-artifact{
+  z-index:6;width:74%;margin:-10px auto 0;padding:19px 16px 13px;text-align:center;
+  background:
+    url('./asset-ivy.png') calc(100% - 5px) calc(100% - 3px)/34px 34px no-repeat,
+    repeating-linear-gradient(0deg,#f2dfb3 0 12px,#ead29e 12px 13px);
+  box-shadow:0 0 0 2px #21150f,0 0 0 5px #68452d,0 0 0 7px #b9862f,4px 5px 0 #100a07;
+}
+.home-rank-artifact:before{
+  content:"";position:absolute;left:50%;top:-16px;transform:translateX(-50%);width:36px;height:36px;
+  background:url('./asset-gem.png') center/36px no-repeat;image-rendering:pixelated;z-index:2;
+}
+.rank-topline{display:block}.rank-gem{display:none}
+.rank-level{display:inline-block;position:absolute;left:11px;top:11px;padding:5px 6px;background:#5a3d72;color:#f3dfb4;font-size:8px;box-shadow:0 0 0 2px #2a1b13,0 0 0 3px #b9862f}
+.home-rank-title{font-family:Georgia,serif;font-size:18px;color:#3d291f;text-shadow:none;margin-top:2px}
+.home-rank-title:before{content:"RANK";display:block;font-family:ui-monospace,monospace;font-size:7px;letter-spacing:1px;color:#6d4a8c;margin-bottom:3px}
+.rank-region{font-size:8px;color:#6d4a8c;margin:6px 0 8px;font-weight:900}
+.home-xp-track{height:11px;background:#d8bc82;border:2px solid #4b3426;box-shadow:inset 0 0 0 1px #b48c50;margin:0 5px}
+.home-xp-track>div{background:linear-gradient(#8c68a7,#654586)}
+.rank-xp{font-size:8px;color:#3f2a20;margin-top:4px}
+
+/* foreground desk + open journal */
+.desk-foreground{position:relative;z-index:4;margin-top:9px;padding:17px 0 10px}
+.desk-prop{position:absolute;z-index:2;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(3px 4px 0 rgba(17,10,7,.55))}
+.prop-candle{left:-2px;top:54px;width:45px}.prop-plant{right:-5px;top:18px;width:54px}.prop-mug{left:-10px;top:252px;width:66px}.prop-quill{right:1px;top:245px;width:46px}.prop-books{left:-10px;top:340px;width:84px}
+.open-journal{
+  position:relative;z-index:4;width:91%;margin:0 auto;padding:14px 12px 16px;
+  background:#4a3161;box-shadow:0 6px 0 #21150f,0 0 0 3px #251710,0 0 0 5px #6c4930;
+  clip-path:polygon(4% 3%,47% 1%,50% 4%,53% 1%,96% 3%,100% 8%,98% 94%,53% 98%,50% 96%,47% 98%,2% 94%,0 8%);
+}
+.journal-pages{
+  position:relative;display:grid;grid-template-columns:1fr 1fr;min-height:245px;
+  background:
+    linear-gradient(90deg,transparent 48.7%,#b99862 49.2%,#d7bd87 50%,#8e6c47 50.8%,transparent 51.3%),
+    repeating-linear-gradient(0deg,#f5e4ba 0 15px,#ecd4a2 15px 16px);
+  box-shadow:inset 0 0 0 2px #b6955e;
+  clip-path:polygon(2% 2%,46% 0,50% 3%,54% 0,98% 2%,100% 7%,98% 96%,55% 99%,50% 97%,45% 99%,2% 96%,0 7%);
+}
+.journal-page{position:relative;padding:22px 18px 17px;min-width:0}
+.journal-left{padding-right:13px}.journal-right{padding-left:16px;padding-right:30px}
+.journal-flourish{font-size:7px;color:#8060b5;letter-spacing:1px;text-align:center;margin-bottom:7px;font-weight:900}
+.book-hero-line{display:grid;grid-template-columns:30px 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.book-hero-icon{width:30px;height:30px;image-rendering:pixelated}
+.home-book-title{font-family:Georgia,serif;font-size:14px;line-height:1.05;color:#332117;font-weight:900;overflow-wrap:anywhere}
+.reread-ribbon{display:inline-block;margin:2px 0 11px;padding:4px 8px;background:#dcc08e;color:#6d4a8c;font-size:7px;font-weight:900;letter-spacing:.5px;clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%)}
+.session-stat{display:grid;grid-template-columns:18px 1fr;gap:6px;align-items:center;margin:11px 0;color:#3f2a20}
+.session-stat img{width:17px;height:17px;image-rendering:pixelated}
+.session-stat span{display:block;font-size:7px;color:#6d4a8c;font-weight:900}.session-stat b{display:block;font-size:9px;margin-top:2px;color:#332117}
+.home-page-text{font-family:Georgia,serif;font-size:13px;text-align:center;color:#332117;font-weight:900;margin:10px 0 8px}
+.journal-progress{height:8px;border:0;background:#d0ad6f;box-shadow:inset 0 0 0 1px #4b3426;margin:8px 1px}
+.journal-progress>div{background:#8060b5}
+.home-percent-text{text-align:center;font-size:10px;color:#332117;font-weight:900;margin-top:7px}
+.last-finished-block{position:absolute;left:16px;right:25px;bottom:18px;border-top:1px dashed #b99663;padding-top:7px}
+.last-finished-block span{display:block;font-size:7px;color:#8060b5;font-weight:900}.last-finished-block b{display:block;font-family:Georgia,serif;font-size:9px;color:#3a261c;margin-top:3px;overflow-wrap:anywhere}
+.bookmark-action{
+  position:absolute;z-index:8;right:-8px;top:36px;width:54px;min-height:82px;padding:23px 4px 15px;border:0;border-radius:0;
+  background:#654586;color:#fff0cf;font-size:8px;line-height:1.3;box-shadow:0 0 0 2px #2b1b13,0 0 0 4px #b9862f,3px 4px 0 #120b08;
+  clip-path:polygon(0 0,100% 0,100% 88%,50% 100%,0 88%);
+}
+.bookmark-action:before{content:"";position:absolute;left:17px;top:7px;width:20px;height:20px;background:url('./asset-book.png') center/20px no-repeat;image-rendering:pixelated}
+.bookmark-action:after{display:none}
+
+.quest-board-actions{position:relative;z-index:5;width:75%;margin:16px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.small-plaque{
+  min-height:38px;border:0;border-radius:0;padding:8px 5px;color:#f5e5bf;font-size:8px;letter-spacing:.45px;
+  background:repeating-linear-gradient(0deg,#5f3d29 0 7px,#533523 7px 14px);
+  box-shadow:0 0 0 2px #1c120e,0 0 0 4px #b9862f,3px 4px 0 #0f0907;
+}
+.small-plaque:before{display:inline-block;margin-right:5px;vertical-align:-4px;width:17px;height:17px;content:"";image-rendering:pixelated;background-size:17px;background-repeat:no-repeat;background-position:center}
+.gold-plaque:before{background-image:url('./asset-scroll.png')}.moss-plaque:before{background-image:url('./asset-ivy.png')}
+.gold-plaque,.moss-plaque{background:repeating-linear-gradient(0deg,#5f3d29 0 7px,#533523 7px 14px);color:#f5e5bf}
+
+.home-ledger-drawer{
+  position:relative;z-index:5;width:52%;margin:22px auto 4px;padding:0;background:#3b271e;color:#f2dfb5;
+  box-shadow:0 0 0 2px #17100c,0 0 0 4px #67442d,0 0 0 6px #9e7535,4px 5px 0 #0e0907;
+}
+.home-ledger-drawer:before{content:"";position:absolute;left:8px;top:4px;width:36px;height:24px;background:url('./asset-ledger.png') center/36px auto no-repeat;image-rendering:pixelated}
+.home-ledger-drawer summary{list-style:none;padding:11px 28px 10px 44px;text-align:center;background:transparent;color:#f2dfb5;font-family:Georgia,serif;font-size:9px;letter-spacing:.4px}
+.home-ledger-drawer summary:before{display:none}.home-ledger-drawer summary:after{content:"⌄";position:absolute;right:10px;color:#e1b85b;font-size:13px;top:6px}
+.home-ledger-drawer[open]{padding-bottom:10px;width:78%;background:#ead8ad;color:#4a3022}.home-ledger-drawer[open] summary{background:#4a3022;color:#f2dfb5}.home-ledger-drawer[open] summary:after{content:"⌃"}
+.ledger-grid{margin:10px 11px;background:#b79863}.ledger-grid>div{background:#f2e2bc}.ledger-note{font-size:7px}.home-save-whisper{position:relative;z-index:5;text-align:center;color:#9b826a;font-size:7px;margin:12px 0 0}
+
+/* bookshelf-style navigation with pixel icons */
+.bottomnav{height:64px;background:repeating-linear-gradient(0deg,#4b3022 0 9px,#3c271e 9px 18px);box-shadow:0 -3px 0 #b9862f,0 -6px 0 #1b110d}
+.bottomnav button{position:relative;padding:32px 1px 6px;font-size:8px;color:#ead9b6;text-shadow:1px 1px 0 #000;background:transparent}
+.bottomnav button:before{content:""!important;position:absolute;left:50%;top:5px;transform:translateX(-50%);width:27px;height:27px;background-position:center;background-repeat:no-repeat;background-size:27px;image-rendering:pixelated}
+.bottomnav button[data-screen="home"]:before{background-image:url('./nav-home.png')}
+.bottomnav button[data-screen="reading"]:before{background-image:url('./nav-read.png')}
+.bottomnav button[data-screen="quests"]:before{background-image:url('./nav-quests.png')}
+.bottomnav button[data-screen="adventure"]:before{background-image:url('./nav-play.png')}
+.bottomnav button[data-screen="profile"]:before{background-image:url('./nav-me.png')}
+.bottomnav button.active{background:linear-gradient(180deg,rgba(128,96,181,.88),rgba(79,56,111,.9));box-shadow:inset 0 3px 0 #b28bd8,inset 0 -3px 0 #3d294f}
+
+@media(max-width:390px){
+  .quest-wall-wrap{padding-left:15px;padding-right:15px}.quest-board-scene{width:93%;padding-left:9px;padding-right:9px}
+  .home-quest-slips{gap:5px}.home-quest-slip{min-height:112px;padding-left:7px;padding-right:6px}.home-quest-slip .q-title{font-size:9px}
+  .home-rank-artifact{width:78%}.home-rank-title{font-size:16px}
+  .open-journal{width:94%;padding-left:9px;padding-right:9px}.journal-pages{min-height:238px}.journal-page{padding-left:13px;padding-right:11px}.journal-right{padding-left:13px;padding-right:26px}
+  .home-book-title{font-size:12px}.bookmark-action{right:-7px;width:50px;font-size:7px}.quest-board-actions{width:80%;gap:10px}.home-ledger-drawer{width:58%}
+  .prop-candle{width:39px}.prop-plant{width:44px}.prop-mug{width:55px}.prop-quill{width:39px}.prop-books{width:70px}
+}
+
+
+/* ===== v4.3 CANDLELIT DESK — CONCEPT ART AS LIVE UI ===== */
+header{
+  min-height:0;height:clamp(64px,17.58vw,92px);padding:0!important;
+  background:url('./v43-header.png') center/100% 100% no-repeat!important;
+  border:0!important;box-shadow:0 4px 0 #100a07!important;overflow:hidden;
+}
+header .header-title,header .sub{visibility:hidden;height:0;margin:0!important}
+header:before,header:after{display:none!important}
+header .appstatus{
+  position:absolute;left:25%;right:25%;bottom:8%;margin:0!important;
+  justify-content:center;color:#e7c98b!important;font-size:clamp(7px,2.1vw,10px)!important;
+  text-shadow:1px 1px 0 #1e120c;white-space:nowrap;
+}
+#home.v43-home{padding:0 0 14px!important;background:#21140e url('./v43-wood-tile.png') center top/256px 200px repeat;overflow:hidden}
+.v43-home-stage{position:relative;padding:8px 0 18px;background:radial-gradient(circle at 50% 18%,rgba(215,147,54,.12),transparent 42%)}
+.v43-piece{position:relative;margin-left:auto;margin-right:auto;z-index:2}
+.v43-piece>img{display:block;width:100%;height:auto;image-rendering:pixelated;user-select:none;pointer-events:none}
+.v43-quest-piece{width:103%;margin-top:2px}
+.v43-rank-piece{width:78%;margin-top:-7px;z-index:4}
+.v43-journal-piece{width:104%;margin-top:-4px;z-index:3}
+.v43-actions-piece{width:82%;margin-top:-5px;z-index:4}
+
+/* live text placed directly over the illustrated props */
+.v43-overlay{position:absolute;color:#3a2419;text-shadow:0 1px rgba(255,240,200,.28);pointer-events:none}
+.v43-quest-title{font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:clamp(8px,2.75vw,14px);line-height:1.05;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.v43-quest-objective{font-family:Georgia,'Times New Roman',serif;font-size:clamp(6.5px,2.05vw,10px);line-height:1.18;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3}
+.v43-quest-meta{font-weight:900;font-size:clamp(6.5px,1.95vw,9.5px);white-space:nowrap}
+.v43-q1-title{left:12.4%;top:36.3%;width:23%}.v43-q2-title{left:39.4%;top:36.3%;width:23%}.v43-q3-title{left:66.1%;top:36.3%;width:23%}
+.v43-q1-obj{left:12.4%;top:49.5%;width:22.8%}.v43-q2-obj{left:39.4%;top:49.5%;width:22.8%}.v43-q3-obj{left:66.1%;top:49.5%;width:22.8%}
+.v43-q1-meta{left:13%;top:72.7%}.v43-q2-meta{left:40%;top:72.7%}.v43-q3-meta{left:66.8%;top:72.7%}
+.v43-q1-xp{left:26.3%;top:72.7%}.v43-q2-xp{left:53.2%;top:72.7%}.v43-q3-xp{left:80%;top:72.7%}
+
+.v43-rank-level{left:16.4%;top:27.5%;width:7.5%;text-align:center;color:#f4d89d;font-weight:900;font-size:clamp(7px,2vw,10px);line-height:1.1;text-shadow:1px 1px 0 #38213d}
+.v43-rank-title{left:30%;right:12%;top:25%;text-align:center;font-family:Georgia,'Times New Roman',serif;font-size:clamp(12px,4vw,22px);font-weight:800}
+.v43-rank-region{left:25%;right:10%;top:50%;text-align:center;color:#704d83;font-weight:900;font-size:clamp(6.5px,1.95vw,10px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v43-xp-track{position:absolute;left:13.5%;top:70.3%;width:70.5%;height:7.5%;overflow:hidden;border-radius:0;pointer-events:none}
+.v43-xp-fill{height:100%;background:#6c4b87;box-shadow:inset 0 2px rgba(196,155,221,.24);width:0}
+.v43-rank-xp{left:31%;right:16%;top:83.2%;text-align:center;font-size:clamp(6.5px,2vw,10px);font-weight:900;white-space:nowrap}
+
+.v43-book-title{left:24.3%;top:19.7%;width:27%;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:clamp(10px,3.25vw,17px);line-height:1.04;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.v43-read-mode{left:23.4%;top:36.6%;width:21.5%;text-align:center;color:#6a477d;font-weight:900;font-size:clamp(6px,1.8vw,9px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v43-session-time{left:23.2%;top:54.2%;font-weight:900;font-size:clamp(7px,2.25vw,11px)}
+.v43-session-chapters{left:23.2%;top:71.2%;font-weight:900;font-size:clamp(7px,2.2vw,11px)}
+.v43-page-text{left:53.6%;top:25.1%;width:21.5%;text-align:center;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:clamp(9px,2.9vw,15px);white-space:nowrap}
+.v43-book-progress{position:absolute;left:53.7%;top:38.25%;width:20.9%;height:2.35%;overflow:hidden;pointer-events:none}
+.v43-book-progress>div{height:100%;width:0;background:#6c4b87}
+.v43-percent{left:58.8%;top:45.4%;width:12%;text-align:center;font-weight:900;font-size:clamp(7px,2.25vw,11px)}
+.v43-last-finished{left:53.8%;top:69.1%;width:23%;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:clamp(7px,2.2vw,11px);line-height:1.1;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+
+.v43-hit{position:absolute;z-index:8;border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important;margin:0!important;border-radius:0!important;color:transparent!important;cursor:pointer;-webkit-tap-highlight-color:rgba(255,215,120,.12)}
+.v43-hit:active{transform:none!important;background:rgba(255,232,170,.09)!important}
+.v43-open-reader{left:73.7%;top:15%;width:12.2%;height:34%}
+.v43-view-board{left:10.8%;top:8.5%;width:38%;height:31%}
+.v43-sync{left:54.2%;top:8.5%;width:38%;height:31%}
+.v43-ledger-hit{left:20%;top:58%;width:60%;height:35%}
+.v43-sync-state{position:absolute;left:48%;right:2%;top:42%;text-align:center;color:#d9bc83;font-size:clamp(6px,1.65vw,8px);text-shadow:1px 1px #140c08;z-index:6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+
+.v43-ledger-panel{width:76%;margin:-3px auto 10px;padding:12px 12px 10px;background:#ead8ad;color:#4a3022;box-shadow:0 0 0 2px #17100c,0 0 0 5px #805b31,4px 5px 0 #0d0806;position:relative;z-index:7}
+.v43-ledger-panel[hidden]{display:none}
+.v43-ledger-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#ad8b56}
+.v43-ledger-grid>div{background:#f2e1ba;text-align:center;padding:7px 4px}.v43-ledger-grid span{display:block;font-size:7px;color:#715943;text-transform:uppercase}.v43-ledger-grid b{display:block;margin-top:2px;font-family:Georgia,serif;font-size:13px;color:#654586}
+.v43-ledger-panel #homeBonuses{font-size:8px;margin-top:8px}.v43-ledger-close{float:right;width:auto;padding:4px 7px!important;font-size:8px!important;box-shadow:none!important}
+.v43-save{position:relative;z-index:6;margin:4px 0 2px;text-align:center;color:#bda47d;font-size:7px;text-shadow:1px 1px #120b08}
+
+/* Home nav is slightly more furniture-like; other screens keep the same controls. */
+.bottomnav{background:linear-gradient(180deg,#3b2418,#26160f)!important;border-top:0!important;box-shadow:0 -2px 0 #b57f30,0 -5px 0 #100906!important}
+.bottomnav button{font-family:Georgia,'Times New Roman',serif!important}
+
+@media(max-width:390px){
+  .v43-rank-piece{width:82%}.v43-actions-piece{width:86%}.v43-quest-piece{width:105%}.v43-journal-piece{width:106%}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
-  <h1>🪿 READING MMO</h1>
-  <div class="sub">Enchanted Library • v4.0 • Pixel Edition</div>
+  <div class="header-title"><img src="./asset-goose.png" class="header-goose" alt=""><h1>READING MMO</h1></div>
+  <div class="sub">Enchanted Library • v4.3 • Candlelit Desk</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -393,47 +764,67 @@ hr{border:0;border-top:2px dashed #b69866;margin:14px 0}
   </div>
 </header>
 
-<section id="home" class="screen active">
-  <div class="card">
-    <div class="kicker">Current Rank</div>
-    <div class="bigline" id="homeRank">Page Wanderer</div>
-    <div class="muted" id="homeRegion">🌿 The Mossy Stacks • Levels 1–10</div>
-    <div class="progress"><div id="xpBar"></div></div>
-    <small id="xpText">0 / 1000 XP</small>
-  </div>
+<section id="home" class="screen active v43-home">
+  <div class="v43-home-stage">
+    <div class="v43-piece v43-quest-piece">
+      <img src="./v43-quest-board.png" alt="Illustrated wooden quest board with three pinned parchment notes">
+      <div id="homeQ1Title" class="v43-overlay v43-quest-title v43-q1-title">Empty Slot</div>
+      <div id="homeQ1Objective" class="v43-overlay v43-quest-objective v43-q1-obj">Roll a Hunt quest.</div>
+      <div id="homeQ1Meta" class="v43-overlay v43-quest-meta v43-q1-meta"></div>
+      <div id="homeQ1Xp" class="v43-overlay v43-quest-meta v43-q1-xp"></div>
 
-  <div class="section"><img src="./asset-book.png" alt="">CURRENT READING</div>
-  <div class="card">
-    <div class="quick-read">
-      <div id="homeReadingSummary"></div>
-      <button class="btn-blue" onclick="go('reading')">Open<br>Reader</button>
-    </div>
-    <div id="homeBookProgressWrap" class="book-progress-wrap" style="display:none">
-      <div class="book-progress-head"><span>BOOK PROGRESS</span><span id="homeBookProgressText">0%</span></div>
-      <div class="progress"><div id="homeBookProgressBar"></div></div>
-    </div>
-  </div>
+      <div id="homeQ2Title" class="v43-overlay v43-quest-title v43-q2-title">Empty Slot</div>
+      <div id="homeQ2Objective" class="v43-overlay v43-quest-objective v43-q2-obj">Roll a Gather quest.</div>
+      <div id="homeQ2Meta" class="v43-overlay v43-quest-meta v43-q2-meta"></div>
+      <div id="homeQ2Xp" class="v43-overlay v43-quest-meta v43-q2-xp"></div>
 
-  <div class="section"><img src="./asset-scroll.png" alt="">ACTIVE QUESTS</div>
-  <div class="card" id="homeQuestCards"></div>
-  <div class="row">
-    <button class="btn-gold" onclick="go('quests')">Open Quests</button>
-    <button id="homeKwgtSyncBtn" class="btn-green" onclick="sendAllWidgetsToKWGT()">📡 Sync Widgets Once</button>
-  </div>
-  <div id="homeSaveMini" class="calm-note" style="text-align:center">Progress saves automatically.</div>
-
-  <details class="card simple-details" style="margin-top:12px">
-    <summary>✨ More character info</summary>
-    <div class="grid2" style="margin-top:9px">
-      <div class="stat">LEVEL<b id="homeLevel">1</b></div>
-      <div class="stat">TOTAL XP<b id="homeXp">0</b></div>
-      <div class="stat">QUESTS<b id="homeQuests">0</b></div>
-      <div class="stat">GOLDENS<b id="homeGoldens">0</b></div>
+      <div id="homeQ3Title" class="v43-overlay v43-quest-title v43-q3-title">Empty Slot</div>
+      <div id="homeQ3Objective" class="v43-overlay v43-quest-objective v43-q3-obj">Roll an Alchemy quest.</div>
+      <div id="homeQ3Meta" class="v43-overlay v43-quest-meta v43-q3-meta"></div>
+      <div id="homeQ3Xp" class="v43-overlay v43-quest-meta v43-q3-xp"></div>
     </div>
-    <div class="section">⚔️ LOADOUT BONUSES</div>
-    <div id="homeBonuses"></div>
-    <div class="calm-note">🪿 Goose rule: chaos may change rewards or challenge structure, but normal reading progress is never erased.</div>
-  </details>
+
+    <div class="v43-piece v43-rank-piece">
+      <img src="./v43-rank-placard.png" alt="Illustrated Reader Level placard">
+      <div class="v43-overlay v43-rank-level">LV.<br><span id="homeLevel">1</span></div>
+      <div id="homeRank" class="v43-overlay v43-rank-title">Page Wanderer</div>
+      <div id="homeRegion" class="v43-overlay v43-rank-region">The Mossy Stacks • Front Stacks</div>
+      <div class="v43-xp-track"><div id="xpBar" class="v43-xp-fill"></div></div>
+      <div id="xpText" class="v43-overlay v43-rank-xp">0 / 1,000 XP</div>
+    </div>
+
+    <div class="v43-piece v43-journal-piece">
+      <img src="./v43-journal-scene.png" alt="Open candlelit reading journal on a wooden desk">
+      <div id="homeBookTitle" class="v43-overlay v43-book-title">No current book</div>
+      <div id="homeReadMode" class="v43-overlay v43-read-mode">CURRENT READ</div>
+      <div id="homeSessionTime" class="v43-overlay v43-session-time">00:00:00</div>
+      <div id="homeSessionChapters" class="v43-overlay v43-session-chapters">0 chapters</div>
+      <div id="homePageText" class="v43-overlay v43-page-text">Page 0 of 0</div>
+      <div class="v43-book-progress"><div id="homeBookProgressBar"></div></div>
+      <div id="homePercentText" class="v43-overlay v43-percent">0.0%</div>
+      <div id="homeLastFinished" class="v43-overlay v43-last-finished">Nothing logged yet</div>
+      <button class="v43-hit v43-open-reader" aria-label="Open Reader" onclick="go('reading')">Open Reader</button>
+    </div>
+
+    <div class="v43-piece v43-actions-piece">
+      <img src="./v43-actions-ledger.png" alt="Wooden View Board, Sync Widgets, and Character Ledger controls">
+      <button class="v43-hit v43-view-board" aria-label="View Board" onclick="go('quests')">View Board</button>
+      <button id="homeKwgtSyncBtn" class="v43-hit v43-sync" aria-label="Sync Widgets" onclick="sendAllWidgetsToKWGT()">Sync Widgets</button>
+      <div id="homeKwgtSyncState" class="v43-sync-state"></div>
+      <button class="v43-hit v43-ledger-hit" aria-label="Open Character Ledger" onclick="toggleHomeLedger()">Character Ledger</button>
+    </div>
+
+    <div id="homeLedgerPanel" class="v43-ledger-panel" hidden>
+      <button class="v43-ledger-close btn-plain" onclick="toggleHomeLedger(false)">Close</button>
+      <div class="v43-ledger-grid">
+        <div><span>XP</span><b id="homeXp">0</b></div>
+        <div><span>Quests</span><b id="homeQuests">0</b></div>
+        <div><span>Goldens</span><b id="homeGoldens">0</b></div>
+      </div>
+      <div id="homeBonuses"></div>
+    </div>
+    <div id="homeSaveMini" class="v43-save">Progress saves automatically.</div>
+  </div>
 </section>
 
 <section id="reading" class="screen">
@@ -810,11 +1201,11 @@ lastread → $br(remote,lastread)$</div>
 </section>
 
 <nav class="bottomnav">
-  <button data-screen="home" class="active" onclick="go('home',this)">🏠<br>Home</button>
-  <button data-screen="reading" onclick="go('reading',this)">📖<br>Read</button>
-  <button data-screen="quests" onclick="go('quests',this)">📜<br>Quests</button>
-  <button data-screen="adventure" onclick="go('adventure',this)">⚔️<br>Play</button>
-  <button data-screen="profile" onclick="go('profile',this)">🧙<br>Me</button>
+  <button data-screen="home" class="active" onclick="go('home',this)">Home</button>
+  <button data-screen="reading" onclick="go('reading',this)">Read</button>
+  <button data-screen="quests" onclick="go('quests',this)">Quests</button>
+  <button data-screen="adventure" onclick="go('adventure',this)">Play</button>
+  <button data-screen="profile" onclick="go('profile',this)">Me</button>
 </nav>
 </div>
 
@@ -1123,6 +1514,12 @@ function rarityClass(r){r=String(r).toLowerCase();if(r.includes("legend"))return
 function rollWeighted(arr,weightIndex=2){let total=arr.reduce((a,x)=>a+Number(x[weightIndex]),0),r=Math.random()*total;for(const x of arr){r-=Number(x[weightIndex]);if(r<=0)return x}return arr[arr.length-1]}
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
 function rangeUpdate(el){el.nextElementSibling.textContent=el.value}
+function toggleHomeLedger(force){
+ const p=$('homeLedgerPanel');if(!p)return;
+ const shouldOpen=force===undefined?p.hasAttribute('hidden'):!!force;
+ if(shouldOpen)p.removeAttribute('hidden');else p.setAttribute('hidden','');
+ if(shouldOpen)setTimeout(()=>p.scrollIntoView({behavior:'smooth',block:'nearest'}),20);
+}
 function go(id,btn){
  document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
  $(id).classList.add("active");
@@ -1569,11 +1966,16 @@ function renderReading(){
  renderBookProgress();
 }
 function renderHomeReading(){
- const el=$("homeReadingSummary");if(!el)return;
- const r=S.reading,total=Number(r.bookTotal||0),page=Number(r.currentPage||0),pct=Number(r.percent||0);
- el.innerHTML=`<b>${esc(r.bookName||"No current book saved")}</b>${r.readMode==="reread"?` <span class="tag">REREAD</span>`:""}<br>
- <small>${total?`Page ${page.toLocaleString()} / ${total.toLocaleString()} • ${pct.toFixed(1)}%`:"Add your book in the Read tab"}<br>
- ${S.pages.toLocaleString()} total MMO pages • ${Number(r.chapters||0)} chapters this session • ${fmtTimer(readingTimerMs())}</small>`;
+ const r=S.reading;if(!$('homeBookTitle'))return;
+ const total=Number(r.bookTotal||0),page=Number(r.currentPage||0),pct=Math.max(0,Math.min(100,Number(r.percent||0)));
+ $('homeBookTitle').textContent=r.bookName||'No current book saved';
+ $('homeReadMode').textContent=r.bookName?(r.readMode==='reread'?'REREAD • FAMILIAR STORY':'FIRST READ'):'ADD A BOOK IN READ';
+ $('homeSessionTime').textContent=fmtTimer(readingTimerMs());
+ const chapters=Number(r.chapters||0);$('homeSessionChapters').textContent=`${chapters} chapter${chapters===1?'':'s'}`;
+ $('homePageText').textContent=total?`Page ${page.toLocaleString()} of ${total.toLocaleString()}`:'Page progress not set';
+ $('homePercentText').textContent=total?`${pct.toFixed(1)}%`:'—';
+ $('homeBookProgressBar').style.width=(total?pct:0)+'%';
+ $('homeLastFinished').textContent=r.lastFinishedBook||'Nothing logged yet';
  renderBookProgress();
 }
 function startReadingUiClock(){
@@ -1582,17 +1984,18 @@ function startReadingUiClock(){
 
 function renderHome(){
  const xp=Math.max(0,totalXp()),l=levelFor(xp),lx=Math.max(0,lvlXp(xp,l)),need=lvlNeed(l);
- $("homeLevel").textContent=l;$("homeXp").textContent=xp.toLocaleString();$("homeQuests").textContent=S.questsCompleted;$("homeGoldens").textContent=goldCount();
- $("homeRank").textContent=rankFor(l);$("homeRegion").textContent=`${regionFor(l)} • ${S.world.activeArea||"Front Stacks"}`;$("xpText").textContent=`${lx.toLocaleString()} / ${need.toLocaleString()} XP`;
- $("xpBar").style.width=Math.min(100,(lx/need)*100)+"%";
- $("homeQuestCards").innerHTML=S.quests.map((q,i)=>`<div class="quest-mini">
-   <div class="quest-mini-main">
-     <b>${i===0?"⚔️ Hunt":i===1?"🌿 Gather":"⚗️ Alchemy"}</b>
-     <small>${esc(q.name||"No quest loaded")}</small>
-   </div>
-   <span class="tag">${q.name?`${q.difficulty} • ${q.status}`:"Empty"}</span>
- </div>`).join("");
- $("homeBonuses").innerHTML=bonusSummaryHtml();
+ $('homeLevel').textContent=l;$('homeXp').textContent=xp.toLocaleString();$('homeQuests').textContent=S.questsCompleted;$('homeGoldens').textContent=goldCount();
+ $('homeRank').textContent=rankFor(l);$('homeRegion').textContent=`${regionFor(l).replace(/^🌿\s*/,"")} • ${S.world.activeArea||"Front Stacks"}`;$('xpText').textContent=`${lx.toLocaleString()} / ${need.toLocaleString()} XP`;
+ $('xpBar').style.width=Math.min(100,(lx/need)*100)+'%';
+ S.quests.forEach((q,i)=>{
+   const n=i+1;
+   const title=$(`homeQ${n}Title`),obj=$(`homeQ${n}Objective`),meta=$(`homeQ${n}Meta`),xpel=$(`homeQ${n}Xp`);
+   if(title)title.textContent=q?.name||'Empty Slot';
+   if(obj)obj.textContent=q?.name?(q.objective||'Quest details live on the board.'):(i===0?'Roll a Hunt quest.':i===1?'Roll a Gather quest.':'Roll an Alchemy quest.');
+   if(meta)meta.textContent=q?.name?(q.difficulty||''):'Waiting';
+   if(xpel)xpel.textContent=q?.name?`+${q.xp} XP`:'';
+ });
+ $('homeBonuses').innerHTML=bonusSummaryHtml();
  renderHomeReading();
 }
 function renderQuestCards(){
@@ -1806,12 +2209,15 @@ function renderKustomSyncButton(){
  if(!btn)return;
  const wait=kustomNextAllowed()-Date.now();
  const pending=!!getQueuedKustom();
+ const state=$("homeKwgtSyncState");
  if(wait>0){
   btn.disabled=true;
-  btn.textContent=`⏳ Sync in ${formatWait(wait)}`;
+  btn.textContent=`SYNC IN ${formatWait(wait).toUpperCase()}`;
+  if(state)state.textContent=`Kustom cooldown • ${formatWait(wait)}`;
  }else{
   btn.disabled=false;
-  btn.textContent=pending?"📡 Sync Latest Changes":"📡 Sync Widgets Once";
+  btn.textContent=pending?"SYNC LATEST":"SYNC WIDGETS";
+  if(state)state.textContent=pending?"Latest changes ready":"";
  }
 }
 
