@@ -1,10 +1,16 @@
-const CACHE = "reading-mmo-shell-v7";
+const CACHE = "reading-mmo-shell-v8";
 const SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./asset-book.png",
+  "./asset-scroll.png",
+  "./asset-potion.png",
+  "./asset-goose.png",
+  "./asset-ivy.png",
+  "./asset-gem.png"
 ];
 
 self.addEventListener("install", event => {

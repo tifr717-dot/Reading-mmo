@@ -155,13 +155,236 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
   .range-row{grid-template-columns:100px 1fr 23px}
   .bottomnav button{font-size:8px}
 }
+
+/* ===== v4.0 ENCHANTED LIBRARY PIXEL THEME ===== */
+:root{
+  --wood:#3d281e;--wood2:#603c2b;--wood3:#241915;
+  --parch:#efdcae;--paper:#f7e8c4;--paper2:#edd39c;
+  --gold:#b9862f;--gold2:#e1b85b;--purple:#654586;--purple2:#8d6aaa;
+  --green:#405f34;--green2:#6f914d;--ink:#332117;--cream:#fff4d8;
+  --shadow:4px 4px 0 #17100c;
+}
+html,body{background:#15100d}
+body{
+  background-image:
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:8px 8px;
+}
+.app{
+  background:
+    linear-gradient(rgba(24,16,12,.92),rgba(24,16,12,.92)),
+    repeating-linear-gradient(0deg,#37251b 0 8px,#2f2018 8px 16px);
+  border-left:3px solid #1b120e;border-right:3px solid #1b120e;
+}
+header{
+  min-height:72px;
+  background:
+    linear-gradient(90deg,transparent 0 8px,rgba(255,255,255,.025) 8px 10px,transparent 10px 28px),
+    repeating-linear-gradient(0deg,#593827 0 10px,#4a2e22 10px 20px);
+  border:0;
+  border-bottom:4px solid #1e1510;
+  box-shadow:inset 0 -2px 0 var(--gold),0 4px 0 #120c09;
+  padding:11px 52px 9px;
+}
+header:before,header:after{
+  content:"";position:absolute;top:7px;width:48px;height:48px;
+  background:url("./asset-ivy.png") center/48px 48px no-repeat;
+  image-rendering:pixelated;opacity:.9;
+}
+header:before{left:4px}
+header:after{right:4px;transform:scaleX(-1)}
+header h1{
+  color:var(--gold2);font-size:20px;letter-spacing:1px;
+  text-shadow:2px 2px 0 #25160f;
+}
+header .sub{color:#f6e2b8;font-size:9px;letter-spacing:.4px}
+
+.screen{padding:14px 14px 20px}
+
+/* parchment panels inset into wood */
+.card{
+  position:relative;
+  border:0;border-radius:0;
+  background:
+    linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.05)),
+    repeating-linear-gradient(0deg,var(--paper) 0 12px,#f2dfb4 12px 13px);
+  box-shadow:
+    0 0 0 2px #21150f,
+    0 0 0 5px #62402c,
+    0 0 0 7px var(--gold),
+    5px 7px 0 #110b08;
+  margin:15px 7px;padding:13px;
+}
+.card:after{
+  content:"";position:absolute;inset:4px;pointer-events:none;
+  border:1px solid rgba(96,62,42,.3);
+}
+.card.dark{
+  background:repeating-linear-gradient(0deg,#1c1512 0 10px,#211915 10px 20px);
+  box-shadow:0 0 0 2px #120c09,0 0 0 5px #5a3a28,0 0 0 7px var(--gold),5px 7px 0 #110b08;
+}
+.card.soft{background:repeating-linear-gradient(0deg,#f3dfb1 0 12px,#ecd49c 12px 13px)}
+
+/* wooden plaque section headers */
+.section{
+  display:flex;align-items:center;gap:7px;
+  width:max-content;max-width:calc(100% - 10px);
+  margin:18px 5px 9px;padding:7px 12px;
+  background:repeating-linear-gradient(0deg,#60402d 0 8px,#523524 8px 16px);
+  border:0;border-left:0;color:#fff1cf;
+  box-shadow:0 0 0 2px #20150f,0 0 0 4px var(--gold),3px 4px 0 #120b08;
+  font-size:11px;letter-spacing:.7px;
+}
+.section img{width:24px;height:24px;image-rendering:pixelated;margin:-4px 2px -4px -5px}
+
+/* pixel buttons */
+button{
+  border:0;border-radius:0;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.10),
+    0 0 0 2px #24160f,
+    0 0 0 4px var(--gold),
+    3px 4px 0 #120b08;
+  margin:4px;
+  text-shadow:1px 1px 0 rgba(0,0,0,.35);
+  transition:none;
+}
+button:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 0 0 2px #24160f,0 0 0 4px var(--gold)}
+button:disabled{filter:saturate(.45);opacity:.56}
+.btn-purple{background:#654586}.btn-green{background:#496638}.btn-red{background:#8e4739}
+.btn-blue{background:#506b7b}.btn-gold{background:#816018}.btn-plain{background:#66503f}
+
+/* parchment inputs */
+input,select,textarea{
+  border:0;border-radius:0;
+  background:#fff3d2;
+  box-shadow:inset 0 0 0 2px #b69a69,2px 2px 0 #5a3a29;
+  padding:10px 9px;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--purple);outline-offset:1px}
+
+/* segmented enchanted progress */
+.progress{
+  height:15px;border:0;background:#cfb783;
+  box-shadow:inset 0 0 0 2px #7d5b36,0 0 0 1px #24160f;
+}
+.progress>div{
+  background:
+    repeating-linear-gradient(90deg,#68468b 0 12px,#825ca4 12px 20px,#4e356b 20px 22px);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.18);
+}
+.book-progress-wrap{
+  background:#ead19b;border:0;
+  box-shadow:inset 0 0 0 2px #aa8a55;
+}
+.book-progress-head{color:#503323}
+
+.kicker{color:#8a6849;font-weight:900;letter-spacing:1px}
+.bigline{color:#654586;font-size:17px;text-shadow:1px 1px 0 #d5bd8a}
+.stat{
+  border:0;background:#ecd7aa;
+  box-shadow:inset 0 0 0 2px #b79863;
+}
+.stat b{color:#654586}
+
+.tag{
+  border:0;border-radius:0;background:#e7c987;
+  box-shadow:inset 0 0 0 1px #9e7840;
+  font-weight:900;color:#4b2f1f;
+}
+
+/* Home: character placard + reading tome */
+#home>.card:first-child{
+  background:
+    url("./asset-gem.png") calc(100% - 10px) 9px/28px 28px no-repeat,
+    repeating-linear-gradient(0deg,#f1dcac 0 12px,#ead09a 12px 13px);
+}
+#homeReadingSummary{padding-left:42px;position:relative;min-height:40px}
+#homeReadingSummary:before{
+  content:"";position:absolute;left:0;top:0;width:36px;height:36px;
+  background:url("./asset-book.png") center/36px 36px no-repeat;image-rendering:pixelated;
+}
+#homeQuestCards{
+  background:
+    url("./asset-scroll.png") calc(100% - 8px) 8px/34px 34px no-repeat,
+    repeating-linear-gradient(0deg,#f3dfb0 0 12px,#ecd39d 12px 13px);
+}
+
+/* Quest board parchments and brass pins */
+#questCards .quest{
+  margin:18px 8px 22px;
+  padding-top:19px;
+  border:0;
+  background:repeating-linear-gradient(0deg,#f6e5bc 0 12px,#efd8a6 12px 13px);
+}
+#questCards .quest:before{
+  content:"";position:absolute;left:50%;top:-8px;transform:translateX(-50%);
+  width:14px;height:14px;background:var(--gold2);
+  box-shadow:inset -3px -3px 0 #8c651c,0 0 0 2px #342218;
+}
+#questCards .quest.hunt{box-shadow:0 0 0 2px #21150f,0 0 0 5px #6b382f,0 0 0 7px var(--gold),5px 7px 0 #110b08}
+#questCards .quest.gather{box-shadow:0 0 0 2px #21150f,0 0 0 5px #46603a,0 0 0 7px var(--gold),5px 7px 0 #110b08}
+#questCards .quest.craft{box-shadow:0 0 0 2px #21150f,0 0 0 5px #5b4174,0 0 0 7px var(--gold),5px 7px 0 #110b08}
+#questCards .quest h3{
+  display:inline-block;background:#4b3022;color:#f7e8c4;padding:5px 8px;
+  box-shadow:0 0 0 2px var(--gold);font-size:11px;
+}
+
+/* Reading desk */
+#reading .desk-card:before,#reading .calc-card:before,#reading .session-card:before{
+  content:"";position:absolute;right:8px;top:7px;width:42px;height:42px;
+  image-rendering:pixelated;opacity:.92;
+}
+#reading .desk-card:before{background:url("./asset-book.png") center/42px 42px no-repeat}
+#reading .calc-card:before{background:url("./asset-scroll.png") center/42px 42px no-repeat}
+#reading .session-card:before{background:url("./asset-potion.png") center/42px 42px no-repeat}
+#reading .desk-card,#reading .calc-card,#reading .session-card{padding-top:18px}
+.read-timer{
+  color:#f5d889;background:#2a1c16;
+  box-shadow:inset 0 0 0 2px #6d4a8c,0 0 0 3px var(--gold);
+  margin:8px 4px 15px;padding:12px 6px;text-shadow:2px 2px 0 #000;
+}
+.counter-number{
+  color:#654586;background:#efd9a8;
+  box-shadow:inset 0 0 0 2px #b18c53;padding:8px;
+}
+.result{
+  border:0;border-radius:0;
+  background:repeating-linear-gradient(0deg,#201714 0 10px,#261b17 10px 20px);
+  box-shadow:0 0 0 2px #0f0a08,0 0 0 4px var(--gold);
+}
+
+/* bottom navigation = carved shelf */
+.bottomnav{
+  background:repeating-linear-gradient(0deg,#4b3022 0 9px,#3d281e 9px 18px);
+  border:0;box-shadow:0 -3px 0 var(--gold),0 -6px 0 #20150f;
+}
+.bottomnav button{
+  color:#ead9b6;background:transparent;border-right:1px solid #79523b;
+  box-shadow:none;margin:0;text-shadow:1px 1px 0 #000;
+}
+.bottomnav button.active{
+  background:#654586;color:#fff2d4;
+  box-shadow:inset 0 3px 0 #a68ac0,inset 0 -3px 0 #432e5c;
+}
+.bottomnav button.active:before{content:"◆ ";color:var(--gold2)}
+
+/* tiny ivy accents, used sparingly */
+#home details.simple-details:before,#quests details.simple-details:before{
+  content:"";position:absolute;right:-7px;bottom:-7px;width:36px;height:36px;
+  background:url("./asset-ivy.png") center/36px 36px no-repeat;image-rendering:pixelated;pointer-events:none;
+}
+details.simple-details summary{color:#4c3020;font-weight:900}
+hr{border:0;border-top:2px dashed #b69866;margin:14px 0}
+.pixel-inline{width:24px;height:24px;image-rendering:pixelated;vertical-align:middle;margin-right:5px}
 </style>
 </head>
 <body>
 <div class="app">
 <header>
   <h1>🪿 READING MMO</h1>
-  <div class="sub">Duck-Tuned Adventurer • v3.8 • Rate-Safe Sync</div>
+  <div class="sub">Enchanted Library • v4.0 • Pixel Edition</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -179,7 +402,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
     <small id="xpText">0 / 1000 XP</small>
   </div>
 
-  <div class="section">📖 CURRENT READING</div>
+  <div class="section"><img src="./asset-book.png" alt="">CURRENT READING</div>
   <div class="card">
     <div class="quick-read">
       <div id="homeReadingSummary"></div>
@@ -191,7 +414,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
     </div>
   </div>
 
-  <div class="section">📜 ACTIVE QUESTS</div>
+  <div class="section"><img src="./asset-scroll.png" alt="">ACTIVE QUESTS</div>
   <div class="card" id="homeQuestCards"></div>
   <div class="row">
     <button class="btn-gold" onclick="go('quests')">Open Quests</button>
@@ -214,9 +437,9 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 </section>
 
 <section id="reading" class="screen">
-  <div class="section">📖 READING DESK</div>
+  <div class="section"><img src="./asset-book.png" alt="">READING DESK</div>
 
-  <div class="card">
+  <div class="card desk-card">
     <label>Current book</label>
     <input id="readBookName" type="text" placeholder="What are you reading now?">
 
@@ -253,8 +476,8 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
     </div>
   </div>
 
-  <div class="section">🧮 XTE INK PAGE CALCULATOR</div>
-  <div class="card">
+  <div class="section"><img src="./asset-scroll.png" alt="">XTE INK PAGE CALCULATOR</div>
+  <div class="card calc-card">
     <small>Use whichever number your e-ink reader gives you. The other one is calculated from the book's page count.</small>
 
     <div class="row">
@@ -276,8 +499,8 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
     <div id="readPositionResult" class="result">Enter the book page count, then use either calculator button.</div>
   </div>
 
-  <div class="section">⏱️ READING SESSION</div>
-  <div class="card">
+  <div class="section"><img src="./asset-potion.png" alt="">READING SESSION</div>
+  <div class="card session-card">
     <div id="readTimer" class="read-timer">00:00:00</div>
     <div class="row">
       <button id="readTimerStartBtn" class="btn-green" onclick="startReadingTimer()">▶ Start</button>
@@ -318,8 +541,8 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
 </section>
 
 <section id="quests" class="screen">
-  <div class="section">🎲 QUEST GENERATOR</div>
-  <div class="card">
+  <div class="section"><img src="./asset-goose.png" alt="">QUEST GENERATOR</div>
+  <div class="card generator-card">
     <div class="row">
       <button class="btn-red" onclick="rollQuest(0)">⚔️ Roll Hunt</button>
       <button class="btn-green" onclick="rollQuest(1)">🌿 Roll Gather</button>
@@ -349,7 +572,7 @@ details.simple-details summary{font-weight:900;cursor:pointer;color:var(--wood);
   
   </details>
 
-  <div class="section">📜 THREE-SLOT QUEST BOARD</div>
+  <div class="section"><img src="./asset-scroll.png" alt="">THREE-SLOT QUEST BOARD</div>
   <div id="replacementNotice" class="card notice" style="display:none"></div>
   <div id="questCards"></div>
 </section>
