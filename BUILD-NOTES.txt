@@ -1,9 +1,9 @@
-Reading MMO v4.6 — Crisp Illustrated Desk
+Reading MMO v4.7 — Rich Crisp Desk
 
-Home-only visual rebuild.
-- Restores the illustrated candlelit desk composition from v4.3/v4.4.
-- Replaces generated/painterly scene rasters with hand-drawn crisp pixel assets.
-- No important words are baked into image assets: header, quest labels/data, rank data, journal labels/data, and buttons are live HTML text.
-- Artwork uses hard pixel edges / nearest-neighbor scaling only. No blur filters.
-- Keeps the v4.4 app/game/save/KWGT logic.
-- Read, Quests, Play, and Me are intentionally not redesigned yet.
+Home-only correction after v4.6 felt too plain.
+- Restores the rich illustrated candlelit composition from the concept/v4.4 direction.
+- Illustration is converted into true hard-edged pixel art with reduced palette + nearest-neighbor rendering.
+- Generated/baked words were painted out; important wording and all changing data are live HTML.
+- Restores candle, mug, books, quill, plant, carved wood, ivy, layered parchment and deeper lighting.
+- Tightens section overlap so the screen reads as one illustrated desk scene rather than stacked cards.
+- Game/save/quest/reading/KWGT mechanics unchanged; other tabs untouched.

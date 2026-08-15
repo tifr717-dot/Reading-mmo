@@ -680,7 +680,7 @@ header .sub{font-size:8px;margin-top:3px;color:#efd9af;letter-spacing:.6px}
 /* ===== v4.3 CANDLELIT DESK — CONCEPT ART AS LIVE UI ===== */
 header{
   min-height:0;height:clamp(64px,17.58vw,92px);padding:0!important;
-  background:url('./v46-header.png') center/100% 100% no-repeat!important;
+  background:url('./v47-header.png') center/100% 100% no-repeat!important;
   border:0!important;box-shadow:0 4px 0 #100a07!important;overflow:hidden;
 }
 header .header-title,header .sub{visibility:hidden;height:0;margin:0!important}
@@ -690,7 +690,7 @@ header .appstatus{
   justify-content:center;color:#e7c98b!important;font-size:clamp(7px,2.1vw,10px)!important;
   text-shadow:1px 1px 0 #1e120c;white-space:nowrap;
 }
-#home.v43-home{padding:0 0 14px!important;background:#21140e url('./v43-wood-tile.png') center top/256px 200px repeat;overflow:hidden}
+#home.v43-home{padding:0 0 14px!important;background:#21140e url('./v47-wood-tile.png') center top/256px 200px repeat;overflow:hidden}
 .v43-home-stage{position:relative;padding:8px 0 18px;background:radial-gradient(circle at 50% 18%,rgba(215,147,54,.12),transparent 42%)}
 .v43-piece{position:relative;margin-left:auto;margin-right:auto;z-index:2}
 .v43-piece>img{display:block;width:100%;height:auto;image-rendering:pixelated;user-select:none;pointer-events:none}
@@ -755,7 +755,7 @@ header .appstatus{
 /* Calm the scene without flattening it. */
 #home.v43-home{
   background-color:#291a12!important;
-  background-image:url('./v43-wood-tile.png')!important;
+  background-image:url('./v47-wood-tile.png')!important;
 }
 .v43-home-stage{
   padding:10px 0 20px!important;
@@ -882,7 +882,7 @@ header .appstatus{
 /* ===== v4.6 CRISP ILLUSTRATED DESK =====
    Hand-drawn pixel assets only. No baked-in words, blur, filters, or generated micro-texture. */
 header{
-  background-image:url('./v46-header.png')!important;
+  background-image:url('./v47-header.png')!important;
   min-height:0!important;height:clamp(64px,17.58vw,92px)!important;
   position:relative!important;display:block!important;
 }
@@ -904,7 +904,7 @@ header .sub{
 }
 header .appstatus{bottom:6%!important;color:#d9c293!important}
 
-#home.v43-home{background-color:#21140e!important;background-image:url('./v43-wood-tile.png')!important}
+#home.v43-home{background-color:#21140e!important;background-image:url('./v47-wood-tile.png')!important}
 .v43-home-stage{padding-top:5px!important;background:radial-gradient(circle at 50% 16%,rgba(211,155,50,.10),transparent 40%)!important}
 .v43-piece>img{image-rendering:pixelated!important;image-rendering:crisp-edges!important;filter:none!important}
 .v43-quest-piece{width:101%!important;margin-top:3px!important}
@@ -962,12 +962,28 @@ header .appstatus{bottom:6%!important;color:#d9c293!important}
 }
 
 </style>
+
+<style id="v47-rich-crisp-tune">
+#home.v43-home{background-image:url('./v47-wood-tile.png')!important;background-size:256px 192px!important}
+.v43-home-stage{padding-top:0!important;padding-bottom:6px!important;background:radial-gradient(circle at 50% 28%,rgba(211,155,50,.14),transparent 48%)!important}
+.v43-quest-piece{width:105%!important;margin-top:-2px!important}
+.v43-rank-piece{width:84%!important;margin-top:-18px!important}
+.v43-journal-piece{width:106%!important;margin-top:-15px!important}
+.v43-actions-piece{width:86%!important;margin-top:-15px!important}
+.v43-piece>img{image-rendering:pixelated!important;image-rendering:crisp-edges!important;filter:none!important}
+.v43-quest-title{font-size:clamp(10.5px,3.15vw,15.5px)!important;line-height:1.02!important}
+.v43-quest-objective{font-size:clamp(7.5px,2.2vw,10.7px)!important;line-height:1.1!important}
+.v43-rank-title{font-size:clamp(14px,4.3vw,22.5px)!important}
+.v43-book-title{font-size:clamp(11.5px,3.55vw,18.5px)!important}
+.v43-open-reader{left:78.1%!important;width:9.7%!important}
+@media(max-width:390px){.v43-quest-piece{width:107%!important}.v43-rank-piece{width:87%!important}.v43-journal-piece{width:108%!important}.v43-actions-piece{width:89%!important}}
+</style>
 </head>
 <body>
 <div class="app">
 <header>
   <div class="header-title"><img src="./asset-goose.png" class="header-goose" alt=""><h1>READING MMO</h1></div>
-  <div class="sub">Enchanted Library • v4.6 • Crisp Illustrated Desk</div>
+  <div class="sub">Enchanted Library • v4.7 • Rich Crisp Desk</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -979,7 +995,7 @@ header .appstatus{bottom:6%!important;color:#d9c293!important}
 <section id="home" class="screen active v43-home">
   <div class="v43-home-stage">
     <div class="v43-piece v43-quest-piece">
-      <img src="./v46-quest-board.png" alt="Crisp illustrated wooden quest board with three pinned parchment notes">
+      <img src="./v47-quest-board.png" alt="Crisp illustrated wooden quest board with three pinned parchment notes">
       <div class="v46-board-label">ACTIVE QUESTS</div>
       <div class="v46-role v46-role1">HUNT</div>
       <div class="v46-role v46-role2">GATHER</div>
@@ -1001,7 +1017,7 @@ header .appstatus{bottom:6%!important;color:#d9c293!important}
     </div>
 
     <div class="v43-piece v43-rank-piece">
-      <img src="./v46-rank-placard.png" alt="Crisp illustrated Reader Level placard">
+      <img src="./v47-rank-placard.png" alt="Crisp illustrated Reader Level placard">
       <div class="v46-rank-label">READER LEVEL</div>
       <div class="v43-overlay v43-rank-level">LV.<br><span id="homeLevel">1</span></div>
       <div id="homeRank" class="v43-overlay v43-rank-title">Page Wanderer</div>
@@ -1011,7 +1027,7 @@ header .appstatus{bottom:6%!important;color:#d9c293!important}
     </div>
 
     <div class="v43-piece v43-journal-piece">
-      <img src="./v46-journal-scene.png" alt="Crisp illustrated open reading journal on a candlelit wooden desk">
+      <img src="./v47-journal-scene.png" alt="Crisp illustrated open reading journal on a candlelit wooden desk">
       <div class="v46-jlabel v46-current-label">CURRENTLY READING</div>
       <div class="v46-jlabel v46-session-label">THIS SESSION</div>
       <div class="v46-jlabel v46-chapters-label">CHAPTERS THIS SESSION</div>
@@ -1029,7 +1045,7 @@ header .appstatus{bottom:6%!important;color:#d9c293!important}
     </div>
 
     <div class="v43-piece v43-actions-piece">
-      <img src="./v46-actions-ledger.png" alt="Crisp illustrated wooden controls and character ledger">
+      <img src="./v47-actions-ledger.png" alt="Crisp illustrated wooden controls and character ledger">
       <button class="v43-hit v43-view-board" aria-label="View Board" onclick="go('quests')">View Board</button>
       <button id="homeKwgtSyncBtn" class="v43-hit v43-sync" aria-label="Sync Widgets" onclick="sendAllWidgetsToKWGT()">Sync Widgets</button>
       <div id="homeKwgtSyncState" class="v43-sync-state"></div>
