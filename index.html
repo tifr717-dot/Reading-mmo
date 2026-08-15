@@ -755,7 +755,7 @@ header .appstatus{
 /* Calm the scene without flattening it. */
 #home.v43-home{
   background-color:#291a12!important;
-  background-image:url('./v47-wood-tile.png')!important;
+  background-image:url('./hyb-wood-tile.png')!important;
 }
 .v43-home-stage{
   padding:10px 0 20px!important;
@@ -882,7 +882,7 @@ header .appstatus{
 /* ===== v4.6 CRISP ILLUSTRATED DESK =====
    Hand-drawn pixel assets only. No baked-in words, blur, filters, or generated micro-texture. */
 header{
-  background-image:url('./v47-header.png')!important;
+  background-image:url('./hyb-header.png')!important;
   min-height:0!important;height:clamp(64px,17.58vw,92px)!important;
   position:relative!important;display:block!important;
 }
@@ -904,7 +904,7 @@ header .sub{
 }
 header .appstatus{bottom:6%!important;color:#d9c293!important}
 
-#home.v43-home{background-color:#21140e!important;background-image:url('./v47-wood-tile.png')!important}
+#home.v43-home{background-color:#21140e!important;background-image:url('./hyb-wood-tile.png')!important}
 .v43-home-stage{padding-top:5px!important;background:radial-gradient(circle at 50% 16%,rgba(211,155,50,.10),transparent 40%)!important}
 .v43-piece>img{image-rendering:pixelated!important;image-rendering:crisp-edges!important;filter:none!important}
 .v43-quest-piece{width:101%!important;margin-top:3px!important}
@@ -964,7 +964,7 @@ header .appstatus{bottom:6%!important;color:#d9c293!important}
 </style>
 
 <style id="v47-rich-crisp-tune">
-#home.v43-home{background-image:url('./v47-wood-tile.png')!important;background-size:256px 192px!important}
+#home.v43-home{background-image:url('./hyb-wood-tile.png')!important;background-size:256px 192px!important}
 .v43-home-stage{padding-top:0!important;padding-bottom:6px!important;background:radial-gradient(circle at 50% 28%,rgba(211,155,50,.14),transparent 48%)!important}
 .v43-quest-piece{width:105%!important;margin-top:-2px!important}
 .v43-rank-piece{width:84%!important;margin-top:-18px!important}
@@ -978,12 +978,112 @@ header .appstatus{bottom:6%!important;color:#d9c293!important}
 .v43-open-reader{left:78.1%!important;width:9.7%!important}
 @media(max-width:390px){.v43-quest-piece{width:107%!important}.v43-rank-piece{width:87%!important}.v43-journal-piece{width:108%!important}.v43-actions-piece{width:89%!important}}
 </style>
+
+<style id="v48-hybrid-layered-home">
+/* v4.8 HYBRID LAYERED HOME
+   Visible surfaces are image assets. CSS only positions layers and live text. */
+#home.hyb-home{
+  padding:0 0 18px!important;
+  background:#24160f url('./hyb-wood-tile.png') repeat!important;
+  background-size:256px 192px!important;
+  overflow:hidden;
+}
+.hyb-home-stage{position:relative;padding:10px 0 6px;isolation:isolate}
+.hyb-home-stage img{image-rendering:pixelated;image-rendering:crisp-edges;filter:none}
+.hyb-hit{position:absolute;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;z-index:15;cursor:pointer}
+.hyb-hit:active{transform:translateY(1px)!important;box-shadow:none!important}
+
+/* quest board frame + three independent pinned notes */
+.hyb-board-zone{position:relative;width:102%;max-width:none;aspect-ratio:914/383;margin:-3px -1% 0}
+.hyb-board-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:1}
+.hyb-note{position:absolute;top:11.2%;width:27.8%;height:73%;z-index:4;transform-origin:50% 15%;color:#3b271e}
+.hyb-note-1{left:8%;transform:rotate(-1.1deg)}
+.hyb-note-2{left:36.1%;transform:rotate(.7deg) translateY(-1.5%)}
+.hyb-note-3{left:64.2%;transform:rotate(-.6deg) translateY(.8%)}
+.hyb-note-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.hyb-role-icon{position:absolute;left:9%;top:14%;width:19%;height:auto;z-index:6}
+.hyb-role{position:absolute;left:31%;top:16.5%;z-index:7;font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:clamp(8px,2.35vw,13px);letter-spacing:.35px;white-space:nowrap}
+.hyb-hunt{color:#9a493b}.hyb-gather{color:#52753e}.hyb-alchemy{color:#735093}
+.hyb-qtitle{position:absolute;left:8%;right:7%;top:31%;z-index:7;font-family:Georgia,'Times New Roman',serif;font-weight:900;font-size:clamp(12px,3.7vw,20px);line-height:1.02;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hyb-qobj{position:absolute;left:8%;right:7%;top:47%;z-index:7;font-family:Georgia,'Times New Roman',serif;font-size:clamp(8px,2.35vw,12.5px);line-height:1.12;color:#5e4735;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hyb-qmeta,.hyb-qxp{position:absolute;bottom:9%;z-index:7;font-size:clamp(7.5px,2.15vw,11px);font-weight:700;color:#4b3426}
+.hyb-qmeta{left:8%}.hyb-qxp{right:8%}
+
+/* rank plaque separate art + badge + gem */
+.hyb-rank-zone{position:relative;width:84%;aspect-ratio:600/222;margin:-22px auto 6px;z-index:6}
+.hyb-rank-art{position:absolute;inset:0;width:100%;height:100%}
+.hyb-badge-art{position:absolute;left:6.5%;top:18%;width:15%;height:auto;z-index:6}
+.hyb-gem-art{position:absolute;left:44.6%;top:-4%;width:10.5%;height:auto;z-index:7}
+.hyb-rank-label{position:absolute;left:24%;right:10%;top:19%;text-align:center;color:#765093;font-size:clamp(6.5px,1.85vw,9.5px);font-weight:900;letter-spacing:1px;z-index:8}
+.hyb-rank-level{position:absolute;left:9.9%;top:35%;width:9%;text-align:center;color:#f3dfb5;font-size:clamp(7px,2vw,10px);font-weight:900;line-height:1.1;z-index:8}
+.hyb-rank-title{position:absolute;left:24%;right:7%;top:31%;text-align:center;font-family:Georgia,'Times New Roman',serif;font-size:clamp(15px,4.5vw,24px);font-weight:900;color:#3b271e;z-index:8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hyb-rank-region{position:absolute;left:24%;right:7%;top:55%;text-align:center;color:#704d83;font-size:clamp(7px,2vw,10px);font-weight:700;z-index:8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hyb-rank-fill-clip{position:absolute;left:21.8%;top:69.5%;width:62.2%;height:7.2%;overflow:hidden;z-index:8}
+.hyb-rank-fill-clip img{display:block;height:100%;width:100%;object-fit:fill;transform-origin:left center}
+.hyb-rank-xp{position:absolute;left:25%;right:9%;top:80%;text-align:center;color:#4b3426;font-size:clamp(7px,2vw,10px);font-weight:700;z-index:8}
+
+/* illustrated open book with independent foreground props and ribbon */
+.hyb-book-zone{position:relative;width:107%;aspect-ratio:920/500;margin:-18px -3.5% 0;z-index:5}
+.hyb-book-art{position:absolute;left:8%;top:6%;width:84%;height:auto;z-index:4}
+.hyb-ribbon-art{position:absolute;left:76.5%;top:20%;width:10.5%;height:auto;z-index:9}
+.hyb-decor{position:absolute;z-index:3;pointer-events:none}
+.hyb-candle{left:1.4%;top:22%;width:8.2%;height:auto}
+.hyb-mug{left:1%;top:56%;width:9.8%;height:auto}
+.hyb-quill{right:1%;top:50%;width:8.7%;height:auto}
+.hyb-books{left:0%;bottom:4%;width:11%;height:auto}
+.hyb-plant{right:.5%;top:15%;width:9.5%;height:auto}
+.hyb-book-icon{position:absolute;left:19.5%;top:22%;width:4.2%;height:auto;z-index:8}
+.hyb-jlabel{position:absolute;z-index:8;font-size:clamp(6px,1.7vw,8.8px);font-weight:900;letter-spacing:.65px;color:#765093}
+.hyb-current-label{left:24%;top:18.5%}.hyb-session-label{left:20.5%;top:49%}.hyb-chapters-label{left:20.5%;top:67.5%}.hyb-progress-label{left:58%;top:20%}.hyb-last-label{left:58%;top:69.5%}
+.hyb-book-title{position:absolute;left:24%;top:24%;width:24%;z-index:8;font-family:Georgia,'Times New Roman',serif;font-size:clamp(13px,3.9vw,21px);font-weight:900;line-height:1.02;color:#3b271e;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hyb-read-mode{position:absolute;left:20.5%;top:39%;width:27%;z-index:8;font-size:clamp(6.5px,1.9vw,9.5px);font-weight:900;color:#765093;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hyb-session-time{position:absolute;left:20.5%;top:54%;z-index:8;font-size:clamp(8.5px,2.5vw,13px);font-weight:800;color:#3b271e}
+.hyb-session-chapters{position:absolute;left:20.5%;top:72.5%;z-index:8;font-size:clamp(8.5px,2.5vw,13px);font-weight:800;color:#3b271e}
+.hyb-page-text{position:absolute;left:55.5%;top:27%;width:22%;z-index:8;text-align:center;font-family:Georgia,'Times New Roman',serif;font-size:clamp(12px,3.55vw,19px);font-weight:900;color:#3b271e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hyb-read-fill-clip{position:absolute;left:58%;top:41.5%;width:18.5%;height:3.1%;overflow:hidden;z-index:8}
+.hyb-read-fill-clip img{display:block;height:100%;width:100%;object-fit:fill;transform-origin:left center}
+.hyb-percent{position:absolute;left:59%;top:47.5%;width:16%;text-align:center;z-index:8;font-size:clamp(9px,2.6vw,13.5px);font-weight:900;color:#3b271e}
+.hyb-last-finished{position:absolute;left:58%;top:74%;width:20%;z-index:8;font-family:Georgia,'Times New Roman',serif;font-size:clamp(9px,2.7vw,14px);font-weight:900;line-height:1.05;color:#3b271e;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hyb-open-reader{left:77.3%;top:29%;width:9%;height:27%;z-index:12;color:#f4e2bb!important;font-size:clamp(6px,1.75vw,8.8px)!important;font-weight:900!important;line-height:1.1!important;text-shadow:1px 1px #3c284d!important}
+
+/* independent illustrated action buttons */
+.hyb-actions-zone{position:relative;width:83%;height:94px;margin:-18px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:5%;z-index:7}
+.hyb-action-wrap{position:relative;height:82px}
+.hyb-action-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.hyb-action-icon{position:absolute;left:8%;top:32%;width:13%;height:auto;z-index:8}
+.hyb-action-hit{inset:0;z-index:9;color:#f2dfb3!important;font-size:clamp(7px,2vw,10px)!important;font-weight:900!important;letter-spacing:.55px!important;text-shadow:1px 1px #25150e!important;padding-left:15%!important}
+.hyb-sync-state{position:absolute;left:51%;right:0;bottom:-1px;text-align:center;color:#bca682;font-size:clamp(5.5px,1.5vw,7.5px);z-index:10;pointer-events:none}
+
+.hyb-ledger-zone{position:relative;width:58%;height:98px;margin:-2px auto 0;z-index:7}
+.hyb-ledger-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.hyb-ledger-icon{position:absolute;left:8%;top:30%;width:13%;height:auto;z-index:8}
+.hyb-ledger-hit{inset:0;color:#f2dfb3!important;font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(8px,2.3vw,12px)!important;letter-spacing:.4px!important;text-shadow:1px 1px #25150e!important;padding-left:12%!important}
+
+/* expanded ledger also uses image art, not a visible CSS card */
+.hyb-ledger-panel{position:relative;width:76%;height:220px;margin:-5px auto 4px;z-index:9;color:#3b271e}
+.hyb-ledger-panel[hidden]{display:none!important}
+.hyb-ledger-open-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.hyb-ledger-close{position:absolute;right:7%;top:9%;z-index:12;background:transparent!important;border:0!important;box-shadow:none!important;color:#765093!important;font-size:8px;font-weight:900;padding:4px!important}
+.hyb-ledger-grid{position:absolute;left:9%;right:9%;top:30%;display:grid;grid-template-columns:repeat(3,1fr);gap:6%;z-index:11;text-align:center}
+.hyb-ledger-grid span{display:block;font-size:clamp(6px,1.7vw,8px);color:#7a5a40;font-weight:900}.hyb-ledger-grid b{display:block;font-family:Georgia,'Times New Roman',serif;font-size:clamp(13px,3.8vw,19px);color:#654586;margin-top:4px}
+.hyb-ledger-note{position:absolute;left:9%;right:9%;bottom:14%;z-index:11;text-align:center;font-size:clamp(6px,1.7vw,8.5px);color:#6c543e}
+.hyb-save{text-align:center;color:#aa9277;font-size:7px;margin:5px 0 0}
+
+/* Header remains a separate illustrated layer */
+header{background-image:url('./hyb-header.png')!important}
+
+@media(max-width:390px){
+  .hyb-board-zone{width:104%;margin-left:-2%}.hyb-rank-zone{width:88%;margin-top:-20px}.hyb-book-zone{width:111%;margin-left:-5.5%}.hyb-actions-zone{width:88%}.hyb-ledger-zone{width:64%}
+  .hyb-qobj{-webkit-line-clamp:2}.hyb-qtitle{font-size:clamp(11px,3.5vw,18px)}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
 <header>
   <div class="header-title"><img src="./asset-goose.png" class="header-goose" alt=""><h1>READING MMO</h1></div>
-  <div class="sub">Enchanted Library • v4.7 • Rich Crisp Desk</div>
+  <div class="sub">Enchanted Library • v4.8 • Hybrid Layered Desk</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -992,76 +1092,114 @@ header .appstatus{bottom:6%!important;color:#d9c293!important}
   </div>
 </header>
 
-<section id="home" class="screen active v43-home">
-  <div class="v43-home-stage">
-    <div class="v43-piece v43-quest-piece">
-      <img src="./v47-quest-board.png" alt="Crisp illustrated wooden quest board with three pinned parchment notes">
-      <div class="v46-board-label">ACTIVE QUESTS</div>
-      <div class="v46-role v46-role1">HUNT</div>
-      <div class="v46-role v46-role2">GATHER</div>
-      <div class="v46-role v46-role3">ALCHEMY</div>
-      <div id="homeQ1Title" class="v43-overlay v43-quest-title v43-q1-title">Empty Slot</div>
-      <div id="homeQ1Objective" class="v43-overlay v43-quest-objective v43-q1-obj">Roll a Hunt quest.</div>
-      <div id="homeQ1Meta" class="v43-overlay v43-quest-meta v43-q1-meta"></div>
-      <div id="homeQ1Xp" class="v43-overlay v43-quest-meta v43-q1-xp"></div>
+<section id="home" class="screen active hyb-home">
+  <div class="hyb-home-stage">
 
-      <div id="homeQ2Title" class="v43-overlay v43-quest-title v43-q2-title">Empty Slot</div>
-      <div id="homeQ2Objective" class="v43-overlay v43-quest-objective v43-q2-obj">Roll a Gather quest.</div>
-      <div id="homeQ2Meta" class="v43-overlay v43-quest-meta v43-q2-meta"></div>
-      <div id="homeQ2Xp" class="v43-overlay v43-quest-meta v43-q2-xp"></div>
+    <div class="hyb-board-zone" aria-label="Active quest board">
+      <img class="hyb-board-frame" src="./hyb-board-frame.png" alt="Illustrated wooden quest board">
 
-      <div id="homeQ3Title" class="v43-overlay v43-quest-title v43-q3-title">Empty Slot</div>
-      <div id="homeQ3Objective" class="v43-overlay v43-quest-objective v43-q3-obj">Roll an Alchemy quest.</div>
-      <div id="homeQ3Meta" class="v43-overlay v43-quest-meta v43-q3-meta"></div>
-      <div id="homeQ3Xp" class="v43-overlay v43-quest-meta v43-q3-xp"></div>
-    </div>
-
-    <div class="v43-piece v43-rank-piece">
-      <img src="./v47-rank-placard.png" alt="Crisp illustrated Reader Level placard">
-      <div class="v46-rank-label">READER LEVEL</div>
-      <div class="v43-overlay v43-rank-level">LV.<br><span id="homeLevel">1</span></div>
-      <div id="homeRank" class="v43-overlay v43-rank-title">Page Wanderer</div>
-      <div id="homeRegion" class="v43-overlay v43-rank-region">The Mossy Stacks • Front Stacks</div>
-      <div class="v43-xp-track"><div id="xpBar" class="v43-xp-fill"></div></div>
-      <div id="xpText" class="v43-overlay v43-rank-xp">0 / 1,000 XP</div>
-    </div>
-
-    <div class="v43-piece v43-journal-piece">
-      <img src="./v47-journal-scene.png" alt="Crisp illustrated open reading journal on a candlelit wooden desk">
-      <div class="v46-jlabel v46-current-label">CURRENTLY READING</div>
-      <div class="v46-jlabel v46-session-label">THIS SESSION</div>
-      <div class="v46-jlabel v46-chapters-label">CHAPTERS THIS SESSION</div>
-      <div class="v46-jlabel v46-progress-label">PROGRESS</div>
-      <div class="v46-jlabel v46-last-label">LAST FINISHED</div>
-      <div id="homeBookTitle" class="v43-overlay v43-book-title">No current book</div>
-      <div id="homeReadMode" class="v43-overlay v43-read-mode">CURRENT READ</div>
-      <div id="homeSessionTime" class="v43-overlay v43-session-time">00:00:00</div>
-      <div id="homeSessionChapters" class="v43-overlay v43-session-chapters">0 chapters</div>
-      <div id="homePageText" class="v43-overlay v43-page-text">Page 0 of 0</div>
-      <div class="v43-book-progress"><div id="homeBookProgressBar"></div></div>
-      <div id="homePercentText" class="v43-overlay v43-percent">0.0%</div>
-      <div id="homeLastFinished" class="v43-overlay v43-last-finished">Nothing logged yet</div>
-      <button class="v43-hit v43-open-reader" aria-label="Open Reader" onclick="go('reading')">Open Reader</button>
-    </div>
-
-    <div class="v43-piece v43-actions-piece">
-      <img src="./v47-actions-ledger.png" alt="Crisp illustrated wooden controls and character ledger">
-      <button class="v43-hit v43-view-board" aria-label="View Board" onclick="go('quests')">View Board</button>
-      <button id="homeKwgtSyncBtn" class="v43-hit v43-sync" aria-label="Sync Widgets" onclick="sendAllWidgetsToKWGT()">Sync Widgets</button>
-      <div id="homeKwgtSyncState" class="v43-sync-state"></div>
-      <button class="v43-hit v43-ledger-hit" aria-label="Open Character Ledger" onclick="toggleHomeLedger()">Character Ledger</button>
-    </div>
-
-    <div id="homeLedgerPanel" class="v43-ledger-panel" hidden>
-      <button class="v43-ledger-close btn-plain" onclick="toggleHomeLedger(false)">Close</button>
-      <div class="v43-ledger-grid">
-        <div><span>XP</span><b id="homeXp">0</b></div>
-        <div><span>Quests</span><b id="homeQuests">0</b></div>
-        <div><span>Goldens</span><b id="homeGoldens">0</b></div>
+      <div class="hyb-note hyb-note-1">
+        <img class="hyb-note-art" src="./hyb-note-hunt.png" alt="Pinned Hunt parchment">
+        <img class="hyb-role-icon" src="./hyb-icon-hunt.png" alt="">
+        <div class="hyb-role hyb-hunt">HUNT</div>
+        <div id="homeQ1Title" class="hyb-qtitle">Empty Slot</div>
+        <div id="homeQ1Objective" class="hyb-qobj">Roll a Hunt quest.</div>
+        <div id="homeQ1Meta" class="hyb-qmeta"></div>
+        <div id="homeQ1Xp" class="hyb-qxp"></div>
       </div>
-      <div id="homeBonuses"></div>
+
+      <div class="hyb-note hyb-note-2">
+        <img class="hyb-note-art" src="./hyb-note-gather.png" alt="Pinned Gather parchment">
+        <img class="hyb-role-icon" src="./hyb-icon-gather.png" alt="">
+        <div class="hyb-role hyb-gather">GATHER</div>
+        <div id="homeQ2Title" class="hyb-qtitle">Empty Slot</div>
+        <div id="homeQ2Objective" class="hyb-qobj">Roll a Gather quest.</div>
+        <div id="homeQ2Meta" class="hyb-qmeta"></div>
+        <div id="homeQ2Xp" class="hyb-qxp"></div>
+      </div>
+
+      <div class="hyb-note hyb-note-3">
+        <img class="hyb-note-art" src="./hyb-note-alchemy.png" alt="Pinned Alchemy parchment">
+        <img class="hyb-role-icon" src="./hyb-icon-alchemy.png" alt="">
+        <div class="hyb-role hyb-alchemy">ALCHEMY</div>
+        <div id="homeQ3Title" class="hyb-qtitle">Empty Slot</div>
+        <div id="homeQ3Objective" class="hyb-qobj">Roll an Alchemy quest.</div>
+        <div id="homeQ3Meta" class="hyb-qmeta"></div>
+        <div id="homeQ3Xp" class="hyb-qxp"></div>
+      </div>
     </div>
-    <div id="homeSaveMini" class="v43-save">Progress saves automatically.</div>
+
+    <div class="hyb-rank-zone" aria-label="Reader Level">
+      <img class="hyb-rank-art" src="./hyb-rank-plaque.png" alt="Illustrated Reader Level plaque">
+      <img class="hyb-badge-art" src="./hyb-level-badge.png" alt="">
+      <img class="hyb-gem-art" src="./hyb-rank-gem.png" alt="">
+      <div class="hyb-rank-label">READER LEVEL</div>
+      <div class="hyb-rank-level">LV.<br><span id="homeLevel">1</span></div>
+      <div id="homeRank" class="hyb-rank-title">Page Wanderer</div>
+      <div id="homeRegion" class="hyb-rank-region">The Mossy Stacks • Front Stacks</div>
+      <div class="hyb-rank-fill-clip"><img id="xpBar" src="./hyb-xp-fill.png" alt=""></div>
+      <div id="xpText" class="hyb-rank-xp">0 / 1,000 XP</div>
+    </div>
+
+    <div class="hyb-book-zone" aria-label="Currently reading">
+      <img class="hyb-book-art" src="./hyb-open-book.png" alt="Illustrated open reading journal">
+      <img class="hyb-decor hyb-candle" src="./hyb-decor-candle.png" alt="">
+      <img class="hyb-decor hyb-mug" src="./hyb-decor-mug.png" alt="">
+      <img class="hyb-decor hyb-quill" src="./hyb-decor-quill.png" alt="">
+      <img class="hyb-decor hyb-books" src="./hyb-decor-books.png" alt="">
+      <img class="hyb-decor hyb-plant" src="./hyb-decor-plant.png" alt="">
+      <img class="hyb-ribbon-art" src="./hyb-open-reader-ribbon.png" alt="">
+
+      <img class="hyb-book-icon" src="./asset-book.png" alt="">
+      <div class="hyb-jlabel hyb-current-label">CURRENTLY READING</div>
+      <div id="homeBookTitle" class="hyb-book-title">No current book</div>
+      <div id="homeReadMode" class="hyb-read-mode">CURRENT READ</div>
+      <div class="hyb-jlabel hyb-session-label">THIS SESSION</div>
+      <div id="homeSessionTime" class="hyb-session-time">00:00:00</div>
+      <div class="hyb-jlabel hyb-chapters-label">CHAPTERS THIS SESSION</div>
+      <div id="homeSessionChapters" class="hyb-session-chapters">0 chapters</div>
+
+      <div class="hyb-jlabel hyb-progress-label">PROGRESS</div>
+      <div id="homePageText" class="hyb-page-text">Page 0 of 0</div>
+      <div class="hyb-read-fill-clip"><img id="homeBookProgressBar" src="./hyb-read-fill.png" alt=""></div>
+      <div id="homePercentText" class="hyb-percent">0.0%</div>
+      <div class="hyb-jlabel hyb-last-label">LAST FINISHED</div>
+      <div id="homeLastFinished" class="hyb-last-finished">Nothing logged yet</div>
+      <button class="hyb-hit hyb-open-reader" aria-label="Open Reader" onclick="go('reading')">OPEN<br>READER</button>
+    </div>
+
+    <div class="hyb-actions-zone">
+      <div class="hyb-action-wrap">
+        <img src="./hyb-btn-board.png" class="hyb-action-art" alt="">
+        <img src="./asset-scroll.png" class="hyb-action-icon" alt="">
+        <button class="hyb-hit hyb-action-hit" onclick="go('quests')">VIEW BOARD</button>
+      </div>
+      <div class="hyb-action-wrap">
+        <img src="./hyb-btn-sync.png" class="hyb-action-art" alt="">
+        <img src="./asset-ivy.png" class="hyb-action-icon" alt="">
+        <button id="homeKwgtSyncBtn" class="hyb-hit hyb-action-hit" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button>
+      </div>
+      <div id="homeKwgtSyncState" class="hyb-sync-state"></div>
+    </div>
+
+    <div class="hyb-ledger-zone">
+      <img src="./hyb-ledger-tab.png" class="hyb-ledger-art" alt="">
+      <img src="./asset-ledger.png" class="hyb-ledger-icon" alt="">
+      <button class="hyb-hit hyb-ledger-hit" onclick="toggleHomeLedger()">Character Ledger <span aria-hidden="true">⌄</span></button>
+    </div>
+
+    <div id="homeLedgerPanel" class="hyb-ledger-panel" hidden>
+      <img src="./hyb-ledger-open.png" class="hyb-ledger-open-art" alt="">
+      <button class="hyb-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
+      <div class="hyb-ledger-grid">
+        <div><span>XP</span><b id="homeXp">0</b></div>
+        <div><span>QUESTS</span><b id="homeQuests">0</b></div>
+        <div><span>GOLDENS</span><b id="homeGoldens">0</b></div>
+      </div>
+      <div id="homeBonuses" class="hyb-ledger-note"></div>
+    </div>
+
+    <div id="homeSaveMini" class="hyb-save">Progress saves automatically.</div>
   </div>
 </section>
 

@@ -1,9 +1,26 @@
-Reading MMO v4.7 — Rich Crisp Desk
+Reading MMO v4.8 — Hybrid Layered Desk
 
-Home-only correction after v4.6 felt too plain.
-- Restores the rich illustrated candlelit composition from the concept/v4.4 direction.
-- Illustration is converted into true hard-edged pixel art with reduced palette + nearest-neighbor rendering.
-- Generated/baked words were painted out; important wording and all changing data are live HTML.
-- Restores candle, mug, books, quill, plant, carved wood, ivy, layered parchment and deeper lighting.
-- Tightens section overlap so the screen reads as one illustrated desk scene rather than stacked cards.
-- Game/save/quest/reading/KWGT mechanics unchanged; other tabs untouched.
+Home-only layered rebuild.
+
+Golden rule:
+- All visible furniture/paper/book/button surfaces are PNG illustration assets.
+- CSS containers are transparent positioning only.
+- Changing values remain live HTML text.
+- No visible CSS cards, fake parchment boxes, or browser-shaped panels on Home.
+
+Layer pack:
+- separate illustrated header
+- clean procedural wood backdrop with no repeated baked UI/text artifacts
+- separate quest-board frame
+- separate Hunt / Gather / Alchemy note art
+- separate role icons
+- separate Reader Level plaque + hanging badge + gem
+- separate open-book illustration
+- separate Open Reader ribbon
+- separate candle / mug / quill / books / plant props
+- separate View Board / Sync Widgets button art
+- separate closed/open Character Ledger art
+- progress fills are image strips whose width is controlled by live data
+
+Gameplay, save data, reading tools, quests, and rate-safe KWGT sync are unchanged.
+Other tabs remain intentionally untouched while Home is being nailed down.
