@@ -1,0 +1,8 @@
+Reading MMO v4.9 — Rich Hybrid Concept Home
+
+Home only visual pass.
+- Hybrid layered art remains: board frame, three separate papers, rank plaque, book scene, buttons/ledger.
+- Rich illustration restored from the original candlelit concept direction.
+- Important text remains live HTML, not baked into art.
+- No visible CSS cards/boxes were added. CSS is positioning only.
+- Existing app/save/quest/KWGT logic inherited from v4.8.
