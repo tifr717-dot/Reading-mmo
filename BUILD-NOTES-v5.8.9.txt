@@ -1,0 +1,8 @@
+Reading MMO PWA v5.8.9
+
+Changed only the lower Home footer treatment.
+- Replaced the cabinet test with a quiet paneled wood footer.
+- Added a slim utility rail behind the Sync / Character Ledger controls.
+- Replaced shelves/doors with subtle wainscoting-style paneling.
+- Added a restrained base trim above the nav.
+- Kept the successful chapter placement fix and overall page composition.
