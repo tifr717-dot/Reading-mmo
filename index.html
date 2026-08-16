@@ -1641,6 +1641,24 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 
 /* Quests intentionally unchanged from the good v5.5/v5.4 layout. */
 </style>
+
+<style id="v57-full-height-home">
+/* v5.7 — Full-height mobile Home canvas. Fix the empty lower viewport without stretching the widget art. */
+.app:has(#home.screen.active){padding-bottom:0!important}
+#home.v53-home{min-height:calc(100dvh - 94px - 64px)!important;padding-bottom:0!important}
+.v53-stage{width:100%!important;max-width:none!important;margin:0!important;padding:17px 0 0!important;min-height:calc(100dvh - 94px - 64px)!important;display:flex!important;flex-direction:column!important}
+.v53-shell{width:100%!important;max-width:none!important;margin:0!important;flex:0 0 auto!important}
+/* The footer is now the expandable illustrated lower furniture bay. */
+.v54-footer{position:relative!important;width:100%!important;max-width:none!important;flex:1 0 220px!important;min-height:220px!important;margin:-18px 0 0!important;padding:64px 9% 24px!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important}
+.v54-footer-art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:fill!important;content:url('./v57-footer-fill.png')!important;pointer-events:none!important}
+.v54-footer .v53-utils{width:76%!important;margin:0 auto 8px!important;position:relative!important;z-index:2!important}
+.v54-footer .v53-sync-state{position:relative!important;z-index:2!important}
+.v54-footer .v53-ledger-panel{position:relative!important;z-index:3!important}
+.v54-footer .v53-save{position:relative!important;z-index:2!important;margin-top:8px!important}
+/* Keep the ornate bottom frame visually attached to the bottom navigation on tall phones. */
+@media (min-height:700px){.v54-footer{min-height:260px!important;flex-basis:260px!important}}
+@media (max-width:380px){.v53-stage{padding-left:0!important;padding-right:0!important}.v53-shell,.v54-footer{width:100%!important}}
+</style>
 </head>
 <body>
 <div class="app">

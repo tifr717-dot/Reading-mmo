@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.6-two-tab-finish';
+const CACHE = 'reading-mmo-v5.7-full-height-home';
 const CORE = [
   './',
   './asset-book.png',
@@ -45,7 +45,8 @@ const CORE = [
   './v54-level-panel.png',
   './v54-shell.png',
   './v56-level-panel-tall.png',
-  './v56-open-book-scene.png'
+  './v56-open-book-scene.png',
+  './v57-footer-fill.png'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
