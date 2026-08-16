@@ -1990,6 +1990,17 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 }
 </style>
 
+
+<style id="v588-built-in-cabinet-test">
+/* v5.8.8 — built-in cabinet footer test. Top composition and chapter placement are frozen. */
+.v58-lowerfill{
+  background:url('./v588-built-in-cabinet-footer.png') center top/100% 100% no-repeat!important;
+  opacity:1!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2729,7 +2740,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.8.7</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.8.8</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");

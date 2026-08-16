@@ -1,0 +1,9 @@
+v5.8.8 — built-in cabinet footer test.
+
+- froze Reading / Reader Level / Quests composition
+- preserved the successful Chapters This Session placement
+- replaced empty/display shelves with one continuous built-in cabinet facade
+- utility buttons mount onto a single wooden crosspiece
+- two large inset cabinet doors and integrated lower drawers fill the remaining space
+- removed floating props, repeated shelf stickers, and nested frames
+- updated App Health version and service-worker cache key
