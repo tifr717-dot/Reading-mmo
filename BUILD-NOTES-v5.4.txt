@@ -1,0 +1,11 @@
+Reading MMO v5.4 — Tabbed Widget Home Polish
+
+HOME ONLY polish pass from v5.3.
+- Smaller bookmark tabs with clearer selected state.
+- Taller shared widget shell for breathing room.
+- Reading tab spacing refined; Open Reader focus/outline removed so only the bookmark art is visible.
+- Reader Level duplicate XP frame removed; live fill now uses the XP bar already illustrated in the widget panel.
+- Quest typography/spacing lightly refined without redesigning it.
+- Sync Widgets + Character Ledger mounted on a shared illustrated desk/shelf base to finish the lower scene.
+- No changes to Read / Quests / Play / Me screens or game/save/KWGT mechanics.
+- Service worker cache bumped to v5.4.

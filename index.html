@@ -1476,6 +1476,76 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 @media(max-width:380px){.v53-stage{padding-left:7px;padding-right:7px}.v53-tabs{left:6%;right:6%;gap:2px}.v53-tab span{font-size:6.8px}.v53-shell{width:98%}.v53-utils{width:82%}.v53-ledger{width:53%}}
 </style>
 
+<style id="v54-tabbed-widget-home-polish">
+/* v5.4 — Tabbed Widget Home Polish. No new layout system: just scale, alignment, duplicate cleanup, and a finished furniture base. */
+#home.v53-home{padding-bottom:0!important}
+.v53-stage{max-width:440px;padding:17px 10px 0;min-height:calc(100svh - 142px);display:flex;flex-direction:column}
+.v53-shell{width:96%;aspect-ratio:592/500;flex:0 0 auto}
+
+/* Smaller bookmark tabs, clearer selected state, more of the ornate frame visible. */
+.v53-tabs{left:12%;right:12%;top:-15px;height:53px;gap:6px}
+.v53-tab{height:48px;opacity:.86;filter:brightness(.82) saturate(.88);transition:transform .12s ease,filter .12s ease,opacity .12s ease}
+.v53-tab span{padding:12px 3px 0;font-size:clamp(6.7px,1.8vw,8.3px)}
+.v53-tab.active{transform:translateY(5px);opacity:1;filter:brightness(1.08) saturate(1.05)}
+.v53-tab.active span{color:#fff2c9}
+
+/* Reading: keep the book as hero, add page breathing room, and make the bookmark the only visible control shape. */
+.v53-reading{top:12.5%;bottom:5.5%}
+.v53-open-book{left:-2%;right:auto;top:12%;width:104%}
+.v53-read-left{left:12.5%;width:35.5%;top:29%}
+.v53-read-right{left:54%;width:29.5%;top:29%}
+.v53-label{margin-bottom:5px}
+.v53-book-title{font-size:clamp(12.5px,3.55vw,17px);margin-bottom:8px}
+.v53-mode{margin:5px 0 13px}
+.v53-value{margin-bottom:15px}
+.v53-page{font-size:clamp(11.7px,3.3vw,16px);margin-bottom:11px}
+.v53-percent{margin-bottom:22px}
+.v53-reader-ribbon{right:1.6%;top:24%;height:31%}
+.v53-open-hit{right:1.3%;top:24%;width:14.5%;height:31%;outline:none!important;box-shadow:none!important;-webkit-tap-highlight-color:transparent!important}
+.v53-open-hit:focus,.v53-open-hit:focus-visible{outline:none!important;box-shadow:none!important}
+.v53-read-decor.candle{left:-.5%;bottom:9%;width:6.5%}
+.v53-read-decor.quill{right:-.5%;bottom:7%;width:6.5%}
+.v53-read-decor.books{left:1%;bottom:2%;width:12.5%}
+
+/* Reader Level: preserve the widget artwork and use ONE live fill in its built-in XP bar. */
+.v53-level-panel{top:21%;bottom:auto;aspect-ratio:586/294}
+.v53-level-art{left:1.5%;right:1.5%;top:0;width:97%}
+.v53-level-title{top:17.5%}
+.v53-rank{top:36.5%}
+.v53-xpbar{left:25.3%;right:24.6%;top:50.8%;height:9px}
+.v53-xpbar>img.frame{display:none!important}
+.v53-xpbar .fillclip{position:absolute;inset:0;overflow:hidden}
+.v53-xpbar .fillclip img{height:100%;width:0%;object-fit:fill;object-position:left center;display:block}
+.v53-xptxt{top:58.7%}
+.v53-lastread{top:67.3%}
+.v53-stat{bottom:6.5%}
+
+/* Quests: the good child. Only small typography/spacing refinement. */
+.v53-quests-panel{top:13.5%;bottom:auto;aspect-ratio:540/379}
+.v53-qslot{left:4.5%;right:4.5%;height:27.2%}
+.v53-qtitle{font-size:clamp(10.4px,2.95vw,13.8px);top:10%}
+.v53-qobj{font-size:clamp(6.7px,1.9vw,8.6px);line-height:1.1;top:39%}
+.v53-qmeta{font-size:clamp(5.8px,1.6vw,7.3px)}
+.v53-qxp{font-size:clamp(5.6px,1.55vw,7.1px)}
+
+/* Finish the scene: utilities are mounted to a shared illustrated desk/shelf base. */
+.v54-footer{position:relative;width:96%;min-height:190px;margin:-2px auto 0;padding:48px 9% 18px;flex:0 0 auto;z-index:2}
+.v54-footer-art{position:absolute;inset:0 0 auto;width:100%;height:190px;object-fit:fill;pointer-events:none;z-index:0}
+.v54-footer .v53-utils{position:relative;z-index:2;width:80%;margin:0 auto 7px;gap:9px}
+.v54-footer .v53-util{aspect-ratio:253/35}
+.v54-footer .v53-util button{font-size:clamp(6.3px,1.75vw,8px)!important;outline:none!important;box-shadow:none!important}
+.v54-footer .v53-sync-state{position:relative;z-index:2;margin:3px auto 0}
+.v54-footer .v53-ledger-panel{position:relative;z-index:3;width:76%;margin:8px auto 0}
+.v54-footer .v53-save{position:relative;z-index:2;margin:8px 0 0;color:#b99e78}
+
+@media(max-width:380px){
+  .v53-tabs{left:10%;right:10%;gap:3px}
+  .v53-tab span{font-size:6.5px;padding-top:12px}
+  .v53-shell{width:98%}
+  .v54-footer{width:98%;padding-left:7%;padding-right:7%}
+  .v54-footer .v53-utils{width:86%}
+}
+
 </head>
 <body>
 <div class="app">
@@ -1494,7 +1564,7 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 <section id="home" class="screen active v53-home">
   <div class="v53-stage">
     <div class="v53-shell" aria-label="Reading MMO Home">
-      <img class="v53-shell-art" src="./v53-shell.png" alt="Illustrated widget-style Home frame">
+      <img class="v53-shell-art" src="./v54-shell.png" alt="Illustrated widget-style Home frame">
 
       <div class="v53-tabs" role="tablist" aria-label="Home views">
         <button class="v53-tab active" id="homeTabReading" role="tab" aria-selected="true" onclick="setHomeTab('reading',this)"><img src="./v53-tab-active.png" alt=""><span>READING</span></button>
@@ -1529,7 +1599,7 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
       </div>
 
       <div id="homePanelLevel" class="v53-panel v53-level-panel" role="tabpanel" aria-labelledby="homeTabLevel" hidden>
-        <img class="v53-level-art" src="./v53-level-panel.png" alt="Reader Level widget interior">
+        <img class="v53-level-art" src="./v54-level-panel.png" alt="Reader Level widget interior">
         <div id="homeLevel" class="v53-level-title">Level 1</div>
         <div id="homeRank" class="v53-rank">Page Wanderer</div>
         <div id="homeRegion" class="v53-region-hidden" aria-hidden="true"></div>
@@ -1549,19 +1619,22 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
       </div>
     </div>
 
-    <div class="v53-utils">
-      <div class="v53-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
-      <div class="v53-util"><img src="./v53-small-button.png" alt=""><button onclick="toggleHomeLedger()">CHARACTER LEDGER</button></div>
-    </div>
-    <div id="homeKwgtSyncState" class="v53-sync-state"></div>
+    <div class="v54-footer">
+      <img class="v54-footer-art" src="./v54-desk-base.png" alt="Illustrated desk shelf base">
+      <div class="v53-utils">
+        <div class="v53-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
+        <div class="v53-util"><img src="./v53-small-button.png" alt=""><button onclick="toggleHomeLedger()">CHARACTER LEDGER</button></div>
+      </div>
+      <div id="homeKwgtSyncState" class="v53-sync-state"></div>
 
-    <div id="homeLedgerPanel" class="v53-ledger-panel" hidden>
-      <img src="./v53-ledger-panel.png" alt="Illustrated Character Ledger panel">
-      <button class="v53-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
-      <div class="v53-ledger-grid"><div><span>XP</span><b id="homeXp">0</b></div><div><span>QUESTS</span><b id="homeQuests">0</b></div><div><span>GOLDENS</span><b id="homeGoldens">0</b></div></div>
-      <div id="homeBonuses" class="v53-ledger-note"></div>
+      <div id="homeLedgerPanel" class="v53-ledger-panel" hidden>
+        <img src="./v53-ledger-panel.png" alt="Illustrated Character Ledger panel">
+        <button class="v53-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
+        <div class="v53-ledger-grid"><div><span>XP</span><b id="homeXp">0</b></div><div><span>QUESTS</span><b id="homeQuests">0</b></div><div><span>GOLDENS</span><b id="homeGoldens">0</b></div></div>
+        <div id="homeBonuses" class="v53-ledger-note"></div>
+      </div>
+      <div id="homeSaveMini" class="v53-save">Progress saves automatically.</div>
     </div>
-    <div id="homeSaveMini" class="v53-save">Progress saves automatically.</div>
   </div>
 </section>
 
