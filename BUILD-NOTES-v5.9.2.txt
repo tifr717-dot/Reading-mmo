@@ -1,0 +1,8 @@
+Reading MMO v5.9.2 — dedicated Quests composition pass.
+
+- Home and Read are frozen.
+- Rebuilt Quest Generator into a compact guild counter.
+- Kept all advanced generator settings in a collapsible drawer.
+- Rebuilt active quest slots as compact pinned parchment slips.
+- Preserved roll, reroll, clear, goose-decide, and KWGT slot-send functions.
+- Reduced excessive vertical whitespace and giant action buttons.

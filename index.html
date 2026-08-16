@@ -2387,6 +2387,35 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 }
 </style>
 
+
+<style id="v592-quests-rebuild">
+/* v5.9.2 — dedicated Quests composition. Home + Read are frozen. */
+#quests.quest-rebuild{padding:18px 16px 118px!important;background:linear-gradient(rgba(23,11,8,.25),rgba(23,11,8,.25)),url('./v53-wood-tile.png') center/160px auto repeat!important;color:#ead8b4}
+#quests.quest-rebuild:before{opacity:.18!important}
+.quest-guild-counter,.quest-board-shell{max-width:660px;margin:0 auto}
+#quests .quest-main-title,#quests .quest-board-title{margin:0 0 10px!important;width:max-content;max-width:100%;padding:10px 18px!important;font-size:clamp(11px,3.3vw,16px)!important;letter-spacing:.8px!important;background:linear-gradient(180deg,#5a3527,#392117)!important;border:2px solid #9b6a35!important;box-shadow:0 0 0 2px #24120c,3px 4px 0 rgba(0,0,0,.45)!important;color:#f1ddad!important}
+#quests .quest-main-title img,#quests .quest-board-title img{width:20px!important;height:20px!important;margin-right:8px!important}
+.quest-board-count{font:700 7px/1 ui-monospace,monospace;color:#bca373;margin-left:10px;vertical-align:middle;white-space:nowrap}
+.quest-roll-dock{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:11px;border:2px solid #8f6331;background:linear-gradient(180deg,rgba(73,41,28,.98),rgba(38,20,15,.98));box-shadow:0 0 0 2px #20110c,4px 5px 0 rgba(0,0,0,.42);margin-bottom:9px}
+.quest-roll{min-width:0;min-height:72px;border:2px solid #bd9353!important;box-shadow:inset 0 0 0 2px rgba(31,14,10,.65),2px 3px 0 rgba(0,0,0,.45)!important;padding:8px 4px!important;color:#fff0cf!important;text-shadow:1px 1px #21110d!important;font-family:Georgia,'Times New Roman',serif!important}
+.quest-roll span{display:block;font-size:18px;line-height:1.05;margin-bottom:3px}.quest-roll b{display:block;font-size:clamp(9px,2.6vw,12px);letter-spacing:.5px}.quest-roll small{display:block;font:700 6px/1.2 ui-monospace,monospace;letter-spacing:1px;opacity:.78;margin-top:4px;text-transform:uppercase}
+.quest-roll.hunt-roll{background:linear-gradient(#9b5142,#6f342d)!important}.quest-roll.gather-roll{background:linear-gradient(#557b43,#36562f)!important}.quest-roll.alchemy-roll{background:linear-gradient(#73529b,#513773)!important}
+.quest-goose-roll{grid-column:1/-1;min-height:42px;margin:0!important;background:linear-gradient(#a88425,#745b18)!important;border:2px solid #c5a65b!important;box-shadow:inset 0 0 0 2px #4a3512,2px 3px 0 rgba(0,0,0,.45)!important;color:#fff1c8!important;font:700 clamp(9px,2.6vw,12px)/1 Georgia,'Times New Roman',serif!important;letter-spacing:.6px;text-shadow:1px 1px #37260e!important}.quest-goose-roll span{margin-right:7px}
+#quests .quest-settings{margin:0 0 18px!important;border:1px solid #80552f!important;background:rgba(58,31,22,.92)!important;box-shadow:0 0 0 2px #21110c!important;color:#ead5aa!important;padding:0!important}
+#quests .quest-settings summary{padding:10px 12px!important;display:flex;justify-content:space-between;align-items:center;font:700 9px/1.2 ui-monospace,monospace;letter-spacing:.4px;color:#e4c895;cursor:pointer;list-style:none}#quests .quest-settings summary::-webkit-details-marker{display:none}#quests .quest-settings summary small{font-size:6px;color:#9e8567;text-transform:uppercase;letter-spacing:1px}
+#quests .quest-settings[open] summary{border-bottom:1px solid #6b472b}.quest-settings-body{padding:11px 12px 13px;background:#ead7aa;color:#4b3325}.quest-settings-body label{color:#4b3325!important}.quest-settings-body small{color:#735b43!important}
+.quest-board-shell{padding:0 0 8px}.quest-replacement{margin:0 2px 12px!important;padding:10px!important;background:#ead7aa!important;color:#4a3022!important;border:2px solid #9b6a35!important}
+.quest-slip-grid{display:grid;gap:12px;padding:4px 2px 8px}
+.quest-slip{position:relative;min-height:176px;padding:18px 16px 13px;background:linear-gradient(rgba(255,247,213,.94),rgba(237,210,157,.97)),repeating-linear-gradient(0deg,transparent 0 23px,rgba(147,111,64,.12) 23px 24px);border:2px solid #8e6535;box-shadow:0 0 0 2px #28170f,4px 5px 0 rgba(0,0,0,.45);color:#432b20;overflow:visible}
+.quest-slip:after{content:"";position:absolute;inset:6px;border:1px solid rgba(122,85,43,.42);pointer-events:none}.quest-slip.hunt{border-left:5px solid #9d4e40}.quest-slip.gather{border-left:5px solid #5e7d47}.quest-slip.craft{border-left:5px solid #745493}
+.quest-pin{position:absolute;left:50%;top:-9px;width:18px;height:18px;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 38% 35%,#efa437 0 23%,#c26018 25% 55%,#78310f 58% 100%);border:2px solid #6b2b0d;box-shadow:0 2px 2px rgba(0,0,0,.42);z-index:3}
+.quest-slip-head{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.quest-role{font:800 clamp(7px,2vw,9px)/1 ui-monospace,monospace;letter-spacing:.45px}.quest-slip.hunt .quest-role{color:#8d4036}.quest-slip.gather .quest-role{color:#47683a}.quest-slip.craft .quest-role{color:#684488}.quest-id{font:700 5.8px/1 ui-monospace,monospace;color:#92775b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:34%}
+.quest-slip-name{position:relative;z-index:2;font:700 clamp(15px,4.5vw,21px)/1.02 Georgia,'Times New Roman',serif;color:#5c3d77;margin:3px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.quest-slip-objective{position:relative;z-index:2;font:600 clamp(8px,2.35vw,10.5px)/1.25 Georgia,'Times New Roman',serif;min-height:42px;max-height:54px;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;color:#4a3225}
+.quest-slip-bottom{position:relative;z-index:2;margin-top:10px;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}.quest-slip-meta{display:flex;flex-wrap:wrap;gap:4px;min-width:0}.quest-slip-meta span{padding:4px 6px;border:1px solid #a67c44;background:#dfc083;font:700 6.2px/1 ui-monospace,monospace;color:#493322;white-space:nowrap}
+.quest-slip-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;flex:0 0 min(48%,230px)}.quest-mini-action{min-width:0;height:34px;padding:0 4px!important;border:1px solid #75502f!important;box-shadow:1px 2px 0 rgba(0,0,0,.35)!important;color:#fff2d0!important;font:700 6.4px/1 ui-monospace,monospace!important;text-shadow:1px 1px #2b170e!important}.quest-mini-action span{display:block;margin-top:2px;font-size:5.7px}.quest-mini-action.reroll{background:#55768a!important}.quest-mini-action.clear{background:#705844!important}.quest-mini-action.send.hunt{background:#92483c!important}.quest-mini-action.send.gather{background:#486b3b!important}.quest-mini-action.send.craft{background:#6d4a91!important}
+@media(max-width:390px){#quests.quest-rebuild{padding-left:12px!important;padding-right:12px!important}.quest-roll{min-height:67px}.quest-slip{padding-left:12px;padding-right:12px}.quest-slip-bottom{display:block}.quest-slip-actions{margin-top:8px;width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.quest-mini-action{height:32px}.quest-slip-objective{min-height:38px}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2589,41 +2618,43 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     </div>
   </div>
 </section>
-<section id="quests" class="screen">
-  <div class="section"><img src="./asset-goose.png" alt="">QUEST GENERATOR</div>
-  <div class="card generator-card">
-    <div class="row">
-      <button class="btn-red" onclick="rollQuest(0)">⚔️ Roll Hunt</button>
-      <button class="btn-green" onclick="rollQuest(1)">🌿 Roll Gather</button>
-      <button class="btn-purple" onclick="rollQuest(2)">⚗️ Roll Alchemy</button>
+<section id="quests" class="screen quest-rebuild">
+  <div class="quest-guild-counter">
+    <div class="section quest-main-title"><img src="./asset-goose.png" alt="">GUILD QUEST COUNTER</div>
+    <div class="quest-roll-dock" aria-label="Quest generator">
+      <button class="quest-roll hunt-roll" onclick="rollQuest(0)"><span>⚔️</span><b>HUNT</b><small>Roll</small></button>
+      <button class="quest-roll gather-roll" onclick="rollQuest(1)"><span>🌿</span><b>GATHER</b><small>Roll</small></button>
+      <button class="quest-roll alchemy-roll" onclick="rollQuest(2)"><span>⚗️</span><b>ALCHEMY</b><small>Roll</small></button>
+      <button class="quest-goose-roll" onclick="gooseDecide()"><span>🪿</span><b>LET THE GOOSE DECIDE</b></button>
     </div>
-    <button class="btn-gold" style="width:100%;margin-top:7px" onclick="gooseDecide()">🪿 LET THE GOOSE DECIDE</button>
+
+    <details class="quest-settings simple-details">
+      <summary><span>⚙️ Generator Settings</span><small>optional</small></summary>
+      <div class="quest-settings-body">
+        <label>Quest Style</label>
+        <select id="questStyle" onchange="saveSettingsFromUI()">
+          <option>Chill</option><option selected>Adventurous</option><option>Challenging</option><option>Unhinged</option>
+        </select>
+        <div class="checkline"><span>Current book first</span><input id="currentBookFirst" class="switch" type="checkbox" checked onchange="saveSettingsFromUI()"></div>
+        <div class="checkline"><span>Hide undiscovered loot names</span><input id="hideSpoilers" class="switch" type="checkbox" checked onchange="saveSettingsFromUI()"></div>
+        <div class="range-row"><span>Genre</span><input id="sGenre" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
+        <div class="range-row"><span>TBR Selection</span><input id="sTbr" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
+        <div class="range-row"><span>Focus</span><input id="sFocus" type="range" min="0" max="5" value="2" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">2</b></div>
+        <div class="range-row"><span>Atmosphere</span><input id="sAtmos" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
+        <div class="range-row"><span>Format / Style</span><input id="sFormat" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
+        <div class="range-row"><span>Time / Deadline</span><input id="sTime" type="range" min="0" max="5" value="2" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">2</b></div>
+        <div class="range-row"><span>Seasonal</span><input id="sSeasonal" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
+        <div class="range-row"><span>Chaos</span><input id="sChaos" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
+        <small>0 = off. Higher values make that quest flavor more likely and more specific.</small>
+      </div>
+    </details>
   </div>
 
-  <details class="card simple-details">
-    <summary>🎚️ Advanced Quest Generator Settings</summary>
-
-    <label>Quest Style</label>
-    <select id="questStyle" onchange="saveSettingsFromUI()">
-      <option>Chill</option><option selected>Adventurous</option><option>Challenging</option><option>Unhinged</option>
-    </select>
-    <div class="checkline"><span>Current book first</span><input id="currentBookFirst" class="switch" type="checkbox" checked onchange="saveSettingsFromUI()"></div>
-    <div class="checkline"><span>Hide undiscovered loot names</span><input id="hideSpoilers" class="switch" type="checkbox" checked onchange="saveSettingsFromUI()"></div>
-    <div class="range-row"><span>Genre</span><input id="sGenre" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
-    <div class="range-row"><span>TBR Selection</span><input id="sTbr" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
-    <div class="range-row"><span>Focus</span><input id="sFocus" type="range" min="0" max="5" value="2" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">2</b></div>
-    <div class="range-row"><span>Atmosphere</span><input id="sAtmos" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
-    <div class="range-row"><span>Format / Style</span><input id="sFormat" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
-    <div class="range-row"><span>Time / Deadline</span><input id="sTime" type="range" min="0" max="5" value="2" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">2</b></div>
-    <div class="range-row"><span>Seasonal</span><input id="sSeasonal" type="range" min="0" max="5" value="1" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">1</b></div>
-    <div class="range-row"><span>Chaos</span><input id="sChaos" type="range" min="0" max="5" value="0" oninput="rangeUpdate(this)" onchange="saveSettingsFromUI()"><b class="range-value">0</b></div>
-    <small>0 = completely off. Higher values make that family more likely and more specific. The generator uses a modifier budget, so it does not glue every category onto every quest.</small>
-  
-  </details>
-
-  <div class="section"><img src="./asset-scroll.png" alt="">THREE-SLOT QUEST BOARD</div>
-  <div id="replacementNotice" class="card notice" style="display:none"></div>
-  <div id="questCards"></div>
+  <div class="quest-board-shell">
+    <div class="section quest-board-title"><img src="./asset-scroll.png" alt="">ACTIVE QUEST BOARD <span class="quest-board-count">3 SLOTS</span></div>
+    <div id="replacementNotice" class="notice quest-replacement" style="display:none"></div>
+    <div id="questCards" class="quest-slip-grid"></div>
+  </div>
 </section>
 
 <section id="adventure" class="screen">
@@ -3133,7 +3164,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.9.1</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.9.2</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -3667,17 +3698,25 @@ function renderHome(){
  renderHomeReading();
 }
 function renderQuestCards(){
- $("questCards").innerHTML=S.quests.map((q,i)=>`<div class="card quest ${i===0?"hunt":i===1?"gather":"craft"}">
- <h3>${i===0?"⚔️ SLOT 1 — HUNT":i===1?"🌿 SLOT 2 — GATHER":"⚗️ SLOT 3 — ALCHEMY"}</h3>
- <div class="kicker">${q.id||"No quest ID"}</div>
- <div class="bigline">${esc(q.name||"Empty Slot")}</div>
- <p style="white-space:pre-wrap;font-size:11px;line-height:1.45">${esc(q.objective||"Roll a quest above.")}</p>
- ${q.name?`<span class="tag">${q.difficulty}</span><span class="tag">+${q.xp} XP</span><span class="tag">${q.status}</span>`:""}
- <div class="row" style="margin-top:8px">
-   <button class="btn-blue" onclick="rollQuest(${i})">Reroll</button>
-   <button class="btn-plain" onclick="clearQuest(${i})">Clear</button>
-   <button class="${i===0?"btn-red":i===1?"btn-green":"btn-purple"}" onclick="sendQuestToKWGT(${i})">📡 Send to Slot ${i+1}</button>
- </div></div>`).join("");
+ $("questCards").innerHTML=S.quests.map((q,i)=>{
+   const role=i===0?"HUNT":i===1?"GATHER":"ALCHEMY";
+   const icon=i===0?"⚔️":i===1?"🌿":"⚗️";
+   const cls=i===0?"hunt":i===1?"gather":"craft";
+   return `<article class="quest-slip ${cls}">
+     <span class="quest-pin" aria-hidden="true"></span>
+     <div class="quest-slip-head"><span class="quest-role">${icon} SLOT ${i+1} · ${role}</span><span class="quest-id">${q.id||"WAITING"}</span></div>
+     <div class="quest-slip-name">${esc(q.name||"Empty Slot")}</div>
+     <div class="quest-slip-objective">${esc(q.objective||"Roll a quest from the guild counter above.")}</div>
+     <div class="quest-slip-bottom">
+       <div class="quest-slip-meta">${q.name?`<span>${esc(q.difficulty)}</span><span>+${Number(q.xp||0).toLocaleString()} XP</span><span>${esc(q.status||"Active")}</span>`:`<span>Awaiting quest</span>`}</div>
+       <div class="quest-slip-actions">
+         <button class="quest-mini-action reroll" onclick="rollQuest(${i})" aria-label="Reroll ${role} quest">↻ <span>Reroll</span></button>
+         <button class="quest-mini-action clear" onclick="clearQuest(${i})" aria-label="Clear slot ${i+1}">× <span>Clear</span></button>
+         <button class="quest-mini-action send ${cls}" onclick="sendQuestToKWGT(${i})" aria-label="Send quest to widget slot ${i+1}">📡 <span>Slot ${i+1}</span></button>
+       </div>
+     </div>
+   </article>`;
+ }).join("");
 }
 function kwgtClean(x){return String(x??"").replace(/\|\|\|/g,"—").trim()}
 function kwgtPayload(q){
