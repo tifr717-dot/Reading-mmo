@@ -1,0 +1,15 @@
+Reading MMO v5.7 — Full-Height Home
+
+Scope: Home shell only.
+
+Changes:
+- Removes the large empty brown gap between the Home content and the fixed bottom navigation on tall phones.
+- Makes the Home stage use the full usable mobile viewport height.
+- The lower illustrated furniture area flexes to consume leftover vertical space instead of ending at a fixed height.
+- Extends the widget-family carved side rails / shelf environment down toward the navigation.
+- Anchors one ornate bottom trim to the expanded lower scene.
+- Keeps the existing Reading / Reader Level / Quests tab layouts and behavior unchanged in this pass.
+- Keeps save data, localStorage, game logic, and rate-safe KWGT sync compatible with v5.6.
+- Service worker cache bumped to reading-mmo-v5.7-full-height-home.
+
+Design rule: the circled empty area should become part of the illustrated Home furniture rather than plain page background.

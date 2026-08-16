@@ -46,7 +46,8 @@ const CORE = [
   './v54-shell.png',
   './v56-level-panel-tall.png',
   './v56-open-book-scene.png',
-  './v57-footer-fill.png'
+  './v57-footer-fill.png',
+  './BUILD-NOTES-v5.7.txt'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
