@@ -1,0 +1,7 @@
+v5.8.6 — seamless footer cleanup.
+
+- removed the nested ornamental footer frame look
+- replaced the boxed footer art with a borderless dark-wood library interior
+- kept two natural shelf rows with asymmetrical books/potions
+- kept utility shelf positions, main panels, and chapter placement unchanged
+- updated App Health version and service-worker cache key

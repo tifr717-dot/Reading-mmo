@@ -1968,6 +1968,17 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 #home.v58-home.tab-quests{--footer-fill-top:53.1%;--footer-fill-height:40.3%;--utils-top:59.35%;--sync-top:64.0%;--save-top:65.6%;}
 </style>
 
+
+<style id="v586-seamless-footer">
+/* v5.8.6 — seamless lower-library footer. Main panels and chapter placement remain untouched. */
+.v58-lowerfill{
+  background:url('./v586-seamless-library-footer.png') center top/100% 100% no-repeat!important;
+  opacity:1!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2707,7 +2718,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.8.5</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.8.6</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
