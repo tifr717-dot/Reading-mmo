@@ -1979,6 +1979,17 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 }
 </style>
 
+
+<style id="v587-clean-cabinet-footer">
+/* v5.8.7 — minimal cabinet footer: no floating prop clusters, no nested frame, no sticker shelves. */
+.v58-lowerfill{
+  background:url('./v587-clean-cabinet-footer.png') center top/100% 100% no-repeat!important;
+  opacity:1!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2718,7 +2729,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.8.6</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.8.7</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");

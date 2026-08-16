@@ -1,0 +1,7 @@
+v5.8.7 — clean cabinet footer.
+
+- removed floating prop clusters from the lower footer
+- replaced shelf-sticker composition with one continuous dark wood cabinet interior
+- used only two full-width shelves plus a lower base shelf
+- preserved Reading / Reader Level / Quests layouts and the chapter placement fix
+- updated App Health and service-worker cache key

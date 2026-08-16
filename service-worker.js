@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.8.6-seamless-footer';
+const CACHE = 'reading-mmo-v5.8.7-clean-cabinet-footer';
 const CORE = [
   './',
   './asset-book.png',
@@ -51,7 +51,8 @@ const CORE = [
   './v58-home-frame-v582.png',
   './v584-dense-library-footer.png',
   './v585-library-footer.png',
-  './v586-seamless-library-footer.png'
+  './v586-seamless-library-footer.png',
+  './v587-clean-cabinet-footer.png'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
