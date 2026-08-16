@@ -1,0 +1,10 @@
+Reading MMO PWA v5.9.0 — Global Tab Theme Pass
+
+Home layout is frozen from the accepted v5.8.10 state.
+This build applies the enchanted-library visual language to the rest of the app without changing feature logic:
+- Read: reading-desk parchment panels, styled timer/progress/session controls
+- Quests: parchment quest-workbench styling and purple/gold generator controls
+- Play: darker adventure hub and matching Hunt/Gather/Alchemy panels
+- World & Bag: matching map, bestiary, collections, potion, and equipment material styling
+- Me: character-ledger treatment and five-tab fit
+- Shared: continuous dark wood room background, ornate section plaques, consistent parchment cards, inputs, buttons, notices, and subtabs

@@ -2010,10 +2010,381 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
   border:0!important;
   box-shadow:none!important;
 }
+/* Preserve the balanced per-tab placement from the earlier good composition. */
 #home.v58-home.tab-reading{--footer-fill-top:49.2%;--footer-fill-height:44.2%;--utils-top:55.6%;--sync-top:60.25%;--save-top:61.95%;}
 #home.v58-home.tab-level{--footer-fill-top:54.0%;--footer-fill-height:39.4%;--utils-top:59.9%;--sync-top:64.55%;--save-top:66.15%;}
 #home.v58-home.tab-quests{--footer-fill-top:53.1%;--footer-fill-height:40.3%;--utils-top:59.25%;--sync-top:63.95%;--save-top:65.55%;}
 .v58-utils,.v58-sync-state,.v58-save{z-index:20!important}
+</style>
+
+
+
+<style id="v590-global-tab-theme">
+/* v5.9.0 — carry the unified enchanted-library visual language to every non-Home screen. */
+:root{
+  --mmo-deep:#1b0d08;
+  --mmo-wood:#3b1d13;
+  --mmo-wood2:#5a301e;
+  --mmo-line:#8b5e37;
+  --mmo-gold:#c59a4a;
+  --mmo-gold-hi:#e1bd70;
+  --mmo-purple:#6f4c91;
+  --mmo-purple-dark:#392947;
+  --mmo-parch:#ead3a6;
+  --mmo-parch2:#f3dfb5;
+  --mmo-ink:#43291c;
+}
+
+/* One continuous room per tab. */
+#reading.screen,#quests.screen,#adventure.screen,#world.screen,#bag.screen,#profile.screen{
+  position:relative;
+  min-height:calc(100dvh - 145px);
+  padding:14px 13px 24px!important;
+  background:
+    linear-gradient(rgba(32,14,8,.18),rgba(16,7,4,.28)),
+    url('./v53-wood-tile.png') center top/512px auto repeat!important;
+  border-left:3px solid #5a341f;
+  border-right:3px solid #5a341f;
+  box-shadow:inset 8px 0 18px rgba(0,0,0,.25),inset -8px 0 18px rgba(0,0,0,.25);
+}
+#reading.screen:before,#quests.screen:before,#adventure.screen:before,#world.screen:before,#bag.screen:before,#profile.screen:before{
+  content:"";
+  display:block;
+  height:10px;
+  margin:-14px -13px 12px;
+  border-top:1px solid #c79a4b;
+  border-bottom:1px solid #5c321f;
+  background:linear-gradient(90deg,#2a120b,#75431f 18%,#c69a45 50%,#75431f 82%,#2a120b);
+  opacity:.85;
+}
+
+/* Ornate section plaques. */
+#reading .section,#quests .section,#adventure .section,#world .section,#bag .section,#profile .section{
+  position:relative;
+  margin:15px 0 8px!important;
+  padding:9px 36px!important;
+  border:1px solid #8e693c!important;
+  border-left:0!important;
+  border-right:0!important;
+  border-radius:0!important;
+  background:linear-gradient(180deg,#4c2b20 0%,#2b1712 48%,#20100c 100%)!important;
+  color:#ead9aa!important;
+  box-shadow:0 3px 0 #160a07,inset 0 1px 0 rgba(232,191,106,.25)!important;
+  text-align:center;
+  font:700 clamp(11px,3.1vw,14px)/1.1 Georgia,'Times New Roman',serif!important;
+  letter-spacing:.6px!important;
+  text-shadow:1px 1px 0 #120806;
+}
+#reading .section:before,#quests .section:before,#adventure .section:before,#world .section:before,#bag .section:before,#profile .section:before,
+#reading .section:after,#quests .section:after,#adventure .section:after,#world .section:after,#bag .section:after,#profile .section:after{
+  content:"◆";
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  color:#8058a1;
+  font-size:10px;
+  text-shadow:0 0 0 #d4ad61;
+}
+#reading .section:before,#quests .section:before,#adventure .section:before,#world .section:before,#bag .section:before,#profile .section:before{left:14px}
+#reading .section:after,#quests .section:after,#adventure .section:after,#world .section:after,#bag .section:after,#profile .section:after{right:14px}
+#reading .section img,#quests .section img,#profile .section img{height:17px;width:17px;object-fit:contain;vertical-align:middle;margin-right:6px;filter:sepia(.2) saturate(.8)}
+
+/* Parchment work panels replace generic white cards. */
+#reading .card,#quests .card,#adventure .card,#world .card,#bag .card,#profile .card,
+#reading details.card,#quests details.card,#profile details.card{
+  position:relative;
+  background:
+    linear-gradient(rgba(255,248,220,.20),rgba(123,78,42,.06)),
+    linear-gradient(180deg,#efd9ad,#e1c18e)!important;
+  color:var(--mmo-ink)!important;
+  border:2px solid #6d4428!important;
+  outline:1px solid #b58b4f;
+  outline-offset:-5px;
+  border-radius:2px!important;
+  box-shadow:0 5px 0 rgba(20,8,5,.45),inset 0 0 22px rgba(112,67,35,.10)!important;
+  margin:10px 0 14px!important;
+  padding:14px 13px!important;
+}
+#reading .card:before,#quests .card:before,#adventure .card:before,#world .card:before,#bag .card:before,#profile .card:before{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border:1px solid rgba(116,73,39,.23);
+  pointer-events:none;
+}
+#reading .card.dark,#quests .card.dark,#adventure .card.dark,#world .card.dark,#bag .card.dark,#profile .card.dark{
+  background:linear-gradient(180deg,#2f1912,#1b0e0a)!important;
+  color:#e5d2aa!important;
+  outline-color:#6f4c91!important;
+}
+#reading .card h2,#reading .card h3,#quests .card h2,#quests .card h3,#adventure .card h2,#adventure .card h3,#world .card h2,#world .card h3,#bag .card h2,#bag .card h3,#profile .card h2,#profile .card h3{
+  font-family:Georgia,'Times New Roman',serif!important;
+  color:#4b281a!important;
+  letter-spacing:.2px;
+}
+
+/* Labels and fields feel like things sitting on a reading desk. */
+#reading label,#quests label,#adventure label,#world label,#bag label,#profile label,
+#reading .range-row span,#quests .range-row span,#adventure .range-row span,#profile .range-row span{
+  color:#5b3421!important;
+  font-weight:900!important;
+}
+#reading input,#reading select,#reading textarea,
+#quests input,#quests select,#quests textarea,
+#adventure input,#adventure select,#adventure textarea,
+#world input,#world select,#world textarea,
+#bag input,#bag select,#bag textarea,
+#profile input,#profile select,#profile textarea{
+  background:#f5e5bf!important;
+  color:#3f271c!important;
+  border:1px solid #87633b!important;
+  border-radius:1px!important;
+  box-shadow:inset 0 1px 4px rgba(69,37,20,.14)!important;
+}
+#reading input:focus,#reading select:focus,#quests input:focus,#quests select:focus,#adventure input:focus,#adventure select:focus,#profile input:focus,#profile select:focus{
+  outline:2px solid rgba(111,76,145,.45)!important;
+  outline-offset:1px;
+}
+
+/* Purple/gold ribbon-style subtabs throughout Play, Me, World and Bag. */
+#reading .tabs,#quests .tabs,#adventure .tabs,#world .tabs,#bag .tabs,#profile .tabs{
+  gap:4px!important;
+  margin:9px 0 12px!important;
+  padding:5px!important;
+  background:rgba(24,10,7,.60)!important;
+  border:1px solid #654126!important;
+  box-shadow:inset 0 0 0 1px rgba(203,157,72,.12)!important;
+  scrollbar-width:none;
+}
+#reading .tabs::-webkit-scrollbar,#quests .tabs::-webkit-scrollbar,#adventure .tabs::-webkit-scrollbar,#world .tabs::-webkit-scrollbar,#bag .tabs::-webkit-scrollbar,#profile .tabs::-webkit-scrollbar{display:none}
+#reading .tabs button,#quests .tabs button,#adventure .tabs button,#world .tabs button,#bag .tabs button,#profile .tabs button{
+  border:1px solid #765535!important;
+  background:linear-gradient(#3e2a36,#2d1e29)!important;
+  color:#c9b796!important;
+  border-radius:1px!important;
+  box-shadow:none!important;
+  text-shadow:1px 1px 0 #160a07!important;
+}
+#reading .tabs button.active,#quests .tabs button.active,#adventure .tabs button.active,#world .tabs button.active,#bag .tabs button.active,#profile .tabs button.active{
+  background:linear-gradient(#7a56a1,#5c3d80)!important;
+  color:#fff0c8!important;
+  border-color:#c89d53!important;
+  box-shadow:inset 0 0 0 1px rgba(235,198,123,.26)!important;
+}
+
+/* Buttons share the Home purple/gold/wood language while preserving action colors. */
+#reading button:not(.bottomnav button),#quests button:not(.bottomnav button),#adventure button:not(.bottomnav button),#world button:not(.bottomnav button),#bag button:not(.bottomnav button),#profile button:not(.bottomnav button){
+  border:1px solid #b18a4d!important;
+  border-radius:2px!important;
+  box-shadow:0 3px 0 rgba(29,12,8,.36)!important;
+  text-shadow:1px 1px 0 rgba(32,12,8,.65);
+}
+#reading .btn-purple,#quests .btn-purple,#adventure .btn-purple,#world .btn-purple,#bag .btn-purple,#profile .btn-purple{background:linear-gradient(#7954a0,#593b78)!important}
+#reading .btn-blue,#quests .btn-blue,#adventure .btn-blue,#world .btn-blue,#bag .btn-blue,#profile .btn-blue{background:linear-gradient(#5f7482,#43545e)!important}
+#reading .btn-green,#quests .btn-green,#adventure .btn-green,#world .btn-green,#bag .btn-green,#profile .btn-green{background:linear-gradient(#627b48,#435733)!important}
+#reading .btn-red,#quests .btn-red,#adventure .btn-red,#world .btn-red,#bag .btn-red,#profile .btn-red{background:linear-gradient(#994e42,#6f352e)!important}
+#reading .btn-gold,#quests .btn-gold,#adventure .btn-gold,#world .btn-gold,#bag .btn-gold,#profile .btn-gold{background:linear-gradient(#9b741e,#725312)!important}
+#reading .btn-plain,#quests .btn-plain,#adventure .btn-plain,#world .btn-plain,#bag .btn-plain,#profile .btn-plain{background:linear-gradient(#76513b,#503326)!important}
+
+/* Dark result boxes and notices echo the lower Home wood. */
+#reading .result,#quests .result,#adventure .result,#world .result,#bag .result,#profile .result{
+  background:linear-gradient(#24120d,#160a07)!important;
+  color:#eadab3!important;
+  border:1px solid #8e693b!important;
+  box-shadow:inset 0 0 0 1px rgba(118,77,42,.24)!important;
+}
+#reading .notice,#quests .notice,#adventure .notice,#world .notice,#bag .notice,#profile .notice,
+#reading .calm-note,#quests .calm-note,#profile .calm-note{
+  background:rgba(83,47,28,.10)!important;
+  border:1px solid rgba(113,75,43,.35)!important;
+  padding:8px!important;
+  color:#684b36!important;
+}
+#reading small,#reading .muted,#quests small,#quests .muted,#adventure small,#adventure .muted,#world small,#world .muted,#bag small,#bag .muted,#profile small,#profile .muted{color:#705946!important}
+
+/* Reading desk emphasis. */
+#reading .desk-card{background:linear-gradient(180deg,#f1ddb6,#dfc18f)!important}
+#reading .read-timer{font-family:Georgia,'Times New Roman',serif!important;color:#6f4c91!important;text-shadow:0 1px #fff0c8;font-size:clamp(30px,9vw,40px)!important}
+#reading .counter-number,#reading .read-big{font-family:Georgia,'Times New Roman',serif!important;color:#6f4c91!important}
+#reading .book-progress-wrap{background:rgba(80,45,27,.08)!important;border:1px solid #9a774b!important}
+#reading .progress{background:#3b2117!important;border:1px solid #7d5937!important;height:15px!important;padding:2px!important}
+#reading .progress>div{background:linear-gradient(90deg,#5d3980,#8c61ae)!important}
+
+/* Quest cards keep their role colors but live on parchment. */
+#quests .quest{border-left-width:5px!important}
+#quests .tag{background:#dcc59a!important;border:1px solid #9d7849!important;color:#523723!important}
+#quests details summary{font-family:Georgia,'Times New Roman',serif!important;color:#4f2d1d!important;font-size:12px!important}
+#quests .range-value{background:#382018!important;color:#ead7ac!important;border:1px solid #8b653e!important}
+
+/* Adventure hub feels like a real hub instead of a plain card stack. */
+#adventure>.card:first-of-type{background:linear-gradient(180deg,#2c1811,#1a0d09)!important;outline-color:#75569a!important;color:#e6d4ae!important}
+#adventure .hub-buttons button{min-height:56px!important;font-family:Georgia,'Times New Roman',serif!important;font-size:12px!important}
+
+/* Map / collection pieces receive the same material language. */
+#world .map-node,#bag .collection-card,#world .region-banner,#world .boss-panel,#world .boss-phase{
+  background:linear-gradient(180deg,#eed9ad,#dec18e)!important;
+  border-color:#795031!important;
+  color:#442b1e!important;
+  box-shadow:0 3px 0 rgba(20,8,5,.32)!important;
+}
+#world .map-node.current{outline-color:#7955a0!important}
+#world .map-status>div,#bag .stat{background:#e6cfa2!important;border-color:#957044!important}
+#bag .item-icon{background:#2b1711!important;border-color:#9b7745!important;color:#d8b96b!important}
+
+/* Character/Profile page reads like a ledger. */
+#profile .tabs{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible!important}
+#profile .tabs button{min-width:0!important;padding:8px 2px!important;font-size:clamp(7px,1.9vw,9px)!important;white-space:normal!important}
+#profile .health-row{border-bottom-color:#9d7b50!important}
+#profile .simple-status{background:#dfc99d!important;border-color:#997346!important;color:#513625!important}
+
+/* Back buttons on nested screens resemble a slim carved rail. */
+#world>button.btn-plain,#bag>button.btn-plain{
+  background:linear-gradient(#4b2a20,#2b1712)!important;
+  color:#ead6a9!important;
+  border-color:#9f7845!important;
+  font-family:Georgia,'Times New Roman',serif!important;
+}
+
+@media(max-width:390px){
+  #reading.screen,#quests.screen,#adventure.screen,#world.screen,#bag.screen,#profile.screen{padding-left:9px!important;padding-right:9px!important}
+  #profile .tabs button{font-size:7px!important}
+  .range-row{grid-template-columns:104px 1fr 24px!important}
+}
+</style>
+
+
+<style id="v591-read-rebuild">
+/* v5.9.1 — dedicated Read page composition. Home and all other tabs remain frozen. */
+#reading.v591-read{
+  padding:12px 11px 28px!important;
+  background:
+    radial-gradient(circle at 50% 5%,rgba(105,66,37,.20),transparent 34%),
+    linear-gradient(rgba(24,10,6,.12),rgba(10,4,3,.30)),
+    url('./v53-wood-tile.png') center top/512px auto repeat!important;
+}
+#reading.v591-read:before{margin:-12px -11px 11px!important}
+.v591-read-stage{max-width:620px;margin:0 auto}
+
+/* Slim carved plaques instead of giant standalone section boxes. */
+#reading .v591-read-plaque{
+  position:relative;
+  width:max-content;
+  max-width:78%;
+  margin:12px 0 7px!important;
+  padding:8px 24px 8px 17px!important;
+  background:linear-gradient(180deg,#563426,#321a13 58%,#25120e)!important;
+  color:#efdcad!important;
+  border:1px solid #a57b43!important;
+  box-shadow:0 3px 0 #160906,inset 0 0 0 2px rgba(199,151,72,.17)!important;
+  font:700 clamp(11px,3vw,14px)/1 Georgia,'Times New Roman',serif!important;
+  letter-spacing:.8px!important;
+  text-shadow:1px 1px #140806;
+}
+#reading .v591-read-plaque:after{content:"◆";color:#79529d;margin-left:14px;font-size:8px}
+#reading .v591-read-plaque img{width:17px;height:17px;vertical-align:middle;object-fit:contain;margin-right:8px}
+
+/* Current book = one compact hero desk panel. */
+#reading .v591-book-panel{
+  position:relative;
+  margin:0 0 10px;
+  padding:11px 12px 12px;
+  background:
+    linear-gradient(rgba(255,249,224,.16),rgba(111,68,35,.05)),
+    linear-gradient(180deg,#f0dcaf,#dfc28e)!important;
+  border:2px solid #6e4529;
+  outline:1px solid #bc9050;
+  outline-offset:-5px;
+  box-shadow:0 5px 0 rgba(18,7,4,.44),inset 0 0 20px rgba(91,54,28,.10);
+  color:#43291c;
+}
+#reading .v591-book-banner{display:flex;align-items:center;justify-content:space-between;padding:2px 3px 8px;border-bottom:1px solid rgba(107,68,37,.28);margin-bottom:9px}
+#reading .v591-book-kicker{font:900 8px/1 ui-monospace,monospace;letter-spacing:1.4px;color:#725194}
+#reading .v591-book-mark{font-size:19px;filter:saturate(.75)}
+#reading .v591-book-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 9px}
+#reading .v591-field{min-width:0}
+#reading .v591-field label{display:block;margin:0 0 3px!important;font-size:8px!important;letter-spacing:.2px}
+#reading .v591-field input,#reading .v591-field select{height:35px!important;padding:7px 9px!important;font-size:10px!important}
+#reading .v591-book-name,#reading .v591-last-book,#reading .v591-status-field{grid-column:1/-1}
+#reading .v591-status-field select{height:37px!important;font-size:8.5px!important}
+#reading .v591-book-progress{margin:10px 0 0!important;padding:7px 8px!important}
+#reading .v591-book-progress .book-progress-head{font-size:7px!important}
+#reading .v591-book-progress .progress{height:12px!important;margin-top:4px!important}
+#reading .v591-book-actions{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:8px;align-items:center;margin-top:9px}
+#reading .v591-book-actions button{min-height:38px!important;font-size:9px!important;padding:7px!important}
+#reading .v591-sync-note{font:700 6.5px/1.25 ui-monospace,monospace;color:#735b45;text-align:center}
+
+/* E-ink calculator becomes a drawer/tool instead of a full page section. */
+#reading .v591-tool-drawer{
+  margin:10px 0 13px!important;
+  padding:0!important;
+  background:linear-gradient(180deg,#45281e,#28140f)!important;
+  border:1px solid #8d6539!important;
+  outline:1px solid rgba(198,151,72,.28)!important;
+  outline-offset:-4px!important;
+  box-shadow:0 4px 0 rgba(18,7,4,.42)!important;
+  color:#ead7aa!important;
+}
+#reading .v591-tool-drawer:before{display:none!important}
+#reading .v591-tool-drawer summary{
+  list-style:none;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;
+  min-height:42px;padding:8px 13px;cursor:pointer;
+  font:700 10px/1 Georgia,'Times New Roman',serif;color:#ead7aa;
+}
+#reading .v591-tool-drawer summary::-webkit-details-marker{display:none}
+#reading .v591-tool-drawer summary:after{content:"▾";color:#b99353;font-size:10px;margin-left:4px}
+#reading .v591-tool-drawer[open] summary:after{content:"▴"}
+#reading .v591-tool-icon{font-size:14px}
+#reading .v591-tool-hint{font:700 5.8px/1 ui-monospace,monospace;color:#9b8467;text-transform:uppercase;letter-spacing:.4px}
+#reading .v591-tool-body{padding:11px 12px 12px;border-top:1px solid #795337;background:linear-gradient(#ead4a8,#dec08c);color:#43291c}
+#reading .v591-tool-copy{font:600 7px/1.35 ui-monospace,monospace;color:#705640;margin-bottom:8px}
+#reading .v591-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#reading .v591-tool-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+#reading .v591-tool-actions button{min-height:38px!important;font-size:9px!important}
+#reading .v591-tool-result{margin-top:8px!important;min-height:34px!important;padding:8px!important;font-size:7px!important}
+
+/* Session is the main interactive workstation. */
+#reading .v591-session-plaque{margin-top:13px!important}
+#reading .v591-session-panel{
+  position:relative;margin:0;padding:11px 12px 12px;
+  background:linear-gradient(180deg,#ead4a7,#ddbf8d)!important;
+  border:2px solid #6e4529;outline:1px solid #bb8f50;outline-offset:-5px;
+  box-shadow:0 5px 0 rgba(18,7,4,.44),inset 0 0 20px rgba(91,54,28,.10);
+}
+#reading .v591-timer-wrap{
+  padding:9px 9px 10px;
+  background:linear-gradient(180deg,#28140f,#1a0c09);
+  border:1px solid #9e7744;box-shadow:inset 0 0 0 2px rgba(113,76,142,.40);
+  text-align:center;
+}
+#reading .v591-timer-label{font:800 6px/1 ui-monospace,monospace;color:#bfa675;letter-spacing:1px;margin-bottom:3px}
+#reading .v591-session-panel .read-timer{font-size:clamp(31px,10vw,44px)!important;line-height:1.05!important;color:#edcf7f!important;text-shadow:0 1px #311709!important;padding:4px 0 7px!important}
+#reading .v591-timer-controls{display:grid;grid-template-columns:1fr 1fr .72fr;gap:6px}
+#reading .v591-timer-controls button{min-height:37px!important;padding:6px!important;font-size:8.5px!important}
+#reading .v591-reset-timer{font-size:7.5px!important}
+#reading .v591-session-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+#reading .v591-session-stat{
+  background:rgba(251,232,187,.48);border:1px solid #a47e49;padding:8px;
+  box-shadow:inset 0 0 0 2px rgba(255,247,220,.25);
+}
+#reading .v591-session-stat label{font-size:7.5px!important;margin-bottom:4px!important}
+#reading .v591-session-stat input{height:34px!important;font-size:11px!important}
+#reading .v591-session-stat button{width:100%;min-height:35px!important;margin-top:6px;padding:5px!important;font-size:7.5px!important}
+#reading .v591-pages-session .read-big{height:34px;display:flex;align-items:center;justify-content:center;font-size:25px!important;line-height:1!important;color:#6f4c91!important}
+#reading .v591-chapter-strip{margin-top:10px;padding:8px 9px;background:rgba(74,42,26,.08);border-top:1px dashed #a8814d;border-bottom:1px dashed #a8814d}
+#reading .v591-chapter-label{font:900 7px/1 ui-monospace,monospace;color:#593521;letter-spacing:.45px;text-align:center;margin-bottom:7px}
+#reading .v591-chapter-controls{display:grid;grid-template-columns:42px 1fr 42px 64px;gap:6px;align-items:stretch}
+#reading .v591-chapter-controls button{min-height:39px!important;padding:4px!important;font-size:14px!important}
+#reading .v591-chapter-controls .v591-chapter-reset{font-size:7px!important}
+#reading .v591-chapter-controls .counter-number{min-height:39px;display:flex;align-items:center;justify-content:center;background:#efd49c;border:1px solid #9f7847;font-size:24px!important;color:#6f4c91!important}
+#reading .v591-session-summary{margin-top:9px!important;min-height:40px!important;padding:8px 10px!important;font-size:7px!important}
+
+@media(max-width:390px){
+  #reading.v591-read{padding-left:8px!important;padding-right:8px!important}
+  #reading .v591-book-grid{gap:6px 7px}
+  #reading .v591-book-actions{grid-template-columns:1fr}
+  #reading .v591-sync-note{text-align:left;padding-left:2px}
+  #reading .v591-chapter-controls{grid-template-columns:38px 1fr 38px 56px}
+}
 </style>
 
 </head>
@@ -2107,110 +2478,117 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
   </div>
 </section>
 
-<section id="reading" class="screen">
-  <div class="section"><img src="./asset-book.png" alt="">READING DESK</div>
+<section id="reading" class="screen v591-read">
+  <div class="v591-read-stage">
+    <div class="v591-read-plaque"><img src="./asset-book.png" alt=""><span>READING DESK</span></div>
 
-  <div class="card desk-card">
-    <label>Current book</label>
-    <input id="readBookName" type="text" placeholder="What are you reading now?">
-
-    <label>Last book finished</label>
-    <input id="readLastFinishedBook" type="text" placeholder="Most recently finished book">
-    <small>This is what your Reader Level widget shows as <b>Last Read</b>.</small>
-
-    <label>Reading status</label>
-    <select id="readMode">
-      <option value="first">First time reading</option>
-      <option value="reread">Reread / familiar series — I know the characters and plot</option>
-    </select>
-    <small>Reread mode assumes you already know the story. Most quests stay focused on reading mechanics; story-based prompts are only occasional flavor.</small>
-
-    <div class="row">
-      <div>
-        <label>Book page count</label>
-        <input id="readBookTotal" type="number" min="1" placeholder="e.g. 420">
+    <div class="v591-book-panel">
+      <div class="v591-book-banner">
+        <div class="v591-book-kicker">CURRENT VOLUME</div>
+        <div class="v591-book-mark">📖</div>
       </div>
-      <div>
-        <label>Total pages read — MMO</label>
-        <input id="readMmoPages" type="number" min="0">
-      </div>
-    </div>
 
-    <button class="btn-blue primary-wide" style="margin-top:9px" onclick="saveReadingDesk()">💾 Save Reading Info</button>
-    <div class="calm-note">Widget syncing lives in one place now: Home → Sync Widgets.</div>
-    <div id="readBookProgressWrap" class="book-progress-wrap" style="display:none">
-      <div class="book-progress-head">
-        <span id="readBookProgressPages">BOOK PROGRESS</span>
-        <span id="readBookProgressText">0%</span>
+      <div class="v591-book-grid">
+        <div class="v591-field v591-book-name">
+          <label>Current book</label>
+          <input id="readBookName" type="text" placeholder="What are you reading now?">
+        </div>
+        <div class="v591-field v591-last-book">
+          <label>Last finished</label>
+          <input id="readLastFinishedBook" type="text" placeholder="Most recently finished book">
+        </div>
+        <div class="v591-field v591-status-field">
+          <label>Reading status</label>
+          <select id="readMode">
+            <option value="first">First time reading</option>
+            <option value="reread">Reread / familiar series — I know the characters and plot</option>
+          </select>
+        </div>
+        <div class="v591-field v591-page-total">
+          <label>Book pages</label>
+          <input id="readBookTotal" type="number" min="1" placeholder="e.g. 420">
+        </div>
+        <div class="v591-field v591-mmo-total">
+          <label>MMO pages</label>
+          <input id="readMmoPages" type="number" min="0">
+        </div>
       </div>
-      <div class="progress"><div id="readBookProgressBar"></div></div>
-    </div>
-  </div>
 
-  <div class="section"><img src="./asset-scroll.png" alt="">XTE INK PAGE CALCULATOR</div>
-  <div class="card calc-card">
-    <small>Use whichever number your e-ink reader gives you. The other one is calculated from the book's page count.</small>
-
-    <div class="row">
-      <div>
-        <label>Current percentage</label>
-        <input id="readPercent" type="number" min="0" max="100" step="0.1" placeholder="e.g. 42.5">
+      <div id="readBookProgressWrap" class="book-progress-wrap v591-book-progress" style="display:none">
+        <div class="book-progress-head">
+          <span id="readBookProgressPages">BOOK PROGRESS</span>
+          <span id="readBookProgressText">0%</span>
+        </div>
+        <div class="progress"><div id="readBookProgressBar"></div></div>
       </div>
-      <div>
-        <label>Approx. current page</label>
-        <input id="readCurrentPage" type="number" min="0" placeholder="e.g. 179">
+
+      <div class="v591-book-actions">
+        <button class="btn-blue" onclick="saveReadingDesk()">💾 Save Reading Info</button>
+        <div class="v591-sync-note">Widgets sync from Home.</div>
       </div>
     </div>
 
-    <div class="row" style="margin-top:8px">
-      <button class="btn-purple" onclick="calcPageFromPercent()">% → Page</button>
-      <button class="btn-green" onclick="calcPercentFromPage()">Page → %</button>
-    </div>
-
-    <div id="readPositionResult" class="result">Enter the book page count, then use either calculator button.</div>
-  </div>
-
-  <div class="section"><img src="./asset-potion.png" alt="">READING SESSION</div>
-  <div class="card session-card">
-    <div id="readTimer" class="read-timer">00:00:00</div>
-    <div class="row">
-      <button id="readTimerStartBtn" class="btn-green" onclick="startReadingTimer()">▶ Start</button>
-      <button class="btn-blue" onclick="pauseReadingTimer()">⏸ Pause</button>
-    </div>
-    <button class="btn-plain" style="width:100%;margin-top:8px" onclick="resetReadingTimer()">↺ Reset Timer</button>
-
-    <hr>
-
-    <div class="row">
-      <div>
-        <label>Session start page</label>
-        <input id="readSessionStartPage" type="number" min="0">
+    <details class="v591-tool-drawer">
+      <summary><span class="v591-tool-icon">📜</span><span>E‑INK PAGE TOOL</span><span class="v591-tool-hint">tap to open</span></summary>
+      <div class="v591-tool-body">
+        <div class="v591-tool-copy">Use whichever position your e-reader gives you. The other value is calculated from the book page count.</div>
+        <div class="v591-tool-grid">
+          <div class="v591-field">
+            <label>Current %</label>
+            <input id="readPercent" type="number" min="0" max="100" step="0.1" placeholder="42.5">
+          </div>
+          <div class="v591-field">
+            <label>Approx. page</label>
+            <input id="readCurrentPage" type="number" min="0" placeholder="179">
+          </div>
+        </div>
+        <div class="v591-tool-actions">
+          <button class="btn-purple" onclick="calcPageFromPercent()">% → Page</button>
+          <button class="btn-green" onclick="calcPercentFromPage()">Page → %</button>
+        </div>
+        <div id="readPositionResult" class="result v591-tool-result">Enter the book page count, then use either calculator button.</div>
       </div>
-      <div>
-        <label>Pages this session</label>
-        <div id="readPagesSession" class="read-big">0</div>
+    </details>
+
+    <div class="v591-read-plaque v591-session-plaque"><img src="./asset-potion.png" alt=""><span>READING SESSION</span></div>
+    <div class="v591-session-panel">
+      <div class="v591-timer-wrap">
+        <div class="v591-timer-label">SESSION TIMER</div>
+        <div id="readTimer" class="read-timer">00:00:00</div>
+        <div class="v591-timer-controls">
+          <button id="readTimerStartBtn" class="btn-green" onclick="startReadingTimer()">▶ Start</button>
+          <button class="btn-blue" onclick="pauseReadingTimer()">⏸ Pause</button>
+          <button class="btn-plain v591-reset-timer" onclick="resetReadingTimer()">↺ Reset</button>
+        </div>
       </div>
+
+      <div class="v591-session-stats">
+        <div class="v591-session-stat v591-start-page">
+          <label>Session start page</label>
+          <input id="readSessionStartPage" type="number" min="0">
+          <button class="btn-blue" onclick="setSessionStartFromCurrent()">Use Current</button>
+        </div>
+        <div class="v591-session-stat v591-pages-session">
+          <label>Pages this session</label>
+          <div id="readPagesSession" class="read-big">0</div>
+          <button class="btn-gold" onclick="logSessionPages()">+ Add to MMO</button>
+        </div>
+      </div>
+
+      <div class="v591-chapter-strip">
+        <div class="v591-chapter-label">CHAPTERS THIS SESSION</div>
+        <div class="v591-chapter-controls">
+          <button class="btn-plain" onclick="changeChapterCount(-1)">−</button>
+          <div id="readChapterCount" class="counter-number">0</div>
+          <button class="btn-purple" onclick="changeChapterCount(1)">+</button>
+          <button class="btn-plain v591-chapter-reset" onclick="resetChapterCount()">Reset</button>
+        </div>
+      </div>
+
+      <div id="readSessionSummary" class="result v591-session-summary">Timer, pages, and chapters stay saved in this app copy.</div>
     </div>
-
-    <div class="row" style="margin-top:8px">
-      <button class="btn-blue" onclick="setSessionStartFromCurrent()">Set Start = Current Page</button>
-      <button class="btn-gold" onclick="logSessionPages()">+ Add Session Pages to MMO</button>
-    </div>
-
-    <hr>
-
-    <label>Chapters completed this session</label>
-    <div class="counter-box">
-      <button class="btn-plain" onclick="changeChapterCount(-1)">−</button>
-      <div id="readChapterCount" class="counter-number">0</div>
-      <button class="btn-purple" onclick="changeChapterCount(1)">+</button>
-    </div>
-    <button class="btn-plain" style="width:100%;margin-top:8px" onclick="resetChapterCount()">Reset Chapter Counter</button>
-
-    <div id="readSessionSummary" class="result">Timer, pages, and chapters stay saved in this app copy.</div>
   </div>
 </section>
-
 <section id="quests" class="screen">
   <div class="section"><img src="./asset-goose.png" alt="">QUEST GENERATOR</div>
   <div class="card generator-card">
@@ -2755,7 +3133,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.8.10</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.9.1</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");

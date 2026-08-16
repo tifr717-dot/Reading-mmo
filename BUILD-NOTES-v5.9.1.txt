@@ -1,0 +1,9 @@
+Reading MMO PWA v5.9.1
+
+Dedicated Read-page rebuild only.
+- Home is frozen and unchanged.
+- Reorganized Read into Current Volume, optional E-Ink Page Tool, and Reading Session.
+- Kept all existing Read IDs/functions so gameplay behavior is unchanged.
+- Made the E-Ink calculator a compact collapsible drawer.
+- Compressed timer, page logging, and chapter controls into one coherent workstation.
+- Updated App Health version and service-worker cache key.

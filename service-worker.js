@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.8.10-quiet-panel-footer';
+const CACHE = 'reading-mmo-v5.9.1-read-rebuild';
 const CORE = [
   './',
   './asset-book.png',
