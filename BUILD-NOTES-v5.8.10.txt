@@ -1,0 +1,7 @@
+Reading MMO PWA v5.8.10
+
+Corrected quiet-panel footer build.
+- Replaces cabinet doors with subtle three-panel wood wainscoting.
+- Keeps the slim utility rail and status text.
+- Keeps Reading, Reader Level, Quests, and chapter placement unchanged.
+- Fresh cache key to avoid the broken 5.8.9 build.
