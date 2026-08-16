@@ -1547,6 +1547,58 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 }
 
 </style>
+
+<style id="v55-fit-finish">
+/* v5.5 — Reading + Reader Level fit-and-finish only. Quests intentionally unchanged. */
+
+/* READING: use the whole stage, make the book the hero, and pin every live field to a clean page safe-zone. */
+.v53-reading{top:12.5%!important;bottom:5.5%!important}
+.v53-open-book{left:-5%!important;right:auto!important;top:8%!important;width:110%!important}
+.v53-read-left,.v53-read-right{top:24.5%!important;height:58%!important}
+.v53-read-left{left:12.5%!important;width:35.5%!important}
+.v53-read-right{left:54%!important;width:29.5%!important}
+.v53-read-left>*,.v53-read-right>*{position:absolute!important;margin:0!important}
+
+/* left page */
+.v53-read-left>:nth-child(1){left:0;right:0;top:0}
+.v53-read-left>:nth-child(2){left:0;right:0;top:8%;max-height:24%;overflow:hidden}
+.v53-read-left>:nth-child(3){left:0;right:0;top:33%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v53-read-left>:nth-child(4){left:0;right:0;top:49%}
+.v53-read-left>:nth-child(5){left:0;right:0;top:57%}
+.v53-read-left>:nth-child(6){left:0;right:0;top:72%}
+.v53-read-left>:nth-child(7){left:0;right:0;top:81%;margin-bottom:0!important}
+
+/* right page */
+.v53-read-right>:nth-child(1){left:0;right:0;top:0;text-align:center}
+.v53-read-right>:nth-child(2){left:-3%;right:-3%;top:10%;text-align:center}
+.v53-read-right>:nth-child(3){left:6%;right:6%;top:31%;width:auto!important}
+.v53-read-right>:nth-child(4){left:0;right:0;top:43%;text-align:center}
+.v53-read-right>:nth-child(5){left:0;right:0;top:69%}
+.v53-read-right>:nth-child(6){left:0;right:0;top:78%;max-height:18%;overflow:hidden}
+.v53-page{font-size:clamp(11.6px,3.25vw,15.8px)!important;white-space:nowrap!important}
+.v53-progress{height:16px!important}
+.v53-percent{font-size:clamp(9px,2.55vw,12px)!important}
+.v53-reader-ribbon{right:.8%!important;top:19.5%!important;height:36%!important;width:auto!important}
+.v53-open-hit{right:.5%!important;top:19.5%!important;width:15.5%!important;height:36%!important;outline:none!important;box-shadow:none!important;-webkit-tap-highlight-color:transparent!important}
+.v53-read-decor.candle{left:-.5%!important;bottom:6%!important;width:6%!important}
+.v53-read-decor.books{left:.5%!important;bottom:1.5%!important;width:11.5%!important}
+.v53-read-decor.quill{right:-.5%!important;bottom:4%!important;width:6%!important}
+
+/* READER LEVEL: let the real widget interior occupy the stage instead of floating in its top half. */
+.v53-level-panel{top:12.5%!important;bottom:5.5%!important;aspect-ratio:auto!important}
+.v53-level-art{left:-6%!important;right:auto!important;top:7%!important;width:112%!important;height:auto!important}
+.v53-level-title{left:25%!important;right:24%!important;top:25.5%!important;font-size:clamp(20px,5.8vw,28px)!important}
+.v53-rank{left:25%!important;right:24%!important;top:38.8%!important}
+.v53-xpbar{left:20.5%!important;right:20.5%!important;top:48.5%!important;height:9px!important}
+.v53-xptxt{left:25%!important;right:24%!important;top:54.7%!important}
+.v53-lastread{left:34%!important;right:24%!important;top:61.8%!important}
+.v53-stat{bottom:auto!important;top:69.8%!important}
+.v53-stat.books{left:24%!important;width:15%!important}
+.v53-stat.pages{left:44.5%!important;width:18%!important}
+.v53-stat.days{right:18%!important;width:15%!important}
+
+/* Keep the already-good Quests tab untouched. */
+</style>
 </head>
 <body>
 <div class="app">

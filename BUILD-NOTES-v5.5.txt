@@ -1,0 +1,9 @@
+Reading MMO v5.5 — Reading + Reader Level Fit-and-Finish
+
+Home only. Quests intentionally unchanged.
+- Reading book enlarged within shared tab shell.
+- Reading live fields pinned to page-safe zones so Chapters and Last Finished stay inside the illustrated book.
+- Open Reader remains the illustrated bookmark control.
+- Reader Level widget interior enlarged and vertically integrated into the shared shell.
+- Reader Level live XP fill remains single-source; no duplicate frame/bar overlay.
+- Existing app data, save logic, tabs, and KWGT sync preserved.

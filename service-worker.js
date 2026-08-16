@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5-4-1-tabbed-widget-home-polish-fix';
+const CACHE = 'reading-mmo-v5.5-fit-finish';
 const CORE = [
   './',
   './index.html',
@@ -41,9 +41,9 @@ const CORE = [
   './v53-tab-inactive.png',
   './v53-wood-tile.png',
   './v53-xp-frame.png',
-  './v54-desk-base.png',
-  './v54-level-panel.png',
-  './v54-shell.png'
+  './v55-desk-base.png',
+  './v55-level-panel.png',
+  './v55-shell.png'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
