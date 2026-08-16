@@ -1770,6 +1770,72 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 }
 </style>
 
+
+<style id="v58-unified-home">
+/* v5.8 — Unified Home rebuild. One outer scene; each tab uses its own native artwork coordinate system. */
+body:has(#home.screen.active) > header{position:relative!important;top:auto!important}
+.app:has(#home.screen.active){padding-bottom:76px!important}
+#home.v58-home{padding:0!important;background:#1c100b url('./v53-wood-tile.png') center top/512px auto repeat!important;overflow:hidden!important}
+.v58-stage{position:relative;width:100%;max-width:440px;aspect-ratio:592/1030;margin:0 auto;color:#3b271e;overflow:hidden}
+.v58-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;z-index:0}
+
+/* Tabs belong to the same room instead of floating above a separate module. */
+.v58-tabs{position:absolute;left:6.2%;right:6.2%;top:3.3%;height:8.8%;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5%;z-index:30;align-items:start}
+.v58-tab{position:relative!important;height:100%!important;border:0!important;background:transparent!important;padding:0!important;margin:0!important;color:#ead9b0!important;box-shadow:none!important;transform:none!important;overflow:visible!important}
+.v58-tab img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:fill!important;pointer-events:none!important;z-index:0!important}
+.v58-tab span{position:absolute!important;left:3%!important;right:3%!important;bottom:19%!important;z-index:2!important;padding:0!important;text-align:center!important;white-space:nowrap!important;font:700 clamp(7px,1.95vw,9px)/1 Georgia,'Times New Roman',serif!important;color:#ead9b0!important;text-shadow:1px 1px 0 #2c1820!important;letter-spacing:.2px!important}
+.v58-tab.active{transform:translateY(1.5%)!important}.v58-tab.active span{color:#fff0c7!important}
+
+.v58-panel-zone{position:absolute;left:5.2%;right:5.2%;top:13.2%;height:52.5%;z-index:8}
+.v58-panel{position:absolute!important;left:0!important;right:0!important;top:0!important;bottom:0!important;width:auto!important;height:auto!important;display:none!important}
+.v58-panel.active{display:flex!important;align-items:flex-start!important;justify-content:center!important}
+.v58-panel[hidden]{display:none!important}
+
+/* READING — coordinates are relative to the 845×560 book artwork only. */
+.v58-reading-canvas{position:relative;width:108%;max-width:none;aspect-ratio:845/560;margin-top:-1.2%;flex:0 0 auto}
+.v58-reading-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v58-reading-canvas>div,.v58-reading-canvas>button{position:absolute;z-index:4}
+.v58-r-current-label,.v58-r-session-label,.v58-r-chapters-label,.v58-r-progress-label,.v58-r-last-label{font:800 clamp(6px,1.6vw,7.5px)/1.05 ui-monospace,SFMono-Regular,Consolas,monospace;color:#72548e;letter-spacing:.7px}
+.v58-r-current-label{left:15%;top:20%}.v58-r-title{left:15%;top:25%;width:30%;font:700 clamp(14px,4vw,19px)/1.02 Georgia,'Times New Roman',serif;color:#3e281d;overflow-wrap:anywhere;max-height:15%;overflow:hidden}
+.v58-r-mode{left:15%;top:38%;width:31%;font:800 clamp(5.7px,1.55vw,7.2px)/1.1 ui-monospace,SFMono-Regular,Consolas,monospace;color:#78558e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v58-r-session-label{left:15%;top:47%}.v58-r-time{left:15%;top:52%;font:700 clamp(10px,2.8vw,13.5px)/1 Georgia,'Times New Roman',serif;color:#432b20}
+.v58-r-chapters-label{left:15%;top:61%}.v58-r-chapters{left:15%;top:66%;width:31%;font:700 clamp(10px,2.8vw,13.5px)/1 Georgia,'Times New Roman',serif;color:#432b20}
+.v58-r-progress-label{left:55%;top:20%;width:27%;text-align:center}.v58-r-page{left:52.5%;top:26%;width:32%;text-align:center;font:700 clamp(12px,3.5vw,17px)/1.05 Georgia,'Times New Roman',serif;color:#3f291f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v58-r-progress{position:absolute!important;left:56%;top:38%;width:25%;height:3.7%;z-index:5}.v58-r-progress>img.frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v58-r-progress .fillclip{position:absolute;left:6.5%;right:6.5%;top:31%;bottom:31%;overflow:hidden}.v58-r-progress .fillclip img{height:100%;width:0%;object-fit:fill;object-position:left center;display:block}
+.v58-r-percent{left:55%;top:44%;width:27%;text-align:center;font:700 clamp(9.5px,2.6vw,12.5px)/1 Georgia,'Times New Roman',serif;color:#3f291f}
+.v58-r-last-label{left:55%;top:57%}.v58-r-last{left:55%;top:62%;width:29%;font:700 clamp(9px,2.5vw,12px)/1.05 Georgia,'Times New Roman',serif;color:#432b20;overflow-wrap:anywhere;max-height:12%;overflow:hidden}
+.v58-reader-ribbon{position:absolute;right:5.3%;top:22%;height:34%;width:auto;z-index:5;pointer-events:none}.v58-reading-canvas>.v58-open-hit{position:absolute!important;right:5.2%;top:22%;width:12.5%;height:34%;z-index:7!important;border:0!important;background:transparent!important;box-shadow:none!important;color:#f4dfb1!important;padding:0!important;font:800 clamp(6.3px,1.75vw,8px)/1.05 ui-monospace,SFMono-Regular,Consolas,monospace!important;text-shadow:1px 1px 0 #38223e!important}
+
+/* READER LEVEL — coordinates are relative to the 586×454 level artwork only. */
+.v58-level-canvas{position:relative;width:108%;aspect-ratio:586/454;margin-top:0;flex:0 0 auto}
+.v58-level-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v58-level-title,.v58-rank,.v58-xptxt,.v58-lastread,.v58-stat{position:absolute;z-index:4;text-align:center}
+.v58-level-title{left:23%;right:23%;top:16.5%;font:700 clamp(22px,6.1vw,30px)/1 Georgia,'Times New Roman',serif;color:#4b1712;white-space:nowrap}
+.v58-rank{left:25%;right:25%;top:27.5%;font:700 clamp(8.5px,2.25vw,11px)/1 Georgia,'Times New Roman',serif;color:#43251a}
+.v58-xpbar{position:absolute;left:24.1%;right:25.2%;top:33.2%;height:3.8%;z-index:5}.v58-xpbar>img.frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v58-xpbar .fillclip{position:absolute;left:6.5%;right:6.5%;top:31%;bottom:31%;overflow:hidden}.v58-xpbar .fillclip img{height:100%;width:0%;object-fit:fill;object-position:left center;display:block}
+.v58-xptxt{left:26%;right:26%;top:39.7%;font:700 clamp(6.4px,1.7vw,8px)/1 Georgia,'Times New Roman',serif;color:#47291d}
+.v58-lastread{left:31%;right:25%;top:46.1%;font:700 clamp(6.2px,1.7vw,8px)/1 Georgia,'Times New Roman',serif;color:#e3c994;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v58-stat{top:54.8%;color:#d6b775}.v58-stat b{display:block;font:700 clamp(10px,2.8vw,13px)/1 Georgia,'Times New Roman',serif}.v58-stat span{display:block;font:700 clamp(4.8px,1.35vw,6px)/1 ui-monospace,monospace;letter-spacing:.35px;margin-top:2px}.v58-stat.books{left:18%;width:16%}.v58-stat.pages{left:43%;width:16%}.v58-stat.days{right:15%;width:16%}.v58-region-hidden{display:none}
+
+/* QUESTS — coordinates are relative to the 540×379 board only. */
+.v58-quests-canvas{position:relative;width:108%;aspect-ratio:540/379;margin-top:0;flex:0 0 auto}
+.v58-quests-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v58-qslot{position:absolute;left:6%;right:5.5%;height:24.5%;z-index:4}.v58-qslot.s1{top:12.2%}.v58-qslot.s2{top:41%}.v58-qslot.s3{top:70%}
+.v58-qtitle{position:absolute;left:7%;right:18%;top:7%;text-align:center;font:700 clamp(10.5px,2.9vw,13.5px)/1 Georgia,'Times New Roman',serif;color:#3f281c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v58-qobj{position:absolute;left:6%;right:6%;top:38%;text-align:center;font:600 clamp(6.5px,1.78vw,8.2px)/1.08 Georgia,'Times New Roman',serif;color:#4c3426;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v58-qslot .v51-qmeta{position:absolute!important;right:1%!important;top:6%!important;text-align:right!important;font:700 clamp(5.7px,1.55vw,7.2px)/1 Georgia,'Times New Roman',serif!important;color:#765093!important}.v58-qslot .v51-qmeta.easy{color:#52733e!important}.v58-qslot .v51-qmeta.hard{color:#a35043!important}.v58-qslot .v51-qmeta.legendary{color:#a97721!important}
+.v58-qxp{position:absolute;right:1%;top:25%;font:700 clamp(5.5px,1.5vw,7px)/1 Georgia,'Times New Roman',serif;color:#40291e}
+
+/* Utilities are part of the room, not a second footer module. */
+.v58-utils{position:absolute;left:20%;right:20%;top:64.5%;height:5.2%;display:grid;grid-template-columns:1fr 1fr;gap:5%;z-index:18}
+.v58-util{position:relative;height:100%}.v58-util img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v58-util button{position:absolute!important;inset:0!important;border:0!important;background:transparent!important;box-shadow:none!important;color:#e7cf9e!important;padding:0!important;font:700 clamp(6.5px,1.8vw,8.5px)/1 Georgia,'Times New Roman',serif!important;text-shadow:1px 1px 0 #25130d!important}
+.v58-sync-state{position:absolute;left:20%;right:20%;top:69.8%;z-index:18;text-align:center;color:#bda37a;font-size:6px;min-height:8px}
+.v58-save{position:absolute;left:20%;right:20%;top:72%;z-index:18;text-align:center;color:#aa8e69;font-size:6.2px}
+.v58-ledger-panel{position:absolute;left:17%;right:17%;top:48%;aspect-ratio:365/194;z-index:25;color:#3b281d}.v58-ledger-panel[hidden]{display:none!important}.v58-ledger-panel>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v58-ledger-close{position:absolute;right:8%;top:8%;z-index:27;background:transparent!important;border:0!important;box-shadow:none!important;color:#76509b!important;font-size:7px;font-weight:900}.v58-ledger-grid{position:absolute;left:10%;right:10%;top:29%;display:grid;grid-template-columns:repeat(3,1fr);gap:5%;text-align:center;z-index:26}.v58-ledger-grid span{display:block;font-size:6.5px;color:#74583f;font-weight:900}.v58-ledger-grid b{display:block;font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#6b4a8c;margin-top:2px}.v58-ledger-note{position:absolute;left:10%;right:10%;bottom:14%;z-index:26;text-align:center;font-size:7px;color:#6c543e}
+
+@media(max-width:380px){.v58-tabs{left:5.5%;right:5.5%}.v58-tab span{font-size:6.6px!important}.v58-utils{left:17%;right:17%}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -1785,80 +1851,77 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 </header>
 
 
-<section id="home" class="screen active v53-home">
-  <div class="v53-stage">
-    <div class="v53-shell" aria-label="Reading MMO Home">
-      <img class="v53-shell-art" src="./v54-shell.png" alt="Illustrated widget-style Home frame">
+<section id="home" class="screen active v58-home">
+  <div class="v58-stage" aria-label="Reading MMO Home">
+    <img class="v58-frame" src="./v58-home-frame.png" alt="Unified enchanted library Home frame">
 
-      <div class="v53-tabs" role="tablist" aria-label="Home views">
-        <button class="v53-tab active" id="homeTabReading" role="tab" aria-selected="true" onclick="setHomeTab('reading',this)"><img src="./v53-tab-active.png" alt=""><span>READING</span></button>
-        <button class="v53-tab" id="homeTabLevel" role="tab" aria-selected="false" onclick="setHomeTab('level',this)"><img src="./v53-tab-inactive.png" alt=""><span>READER LEVEL</span></button>
-        <button class="v53-tab" id="homeTabQuests" role="tab" aria-selected="false" onclick="setHomeTab('quests',this)"><img src="./v53-tab-inactive.png" alt=""><span>QUESTS</span></button>
-      </div>
+    <div class="v58-tabs" role="tablist" aria-label="Home views">
+      <button class="v53-tab v58-tab active" id="homeTabReading" role="tab" aria-selected="true" onclick="setHomeTab('reading',this)"><img src="./v53-tab-active.png" alt=""><span>READING</span></button>
+      <button class="v53-tab v58-tab" id="homeTabLevel" role="tab" aria-selected="false" onclick="setHomeTab('level',this)"><img src="./v53-tab-inactive.png" alt=""><span>READER LEVEL</span></button>
+      <button class="v53-tab v58-tab" id="homeTabQuests" role="tab" aria-selected="false" onclick="setHomeTab('quests',this)"><img src="./v53-tab-inactive.png" alt=""><span>QUESTS</span></button>
+    </div>
 
-      <div id="homePanelReading" class="v53-panel v53-reading active" role="tabpanel" aria-labelledby="homeTabReading">
-        <img class="v53-open-book" src="./v56-open-book-scene.png" alt="Illustrated open reading book on a finished desk shelf">
-        <img class="v53-reader-ribbon" src="./v53-reader-ribbon.png" alt="Purple Open Reader bookmark">
-        <img class="v53-read-decor candle" src="./v53-candle.png" alt="">
-        <img class="v53-read-decor quill" src="./v53-quill.png" alt="">
-        <img class="v53-read-decor books" src="./v53-books.png" alt="">
-        <div class="v53-read-left">
-          <div class="v53-label">CURRENT BOOK</div>
-          <div id="homeBookTitle" class="v53-book-title">No current book</div>
-          <div id="homeReadMode" class="v53-mode">CURRENT READ</div>
-          <div class="v53-label">THIS SESSION</div>
-          <div id="homeSessionTime" class="v53-value">00:00:00</div>
-          <div class="v53-label">CHAPTERS THIS SESSION</div>
-          <div id="homeSessionChapters" class="v53-value">0 chapters</div>
+    <div class="v58-panel-zone">
+      <div id="homePanelReading" class="v53-panel v58-panel v58-reading active" role="tabpanel" aria-labelledby="homeTabReading">
+        <div class="v58-reading-canvas">
+          <img class="v58-reading-art" src="./v56-open-book-scene.png" alt="Open reading book">
+          <div class="v58-r-current-label">CURRENT BOOK</div>
+          <div id="homeBookTitle" class="v58-r-title">No current book</div>
+          <div id="homeReadMode" class="v58-r-mode">CURRENT READ</div>
+          <div class="v58-r-session-label">THIS SESSION</div>
+          <div id="homeSessionTime" class="v58-r-time">00:00:00</div>
+          <div class="v58-r-chapters-label">CHAPTERS THIS SESSION</div>
+          <div id="homeSessionChapters" class="v58-r-chapters">0 chapters</div>
+
+          <div class="v58-r-progress-label">PROGRESS</div>
+          <div id="homePageText" class="v58-r-page">Page 0 of 0</div>
+          <div class="v58-r-progress"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="homeBookProgressBar" src="./v53-fill.png" alt=""></div></div>
+          <div id="homePercentText" class="v58-r-percent">0.0%</div>
+          <div class="v58-r-last-label">LAST FINISHED</div>
+          <div id="homeLastFinished" class="v58-r-last">Nothing logged yet</div>
+          <img class="v58-reader-ribbon" src="./v53-reader-ribbon.png" alt="Purple Open Reader bookmark">
+          <button class="v58-open-hit" aria-label="Open Reader" onclick="go('reading')">OPEN<br>READER</button>
         </div>
-        <div class="v53-read-right">
-          <div class="v53-label" style="text-align:center">PROGRESS</div>
-          <div id="homePageText" class="v53-page">Page 0 of 0</div>
-          <div class="v53-progress"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="homeBookProgressBar" src="./v53-fill.png" alt=""></div></div>
-          <div id="homePercentText" class="v53-percent">0.0%</div>
-          <div class="v53-label">LAST FINISHED</div>
-          <div id="homeLastFinished" class="v53-last">Nothing logged yet</div>
+      </div>
+
+      <div id="homePanelLevel" class="v53-panel v58-panel v58-level" role="tabpanel" aria-labelledby="homeTabLevel" hidden>
+        <div class="v58-level-canvas">
+          <img class="v58-level-art" src="./v56-level-panel-tall.png" alt="Reader Level bookshelf">
+          <div id="homeLevel" class="v58-level-title">Level 1</div>
+          <div id="homeRank" class="v58-rank">Page Wanderer</div>
+          <div id="homeRegion" class="v58-region-hidden" aria-hidden="true"></div>
+          <div class="v58-xpbar"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="xpBar" src="./v53-fill.png" alt=""></div></div>
+          <div id="xpText" class="v58-xptxt">0 / 1,000 XP</div>
+          <div id="homeReaderLast" class="v58-lastread">Nothing logged yet</div>
+          <div class="v58-stat books"><b id="homeBooksStat">0</b><span>BOOKS</span></div>
+          <div class="v58-stat pages"><b id="homePagesStat">0</b><span>PAGES</span></div>
+          <div class="v58-stat days"><b id="homeDaysStat">0</b><span>DAYS</span></div>
         </div>
-        <button class="v53-open-hit" aria-label="Open Reader" onclick="go('reading')">OPEN<br>READER</button>
       </div>
 
-      <div id="homePanelLevel" class="v53-panel v53-level-panel" role="tabpanel" aria-labelledby="homeTabLevel" hidden>
-        <img class="v53-level-art" src="./v56-level-panel-tall.png" alt="Extended Reader Level widget bookshelf interior">
-        <div id="homeLevel" class="v53-level-title">Level 1</div>
-        <div id="homeRank" class="v53-rank">Page Wanderer</div>
-        <div id="homeRegion" class="v53-region-hidden" aria-hidden="true"></div>
-        <div class="v53-xpbar"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="xpBar" src="./v53-fill.png" alt=""></div></div>
-        <div id="xpText" class="v53-xptxt">0 / 1,000 XP</div>
-        <div id="homeReaderLast" class="v53-lastread">Nothing logged yet</div>
-        <div class="v53-stat books"><b id="homeBooksStat">0</b><span>BOOKS</span></div>
-        <div class="v53-stat pages"><b id="homePagesStat">0</b><span>PAGES</span></div>
-        <div class="v53-stat days"><b id="homeDaysStat">0</b><span>DAYS</span></div>
-      </div>
-
-      <div id="homePanelQuests" class="v53-panel v53-quests-panel" role="tabpanel" aria-labelledby="homeTabQuests" hidden>
-        <img class="v53-quests-art" src="./v53-quests-panel.png" alt="Quest widget interior">
-        <div class="v53-qslot s1"><div id="homeQ1Title" class="v53-qtitle">Empty Slot</div><div id="homeQ1Objective" class="v53-qobj">Roll a Hunt quest.</div><div id="homeQ1Meta" class="v53-qmeta"></div><div id="homeQ1Xp" class="v53-qxp"></div></div>
-        <div class="v53-qslot s2"><div id="homeQ2Title" class="v53-qtitle">Empty Slot</div><div id="homeQ2Objective" class="v53-qobj">Roll a Gather quest.</div><div id="homeQ2Meta" class="v53-qmeta"></div><div id="homeQ2Xp" class="v53-qxp"></div></div>
-        <div class="v53-qslot s3"><div id="homeQ3Title" class="v53-qtitle">Empty Slot</div><div id="homeQ3Objective" class="v53-qobj">Roll an Alchemy quest.</div><div id="homeQ3Meta" class="v53-qmeta"></div><div id="homeQ3Xp" class="v53-qxp"></div></div>
+      <div id="homePanelQuests" class="v53-panel v58-panel v58-quests" role="tabpanel" aria-labelledby="homeTabQuests" hidden>
+        <div class="v58-quests-canvas">
+          <img class="v58-quests-art" src="./v53-quests-panel.png" alt="Quest board">
+          <div class="v58-qslot s1"><div id="homeQ1Title" class="v58-qtitle">Empty Slot</div><div id="homeQ1Objective" class="v58-qobj">Roll a Hunt quest.</div><div id="homeQ1Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ1Xp" class="v58-qxp"></div></div>
+          <div class="v58-qslot s2"><div id="homeQ2Title" class="v58-qtitle">Empty Slot</div><div id="homeQ2Objective" class="v58-qobj">Roll a Gather quest.</div><div id="homeQ2Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ2Xp" class="v58-qxp"></div></div>
+          <div class="v58-qslot s3"><div id="homeQ3Title" class="v58-qtitle">Empty Slot</div><div id="homeQ3Objective" class="v58-qobj">Roll an Alchemy quest.</div><div id="homeQ3Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ3Xp" class="v58-qxp"></div></div>
+        </div>
       </div>
     </div>
 
-    <div class="v54-footer">
-      <img class="v54-footer-art" src="./v54-desk-base.png" alt="Illustrated desk shelf base">
-      <div class="v53-utils">
-        <div class="v53-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
-        <div class="v53-util"><img src="./v53-small-button.png" alt=""><button onclick="toggleHomeLedger()">CHARACTER LEDGER</button></div>
-      </div>
-      <div id="homeKwgtSyncState" class="v53-sync-state"></div>
-
-      <div id="homeLedgerPanel" class="v53-ledger-panel" hidden>
-        <img src="./v53-ledger-panel.png" alt="Illustrated Character Ledger panel">
-        <button class="v53-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
-        <div class="v53-ledger-grid"><div><span>XP</span><b id="homeXp">0</b></div><div><span>QUESTS</span><b id="homeQuests">0</b></div><div><span>GOLDENS</span><b id="homeGoldens">0</b></div></div>
-        <div id="homeBonuses" class="v53-ledger-note"></div>
-      </div>
-      <div id="homeSaveMini" class="v53-save">Progress saves automatically.</div>
+    <div class="v58-utils">
+      <div class="v58-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
+      <div class="v58-util"><img src="./v53-small-button.png" alt=""><button onclick="toggleHomeLedger()">CHARACTER LEDGER</button></div>
     </div>
+    <div id="homeKwgtSyncState" class="v58-sync-state"></div>
+
+    <div id="homeLedgerPanel" class="v58-ledger-panel" hidden>
+      <img src="./v53-ledger-panel.png" alt="Character Ledger panel">
+      <button class="v58-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
+      <div class="v58-ledger-grid"><div><span>XP</span><b id="homeXp">0</b></div><div><span>QUESTS</span><b id="homeQuests">0</b></div><div><span>GOLDENS</span><b id="homeGoldens">0</b></div></div>
+      <div id="homeBonuses" class="v58-ledger-note"></div>
+    </div>
+    <div id="homeSaveMini" class="v58-save">Progress saves automatically.</div>
   </div>
 </section>
 
@@ -2510,7 +2573,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.7.2</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.8</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");

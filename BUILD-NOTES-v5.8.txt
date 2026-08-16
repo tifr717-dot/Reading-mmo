@@ -1,0 +1,13 @@
+Reading MMO v5.8 — Unified Home Rebuild
+
+This is a structural Home rebuild rather than another spacing patch.
+
+- Replaced the stacked shell + footer architecture with one continuous illustrated Home frame.
+- Reading overlays now use the native 845x560 book artwork coordinate system.
+- Reader Level overlays now use the native 586x454 panel coordinate system.
+- Quest overlays now use the native 540x379 board coordinate system.
+- Removed the extra pasted-on reading decor from Home.
+- Integrated Sync Widgets and Character Ledger directly into the unified room.
+- Integrated two bookshelf shelves into the same outer frame so the lower Home area is decorated rather than a separate filler module.
+- Character Ledger opens as an overlay rather than pushing the layout apart.
+- Updated App Health to v5.8 and service-worker cache key to v5.8.
