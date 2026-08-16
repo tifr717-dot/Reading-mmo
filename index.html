@@ -1660,58 +1660,116 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 @media (max-width:380px){.v53-stage{padding-left:0!important;padding-right:0!important}.v53-shell,.v54-footer{width:100%!important}}
 </style>
 
-<style id="v571-targeted-fixes">
-/* v5.7.1 — real targeted fixes; no redesign and no stretched filler art. */
-
-/* HOME: use a tall extension assembled from the existing shelf/frame art at native scale.
-   No shelf or ornament is vertically stretched, and the lower phone viewport stays decorated. */
-.v54-footer{
+<style id="v572-layout-cleanup">
+/* v5.7.2 — layout cleanup pass based on live S26 Ultra screenshots. */
+.app:has(#home.screen.active){padding-bottom:0!important}
+#home.v53-home{
+  min-height:calc(100dvh - 94px - 64px)!important;
+  padding:0 0 8px!important;
+}
+.v53-stage{
+  width:100%!important;
+  max-width:440px!important;
+  margin:0 auto!important;
+  padding:16px 0 0!important;
+  min-height:calc(100dvh - 94px - 64px)!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+/* Make the main illustrated home shell taller so the actual content fills more of the phone screen. */
+.v53-shell{
+  width:100%!important;
+  aspect-ratio:592/575!important;
+  margin:0!important;
   flex:0 0 auto!important;
-  flex-basis:auto!important;
-  min-height:0!important;
-  aspect-ratio:592/520!important;
-  margin:-18px 0 0!important;
-  padding:64px 9% 18px!important;
+}
+.v53-tabs{left:6.5%!important;right:6.5%!important;top:-13px!important;height:56px!important;gap:3px!important}
+.v53-tab{height:50px!important;font-size:clamp(7px,1.95vw,8.8px)!important}
+.v53-tab span{padding:12px 6px 0!important;white-space:normal!important;line-height:1.05!important}
+.v53-tab.active{transform:translateY(2px)!important}
+/* Slightly larger safe area for the panels. */
+.v53-panel{left:5.8%!important;right:5.8%!important;top:13%!important;bottom:5.5%!important}
+.v53-quests-panel{top:14%!important;bottom:4.8%!important}
+.v53-qslot{left:4.2%!important;right:4.2%!important;height:27.6%!important}
+.v53-qslot.s1{top:11.2%!important}.v53-qslot.s2{top:40%!important}.v53-qslot.s3{top:68.8%!important}
+/* Reading panel cleanup: more room below, less clipping, ribbon slightly smaller. */
+.v53-reading{top:12.4%!important;bottom:4.2%!important}
+.v53-open-book{left:-7%!important;right:auto!important;top:1%!important;width:114%!important;height:auto!important}
+.v53-read-left,.v53-read-right{top:22.8%!important;height:57%!important}
+.v53-read-left{left:12.7%!important;width:35.2%!important}
+.v53-read-right{left:54.3%!important;width:28.8%!important}
+.v53-read-left>*,.v53-read-right>*{position:absolute!important;margin:0!important}
+.v53-read-left>:nth-child(1){left:0;right:0;top:0}
+.v53-read-left>:nth-child(2){left:0;right:0;top:7%;max-height:24%;overflow:hidden}
+.v53-read-left>:nth-child(3){left:0;right:0;top:31%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v53-read-left>:nth-child(4){left:0;right:0;top:45%}
+.v53-read-left>:nth-child(5){left:0;right:0;top:53%}
+.v53-read-left>:nth-child(6){left:0;right:0;top:61%}
+.v53-read-left>:nth-child(7){left:0;right:0;top:69%;margin-bottom:0!important}
+.v53-read-right>:nth-child(1){left:0;right:0;top:0;text-align:center}
+.v53-read-right>:nth-child(2){left:-3%;right:-3%;top:10%;text-align:center}
+.v53-read-right>:nth-child(3){left:5%;right:5%;top:29%;width:auto!important}
+.v53-read-right>:nth-child(4){left:0;right:0;top:40%;text-align:center}
+.v53-read-right>:nth-child(5){left:0;right:0;top:59%}
+.v53-read-right>:nth-child(6){left:0;right:0;top:67%;max-height:16%;overflow:hidden}
+.v53-reader-ribbon{right:.9%!important;top:16.8%!important;height:34%!important;width:auto!important}
+.v53-open-hit{right:.5%!important;top:16.8%!important;width:15.5%!important;height:34%!important}
+.v53-read-decor.candle{left:.2%!important;bottom:9.5%!important;width:5.4%!important}
+.v53-read-decor.books{left:1.6%!important;bottom:4.8%!important;width:10.4%!important}
+.v53-read-decor.quill{right:.2%!important;bottom:9%!important;width:5.4%!important}
+/* Reader Level: scale the widget interior up and let it use more of the available height. */
+.v53-level-panel{top:12.6%!important;bottom:4.2%!important}
+.v53-level-art{left:-4%!important;right:auto!important;top:0!important;width:108%!important;height:auto!important}
+.v53-level-title{left:24%!important;right:23%!important;top:17.8%!important;font-size:clamp(21px,6vw,29px)!important}
+.v53-rank{left:24%!important;right:23%!important;top:29.6%!important;font-size:clamp(8px,2.15vw,10.2px)!important}
+.v53-xpbar{left:20.2%!important;right:20.2%!important;top:38.8%!important;height:10px!important}
+.v53-xptxt{left:24%!important;right:23%!important;top:44.1%!important;font-size:clamp(6.2px,1.7vw,7.9px)!important}
+.v53-lastread{left:33.5%!important;right:23%!important;top:49.2%!important;font-size:clamp(5.9px,1.65vw,7.4px)!important}
+.v53-stat{bottom:auto!important;top:56.5%!important}
+.v53-stat.books{left:23.8%!important;width:15%!important}
+.v53-stat.pages{left:44.1%!important;width:18%!important}
+.v53-stat.days{right:17.8%!important;width:15%!important}
+/* Compact the utility shelf and keep it visually attached to the main shell. */
+.v54-footer{
+  position:relative!important;
+  width:100%!important;
+  max-width:none!important;
+  flex:1 0 auto!important;
+  min-height:158px!important;
+  margin:-44px 0 0!important;
+  padding:48px 8% 8px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
 }
 .v54-footer-art{
-  inset:0!important;
+  position:absolute!important;
+  inset:0 0 auto 0!important;
   width:100%!important;
-  height:100%!important;
+  height:132px!important;
   object-fit:fill!important;
-  content:url('./v571-footer-bookcase-tall.png')!important;
+  content:url('./v54-desk-base.png')!important;
+  pointer-events:none!important;
+  z-index:0!important;
 }
-@media (min-height:700px){
-  .v54-footer{min-height:0!important;flex-basis:auto!important}
+.v54-footer .v53-utils{width:82%!important;margin:0 auto 4px!important;position:relative!important;z-index:2!important;gap:10px!important}
+.v54-footer .v53-util button{font-size:clamp(6.5px,1.8vw,8.2px)!important}
+.v54-footer .v53-sync-state{position:relative!important;z-index:2!important;font-size:6.1px!important;min-height:8px!important;margin:0 auto 0!important}
+.v54-footer .v53-ledger-panel{position:relative!important;z-index:3!important;width:76%!important;margin:6px auto 0!important}
+.v54-footer .v53-save{position:relative!important;z-index:2!important;margin-top:3px!important;font-size:6.3px!important;color:#bfa27a!important;text-align:center!important}
+/* Tall phones still get enough room for the utility shelf, but not a giant empty bookshelf canyon. */
+@media (min-height:760px){
+  .v54-footer{min-height:170px!important}
 }
-
-/* READING HOME TAB: give the lower fields their own rows so the session chapter
-   line and last-finished title stay above the illustrated page edge. */
-.v53-read-left>:nth-child(4){top:42%!important}
-.v53-read-left>:nth-child(5){top:50%!important}
-.v53-read-left>:nth-child(6){top:64%!important}
-.v53-read-left>:nth-child(7){top:73%!important}
-.v53-read-right>:nth-child(5){top:58%!important}
-.v53-read-right>:nth-child(6){top:67%!important;max-height:15%!important}
-
-/* ME: all five subtabs must fit the phone width. */
-#profile>.tabs{
-  display:grid!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  gap:4px!important;
-  overflow:visible!important;
-}
-#profile>.tabs button{
-  min-width:0!important;
-  width:100%!important;
-  padding:7px 2px!important;
-  font-size:clamp(7px,2.15vw,10px)!important;
-  white-space:nowrap!important;
-}
-@media(max-width:380px){
-  #profile>.tabs{gap:3px!important}
-  #profile>.tabs button{font-size:clamp(6.4px,2vw,8.6px)!important;padding-left:1px!important;padding-right:1px!important}
+@media (max-width:380px){
+  .v53-stage{padding-left:0!important;padding-right:0!important}
+  .v53-shell,.v54-footer{width:100%!important}
+  .v53-tabs{left:5.8%!important;right:5.8%!important}
+  .v54-footer .v53-utils{width:86%!important}
 }
 </style>
+
 </head>
 <body>
 <div class="app">
@@ -2202,7 +2260,6 @@ lastread → $br(remote,lastread)$</div>
 
 <script>
 const $=id=>document.getElementById(id);
-const APP_VERSION="5.7.1";
 const BASE={pages:3411,books:9,days:1740};
 const slots=["Head","Body","Back","Weapon / Focus","Charm","Relic","Familiar"];
 const ranks=[
@@ -2453,11 +2510,11 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v${APP_VERSION}</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.7.2</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
- if(el)el.textContent="Checking for the latest app…";
+ if(el)el.textContent="Checking GitHub for the latest app…";
  if(!navigator.onLine){
   if(el)el.textContent="📴 You are offline. Reconnect, then try again.";
   return;
@@ -2465,31 +2522,10 @@ async function checkForAppUpdate(){
  try{
   if("serviceWorker" in navigator){
    const reg=await navigator.serviceWorker.getRegistration();
-   if(reg){
-    let controllerChanged=false;
-    const changed=new Promise(resolve=>{
-     const onChange=()=>{controllerChanged=true;resolve();};
-     navigator.serviceWorker.addEventListener("controllerchange",onChange,{once:true});
-     setTimeout(resolve,4500);
-    });
-    await reg.update();
-    if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"});
-    if(reg.installing){
-     await new Promise(resolve=>{
-      const w=reg.installing;
-      const done=()=>{if(w.state==="activated"||w.state==="redundant")resolve();};
-      w.addEventListener("statechange",done);
-      done();
-      setTimeout(resolve,4500);
-     });
-    }
-    await changed;
-   }
+   if(reg)await reg.update();
   }
-  if(el)el.textContent="✅ Update check complete. Loading the fresh app…";
-  const u=new URL(location.href);
-  u.searchParams.set("appRefresh",Date.now().toString());
-  setTimeout(()=>location.replace(u.href),250);
+  if(el)el.textContent="✅ Check complete. Reloading the latest version…";
+  setTimeout(()=>location.reload(),700);
  }catch(e){
   if(el)el.textContent="Could not check right now. Your current app and save are still safe.";
  }

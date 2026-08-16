@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.7.1-targeted-fixes';
+const CACHE = 'reading-mmo-v5.7.2-layout-cleanup';
 const CORE = [
   './',
   './asset-book.png',
@@ -46,12 +46,8 @@ const CORE = [
   './v54-shell.png',
   './v56-level-panel-tall.png',
   './v56-open-book-scene.png',
-  './v57-footer-fill.png',
-  './v571-footer-bookcase-tall.png'
+  './v57-footer-fill.png'
 ];
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
-});
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });

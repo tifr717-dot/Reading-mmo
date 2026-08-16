@@ -1,0 +1,8 @@
+v5.7.2 — layout cleanup pass based on live S26 Ultra screenshots.
+
+- collapsed giant empty home vertical space
+- compacted utility shelf area
+- tightened Read tab spacing and decor clipping
+- scaled Reader Level panel up to fill space better
+- polished home sub-tab spacing
+- updated App Health version and service-worker cache name
