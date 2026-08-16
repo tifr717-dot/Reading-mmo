@@ -1,0 +1,25 @@
+Reading MMO v5.6 — Two-Tab Finish Pass
+
+Home only. No new design direction.
+
+Quests:
+- Intentionally unchanged from the already-good tab.
+
+Reading:
+- Uses the exact open-book art with an illustrated desk/shelf continuation baked below it.
+- Chapters This Session and Last Finished moved upward into proper page-safe zones.
+- Open Reader bookmark preserved.
+- Book scene fills more of the shared frame without stretching the book pages.
+
+Reader Level:
+- Uses the exact Reader Level widget interior unchanged on top.
+- Extended downward using an empty shelf section from the user's existing bookshelf widget family.
+- Live Level/Rank/XP/Last Read/Books/Pages/Days remain in the original widget portion.
+- No duplicated XP frame or live-data UI in the new shelf extension.
+
+Shared lower utilities:
+- Illustrated furniture base pulled upward so Sync Widgets and Character Ledger feel attached to the scene.
+
+Service worker:
+- Cache bumped to v5.6.
+- CORE list rebuilt from files that actually exist, fixing stale/nonexistent v5.5 asset references.

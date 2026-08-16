@@ -1,10 +1,6 @@
-const CACHE = 'reading-mmo-v5.5-fit-finish';
+const CACHE = 'reading-mmo-v5.6-two-tab-finish';
 const CORE = [
   './',
-  './index.html',
-  './manifest.webmanifest',
-  './icon-192.png',
-  './icon-512.png',
   './asset-book.png',
   './asset-books-stack.png',
   './asset-crystal-lamp.png',
@@ -16,6 +12,10 @@ const CORE = [
   './asset-scroll.png',
   './hyb-header.png',
   './hyb-wood-tile.png',
+  './icon-192.png',
+  './icon-512.png',
+  './index.html',
+  './manifest.webmanifest',
   './nav-home.png',
   './nav-me.png',
   './nav-play.png',
@@ -41,9 +41,11 @@ const CORE = [
   './v53-tab-inactive.png',
   './v53-wood-tile.png',
   './v53-xp-frame.png',
-  './v55-desk-base.png',
-  './v55-level-panel.png',
-  './v55-shell.png'
+  './v54-desk-base.png',
+  './v54-level-panel.png',
+  './v54-shell.png',
+  './v56-level-panel-tall.png',
+  './v56-open-book-scene.png'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

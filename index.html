@@ -1599,6 +1599,48 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 
 /* Keep the already-good Quests tab untouched. */
 </style>
+
+<style id="v56-home-finish">
+/* v5.6 — two-tab finish pass. Quests intentionally untouched. */
+
+/* READING: new art keeps the exact open-book widget but extends its illustrated desk downward. */
+.v53-reading{top:12.5%!important;bottom:5.5%!important}
+.v53-open-book{left:-6%!important;right:auto!important;top:3%!important;width:112%!important;height:auto!important}
+.v53-read-left,.v53-read-right{top:21.5%!important;height:57%!important}
+.v53-read-left{left:12.7%!important;width:35.3%!important}
+.v53-read-right{left:54.2%!important;width:29.2%!important}
+/* Keep lower-page fields safely above the page edge and floral corners. */
+.v53-read-left>:nth-child(6){top:63%!important}
+.v53-read-left>:nth-child(7){top:72%!important}
+.v53-read-right>:nth-child(5){top:62%!important}
+.v53-read-right>:nth-child(6){top:71%!important;max-height:15%!important}
+.v53-reader-ribbon{right:.7%!important;top:17.5%!important;height:34%!important}
+.v53-open-hit{right:.4%!important;top:17.5%!important;width:15.5%!important;height:34%!important}
+.v53-read-decor.candle{left:-.5%!important;bottom:9%!important;width:5.8%!important}
+.v53-read-decor.books{left:1.2%!important;bottom:4.5%!important;width:10.8%!important}
+.v53-read-decor.quill{right:-.2%!important;bottom:8%!important;width:5.8%!important}
+
+/* READER LEVEL: exact widget interior on top, then a real shelf extension from the user's widget family below. */
+.v53-level-panel{top:12.5%!important;bottom:5.5%!important;aspect-ratio:auto!important}
+.v53-level-art{left:-2%!important;right:auto!important;top:2.5%!important;width:104%!important;height:auto!important}
+.v53-level-title{left:25%!important;right:24%!important;top:18.5%!important;font-size:clamp(20px,5.8vw,28px)!important}
+.v53-rank{left:25%!important;right:24%!important;top:30.5%!important}
+.v53-xpbar{left:20.5%!important;right:20.5%!important;top:39.5%!important;height:9px!important}
+.v53-xptxt{left:25%!important;right:24%!important;top:45%!important}
+.v53-lastread{left:34%!important;right:24%!important;top:50.8%!important}
+.v53-stat{bottom:auto!important;top:57.5%!important}
+.v53-stat.books{left:24%!important;width:15%!important}
+.v53-stat.pages{left:44.5%!important;width:18%!important}
+.v53-stat.days{right:18%!important;width:15%!important}
+
+/* Pull the utility furniture up into the main set so it reads as part of the room, not floating UI. */
+.v54-footer{margin:-24px auto 0!important;min-height:176px!important;padding-top:46px!important}
+.v54-footer-art{height:176px!important}
+.v54-footer .v53-utils{width:76%!important;gap:10px!important}
+.v54-footer .v53-save{margin-top:7px!important}
+
+/* Quests intentionally unchanged from the good v5.5/v5.4 layout. */
+</style>
 </head>
 <body>
 <div class="app">
@@ -1626,7 +1668,7 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
       </div>
 
       <div id="homePanelReading" class="v53-panel v53-reading active" role="tabpanel" aria-labelledby="homeTabReading">
-        <img class="v53-open-book" src="./v53-open-book.png" alt="Illustrated open reading book">
+        <img class="v53-open-book" src="./v56-open-book-scene.png" alt="Illustrated open reading book on a finished desk shelf">
         <img class="v53-reader-ribbon" src="./v53-reader-ribbon.png" alt="Purple Open Reader bookmark">
         <img class="v53-read-decor candle" src="./v53-candle.png" alt="">
         <img class="v53-read-decor quill" src="./v53-quill.png" alt="">
@@ -1652,7 +1694,7 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
       </div>
 
       <div id="homePanelLevel" class="v53-panel v53-level-panel" role="tabpanel" aria-labelledby="homeTabLevel" hidden>
-        <img class="v53-level-art" src="./v54-level-panel.png" alt="Reader Level widget interior">
+        <img class="v53-level-art" src="./v56-level-panel-tall.png" alt="Extended Reader Level widget bookshelf interior">
         <div id="homeLevel" class="v53-level-title">Level 1</div>
         <div id="homeRank" class="v53-rank">Page Wanderer</div>
         <div id="homeRegion" class="v53-region-hidden" aria-hidden="true"></div>
