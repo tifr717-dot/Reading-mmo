@@ -1955,6 +1955,19 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 .v58-r-chapters{top:61.3%!important}
 </style>
 
+
+<style id="v585-footer-polish">
+/* v5.8.5 — footer art polish only. Keep the chapter/main-panel composition from v5.8.4. */
+.v58-lowerfill{
+  background:url('./v585-library-footer.png') center top/100% 100% no-repeat!important;
+  opacity:1!important;
+}
+/* Two-shelf footer: same per-tab anchoring, but slightly calmer height so the art doesn't feel tiled. */
+#home.v58-home.tab-reading{--footer-fill-top:49.2%;--footer-fill-height:44.2%;--utils-top:55.7%;--sync-top:60.45%;--save-top:62.05%;}
+#home.v58-home.tab-level{--footer-fill-top:54.0%;--footer-fill-height:39.4%;--utils-top:59.95%;--sync-top:64.6%;--save-top:66.2%;}
+#home.v58-home.tab-quests{--footer-fill-top:53.1%;--footer-fill-height:40.3%;--utils-top:59.35%;--sync-top:64.0%;--save-top:65.6%;}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2694,7 +2707,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.8.4</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.8.5</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");

@@ -1,0 +1,9 @@
+v5.8.5 — footer polish only.
+
+- kept the successful Reading chapter placement from v5.8.4
+- kept Reading / Reader Level / Quests compositions unchanged
+- replaced the four repeated shelf rows with a calmer two-shelf lower library scene
+- reduced obvious duplicated props and horizontal striping
+- added more breathing room and a single small center accent
+- retained per-tab footer anchoring so the utility shelf stays near the active panel
+- updated App Health version and service-worker cache key
