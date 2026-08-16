@@ -1659,6 +1659,28 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 @media (min-height:700px){.v54-footer{min-height:260px!important;flex-basis:260px!important}}
 @media (max-width:380px){.v53-stage{padding-left:0!important;padding-right:0!important}.v53-shell,.v54-footer{width:100%!important}}
 </style>
+
+<style id="v571-current-issues-fix">
+/* v5.7.1 — current-issues-only fix. No redesign. */
+/* Reading: keep all live text fully inside the illustrated page safe zones. */
+.v53-read-left{left:12.7%!important;width:35.3%!important;top:21.5%!important;height:57%!important}
+.v53-read-right{left:52.8%!important;width:30.4%!important;top:21.5%!important;height:57%!important}
+.v53-read-left>:nth-child(4){top:45%!important}
+.v53-read-left>:nth-child(5){top:54%!important}
+.v53-read-left>:nth-child(6){top:68%!important}
+.v53-read-left>:nth-child(7){top:77%!important}
+.v53-read-right>:nth-child(2){left:-1%!important;right:0!important;top:10%!important}
+.v53-page{font-size:clamp(10.7px,3vw,14.7px)!important;white-space:nowrap!important;overflow:visible!important}
+.v53-read-right>:nth-child(5){top:64%!important}
+.v53-read-right>:nth-child(6){top:73%!important;max-height:18%!important;line-height:1.08!important;overflow:hidden!important}
+.v53-reader-ribbon{right:.15%!important}
+.v53-open-hit{right:0!important}
+/* Full-height shell: keep the furniture bay continuous down to the fixed navigation. */
+.v54-footer{margin:-18px 0 0!important}
+/* Prevent the illustrated shell from creating any extra page gap below its furniture. */
+#home.v53-home{margin-bottom:0!important}
+.v53-stage{padding-bottom:0!important}
+</style>
 </head>
 <body>
 <div class="app">

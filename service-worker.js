@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.7-full-height-home';
+const CACHE = 'reading-mmo-v5.7.1-current-issues-fix';
 const CORE = [
   './',
   './asset-book.png',

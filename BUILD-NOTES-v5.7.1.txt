@@ -1,0 +1,14 @@
+Reading MMO v5.7.1 — Current Issues Fix
+
+Scope: Home only. No redesign.
+
+Fixes:
+- Uses the full-height illustrated Home furniture bay so the large plain brown gap above the bottom navigation is removed.
+- Keeps the carved side rails and ornate bottom frame continuing through the lower Home area.
+- Reading: widens the right-page safe zone so Page X of Y is not clipped by the Open Reader bookmark.
+- Reading: separates session time from Chapters This Session and lifts the lower left-page fields away from the page edge.
+- Reading: lifts Last Finished and its title into the right-page safe zone.
+- Quests unchanged.
+- Reader Level art direction unchanged.
+- No game, save, localStorage, or KWGT sync changes.
+- Cache bumped to v5.7.1.
