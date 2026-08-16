@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.7-full-height-alignment';
+const CACHE = 'reading-mmo-v5.7.1-targeted-fixes';
 const CORE = [
   './',
   './asset-book.png',
@@ -46,12 +46,12 @@ const CORE = [
   './v54-shell.png',
   './v56-level-panel-tall.png',
   './v56-open-book-scene.png',
-  './v57-footer-top.png',
-  './v57-side-left.png',
-  './v57-side-right.png',
-  './v57-bottom-cap.png',
-  './v57-shelf-strip.png',
+  './v57-footer-fill.png',
+  './v571-footer-bookcase-tall.png'
 ];
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
 });

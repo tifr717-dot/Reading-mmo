@@ -1641,96 +1641,77 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 
 /* Quests intentionally unchanged from the good v5.5/v5.4 layout. */
 </style>
-<style id="v57-fullscreen-home-fit">
-/* v5.7 — full-height mobile Home canvas + alignment pass.
-   Keep the proven tab art; remove the leftover viewport void by letting the illustrated furniture grow to the fixed bottom nav. */
 
-/* Use the phone as the canvas instead of centering a short widget-sized island inside it. */
-#home.v53-home{min-height:calc(100svh - 72px - 64px - env(safe-area-inset-bottom))!important}
-.v53-stage{
-  width:100%!important;
-  max-width:none!important;
-  min-height:calc(100svh - 72px - 64px - env(safe-area-inset-bottom))!important;
-  padding:17px 2px 0!important;
-  display:flex!important;
-  flex-direction:column!important;
-}
-.v53-shell{width:100%!important;max-width:592px!important;flex:0 0 auto!important}
-
-/* The old footer art closed the illustration halfway down the screen. Hide it and turn the
-   lower area into expandable widget-family furniture instead. */
-.v54-footer{
-  position:relative!important;
-  width:100%!important;
-  max-width:592px!important;
-  flex:1 1 auto!important;
-  min-height:220px!important;
-  margin:-7px auto 0!important;
-  padding:52px 8% 72px!important;
-  overflow:hidden!important;
-  z-index:2!important;
-  background-color:#321b12!important;
-  background-image:
-    url('./v57-footer-top.png'),
-    url('./v57-bottom-cap.png'),
-    url('./v57-shelf-strip.png'),
-    url('./v57-side-left.png'),
-    url('./v57-side-right.png')!important;
-  background-repeat:no-repeat,no-repeat,repeat-y,repeat-y,repeat-y!important;
-  background-position:center top,center bottom,center 116px,left top,right top!important;
-  background-size:100% 48px,100% 58px,84% auto,9.5% auto,9.5% auto!important;
-}
-.v54-footer-art{display:none!important}
-.v54-footer .v53-utils{width:78%!important;margin:0 auto 8px!important;gap:10px!important}
-.v54-footer .v53-sync-state{margin-top:4px!important}
-.v54-footer .v53-ledger-panel{width:78%!important;margin:10px auto 0!important}
-.v54-footer .v53-save{margin-top:10px!important}
-
-/* READING — align every field to the actual page safe zones. No more ellipsis on the page count,
-   and keep session/chapter + last-finished rows visibly separated. */
-.v53-open-book{left:-4%!important;top:4%!important;width:108%!important}
-.v53-read-left,.v53-read-right{top:21%!important;height:58%!important}
-.v53-read-left{left:13.2%!important;width:35.5%!important}
-.v53-read-right{left:51.8%!important;width:34.5%!important}
-.v53-read-left>:nth-child(1){top:0!important}
-.v53-read-left>:nth-child(2){top:8%!important;max-height:23%!important}
-.v53-read-left>:nth-child(3){top:32%!important}
-.v53-read-left>:nth-child(4){top:46%!important}
-.v53-read-left>:nth-child(5){top:55%!important}
-.v53-read-left>:nth-child(6){top:69%!important}
-.v53-read-left>:nth-child(7){top:79%!important}
-.v53-read-right>:nth-child(1){top:0!important}
-.v53-read-right>:nth-child(2){left:-1%!important;right:-1%!important;top:9%!important}
-.v53-read-right>:nth-child(3){left:8%!important;right:8%!important;top:30%!important}
-.v53-read-right>:nth-child(4){top:42%!important}
-.v53-read-right>:nth-child(5){top:65%!important}
-.v53-read-right>:nth-child(6){top:75%!important;max-height:17%!important}
-.v53-page{font-size:clamp(10.8px,3.05vw,15px)!important;overflow:visible!important;text-overflow:clip!important}
-.v53-reader-ribbon{right:.6%!important;top:17.5%!important;height:34%!important}
-.v53-open-hit{right:.3%!important;top:17.5%!important;width:15.2%!important;height:34%!important}
-
-/* READER LEVEL — put the live overlays on the same coordinate system as the art.
-   The art itself already contains the extended shelves; these values simply stop the text from looking detached. */
-.v53-level-art{left:0!important;right:0!important;top:2.5%!important;width:100%!important}
-.v53-level-title{left:26%!important;right:25%!important;top:18.5%!important}
-.v53-rank{left:26%!important;right:25%!important;top:30.5%!important}
-.v53-xpbar{left:21.5%!important;right:21.5%!important;top:39.5%!important}
-.v53-xptxt{left:26%!important;right:25%!important;top:45%!important}
-.v53-lastread{left:35%!important;right:25%!important;top:50.8%!important}
-.v53-stat.books{left:25%!important;width:14%!important}
-.v53-stat.pages{left:45%!important;width:17%!important}
-.v53-stat.days{right:19%!important;width:14%!important}
-
-/* Quests remains the visual benchmark. */
-
-@media(max-width:380px){
-  .v53-stage{padding-left:0!important;padding-right:0!important}
-  .v53-shell,.v54-footer{width:100%!important}
-  .v54-footer{padding-left:7%!important;padding-right:7%!important}
-  .v54-footer .v53-utils{width:82%!important}
-}
+<style id="v57-full-height-home">
+/* v5.7 — Full-height mobile Home canvas. Fix the empty lower viewport without stretching the widget art. */
+.app:has(#home.screen.active){padding-bottom:0!important}
+#home.v53-home{min-height:calc(100dvh - 94px - 64px)!important;padding-bottom:0!important}
+.v53-stage{width:100%!important;max-width:none!important;margin:0!important;padding:17px 0 0!important;min-height:calc(100dvh - 94px - 64px)!important;display:flex!important;flex-direction:column!important}
+.v53-shell{width:100%!important;max-width:none!important;margin:0!important;flex:0 0 auto!important}
+/* The footer is now the expandable illustrated lower furniture bay. */
+.v54-footer{position:relative!important;width:100%!important;max-width:none!important;flex:1 0 220px!important;min-height:220px!important;margin:-18px 0 0!important;padding:64px 9% 24px!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important}
+.v54-footer-art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:fill!important;content:url('./v57-footer-fill.png')!important;pointer-events:none!important}
+.v54-footer .v53-utils{width:76%!important;margin:0 auto 8px!important;position:relative!important;z-index:2!important}
+.v54-footer .v53-sync-state{position:relative!important;z-index:2!important}
+.v54-footer .v53-ledger-panel{position:relative!important;z-index:3!important}
+.v54-footer .v53-save{position:relative!important;z-index:2!important;margin-top:8px!important}
+/* Keep the ornate bottom frame visually attached to the bottom navigation on tall phones. */
+@media (min-height:700px){.v54-footer{min-height:260px!important;flex-basis:260px!important}}
+@media (max-width:380px){.v53-stage{padding-left:0!important;padding-right:0!important}.v53-shell,.v54-footer{width:100%!important}}
 </style>
 
+<style id="v571-targeted-fixes">
+/* v5.7.1 — real targeted fixes; no redesign and no stretched filler art. */
+
+/* HOME: use a tall extension assembled from the existing shelf/frame art at native scale.
+   No shelf or ornament is vertically stretched, and the lower phone viewport stays decorated. */
+.v54-footer{
+  flex:0 0 auto!important;
+  flex-basis:auto!important;
+  min-height:0!important;
+  aspect-ratio:592/520!important;
+  margin:-18px 0 0!important;
+  padding:64px 9% 18px!important;
+}
+.v54-footer-art{
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:fill!important;
+  content:url('./v571-footer-bookcase-tall.png')!important;
+}
+@media (min-height:700px){
+  .v54-footer{min-height:0!important;flex-basis:auto!important}
+}
+
+/* READING HOME TAB: give the lower fields their own rows so the session chapter
+   line and last-finished title stay above the illustrated page edge. */
+.v53-read-left>:nth-child(4){top:42%!important}
+.v53-read-left>:nth-child(5){top:50%!important}
+.v53-read-left>:nth-child(6){top:64%!important}
+.v53-read-left>:nth-child(7){top:73%!important}
+.v53-read-right>:nth-child(5){top:58%!important}
+.v53-read-right>:nth-child(6){top:67%!important;max-height:15%!important}
+
+/* ME: all five subtabs must fit the phone width. */
+#profile>.tabs{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:4px!important;
+  overflow:visible!important;
+}
+#profile>.tabs button{
+  min-width:0!important;
+  width:100%!important;
+  padding:7px 2px!important;
+  font-size:clamp(7px,2.15vw,10px)!important;
+  white-space:nowrap!important;
+}
+@media(max-width:380px){
+  #profile>.tabs{gap:3px!important}
+  #profile>.tabs button{font-size:clamp(6.4px,2vw,8.6px)!important;padding-left:1px!important;padding-right:1px!important}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -2221,6 +2202,7 @@ lastread → $br(remote,lastread)$</div>
 
 <script>
 const $=id=>document.getElementById(id);
+const APP_VERSION="5.7.1";
 const BASE={pages:3411,books:9,days:1740};
 const slots=["Head","Body","Back","Weapon / Focus","Charm","Relic","Familiar"];
 const ranks=[
@@ -2471,11 +2453,11 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v3.5</span></div>`;
+  <div class="health-row"><b>Version</b><span>v${APP_VERSION}</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
- if(el)el.textContent="Checking GitHub for the latest app…";
+ if(el)el.textContent="Checking for the latest app…";
  if(!navigator.onLine){
   if(el)el.textContent="📴 You are offline. Reconnect, then try again.";
   return;
@@ -2483,10 +2465,31 @@ async function checkForAppUpdate(){
  try{
   if("serviceWorker" in navigator){
    const reg=await navigator.serviceWorker.getRegistration();
-   if(reg)await reg.update();
+   if(reg){
+    let controllerChanged=false;
+    const changed=new Promise(resolve=>{
+     const onChange=()=>{controllerChanged=true;resolve();};
+     navigator.serviceWorker.addEventListener("controllerchange",onChange,{once:true});
+     setTimeout(resolve,4500);
+    });
+    await reg.update();
+    if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"});
+    if(reg.installing){
+     await new Promise(resolve=>{
+      const w=reg.installing;
+      const done=()=>{if(w.state==="activated"||w.state==="redundant")resolve();};
+      w.addEventListener("statechange",done);
+      done();
+      setTimeout(resolve,4500);
+     });
+    }
+    await changed;
+   }
   }
-  if(el)el.textContent="✅ Check complete. Reloading the latest version…";
-  setTimeout(()=>location.reload(),700);
+  if(el)el.textContent="✅ Update check complete. Loading the fresh app…";
+  const u=new URL(location.href);
+  u.searchParams.set("appRefresh",Date.now().toString());
+  setTimeout(()=>location.replace(u.href),250);
  }catch(e){
   if(el)el.textContent="Could not check right now. Your current app and save are still safe.";
  }

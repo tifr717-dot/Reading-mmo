@@ -1,14 +1,12 @@
-Reading MMO v5.7.1 — Current Issues Fix
+Reading MMO v5.7.1 — Targeted Fix Build
 
-Scope: Home only. No redesign.
+Base: v5.7 Full Height Home
 
-Fixes:
-- Uses the full-height illustrated Home furniture bay so the large plain brown gap above the bottom navigation is removed.
-- Keeps the carved side rails and ornate bottom frame continuing through the lower Home area.
-- Reading: widens the right-page safe zone so Page X of Y is not clipped by the Open Reader bookmark.
-- Reading: separates session time from Chapters This Session and lifts the lower left-page fields away from the page edge.
-- Reading: lifts Last Finished and its title into the right-page safe zone.
-- Quests unchanged.
-- Reader Level art direction unchanged.
-- No game, save, localStorage, or KWGT sync changes.
-- Cache bumped to v5.7.1.
+Actual fixes in this build:
+1. App Health reports v5.7.1 instead of the stale hard-coded v3.5.
+2. Home no longer stretches the short v5.7 footer or leaves a giant empty brown zone. A purpose-built tall bookcase extension is assembled from the existing pixel-art shelves/frame at native scale, with a second mirrored shelf tier filling the lower screen.
+3. Reading Home tab spacing is repaired so session/chapter and Last Finished fields have separate rows and stay inside the illustrated pages.
+4. Me/Profile tabs use a five-column grid so Stats, Setup, Journal, Titles, and Save all fit onscreen without horizontal clipping.
+5. Service-worker cache key is bumped to v5.7.1. Update/reload now waits for worker activation/controller change and then performs a cache-busted navigation.
+
+No game progression, save data, quest logic, loot logic, or KWGT data schema was changed.
