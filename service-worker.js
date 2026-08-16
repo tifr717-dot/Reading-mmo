@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.7.1-current-issues-fix';
+const CACHE = 'reading-mmo-v5.7-full-height-alignment';
 const CORE = [
   './',
   './asset-book.png',
@@ -46,8 +46,11 @@ const CORE = [
   './v54-shell.png',
   './v56-level-panel-tall.png',
   './v56-open-book-scene.png',
-  './v57-footer-fill.png',
-  './BUILD-NOTES-v5.7.txt'
+  './v57-footer-top.png',
+  './v57-side-left.png',
+  './v57-side-right.png',
+  './v57-bottom-cap.png',
+  './v57-shelf-strip.png',
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

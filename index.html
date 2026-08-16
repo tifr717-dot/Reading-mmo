@@ -1641,46 +1641,96 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
 
 /* Quests intentionally unchanged from the good v5.5/v5.4 layout. */
 </style>
+<style id="v57-fullscreen-home-fit">
+/* v5.7 — full-height mobile Home canvas + alignment pass.
+   Keep the proven tab art; remove the leftover viewport void by letting the illustrated furniture grow to the fixed bottom nav. */
 
-<style id="v57-full-height-home">
-/* v5.7 — Full-height mobile Home canvas. Fix the empty lower viewport without stretching the widget art. */
-.app:has(#home.screen.active){padding-bottom:0!important}
-#home.v53-home{min-height:calc(100dvh - 94px - 64px)!important;padding-bottom:0!important}
-.v53-stage{width:100%!important;max-width:none!important;margin:0!important;padding:17px 0 0!important;min-height:calc(100dvh - 94px - 64px)!important;display:flex!important;flex-direction:column!important}
-.v53-shell{width:100%!important;max-width:none!important;margin:0!important;flex:0 0 auto!important}
-/* The footer is now the expandable illustrated lower furniture bay. */
-.v54-footer{position:relative!important;width:100%!important;max-width:none!important;flex:1 0 220px!important;min-height:220px!important;margin:-18px 0 0!important;padding:64px 9% 24px!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important}
-.v54-footer-art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:fill!important;pointer-events:none!important}
-.v54-footer .v53-utils{width:76%!important;margin:0 auto 8px!important;position:relative!important;z-index:2!important}
-.v54-footer .v53-sync-state{position:relative!important;z-index:2!important}
-.v54-footer .v53-ledger-panel{position:relative!important;z-index:3!important}
-.v54-footer .v53-save{position:relative!important;z-index:2!important;margin-top:8px!important}
-/* Keep the ornate bottom frame visually attached to the bottom navigation on tall phones. */
-@media (min-height:700px){.v54-footer{min-height:260px!important;flex-basis:260px!important}}
-@media (max-width:380px){.v53-stage{padding-left:0!important;padding-right:0!important}.v53-shell,.v54-footer{width:100%!important}}
+/* Use the phone as the canvas instead of centering a short widget-sized island inside it. */
+#home.v53-home{min-height:calc(100svh - 72px - 64px - env(safe-area-inset-bottom))!important}
+.v53-stage{
+  width:100%!important;
+  max-width:none!important;
+  min-height:calc(100svh - 72px - 64px - env(safe-area-inset-bottom))!important;
+  padding:17px 2px 0!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.v53-shell{width:100%!important;max-width:592px!important;flex:0 0 auto!important}
+
+/* The old footer art closed the illustration halfway down the screen. Hide it and turn the
+   lower area into expandable widget-family furniture instead. */
+.v54-footer{
+  position:relative!important;
+  width:100%!important;
+  max-width:592px!important;
+  flex:1 1 auto!important;
+  min-height:220px!important;
+  margin:-7px auto 0!important;
+  padding:52px 8% 72px!important;
+  overflow:hidden!important;
+  z-index:2!important;
+  background-color:#321b12!important;
+  background-image:
+    url('./v57-footer-top.png'),
+    url('./v57-bottom-cap.png'),
+    url('./v57-shelf-strip.png'),
+    url('./v57-side-left.png'),
+    url('./v57-side-right.png')!important;
+  background-repeat:no-repeat,no-repeat,repeat-y,repeat-y,repeat-y!important;
+  background-position:center top,center bottom,center 116px,left top,right top!important;
+  background-size:100% 48px,100% 58px,84% auto,9.5% auto,9.5% auto!important;
+}
+.v54-footer-art{display:none!important}
+.v54-footer .v53-utils{width:78%!important;margin:0 auto 8px!important;gap:10px!important}
+.v54-footer .v53-sync-state{margin-top:4px!important}
+.v54-footer .v53-ledger-panel{width:78%!important;margin:10px auto 0!important}
+.v54-footer .v53-save{margin-top:10px!important}
+
+/* READING — align every field to the actual page safe zones. No more ellipsis on the page count,
+   and keep session/chapter + last-finished rows visibly separated. */
+.v53-open-book{left:-4%!important;top:4%!important;width:108%!important}
+.v53-read-left,.v53-read-right{top:21%!important;height:58%!important}
+.v53-read-left{left:13.2%!important;width:35.5%!important}
+.v53-read-right{left:51.8%!important;width:34.5%!important}
+.v53-read-left>:nth-child(1){top:0!important}
+.v53-read-left>:nth-child(2){top:8%!important;max-height:23%!important}
+.v53-read-left>:nth-child(3){top:32%!important}
+.v53-read-left>:nth-child(4){top:46%!important}
+.v53-read-left>:nth-child(5){top:55%!important}
+.v53-read-left>:nth-child(6){top:69%!important}
+.v53-read-left>:nth-child(7){top:79%!important}
+.v53-read-right>:nth-child(1){top:0!important}
+.v53-read-right>:nth-child(2){left:-1%!important;right:-1%!important;top:9%!important}
+.v53-read-right>:nth-child(3){left:8%!important;right:8%!important;top:30%!important}
+.v53-read-right>:nth-child(4){top:42%!important}
+.v53-read-right>:nth-child(5){top:65%!important}
+.v53-read-right>:nth-child(6){top:75%!important;max-height:17%!important}
+.v53-page{font-size:clamp(10.8px,3.05vw,15px)!important;overflow:visible!important;text-overflow:clip!important}
+.v53-reader-ribbon{right:.6%!important;top:17.5%!important;height:34%!important}
+.v53-open-hit{right:.3%!important;top:17.5%!important;width:15.2%!important;height:34%!important}
+
+/* READER LEVEL — put the live overlays on the same coordinate system as the art.
+   The art itself already contains the extended shelves; these values simply stop the text from looking detached. */
+.v53-level-art{left:0!important;right:0!important;top:2.5%!important;width:100%!important}
+.v53-level-title{left:26%!important;right:25%!important;top:18.5%!important}
+.v53-rank{left:26%!important;right:25%!important;top:30.5%!important}
+.v53-xpbar{left:21.5%!important;right:21.5%!important;top:39.5%!important}
+.v53-xptxt{left:26%!important;right:25%!important;top:45%!important}
+.v53-lastread{left:35%!important;right:25%!important;top:50.8%!important}
+.v53-stat.books{left:25%!important;width:14%!important}
+.v53-stat.pages{left:45%!important;width:17%!important}
+.v53-stat.days{right:19%!important;width:14%!important}
+
+/* Quests remains the visual benchmark. */
+
+@media(max-width:380px){
+  .v53-stage{padding-left:0!important;padding-right:0!important}
+  .v53-shell,.v54-footer{width:100%!important}
+  .v54-footer{padding-left:7%!important;padding-right:7%!important}
+  .v54-footer .v53-utils{width:82%!important}
+}
 </style>
 
-<style id="v571-current-issues-fix">
-/* v5.7.1 — current-issues-only fix. No redesign. */
-/* Reading: keep all live text fully inside the illustrated page safe zones. */
-.v53-read-left{left:12.7%!important;width:35.3%!important;top:21.5%!important;height:57%!important}
-.v53-read-right{left:52.8%!important;width:30.4%!important;top:21.5%!important;height:57%!important}
-.v53-read-left>:nth-child(4){top:45%!important}
-.v53-read-left>:nth-child(5){top:54%!important}
-.v53-read-left>:nth-child(6){top:68%!important}
-.v53-read-left>:nth-child(7){top:77%!important}
-.v53-read-right>:nth-child(2){left:-1%!important;right:0!important;top:10%!important}
-.v53-page{font-size:clamp(10.7px,3vw,14.7px)!important;white-space:nowrap!important;overflow:visible!important}
-.v53-read-right>:nth-child(5){top:64%!important}
-.v53-read-right>:nth-child(6){top:73%!important;max-height:18%!important;line-height:1.08!important;overflow:hidden!important}
-.v53-reader-ribbon{right:.15%!important}
-.v53-open-hit{right:0!important}
-/* Full-height shell: keep the furniture bay continuous down to the fixed navigation. */
-.v54-footer{margin:-18px 0 0!important}
-/* Prevent the illustrated shell from creating any extra page gap below its furniture. */
-#home.v53-home{margin-bottom:0!important}
-.v53-stage{padding-bottom:0!important}
-</style>
 </head>
 <body>
 <div class="app">
@@ -1755,7 +1805,7 @@ body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;
     </div>
 
     <div class="v54-footer">
-      <img class="v54-footer-art" src="./v57-footer-fill.png" alt="Full-height illustrated library furniture extending to the bottom navigation">
+      <img class="v54-footer-art" src="./v54-desk-base.png" alt="Illustrated desk shelf base">
       <div class="v53-utils">
         <div class="v53-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
         <div class="v53-util"><img src="./v53-small-button.png" alt=""><button onclick="toggleHomeLedger()">CHARACTER LEDGER</button></div>
