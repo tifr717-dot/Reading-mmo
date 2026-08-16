@@ -1,0 +1,5 @@
+Reading MMO v5.4.1 — Tabbed Widget Home Polish Fix
+
+Fixes a missing closing </style> tag in v5.4 that caused the browser to interpret the Home HTML as CSS and render a blank/black content area.
+
+This is otherwise the same v5.4 polish build. Service-worker cache name bumped so the corrected index is fetched.

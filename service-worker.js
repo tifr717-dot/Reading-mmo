@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5-4-tabbed-widget-home-polish';
+const CACHE = 'reading-mmo-v5-4-1-tabbed-widget-home-polish-fix';
 const CORE = [
   './',
   './index.html',
