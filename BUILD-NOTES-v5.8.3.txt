@@ -1,0 +1,8 @@
+v5.8.3 — dynamic footer fill pass.
+
+- kept the main panel compositions intact
+- added a furnished lower-library fill to occupy the empty lower half
+- made the utility shelf + sync/status area move per active Home tab
+- placed the footer fill directly beneath Reading / Reader Level / Quests depending on the active view
+- nudged the Reading chapter lines slightly higher again
+- updated App Health version and service-worker cache key

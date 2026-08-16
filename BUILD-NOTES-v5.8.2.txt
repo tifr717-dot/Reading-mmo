@@ -1,0 +1,8 @@
+v5.8.2 — footer rebuild + reading micro-fix.
+
+- rebuilt the lower home footer composition with the furnished footer moved closer to the active panel
+- moved Sync Latest / Character Ledger upward
+- placed sync/save status directly beneath the footer buttons
+- preserved Reading / Reader Level / Quests main panel layouts
+- moved “Chapters This Session” and its value upward and slightly reduced sizing so they stay on the book page
+- updated App Health version and service-worker cache key

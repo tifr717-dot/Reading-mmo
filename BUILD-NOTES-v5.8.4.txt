@@ -1,0 +1,7 @@
+v5.8.4 — visible library fill.
+
+- replaced the sparse lower filler with a dense four-shelf library footer built from the existing pixel-art shelf assets
+- extended the furnished footer nearly to the bottom navigation so the brown void is actually filled
+- kept Reading / Reader Level / Quests main compositions unchanged
+- kept the chapter count safely on the book page
+- updated App Health and service-worker cache key

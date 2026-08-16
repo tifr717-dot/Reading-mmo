@@ -1,0 +1,7 @@
+v5.8.1 — final polish pass.
+
+- pulled utility shelf/buttons upward under the active panel
+- tightened lower-third spacing for sync status and save text
+- nudged Character Ledger overlay upward to match the new utility shelf position
+- preserved Reading / Reader Level / Quests main panel layouts from v5.8
+- updated App Health version and service-worker cache key

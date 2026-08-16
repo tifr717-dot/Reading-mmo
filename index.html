@@ -1836,6 +1836,125 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 @media(max-width:380px){.v58-tabs{left:5.5%;right:5.5%}.v58-tab span{font-size:6.6px!important}.v58-utils{left:17%;right:17%}}
 </style>
 
+
+<style id="v581-final-polish">
+/* v5.8.1 — tiny lower-third polish pass. Main panel layouts intentionally preserved. */
+.v58-utils{
+  left:18%!important;
+  right:18%!important;
+  top:60.8%!important;
+  height:4.8%!important;
+  gap:4.5%!important;
+}
+.v58-util button{font-size:clamp(6.8px,1.85vw,8.6px)!important}
+.v58-sync-state{
+  left:18%!important;
+  right:18%!important;
+  top:65.4%!important;
+  font-size:6.1px!important;
+}
+.v58-save{
+  left:18%!important;
+  right:18%!important;
+  top:67.4%!important;
+  font-size:6.2px!important;
+}
+.v58-ledger-panel{
+  left:16.5%!important;
+  right:16.5%!important;
+  top:44.8%!important;
+}
+@media(max-width:380px){
+  .v58-utils{left:16.5%!important;right:16.5%!important}
+  .v58-sync-state,.v58-save{left:16.5%!important;right:16.5%!important}
+}
+</style>
+
+
+<style id="v582-footer-rebuild">
+/* v5.8.2 — footer rebuild + tiny reading text adjustment. */
+/* keep the main panels intact; only tighten the lower-footer composition and the low reading text */
+.v58-r-chapters-label{top:58.8%!important;font-size:clamp(5.7px,1.45vw,6.9px)!important}
+.v58-r-chapters{top:63.1%!important;font-size:clamp(9.2px,2.55vw,12.3px)!important}
+
+.v58-utils{
+  left:16.5%!important;
+  right:16.5%!important;
+  top:56.2%!important;
+  height:4.9%!important;
+  gap:4.5%!important;
+}
+.v58-util button{font-size:clamp(6.8px,1.85vw,8.7px)!important}
+.v58-sync-state{
+  left:16.5%!important;
+  right:16.5%!important;
+  top:61.1%!important;
+  font-size:6.1px!important;
+}
+.v58-save{
+  left:16.5%!important;
+  right:16.5%!important;
+  top:62.8%!important;
+  font-size:6.15px!important;
+}
+.v58-ledger-panel{
+  left:16%!important;
+  right:16%!important;
+  top:41.8%!important;
+}
+@media(max-width:380px){
+  .v58-utils{left:15.5%!important;right:15.5%!important}
+  .v58-sync-state,.v58-save{left:15.5%!important;right:15.5%!important}
+}
+</style>
+
+
+<style id="v583-dynamic-footer-fill">
+/* v5.8.3 — fill the empty lower space without changing the main panel composition. */
+.v58-home{--footer-fill-top:54.8%;--footer-fill-height:26.5%;--utils-top:60.6%;--sync-top:65.2%;--save-top:66.9%;}
+.v58-lowerfill{
+  position:absolute;
+  left:6.8%;
+  right:6.8%;
+  top:var(--footer-fill-top);
+  height:var(--footer-fill-height);
+  background:url('./v57-footer-fill.png') center top/100% 100% no-repeat;
+  pointer-events:none;
+  z-index:10;
+  opacity:.98;
+}
+.v58-utils{top:var(--utils-top)!important; z-index:18!important}
+.v58-sync-state{top:var(--sync-top)!important; z-index:18!important}
+.v58-save{top:var(--save-top)!important; z-index:18!important}
+/* Per-tab placement so the furnished footer sits directly under the active panel. */
+#home.v58-home.tab-reading{--footer-fill-top:49.2%;--footer-fill-height:31%;--utils-top:56.5%;--sync-top:61.2%;--save-top:62.9%;}
+#home.v58-home.tab-level{--footer-fill-top:54.4%;--footer-fill-height:27.4%;--utils-top:60.8%;--sync-top:65.2%;--save-top:66.9%;}
+#home.v58-home.tab-quests{--footer-fill-top:53.6%;--footer-fill-height:28.8%;--utils-top:60.3%;--sync-top:64.9%;--save-top:66.6%;}
+/* Reading chapter lines: one more tiny nudge upward for safer page fit. */
+.v58-r-chapters-label{top:57.6%!important}
+.v58-r-chapters{top:61.8%!important}
+@media(max-width:380px){
+  .v58-lowerfill{left:6.3%;right:6.3%;}
+}
+</style>
+
+
+<style id="v584-visible-library-fill">
+/* v5.8.4 — actually fill the empty lower space with visible library furniture. */
+.v58-lowerfill{
+  background:url('./v584-dense-library-footer.png') center top/100% 100% no-repeat!important;
+  opacity:1!important;
+  z-index:11!important;
+}
+#home.v58-home.tab-reading{--footer-fill-top:49.2%;--footer-fill-height:44.5%;--utils-top:55.6%;--sync-top:60.4%;--save-top:62.0%;}
+#home.v58-home.tab-level{--footer-fill-top:54.0%;--footer-fill-height:39.7%;--utils-top:59.9%;--sync-top:64.6%;--save-top:66.2%;}
+#home.v58-home.tab-quests{--footer-fill-top:53.1%;--footer-fill-height:40.6%;--utils-top:59.3%;--sync-top:64.0%;--save-top:65.6%;}
+.v58-utils,.v58-sync-state,.v58-save{z-index:20!important}
+/* Keep the chapter lines safely on the page. */
+.v58-r-chapters-label{top:57.2%!important}
+.v58-r-chapters{top:61.3%!important}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -1851,9 +1970,9 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 </header>
 
 
-<section id="home" class="screen active v58-home">
+<section id="home" class="screen active v58-home tab-reading">
   <div class="v58-stage" aria-label="Reading MMO Home">
-    <img class="v58-frame" src="./v58-home-frame.png" alt="Unified enchanted library Home frame">
+    <img class="v58-frame" src="./v58-home-frame-v582.png" alt="Unified enchanted library Home frame">
 
     <div class="v58-tabs" role="tablist" aria-label="Home views">
       <button class="v53-tab v58-tab active" id="homeTabReading" role="tab" aria-selected="true" onclick="setHomeTab('reading',this)"><img src="./v53-tab-active.png" alt=""><span>READING</span></button>
@@ -1908,6 +2027,8 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
         </div>
       </div>
     </div>
+
+    <div class="v58-lowerfill" aria-hidden="true"></div>
 
     <div class="v58-utils">
       <div class="v58-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
@@ -2573,7 +2694,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.8</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.8.4</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -4370,6 +4491,11 @@ function setHomeTab(name,btn){
     t.classList.toggle('active',on); t.setAttribute('aria-selected',on?'true':'false');
     const img=t.querySelector('img'); if(img)img.src=on?'./v53-tab-active.png':'./v53-tab-inactive.png';
   });
+  const home=$('home');
+  if(home){
+    home.classList.remove('tab-reading','tab-level','tab-quests');
+    home.classList.add('tab-'+name);
+  }
 }
 function restoreHomeTab(){ const b=$('homeTabReading'); if(b)setHomeTab('reading',b); }
 
