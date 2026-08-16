@@ -2416,6 +2416,33 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 @media(max-width:390px){#quests.quest-rebuild{padding-left:12px!important;padding-right:12px!important}.quest-roll{min-height:67px}.quest-slip{padding-left:12px;padding-right:12px}.quest-slip-bottom{display:block}.quest-slip-actions{margin-top:8px;width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.quest-mini-action{height:32px}.quest-slip-objective{min-height:38px}}
 </style>
 
+
+<style id="v593-play-me-finish">
+/* v5.9.3 — finish Play + Me. Home, Read and Quests are frozen. */
+#sectest{} /* harmless marker */
+
+/* PLAY — one compact adventure workstation. */
+#adventure.v593-play{padding:14px 12px 118px!important;background:linear-gradient(rgba(20,8,5,.18),rgba(15,6,4,.32)),url('./v53-wood-tile.png') center/170px auto repeat!important;color:#ead8b4}
+.v593-play-stage{max-width:650px;margin:0 auto}
+.v593-play-heading,.v593-profile-heading{display:flex;align-items:center;gap:10px;margin:3px 0 10px;padding:10px 13px;background:linear-gradient(180deg,#563326,#311a13);border:1px solid #a77b43;box-shadow:0 3px 0 #160906,inset 0 0 0 2px rgba(200,153,73,.14);color:#efdcad}
+.v593-play-heading>div{display:flex;align-items:center;gap:8px}.v593-play-heading b,.v593-profile-heading b{font:700 clamp(11px,3.2vw,15px)/1 Georgia,'Times New Roman',serif;letter-spacing:.8px}.v593-play-heading small,.v593-profile-heading small{display:block;margin-left:auto;color:#aa9170!important;font:700 6.4px/1.2 ui-monospace,monospace}.v593-play-icon{font-size:18px}
+.v593-hub-gates{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}.v593-gate{min-height:70px;padding:9px!important;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;text-align:left!important;border:2px solid #a47a43!important;box-shadow:inset 0 0 0 2px rgba(22,9,6,.55),2px 3px 0 rgba(0,0,0,.4)!important}.v593-gate>span{grid-row:1/3;font-size:21px;align-self:center}.v593-gate b{font:700 clamp(9px,2.7vw,12px)/1 Georgia,'Times New Roman',serif}.v593-gate small{font:700 5.8px/1.15 ui-monospace,monospace;color:#d1bc96!important}.v593-gate.world-gate{background:linear-gradient(#557445,#36502f)!important}.v593-gate.bag-gate{background:linear-gradient(#75539a,#50366e)!important}
+#adventure .v593-activity-tabs{display:grid!important;grid-template-columns:repeat(3,1fr)!important;overflow:visible!important;margin:0 0 10px!important;padding:4px!important}.v593-activity-tabs button{min-width:0!important;height:40px!important;padding:5px!important;font:700 8.3px/1 Georgia,'Times New Roman',serif!important}.v593-activity-tabs button span{font-size:13px;margin-right:4px}
+.v593-station{position:relative;padding:12px;background:linear-gradient(rgba(255,247,218,.15),rgba(101,60,31,.04)),linear-gradient(#efd8aa,#dec08c);border:2px solid #70462a;outline:1px solid #b88c4e;outline-offset:-5px;box-shadow:0 5px 0 rgba(18,7,4,.45),inset 0 0 20px rgba(82,48,25,.08);color:#43291c}.v593-station-head{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;padding:2px 2px 8px;margin-bottom:8px;border-bottom:1px solid rgba(102,63,34,.28)}.v593-station-head>div{display:flex;align-items:center;gap:7px}.v593-station-head span{font-size:16px}.v593-station-head b{font:700 10px/1 Georgia,'Times New Roman',serif;color:#50301e;letter-spacing:.5px}.v593-station-head small{font:700 6px/1.2 ui-monospace,monospace;color:#79604a!important;text-align:right}.v593-control-row label{display:block;margin-bottom:4px!important;font-size:7.6px!important}.v593-control-row select{height:38px!important;font-size:9px!important;padding:7px 9px!important}.v593-station-info{margin:8px 0!important}.v593-primary-action{width:100%;min-height:42px!important;margin-top:7px!important;padding:7px!important;font:700 9px/1.1 Georgia,'Times New Roman',serif!important}.v593-station-result{margin-top:8px!important;min-height:38px;padding:9px!important;font-size:7.2px!important;line-height:1.3!important}.v593-pouch{margin-top:10px;padding:9px;background:rgba(91,53,28,.08);border:1px solid #a67f49}.v593-mini-title{font:900 7px/1 ui-monospace,monospace;letter-spacing:.8px;color:#6f4c91;margin-bottom:7px}.v593-alchemy-grid{display:grid;gap:10px}.v593-enchant-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.v593-enchant-grid .v593-control-row:last-child{grid-column:1/-1}
+
+/* WORLD + BAG inherit a slightly tidier Play shell without changing logic. */
+#world.screen,#bag.screen{padding:12px 12px 118px!important;background:linear-gradient(rgba(20,8,5,.16),rgba(15,6,4,.28)),url('./v53-wood-tile.png') center/170px auto repeat!important}#world>.tabs,#bag>.tabs{display:grid!important;grid-template-columns:repeat(3,1fr)!important;overflow:visible!important}#world>.tabs button,#bag>.tabs button{min-width:0!important;font-size:8px!important}
+
+/* ME — compact character ledger. */
+#profile.v593-profile{padding:12px 11px 118px!important;background:linear-gradient(rgba(20,8,5,.18),rgba(15,6,4,.30)),url('./v53-wood-tile.png') center/170px auto repeat!important;color:#ead8b4}.v593-profile-stage{max-width:650px;margin:0 auto}.v593-profile-heading{align-items:center}.v593-profile-heading>span{font-size:19px}.v593-profile-heading>div{min-width:0}.v593-profile-heading small{margin:3px 0 0!important}
+#profile .v593-profile-tabs{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:3px!important;overflow:visible!important;margin:0 0 10px!important;padding:4px!important}#profile .v593-profile-tabs button{min-width:0!important;width:auto!important;height:46px!important;padding:4px 2px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;font-size:6.7px!important;white-space:nowrap!important}#profile .v593-profile-tabs button span{font-size:13px!important;line-height:1!important}#profile .v593-profile-tabs button b{font:700 6.6px/1 Georgia,'Times New Roman',serif!important}
+.v593-ledger-card{position:relative;margin:0 0 10px;padding:12px;background:linear-gradient(rgba(255,247,218,.15),rgba(101,60,31,.04)),linear-gradient(#efd8aa,#dec08c);border:2px solid #70462a;outline:1px solid #b88c4e;outline-offset:-5px;box-shadow:0 5px 0 rgba(18,7,4,.45),inset 0 0 20px rgba(82,48,25,.08);color:#43291c}.v593-ledger-head{display:flex;align-items:center;gap:8px;padding:1px 2px 8px;margin-bottom:9px;border-bottom:1px solid rgba(103,64,35,.28)}.v593-ledger-head>span{font-size:16px}.v593-ledger-head b{font:700 9.5px/1 Georgia,'Times New Roman',serif;letter-spacing:.5px;color:#4f2f1e}.v593-ledger-head small{display:block;margin-top:3px;color:#785f49!important;font:700 6px/1.2 ui-monospace,monospace}.v593-ledger-head.compact{margin-bottom:7px;padding-bottom:6px}.v593-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.v593-stat-field{padding:7px;background:rgba(252,233,190,.44);border:1px solid #a57d47}.v593-stat-field label{display:block;margin:0 0 3px!important;font-size:7.3px!important}.v593-stat-field input{height:35px!important;font-size:10px!important;padding:7px 8px!important}.v593-save-stats,.v593-full{width:100%;min-height:38px!important;margin-top:8px!important;font-size:8.5px!important;padding:6px!important}.v593-baseline-note{margin-top:8px;padding-top:7px;border-top:1px dashed #a5814e;font:700 6.2px/1.35 ui-monospace,monospace;color:#735a43}.v593-profile-two-up{display:grid;grid-template-columns:1fr 1fr;gap:10px}.v593-character-summary #profileSummary .inventory-row{padding:7px 4px!important;border-bottom:1px dotted rgba(91,54,31,.22)!important;font-size:7.5px!important}.v593-safety-card button{width:100%;min-height:37px!important;padding:6px!important;font-size:8px!important}.v593-safety-card .muted{margin-top:6px!important;font-size:6.4px!important}.v593-safety-card small{display:block;margin-top:5px!important;font-size:6px!important;line-height:1.3!important}
+.v593-setup-block{padding:9px;background:rgba(252,233,190,.42);border:1px solid #a57d47}.v593-setup-block label{font-size:7.4px!important}.v593-setup-block input{height:35px!important;font-size:8px!important}.v593-ledger-drawer{margin-top:8px;border:1px solid #8b653b;background:rgba(75,42,26,.10)}.v593-ledger-drawer summary{list-style:none;display:flex;align-items:center;justify-content:space-between;padding:9px;font:800 7px/1 ui-monospace,monospace;color:#5c3c28;cursor:pointer}.v593-ledger-drawer summary::-webkit-details-marker{display:none}.v593-ledger-drawer summary span{font-size:5.7px;color:#785a42}.v593-ledger-drawer[open] summary span{font-size:0}.v593-ledger-drawer[open] summary span:after{content:'CLOSE';font-size:5.7px}.v593-drawer-body{padding:8px 9px;border-top:1px solid #a37c49}.v593-drawer-body .simple-status,.v593-drawer-body .muted{margin-top:5px!important;font-size:6.5px!important}.v593-test-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:9px;padding:9px;background:rgba(91,53,28,.08);border:1px solid #a47c47}.v593-test-row b{font-size:8px}.v593-test-row small{display:block;margin-top:2px;font-size:5.8px!important}.v593-save-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.v593-backup-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.v593-backup-actions button{min-height:38px!important;font-size:8px!important}.v593-danger-drawer{margin-top:10px;padding:9px 11px;background:rgba(114,47,39,.20);border:1px solid #8c453a;color:#e6c5a4}.v593-danger-drawer summary{font:700 8px/1 Georgia,'Times New Roman',serif;cursor:pointer}.v593-danger-drawer button{margin-top:8px!important}
+/* Dynamic journal/title cards become denser inside the ledger. */
+#profile #questJournal .card,#profile #achievementList .card{margin:7px 0!important;padding:10px!important}#profile #achievementList{display:grid;grid-template-columns:1fr 1fr;gap:7px}#profile #achievementList .card{margin:0!important;min-height:72px}#profile #achievementList .card h3{font-size:9px!important;margin:0 0 4px!important}#profile #achievementList .card small{font-size:6px!important}
+@media(max-width:390px){.v593-play-heading small{display:none}.v593-gate small{display:none}.v593-gate{min-height:58px}.v593-hub-gates{gap:6px}.v593-enchant-grid{grid-template-columns:1fr}.v593-enchant-grid .v593-control-row:last-child{grid-column:auto}.v593-profile-two-up,.v593-save-grid{grid-template-columns:1fr}#profile .v593-profile-tabs button{height:44px!important;font-size:6.2px!important}#profile .v593-profile-tabs button b{font-size:6.1px!important}.v593-stat-grid{gap:6px}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2657,63 +2684,76 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
   </div>
 </section>
 
-<section id="adventure" class="screen">
-  <div class="section">🧭 ADVENTURE HUB</div>
-  <div class="card">
-    <div class="hub-buttons">
-      <button class="btn-green" onclick="go('world')">🗺️ World & Bestiary</button>
-      <button class="btn-purple" onclick="go('bag')">🎒 Bag & Equipment</button>
+<section id="adventure" class="screen v593-play">
+  <div class="v593-play-stage">
+    <div class="v593-play-heading">
+      <div><span class="v593-play-icon">🧭</span><b>ADVENTURE HUB</b></div>
+      <small>Choose an activity, explore the region, or manage your haul.</small>
     </div>
-  </div>
 
-  <div class="tabs">
-    <button class="active" onclick="subtab('adv','huntPanel',this)">⚔️ Hunt</button>
-    <button onclick="subtab('adv','gatherPanel',this)">🌿 Gather</button>
-    <button onclick="subtab('adv','alchemyPanel',this)">⚗️ Alchemy</button>
-  </div>
-
-  <div id="huntPanel" class="subpanel active">
-    <div class="section">⚔️ HUNT</div>
-    <div class="card">
-      <label>Target Mob</label>
-      <select id="huntMob" onchange="renderHuntInfo();syncHuntTarget()"></select>
-      <div id="huntInfo" style="margin-top:9px"></div>
-      <button class="btn-red" style="width:100%;margin-top:9px" onclick="completeHunt()">Complete Hunt Quest + Fight</button>
-      <div id="huntResult" class="result">Choose the creature you actually want to farm.</div>
+    <div class="v593-hub-gates">
+      <button class="v593-gate world-gate" onclick="go('world')"><span>🗺️</span><b>World &amp; Bestiary</b><small>Explore • bosses • lore</small></button>
+      <button class="v593-gate bag-gate" onclick="go('bag')"><span>🎒</span><b>Bag &amp; Equipment</b><small>Loot • potions • loadout</small></button>
     </div>
-  </div>
 
-  <div id="gatherPanel" class="subpanel">
-    <div class="section">🌿 GATHER / FORAGE</div>
-    <div class="card">
-      <label>Forage Area</label>
-      <select id="gatherArea" onchange="syncGatherArea()">
-        <option>Front Stacks</option>
-        <option disabled>Glowcap Galleries — locked</option>
-        <option disabled>Whispering Annex — locked</option>
-        <option disabled>Inner Stacks — locked</option>
-      </select>
-      <button class="btn-green" style="width:100%;margin-top:9px" onclick="completeGather()">Complete Gather Quest + Forage</button>
-      <div id="gatherResult" class="result">Gathering materials feed your Goose Alchemy Lab.</div>
+    <div class="tabs v593-activity-tabs">
+      <button class="active" onclick="subtab('adv','huntPanel',this)"><span>⚔️</span> Hunt</button>
+      <button onclick="subtab('adv','gatherPanel',this)"><span>🌿</span> Gather</button>
+      <button onclick="subtab('adv','alchemyPanel',this)"><span>⚗️</span> Alchemy</button>
     </div>
-    <div class="card"><h3>Material Pouch</h3><div id="materialList"></div></div>
-  </div>
 
-  <div id="alchemyPanel" class="subpanel">
-    <div class="section">⚗️ GOOSE ALCHEMY LAB</div>
-    <div class="card">
-      <label>Recipe</label><select id="potionSelect" onchange="renderPotion();syncPotionQuest()"></select>
-      <div id="potionInfo" style="margin-top:9px"></div>
-      <button class="btn-purple" style="width:100%;margin-top:9px" onclick="brewPotion()">Complete Alchemy Quest + Brew</button>
-      <div id="alchemyResult" class="result">Brew first. Enchant later. The goose has read zero safety manuals.</div>
+    <div id="huntPanel" class="subpanel active">
+      <div class="v593-station v593-hunt-station">
+        <div class="v593-station-head"><div><span>⚔️</span><b>HUNT LODGE</b></div><small>Pick the creature you actually want to farm.</small></div>
+        <div class="v593-control-row">
+          <label>Target Mob</label>
+          <select id="huntMob" onchange="renderHuntInfo();syncHuntTarget()"></select>
+        </div>
+        <div id="huntInfo" class="v593-station-info"></div>
+        <button class="btn-red v593-primary-action" onclick="completeHunt()">⚔ Complete Hunt Quest + Fight</button>
+        <div id="huntResult" class="result v593-station-result">Choose the creature you actually want to farm.</div>
+      </div>
     </div>
-    <div class="card">
-      <h3>Use a Potion</h3>
-      <label>Potion in Bag</label><select id="usePotionSelect"></select>
-      <label>Target Collectible</label><select id="targetItem"></select>
-      <label>Variant</label><select id="targetVariant"><option>Normal</option><option>Golden</option></select>
-      <button class="btn-gold" style="width:100%;margin-top:9px" onclick="applyPotion()">Apply Potion to Collectible</button>
-      <div id="applyResult" class="result">One enchantment slot per collectible variant. New enchantments overwrite the old one.</div>
+
+    <div id="gatherPanel" class="subpanel">
+      <div class="v593-station v593-gather-station">
+        <div class="v593-station-head"><div><span>🌿</span><b>FORAGER'S BENCH</b></div><small>Gather materials for the Goose Alchemy Lab.</small></div>
+        <div class="v593-control-row">
+          <label>Forage Area</label>
+          <select id="gatherArea" onchange="syncGatherArea()">
+            <option>Front Stacks</option>
+            <option disabled>Glowcap Galleries — locked</option>
+            <option disabled>Whispering Annex — locked</option>
+            <option disabled>Inner Stacks — locked</option>
+          </select>
+        </div>
+        <button class="btn-green v593-primary-action" onclick="completeGather()">🌿 Complete Gather Quest + Forage</button>
+        <div id="gatherResult" class="result v593-station-result">Gathering materials feed your Goose Alchemy Lab.</div>
+        <div class="v593-pouch"><div class="v593-mini-title">MATERIAL POUCH</div><div id="materialList"></div></div>
+      </div>
+    </div>
+
+    <div id="alchemyPanel" class="subpanel">
+      <div class="v593-alchemy-grid">
+        <div class="v593-station v593-alchemy-station">
+          <div class="v593-station-head"><div><span>⚗️</span><b>GOOSE ALCHEMY LAB</b></div><small>Brew first. Safety paperwork never.</small></div>
+          <div class="v593-control-row"><label>Recipe</label><select id="potionSelect" onchange="renderPotion();syncPotionQuest()"></select></div>
+          <div id="potionInfo" class="v593-station-info"></div>
+          <button class="btn-purple v593-primary-action" onclick="brewPotion()">⚗ Complete Alchemy Quest + Brew</button>
+          <div id="alchemyResult" class="result v593-station-result">Brew first. Enchant later. The goose has read zero safety manuals.</div>
+        </div>
+
+        <div class="v593-station v593-enchant-station">
+          <div class="v593-station-head compact"><div><span>✨</span><b>ENCHANTING TABLE</b></div><small>One slot per collectible variant.</small></div>
+          <div class="v593-enchant-grid">
+            <div class="v593-control-row"><label>Potion in Bag</label><select id="usePotionSelect"></select></div>
+            <div class="v593-control-row"><label>Target Collectible</label><select id="targetItem"></select></div>
+            <div class="v593-control-row"><label>Variant</label><select id="targetVariant"><option>Normal</option><option>Golden</option></select></div>
+          </div>
+          <button class="btn-gold v593-primary-action" onclick="applyPotion()">✨ Apply Potion to Collectible</button>
+          <div id="applyResult" class="result v593-station-result">One enchantment slot per collectible variant. New enchantments overwrite the old one.</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -2778,114 +2818,127 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
   </div>
 </section>
 
-<section id="profile" class="screen">
-  <div class="tabs">
-    <button class="active" onclick="subtab('profile','statsPanel',this)">🧙 Stats</button>
-    <button onclick="subtab('profile','setupPanel',this)">⚙️ Setup</button>
-    <button onclick="subtab('profile','journalPanel',this)">📖 Journal</button>
-    <button onclick="subtab('profile','achievementsPanel',this)">🏆 Titles</button>
-    <button onclick="subtab('profile','savePanel',this)">💾 Save</button>
-  </div>
+<section id="profile" class="screen v593-profile">
+  <div class="v593-profile-stage">
+    <div class="v593-profile-heading"><span>🧙</span><div><b>CHARACTER LEDGER</b><small>Your reader profile, records, titles, and app tools.</small></div></div>
 
-  <div id="statsPanel" class="subpanel active">
-    <div class="section">🧙 CHARACTER / READING STATS</div>
-    <div class="card">
-      <label>Pages — Current</label><input id="pagesCurrent" type="number">
-      <label>Books — Current</label><input id="booksCurrent" type="number">
-      <label>Days Read — Current</label><input id="daysCurrent" type="number">
-      <label>Manual Bonus Adjustment</label><input id="manualBonus" type="number">
-      <button class="btn-blue" style="width:100%;margin-top:9px" onclick="saveProfile()">Save Reading Stats</button>
-      <div class="calm-note">Save stats here; sync widgets from Home.</div>
-      <hr>
-      <small>Frozen baselines: 3,411 pages • 9 books • 1,740 days. Quest XP is bonus XP on top of normal page/day/book XP.</small>
+    <div class="tabs v593-profile-tabs">
+      <button class="active" onclick="subtab('profile','statsPanel',this)"><span>🧙</span><b>Stats</b></button>
+      <button onclick="subtab('profile','setupPanel',this)"><span>⚙️</span><b>Setup</b></button>
+      <button onclick="subtab('profile','journalPanel',this)"><span>📖</span><b>Journal</b></button>
+      <button onclick="subtab('profile','achievementsPanel',this)"><span>🏆</span><b>Titles</b></button>
+      <button onclick="subtab('profile','savePanel',this)"><span>💾</span><b>Save</b></button>
     </div>
-    <div class="card">
-      <h3>Character Summary</h3>
-      <div id="profileSummary"></div>
+
+    <div id="statsPanel" class="subpanel active">
+      <div class="v593-ledger-card v593-reading-record">
+        <div class="v593-ledger-head"><span>📚</span><div><b>READING RECORD</b><small>Current values used by your Reader Level.</small></div></div>
+        <div class="v593-stat-grid">
+          <div class="v593-stat-field"><label>Pages</label><input id="pagesCurrent" type="number"></div>
+          <div class="v593-stat-field"><label>Books</label><input id="booksCurrent" type="number"></div>
+          <div class="v593-stat-field"><label>Days Read</label><input id="daysCurrent" type="number"></div>
+          <div class="v593-stat-field"><label>Bonus Adjustment</label><input id="manualBonus" type="number"></div>
+        </div>
+        <button class="btn-blue v593-save-stats" onclick="saveProfile()">💾 Save Reading Stats</button>
+        <div class="v593-baseline-note">Frozen baselines: 3,411 pages • 9 books • 1,740 days. Quest XP is added on top.</div>
+      </div>
+
+      <div class="v593-profile-two-up">
+        <div class="v593-ledger-card v593-character-summary">
+          <div class="v593-ledger-head compact"><span>✨</span><div><b>CHARACTER SUMMARY</b></div></div>
+          <div id="profileSummary"></div>
+        </div>
+        <div class="v593-ledger-card v593-safety-card">
+          <div class="v593-ledger-head compact"><span>🧹</span><div><b>COMPLETION SAFETY</b></div></div>
+          <button id="undoCompletionBtn" class="btn-red" onclick="undoLastCompletion()">Undo Last Completion</button>
+          <div id="undoCompletionStatus" class="muted"></div>
+          <small>Reverses only the most recent quest reward/progression.</small>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <h3>🧹 Completion Safety</h3>
-      <button id="undoCompletionBtn" class="btn-red" style="width:100%" onclick="undoLastCompletion()">Undo Last Completion</button>
-      <div id="undoCompletionStatus" class="muted" style="margin-top:8px"></div>
-      <small>This reverses only the most recent quest completion reward/progression. It does not touch your normal page, book, or reading-day progress.</small>
-    </div>
-  </div>
 
+    <div id="setupPanel" class="subpanel">
+      <div class="v593-ledger-card">
+        <div class="v593-ledger-head"><span>⚙️</span><div><b>SETTINGS &amp; CONNECTIONS</b><small>Widget connection and test tools.</small></div></div>
+        <div class="v593-setup-block">
+          <div class="v593-mini-title">📡 KWGT CONNECTION</div>
+          <div id="kwgtTokenState" class="simple-status">Checking KWGT setup…</div>
+          <label>Kustom Remote Message token</label>
+          <input id="kwgtToken" type="password" autocomplete="off" placeholder="Paste token from KWGT Remote Message">
+          <button class="btn-purple v593-full" onclick="saveKustomToken()">🔐 Save KWGT Token</button>
+          <small>Normal widget syncing lives on Home → <b>Sync Widgets</b>.</small>
+        </div>
 
-  <div id="setupPanel" class="subpanel">
-    <div class="section">⚙️ SETTINGS & CONNECTIONS</div>
+        <details class="v593-ledger-drawer">
+          <summary>🛠 KWGT troubleshooting <span>OPEN</span></summary>
+          <div class="v593-drawer-body">
+            <div class="simple-status">Normal widget sync doubles as the connection test, so troubleshooting no longer spends an extra API call.</div>
+            <div id="kwgtStatus" class="simple-status"></div>
+            <div id="kwgtRateInfo" class="muted"></div>
+            <div id="kwgtCooldown" class="muted"></div>
+            <button id="clearStaleCooldownBtn" class="btn-plain v593-full" style="display:none" onclick="clearStaleKustomCooldown()">🧹 Clear App's Local Cooldown</button>
+            <small>The app allows at most one Kustom network send every 90 seconds, merges newer changes locally, and skips duplicate packets.</small>
+          </div>
+        </details>
 
-    <div class="card">
-      <h3>📡 KWGT Connection</h3>
-      <div id="kwgtTokenState" class="simple-status">Checking KWGT setup…</div>
-      <label>Kustom Remote Message token</label>
-      <input id="kwgtToken" type="password" autocomplete="off" placeholder="Paste token from KWGT Remote Message">
-      <button class="btn-purple" style="width:100%;margin-top:8px" onclick="saveKustomToken()">🔐 Save KWGT Token</button>
-      <small>Normal widget syncing now lives on Home → <b>Sync Widgets</b>.</small>
-
-      <details class="simple-details" style="margin-top:10px">
-        <summary>🛠 KWGT troubleshooting</summary>
-        <div class="simple-status" style="margin-top:8px">Normal widget sync doubles as the connection test, so troubleshooting no longer spends an extra API call.</div>
-        <div id="kwgtStatus" class="simple-status" style="margin-top:8px"></div>
-        <div id="kwgtRateInfo" class="muted" style="margin-top:6px"></div>
-        <div id="kwgtCooldown" class="muted" style="margin-top:4px"></div>
-        <button id="clearStaleCooldownBtn" class="btn-plain" style="width:100%;margin-top:8px;display:none" onclick="clearStaleKustomCooldown()">🧹 Clear App's Local Cooldown</button>
-        <small>The app now allows at most one Kustom network send every 90 seconds, merges newer changes locally, and skips duplicate packets entirely.</small>
-      </details>
-
-      <details class="simple-details" style="margin-top:10px">
-        <summary>Reader Level widget — one-time hookup</summary>
-        <div id="readerSyncPreview" class="simple-status" style="margin-top:8px"></div>
-        <small>Keep your existing XP/level formulas. These five globals receive the app values:</small>
-        <div class="result" style="margin-top:7px;white-space:pre-wrap">pages → $br(remote,pages)$
+        <details class="v593-ledger-drawer">
+          <summary>📈 Reader Level widget hookup <span>OPEN</span></summary>
+          <div class="v593-drawer-body">
+            <div id="readerSyncPreview" class="simple-status"></div>
+            <small>Keep your existing XP/level formulas. These five globals receive the app values:</small>
+            <div class="result" style="white-space:pre-wrap">pages → $br(remote,pages)$
 books → $br(remote,books)$
 streak → $br(remote,streak)$
 bonus → $br(remote,bonus)$
 lastread → $br(remote,lastread)$</div>
+          </div>
+        </details>
+
+        <div class="v593-test-row">
+          <span><b>🧪 Test Mode</b><small>Preview completions and fights without changing real progress.</small></span>
+          <input id="testMode" class="switch" type="checkbox" onchange="setTestMode(this.checked)">
+        </div>
+        <div id="testModeStatus" class="muted"></div>
+      </div>
+    </div>
+
+    <div id="journalPanel" class="subpanel">
+      <div class="v593-ledger-card">
+        <div class="v593-ledger-head"><span>📖</span><div><b>QUEST JOURNAL</b><small>Completed guild work is recorded automatically.</small></div></div>
+        <div id="questJournal"></div>
+      </div>
+    </div>
+
+    <div id="achievementsPanel" class="subpanel">
+      <div class="v593-ledger-card">
+        <div class="v593-ledger-head"><span>🏆</span><div><b>TITLES &amp; ACHIEVEMENTS</b><small>Milestones earned across your Reading MMO.</small></div></div>
+        <div id="achievementList"></div>
+      </div>
+    </div>
+
+    <div id="savePanel" class="subpanel">
+      <div class="v593-save-grid">
+        <div class="v593-ledger-card">
+          <div class="v593-ledger-head compact"><span>💾</span><div><b>APP HEALTH</b></div></div>
+          <div id="saveHealth"></div>
+          <button class="btn-purple v593-full" onclick="checkForAppUpdate()">✨ Check for App Update + Reload</button>
+          <div id="updateStatus" class="muted"></div>
+        </div>
+        <div class="v593-ledger-card">
+          <div class="v593-ledger-head compact"><span>📦</span><div><b>PORTABLE BACKUP</b></div></div>
+          <div class="v593-backup-actions">
+            <button class="btn-blue" onclick="exportSave()">⬇ Export</button>
+            <button class="btn-green" onclick="document.getElementById('importFile').click()">⬆ Import</button>
+          </div>
+          <input id="importFile" type="file" accept=".json,application/json" style="display:none" onchange="importSave(event)">
+          <small>Your progress auto-saves inside the installed app. Exporting gives you a separate JSON safety copy.</small>
+        </div>
+      </div>
+      <details class="v593-danger-drawer">
+        <summary>⚠️ Danger Zone</summary>
+        <button class="btn-red v593-full" onclick="resetGame()">Reset This Browser Save</button>
       </details>
     </div>
-
-    <div class="card notice">
-      <div class="checkline">
-        <span><b>Test Mode</b><br><small>Preview quest completions and boss fights without changing real XP, loot, kills, journal entries, or world progress.</small></span>
-        <input id="testMode" class="switch" type="checkbox" onchange="setTestMode(this.checked)">
-      </div>
-      <div id="testModeStatus" class="muted" style="margin-top:7px"></div>
-    </div>
-  </div>
-
-  <div id="journalPanel" class="subpanel">
-    <div class="section">📖 QUEST JOURNAL</div>
-    <div class="card notice">Every completed Hunt, Gather, and Alchemy quest is recorded here automatically.</div>
-    <div id="questJournal"></div>
-  </div>
-
-  <div id="achievementsPanel" class="subpanel">
-    <div class="section">🏆 TITLES & ACHIEVEMENTS</div>
-    <div id="achievementList"></div>
-  </div>
-
-  <div id="savePanel" class="subpanel">
-    <div class="section">💾 SAVE / BACKUP</div>
-    <div class="card">
-      <h3>App Health</h3>
-      <div id="saveHealth"></div>
-      <button class="btn-purple" style="width:100%;margin-top:8px" onclick="checkForAppUpdate()">✨ Check for App Update + Reload</button>
-      <div id="updateStatus" class="muted" style="margin-top:7px"></div>
-    </div>
-    <div class="card">
-      <h3>Portable Backup</h3>
-      <div class="row">
-        <button class="btn-blue" onclick="exportSave()">⬇ Export Backup</button>
-        <button class="btn-green" onclick="document.getElementById('importFile').click()">⬆ Import Backup</button>
-      </div>
-      <input id="importFile" type="file" accept=".json,application/json" style="display:none" onchange="importSave(event)">
-      <small>Your progress auto-saves inside the installed app. Exporting gives you a separate JSON safety copy.</small>
-    </div>
-    <details class="card danger">
-      <summary>Danger Zone</summary>
-      <button class="btn-red" style="width:100%;margin-top:9px" onclick="resetGame()">Reset This Browser Save</button>
-    </details>
   </div>
 </section>
 
@@ -3164,7 +3217,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.9.2</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.9.3</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");

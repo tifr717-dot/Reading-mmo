@@ -1,0 +1,11 @@
+Reading MMO v5.9.3 — Play + Me finish pass
+
+- Home, Read, and Quests remain frozen.
+- Rebuilt Play into a compact Adventure Hub with World/Bag gateways and Hunt/Gather/Alchemy workstations.
+- Tidied World and Bag navigation styling without changing logic.
+- Rebuilt Me into a Character Ledger composition.
+- Five Me tabs now fit in a fixed five-column row.
+- Stats condensed into a 2x2 reading record grid plus Character Summary and Completion Safety cards.
+- Setup tools moved into compact ledger drawers.
+- Journal, Titles, and Save screens inherit the ledger treatment.
+- Updated App Health to v5.9.3 and refreshed the service-worker cache key.
