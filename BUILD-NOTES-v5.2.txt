@@ -1,0 +1,14 @@
+Reading MMO v5.2 — Unified Widget Home
+
+HOME ONLY visual pass.
+
+Goal: keep the exact finished widget art language but stop presenting three separate widget cards.
+- Quest board keeps the real widget artwork, trimmed into the shared wall.
+- Reader Level keeps the real widget artwork, mounted as a prestige shelf beneath it.
+- Current Reading loses the standalone outer card and becomes the open book on the shared desk.
+- Continuous carved/ivy side rails and an ornate bottom closure visually bind Home into one room.
+- View Board, Sync Widgets, and Character Ledger remain matching accessory plaques.
+- All changing text/progress stays live HTML.
+- No visible CSS card surfaces were introduced.
+- Read / Quests / Play / Me mechanics and layouts are unchanged.
+- KWGT rate-safe sync and saved game logic remain unchanged.

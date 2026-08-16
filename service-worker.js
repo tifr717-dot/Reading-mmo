@@ -1,36 +1,13 @@
-const CACHE = 'reading-mmo-v4-8-hybrid-layered-desk';
+const CACHE = 'reading-mmo-v5-3-tabbed-widget-home';
 const CORE = [
   './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
   './asset-book.png','./asset-gem.png','./asset-goose.png','./asset-ivy.png','./asset-potion.png','./asset-scroll.png',
   './asset-candle.png','./asset-mug.png','./asset-quill.png','./asset-books-stack.png','./asset-plant.png','./asset-ledger.png','./asset-crystal-lamp.png',
   './nav-home.png','./nav-read.png','./nav-quests.png','./nav-play.png','./nav-me.png',
-  './v47-header.png','./v47-quest-board.png','./v47-rank-placard.png','./v47-journal-scene.png','./v47-actions-ledger.png','./v47-wood-tile.png',
-  './hyb-header.png',
-  './hyb-wood-tile.png',
-  './hyb-board-frame.png',
-  './hyb-note-hunt.png',
-  './hyb-note-gather.png',
-  './hyb-note-alchemy.png',
-  './hyb-icon-hunt.png',
-  './hyb-icon-gather.png',
-  './hyb-icon-alchemy.png',
-  './hyb-rank-plaque.png',
-  './hyb-level-badge.png',
-  './hyb-rank-gem.png',
-  './hyb-open-book.png',
-  './hyb-open-reader-ribbon.png',
-  './hyb-xp-fill.png',
-  './hyb-read-fill.png',
-  './hyb-decor-candle.png',
-  './hyb-decor-mug.png',
-  './hyb-decor-quill.png',
-  './hyb-decor-books.png',
-  './hyb-decor-plant.png',
-  './hyb-decor-crystal.png',
-  './hyb-btn-board.png',
-  './hyb-btn-sync.png',
-  './hyb-ledger-tab.png',
-  './hyb-ledger-open.png',
+  './v51-header.png','./v51-wood-tile.png','./v51-quest-widget.png','./v51-reader-widget.png','./v51-xp-frame.png','./v51-fill.png',
+  './v51-current-widget-frame.png','./v51-open-book.png','./v51-reader-ribbon.png','./v51-small-button.png','./v51-plaque.png','./v51-ledger-open.png',
+  './v52-quest-inner.png','./v52-reader-inner.png','./v52-current-plaque.png','./v52-open-book-scene.png','./v52-rail-left.png','./v52-rail-right.png','./v52-connector.png','./v52-bottom-ornament.png',
+  './v53-header.png','./v53-shell.png','./v53-tab-active.png','./v53-tab-inactive.png','./v53-open-book.png','./v53-reader-ribbon.png','./v53-level-panel.png','./v53-quests-panel.png','./v53-xp-frame.png','./v53-fill.png','./v53-small-button.png','./v53-ledger-panel.png','./v53-wood-tile.png','./v53-candle.png','./v53-quill.png','./v53-books.png','./v53-ivy.png'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

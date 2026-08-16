@@ -1080,7 +1080,7 @@ header{background-image:url('./hyb-header.png')!important}
 
 
 <style id="v49-rich-hybrid-concept">
-/* v4.9: rich illustrated layers. Visible structure comes from artwork, never CSS cards. */
+/* v5.0: rich illustrated layers. Visible structure comes from artwork, never CSS cards. */
 #home.hyb-home{background:#1d110c url('./hyb-wood-tile.png') repeat!important;background-size:512px 384px!important}
 .hyb-home-stage{padding-top:8px!important;padding-bottom:10px!important}
 .hyb-home-stage img{image-rendering:auto!important;filter:none!important}
@@ -1150,12 +1150,338 @@ header{background-image:url('./hyb-header.png')!important}
 }
 </style>
 
+
+<style id="v50-strict-home">
+/* ===== v5.0 STRICT COZY DESK HOME =====
+   Visible structure is illustrated assets only. CSS is transparent positioning. */
+#home.v50-home{background:#1d110c url('./v50-wood.png') repeat!important;background-size:180px 128px!important;padding:0 0 10px!important;overflow:hidden!important}
+.v50-stage{position:relative;width:100%;max-width:430px;margin:0 auto;padding:8px 0 8px;isolation:isolate}
+.v50-stage img{image-rendering:pixelated;image-rendering:crisp-edges;filter:none!important}
+.v50-hit{position:absolute;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;color:inherit;cursor:pointer;z-index:20}
+.v50-hit:active{transform:translateY(1px)}
+
+.v50-board{position:relative;width:96%;aspect-ratio:344/218;margin:2px auto 0}
+.v50-board>img.board{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:1}
+.v50-board-title{position:absolute;left:33%;right:33%;top:2.8%;text-align:center;z-index:5;color:#f1dfb0;font-size:clamp(8px,2.45vw,10.5px);font-weight:900;letter-spacing:.8px}
+.v50-note{position:absolute;top:20%;width:27.9%;height:70.6%;z-index:5;color:#3b281d}
+.v50-note.n1{left:8.3%;transform:rotate(-.5deg)} .v50-note.n2{left:36.1%;transform:translateY(-1px)} .v50-note.n3{left:63.9%;transform:rotate(.45deg)}
+.v50-note-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.v50-role-icon{position:absolute;left:10%;top:11%;width:16%;z-index:7}
+.v50-role{position:absolute;left:29%;top:12%;right:6%;z-index:8;font-size:clamp(8px,2.3vw,10px);font-weight:900;letter-spacing:.35px;white-space:nowrap}
+.v50-role.hunt{color:#8f4338}.v50-role.gather{color:#4f733d}.v50-role.alchemy{color:#6f4c8f}
+.v50-qtitle{position:absolute;left:9%;right:8%;top:28%;z-index:8;font-family:Georgia,'Times New Roman',serif;font-size:clamp(13px,3.8vw,17px);font-weight:900;line-height:.98;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v50-qobj{position:absolute;left:9%;right:8%;top:49%;z-index:8;font-family:Georgia,'Times New Roman',serif;font-size:clamp(8.5px,2.45vw,10.7px);line-height:1.10;color:#5c4534;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.v50-qmeta,.v50-qxp{position:absolute;bottom:8.5%;z-index:8;font-size:clamp(7.6px,2.25vw,9.6px);font-weight:800}.v50-qmeta{left:9%}.v50-qxp{right:8%}
+
+.v50-rank{position:relative;width:86%;aspect-ratio:310/116;margin:-9px auto 0;z-index:8}
+.v50-rank-art{position:absolute;inset:0;width:100%;height:100%}.v50-badge{position:absolute;left:5.5%;top:20%;width:15.8%;z-index:5}.v50-gem{position:absolute;left:45.7%;top:-4%;width:8.5%;z-index:6}
+.v50-rank-label{position:absolute;left:23%;right:8%;top:17%;text-align:center;color:#76509b;font-size:clamp(6.5px,1.9vw,8.5px);font-weight:900;letter-spacing:1px;z-index:8}
+.v50-level{position:absolute;left:8.8%;top:38%;width:9%;text-align:center;color:#f4e2bb;font-size:clamp(7px,2.05vw,9px);font-weight:900;line-height:1.1;z-index:8}
+.v50-rank-title{position:absolute;left:23%;right:7%;top:31%;text-align:center;font-family:Georgia,'Times New Roman',serif;font-size:clamp(16px,4.7vw,21px);font-weight:900;color:#3b281d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:8}
+.v50-region{position:absolute;left:23%;right:7%;top:54%;text-align:center;color:#6d4d82;font-size:clamp(7.2px,2.1vw,9.2px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:8}
+.v50-xpclip{position:absolute;left:23.9%;top:67.2%;width:60.5%;height:3.8%;overflow:hidden;z-index:8}.v50-xpclip img{display:block;height:100%;width:100%;object-fit:fill}
+.v50-xptxt{position:absolute;left:23%;right:7%;top:78%;text-align:center;color:#4b3426;font-size:clamp(7px,2vw,9px);font-weight:800;z-index:8}
+
+.v50-book-zone{position:relative;width:104%;aspect-ratio:350/272;margin:-2px -2% 0;z-index:7}
+.v50-book{position:absolute;left:1.8%;top:4%;width:96.4%;height:auto;z-index:5}
+.v50-ribbon{position:absolute;left:82.2%;top:15.8%;width:12.5%;height:auto;z-index:12}
+.v50-decor{position:absolute;z-index:4;pointer-events:none}.v50-candle{left:.8%;top:29%;width:9%}.v50-mug{left:0;top:56%;width:11%}.v50-quill{right:.6%;top:45%;width:8.3%}.v50-books{left:1.5%;bottom:2%;width:15%}.v50-plant{right:.8%;top:20%;width:10.5%}
+.v50-book-icon{position:absolute;left:16.7%;top:24.2%;width:4.8%;z-index:9}
+.v50-label{position:absolute;z-index:9;color:#76509b;font-size:clamp(6.6px,1.9vw,8.5px);font-weight:900;letter-spacing:.65px;white-space:nowrap}
+.v50-current{left:22%;top:18%}.v50-sessionlab{left:17.8%;top:48.5%}.v50-chapterlab{left:17.8%;top:67.5%}.v50-progresslab{left:58%;top:18.5%}.v50-lastlab{left:57.8%;top:68.5%}
+.v50-title{position:absolute;left:22%;top:23.5%;width:25%;z-index:9;font-family:Georgia,'Times New Roman',serif;font-size:clamp(14px,4.1vw,18.5px);font-weight:900;line-height:1.02;color:#3b281d;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v50-mode{position:absolute;left:17.8%;top:38%;width:29%;z-index:9;color:#76509b;font-size:clamp(7px,2vw,9px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v50-time{position:absolute;left:17.8%;top:53.3%;z-index:9;font-size:clamp(9px,2.6vw,11.5px);font-weight:800;color:#3b281d}.v50-chapters{position:absolute;left:17.8%;top:72.3%;z-index:9;font-size:clamp(9px,2.6vw,11.5px);font-weight:800;color:#3b281d}
+.v50-page{position:absolute;left:54%;top:25.2%;width:25%;z-index:9;text-align:center;font-family:Georgia,'Times New Roman',serif;font-size:clamp(13px,3.8vw,17px);font-weight:900;color:#3b281d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v50-readclip{position:absolute;left:57.8%;top:39.7%;width:20.3%;height:1.8%;overflow:hidden;z-index:9}.v50-readclip img{display:block;height:100%;width:100%;object-fit:fill}
+.v50-percent{position:absolute;left:59%;top:45.5%;width:17%;text-align:center;z-index:9;font-size:clamp(9.5px,2.8vw,12px);font-weight:900;color:#3b281d}
+.v50-last{position:absolute;left:57.8%;top:73.3%;width:21%;z-index:9;font-family:Georgia,'Times New Roman',serif;font-size:clamp(9.8px,2.8vw,12.5px);font-weight:900;line-height:1.04;color:#3b281d;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v50-open{left:83%;top:28%;width:10.5%;height:29%;color:#f4e2bb!important;font-size:clamp(6px,1.8vw,8px)!important;font-weight:900!important;line-height:1.08!important;text-shadow:1px 1px #372448!important}
+
+.v50-actions{position:relative;width:82%;height:54px;margin:-8px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:6%;z-index:8}
+.v50-action{position:relative;height:52px}.v50-action>img.frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v50-action>img.ico{position:absolute;left:8%;top:28%;width:13%;z-index:8}.v50-action .v50-hit{inset:0;color:#f2dfb3!important;font-size:clamp(7.5px,2.2vw,9.5px)!important;font-weight:900!important;letter-spacing:.4px!important;text-shadow:1px 1px #25150e!important;padding-left:14%!important}
+.v50-sync-state{position:absolute;left:51%;right:0;bottom:-10px;text-align:center;color:#b9a084;font-size:6px;z-index:11;pointer-events:none}
+.v50-ledger{position:relative;width:56%;height:60px;margin:6px auto 0;z-index:8}.v50-ledger>img.frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v50-ledger>img.ico{position:absolute;left:8%;top:28%;width:12%;z-index:8}.v50-ledger .v50-hit{inset:0;color:#f2dfb3!important;font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(8px,2.35vw,10.5px)!important;font-weight:800!important;text-shadow:1px 1px #25150e!important;padding-left:12%!important}
+.v50-ledger-panel{position:relative;width:70%;height:150px;margin:3px auto 4px;z-index:10;color:#3b281d}.v50-ledger-panel[hidden]{display:none!important}.v50-ledger-panel>img{position:absolute;inset:0;width:100%;height:100%}.v50-ledger-close{position:absolute;right:8%;top:10%;z-index:12;background:transparent!important;border:0!important;color:#76509b!important;font-size:7px;font-weight:900}.v50-ledger-grid{position:absolute;left:10%;right:10%;top:32%;display:grid;grid-template-columns:repeat(3,1fr);gap:5%;text-align:center;z-index:12}.v50-ledger-grid span{display:block;font-size:7px;color:#74583f;font-weight:900}.v50-ledger-grid b{display:block;font-family:Georgia,'Times New Roman',serif;font-size:17px;color:#654586;margin-top:3px}.v50-ledger-note{position:absolute;left:10%;right:10%;bottom:13%;text-align:center;z-index:12;font-size:7px;color:#6c543e}
+.v50-save{text-align:center;color:#a99075;font-size:6.5px;margin:2px 0 0}
+header{background-image:url('./v50-header.png')!important;background-size:100% 100%!important;height:94px!important;min-height:94px!important;padding:10px 18px 4px!important}
+header .header-title{margin-top:3px!important}header .header-goose{opacity:0!important;width:33px!important}header h1{font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(23px,7vw,31px)!important;letter-spacing:2px!important;color:#f1dfb0!important;text-shadow:2px 2px #1b0d08!important}header .sub{font-size:clamp(8px,2.4vw,10px)!important;color:#d8bf91!important;margin-top:2px!important}header .appstatus{font-size:clamp(7px,2vw,8.5px)!important;color:#d8c59d!important;margin-top:3px!important}
+.bottom-nav{background:#2a170f!important;border-top:2px solid #b07827!important}
+@media(max-width:380px){.v50-qobj{-webkit-line-clamp:2}.v50-qtitle{font-size:clamp(12px,3.6vw,16px)}.v50-rank{width:88%}.v50-actions{width:86%}.v50-ledger{width:61%}}
+</style>
+
+<style id="v51-widget-clone-home">
+/* ================================================================
+   v5.1 HOME ONLY — WIDGET CLONE
+   Visible structure comes from the actual finished widget artwork.
+   CSS only positions live text, progress fills, and transparent hit zones.
+   ================================================================ */
+#home.v51-home{
+  padding:6px 0 14px!important;
+  overflow-x:hidden!important;
+  background:#1c100a url('./v51-wood-tile.png') center top/384px 128px repeat!important;
+}
+.v51-stage{position:relative;width:100%;max-width:440px;margin:0 auto;padding:0 0 6px}
+.v51-stage img{display:block;image-rendering:auto!important;filter:none!important}
+.v51-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v51-hit{position:absolute!important;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;cursor:pointer;z-index:20;color:inherit}
+.v51-hit:active{transform:translateY(1px)}
+
+/* Header is the same carved Quest-widget plaque family. */
+header{
+  position:relative!important;height:78px!important;min-height:78px!important;
+  padding:0!important;border:0!important;box-shadow:none!important;
+  background:#1b0f0a url('./v51-header.png') center/100% 100% no-repeat!important;
+  overflow:hidden!important;
+}
+header .header-title{position:absolute!important;left:29%!important;right:29%!important;top:11px!important;height:28px!important;display:block!important;text-align:center!important}
+header .header-goose{display:none!important}
+header .header-title h1{margin:0!important;font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(17px,4.9vw,22px)!important;line-height:28px!important;color:#edd49a!important;text-shadow:1px 1px 0 #27130c!important;letter-spacing:.6px!important;white-space:nowrap!important}
+header .sub{position:absolute!important;left:10%!important;right:10%!important;top:49px!important;text-align:center!important;margin:0!important;font:700 clamp(6px,1.7vw,8px)/1 'Courier New',monospace!important;color:#d0b47f!important;letter-spacing:.35px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+header .appstatus{position:absolute!important;left:10%!important;right:10%!important;top:62px!important;justify-content:center!important;margin:0!important;font:700 clamp(5.5px,1.55vw,7px)/1 'Courier New',monospace!important;color:#bca279!important;gap:5px!important}
+header .status-dot{font-size:7px!important}
+
+/* ---------------- Quest widget clone ---------------- */
+.v51-quests{position:relative;width:96%;aspect-ratio:592/410;margin:3px auto 8px;color:#3b271e}
+.v51-quest-slot{position:absolute;left:10.4%;right:9.2%;height:22%;z-index:5}
+.v51-quest-slot.s1{top:15.2%}.v51-quest-slot.s2{top:42.8%}.v51-quest-slot.s3{top:70.1%}
+.v51-qtitle{position:absolute;left:6%;right:19%;top:10%;text-align:center;font:700 clamp(11px,3.25vw,15.5px)/1.02 Georgia,'Times New Roman',serif;color:#3e2518;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v51-qobj{position:absolute;left:6%;right:6%;top:43%;text-align:center;font:600 clamp(7.7px,2.25vw,10.5px)/1.08 Georgia,'Times New Roman',serif;color:#4b3426;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v51-qmeta{position:absolute;right:4%;top:9%;text-align:right;font:700 clamp(6.5px,1.9vw,8.8px)/1 Georgia,'Times New Roman',serif;color:#725094}
+.v51-qmeta.easy{color:#52733e}.v51-qmeta.normal{color:#765093}.v51-qmeta.hard{color:#a35043}.v51-qmeta.legendary{color:#a97721}
+.v51-qxp{position:absolute;right:4%;top:26%;font:700 clamp(6.2px,1.8vw,8.5px)/1 Georgia,'Times New Roman',serif;color:#3f2a20}
+
+/* ---------------- Reader Level widget clone ---------------- */
+.v51-reader{position:relative;width:96%;aspect-ratio:622/311;margin:2px auto 9px;color:#3c2418}
+.v51-level-line{position:absolute;left:26%;right:24%;top:23.4%;z-index:5;text-align:center;font:700 clamp(24px,7.15vw,34px)/.96 Georgia,'Times New Roman',serif;color:#411a12;white-space:nowrap}
+.v51-rank-name{position:absolute;left:30%;right:28%;top:42.2%;z-index:5;text-align:center;font:700 clamp(10px,2.9vw,13.5px)/1 Georgia,'Times New Roman',serif;color:#49251a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v51-region-hidden{display:none!important}
+.v51-xpframe{position:absolute;left:25.25%;top:49.1%;width:46.65%;height:auto;z-index:4;pointer-events:none}
+.v51-xp-track{position:absolute;left:27.95%;top:52.65%;width:41.1%;height:4%;overflow:hidden;z-index:5}
+.v51-live-fill{height:100%;width:0;object-fit:fill;object-position:left center}
+.v51-xptxt{position:absolute;left:31%;right:31%;top:60.8%;z-index:5;text-align:center;font:700 clamp(6.6px,1.95vw,9.2px)/1 Georgia,'Times New Roman',serif;color:#3c2418;white-space:nowrap}
+.v51-last-value{position:absolute;left:47%;right:31%;top:70.2%;z-index:5;text-align:center;font:700 clamp(6.1px,1.75vw,8.4px)/1 Georgia,'Times New Roman',serif;color:#d9b77d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v51-stat{position:absolute;bottom:5.3%;z-index:5;width:16%;text-align:center;color:#d7b478}
+.v51-stat.books{left:22.2%}.v51-stat.pages{left:46.5%}.v51-stat.days{left:70.5%}
+.v51-stat b{display:block;font:700 clamp(9.5px,2.7vw,12.5px)/1 Georgia,'Times New Roman',serif;color:#d8b579}
+.v51-stat span{display:block;margin-top:2px;font:700 clamp(5.2px,1.5vw,7px)/1 'Courier New',monospace;letter-spacing:.45px;color:#c9a36c}
+
+/* ---------------- Current Reading: new matching widget ---------------- */
+.v51-current{position:relative;width:96%;aspect-ratio:592/410;margin:0 auto 4px;color:#3b271e}
+.v51-current-title{position:absolute;left:30%;right:30%;top:4.0%;z-index:6;text-align:center;color:#e9d099;font:700 clamp(11px,3vw,14.5px)/1 Georgia,'Times New Roman',serif;letter-spacing:.35px;white-space:nowrap}
+.v51-book-art{position:absolute;left:5.8%;top:15.8%;width:87.5%;height:auto;z-index:3;pointer-events:none}
+.v51-ribbon{position:absolute;right:6.2%;top:20.2%;width:13.4%;height:auto;z-index:7;pointer-events:none}
+.v51-book-left,.v51-book-right{position:absolute;z-index:6}
+.v51-book-left{left:16.5%;top:24.5%;width:31.5%;height:48%}
+.v51-book-right{left:54.2%;top:24.5%;width:27.8%;height:48%}
+.v51-book-label{font:700 clamp(5.8px,1.65vw,8px)/1 'Courier New',monospace;color:#745093;letter-spacing:.45px}
+.v51-book-title{margin-top:5px;font:700 clamp(12.5px,3.65vw,17.5px)/1.02 Georgia,'Times New Roman',serif;color:#3a2419;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v51-mode{margin-top:7px;font:700 clamp(5.8px,1.7vw,8px)/1 'Courier New',monospace;color:#76509a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v51-session-row{margin-top:16px}.v51-chapter-row{margin-top:12px}
+.v51-session-value{margin-top:4px;font:700 clamp(8.8px,2.55vw,12px)/1 Georgia,'Times New Roman',serif;color:#3b271e}
+.v51-page{margin-top:6px;font:700 clamp(11.5px,3.3vw,16px)/1 Georgia,'Times New Roman',serif;color:#3a2419;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v51-readbar{position:relative;width:84%;height:20px;margin:10px auto 0}
+.v51-readbar-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v51-read-track{position:absolute;left:6%;top:31%;width:88%;height:38%;overflow:hidden}
+.v51-percent{text-align:center;margin-top:4px;font:700 clamp(9px,2.6vw,12px)/1 Georgia,'Times New Roman',serif;color:#3b271e}
+.v51-last2{margin-top:17px}.v51-last2-title{margin-top:4px;font:700 clamp(8px,2.35vw,11px)/1.05 Georgia,'Times New Roman',serif;color:#3b271e;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v51-open{right:8.2%!important;top:31.5%!important;width:10.2%!important;height:25%!important;color:#f4e3bf!important;font:700 clamp(5.7px,1.65vw,7.8px)/1.05 'Courier New',monospace!important;text-align:center!important;text-shadow:1px 1px 0 #352042!important}
+
+/* ---------------- Accessory plaques ---------------- */
+.v51-actions{display:grid;grid-template-columns:1fr 1fr;gap:5%;width:76%;margin:0 auto 3px}
+.v51-action{position:relative;height:39px}.v51-action>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.v51-action .v51-hit{inset:0!important;color:#ead4a3!important;font:700 clamp(6.6px,1.95vw,9px)/1 'Courier New',monospace!important;text-shadow:1px 1px 0 #26130d!important}
+.v51-sync-state{width:78%;min-height:8px;margin:0 auto 2px;text-align:center;color:#bba17d;font-size:6px;line-height:1.2}
+.v51-ledger{position:relative;width:58%;height:50px;margin:2px auto 1px}.v51-ledger>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v51-ledger>.v51-hit{inset:0!important;color:#ead4a3!important;font:700 clamp(7.4px,2.15vw,10px)/1 Georgia,'Times New Roman',serif!important;text-shadow:1px 1px 0 #26130d!important}
+.v51-save{text-align:center;color:#a99172;font-size:6.2px;margin:3px 0 0}
+
+/* Expanded ledger remains an illustrated object, not a CSS card. */
+.v51-ledger-panel{position:relative;width:72%;aspect-ratio:365/194;margin:3px auto;color:#3b281d;z-index:7}.v51-ledger-panel[hidden]{display:none!important}.v51-ledger-panel>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v51-ledger-close{position:absolute;right:8%;top:8%;z-index:9;background:transparent!important;border:0!important;color:#76509b!important;font-size:7px;font-weight:900}.v51-ledger-grid{position:absolute;left:10%;right:10%;top:29%;display:grid;grid-template-columns:repeat(3,1fr);gap:5%;text-align:center;z-index:9}.v51-ledger-grid span{display:block;font-size:6.5px;color:#74583f;font-weight:900}.v51-ledger-grid b{display:block;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#654586;margin-top:3px}.v51-ledger-note{position:absolute;left:10%;right:10%;bottom:13%;text-align:center;z-index:9;font-size:6.5px;color:#6c543e}
+
+/* Keep bottom nav quiet. Home itself is the visual work in this pass. */
+.bottomnav,.bottom-nav{background:#28170f!important}
+
+@media(max-width:380px){
+  .v51-quests,.v51-reader,.v51-current{width:98%}
+  .v51-qtitle{font-size:10.5px}.v51-qobj{font-size:7.3px}
+  .v51-actions{width:82%}.v51-ledger{width:63%}
+}
+</style>
+
+
+<style id="v52-unified-widget-home">
+/* ================================================================
+   v5.2 HOME ONLY — UNIFIED WIDGET SCENE
+   Exact widget artwork is kept, but the standalone-card edges are
+   trimmed and blended into one continuous carved-wood home screen.
+   Visible structure = illustrated assets. CSS only places assets/data.
+   ================================================================ */
+#home.v52-home{
+  padding:0 0 10px!important;
+  overflow-x:hidden!important;
+  background:#1b0f0a url('./v51-wood-tile.png') center top/384px 128px repeat!important;
+}
+.v52-stage{position:relative;width:100%;max-width:440px;margin:0 auto;padding:2px 13px 7px;overflow:hidden}
+.v52-stage img{display:block;image-rendering:auto!important;filter:none!important}
+.v52-inner{position:relative;z-index:3}
+.v52-rail{position:absolute;top:0;bottom:0;height:100%;width:18px;object-fit:fill;z-index:1;pointer-events:none;opacity:.98}
+.v52-rail.left{left:0}.v52-rail.right{right:0}
+.v52-hit{position:absolute!important;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;cursor:pointer;z-index:20;color:inherit}
+.v52-hit:active{transform:translateY(1px)}
+
+/* Quest board: exact widget interior, now mounted into the shared room frame. */
+.v52-quests{position:relative;width:96%;aspect-ratio:540/379;margin:0 auto -12px;color:#3b271e;z-index:3}
+.v52-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v52-quest-slot{position:absolute;left:6.3%;right:5%;height:23.9%;z-index:5}
+.v52-quest-slot.s1{top:11.8%}.v52-quest-slot.s2{top:41.8%}.v52-quest-slot.s3{top:71.5%}
+.v52-qtitle{position:absolute;left:6%;right:19%;top:10%;text-align:center;font:700 clamp(11px,3.2vw,15.5px)/1.02 Georgia,'Times New Roman',serif;color:#3e2518;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v52-qobj{position:absolute;left:6%;right:6%;top:43%;text-align:center;font:600 clamp(7.6px,2.2vw,10.4px)/1.08 Georgia,'Times New Roman',serif;color:#4b3426;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v52-qmeta{position:absolute;right:4%;top:9%;text-align:right;font:700 clamp(6.4px,1.86vw,8.7px)/1 Georgia,'Times New Roman',serif;color:#725094}
+.v52-qmeta.easy{color:#52733e}.v52-qmeta.normal{color:#765093}.v52-qmeta.hard{color:#a35043}.v52-qmeta.legendary{color:#a97721}
+.v52-qxp{position:absolute;right:4%;top:26%;font:700 clamp(6.2px,1.8vw,8.4px)/1 Georgia,'Times New Roman',serif;color:#3f2a20}
+
+/* Small shared ornament visually pins the board to the prestige shelf. */
+.v52-connector{position:relative;width:25%;max-width:115px;margin:-4px auto -10px;z-index:6;pointer-events:none}
+
+/* Reader Level: the real widget interior, treated as a mounted prestige shelf. */
+.v52-reader{position:relative;width:91%;aspect-ratio:586/294;margin:0 auto -13px;color:#3c2418;z-index:5}
+.v52-level-line{position:absolute;left:24%;right:22%;top:22.4%;z-index:7;text-align:center;font:700 clamp(23px,6.8vw,32px)/.96 Georgia,'Times New Roman',serif;color:#411a12;white-space:nowrap}
+.v52-rank-name{position:absolute;left:29%;right:27%;top:42.2%;z-index:7;text-align:center;font:700 clamp(9.6px,2.75vw,13px)/1 Georgia,'Times New Roman',serif;color:#49251a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v52-region-hidden{display:none!important}
+.v52-xpframe{position:absolute;left:23.75%;top:49.6%;width:49.5%;height:auto;z-index:6;pointer-events:none}
+.v52-xp-track{position:absolute;left:26.6%;top:53.2%;width:43.6%;height:4.1%;overflow:hidden;z-index:7}
+.v52-live-fill{height:100%;width:0;object-fit:fill;object-position:left center}
+.v52-xptxt{position:absolute;left:29%;right:29%;top:61.2%;z-index:7;text-align:center;font:700 clamp(6.4px,1.9vw,9px)/1 Georgia,'Times New Roman',serif;color:#3c2418;white-space:nowrap}
+.v52-last-value{position:absolute;left:46.8%;right:29.8%;top:70.2%;z-index:7;text-align:center;font:700 clamp(6px,1.72vw,8.2px)/1 Georgia,'Times New Roman',serif;color:#d9b77d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v52-stat{position:absolute;bottom:5.4%;z-index:7;width:16%;text-align:center;color:#d7b478}
+.v52-stat.books{left:21.5%}.v52-stat.pages{left:46%}.v52-stat.days{left:70.2%}
+.v52-stat b{display:block;font:700 clamp(9px,2.55vw,12px)/1 Georgia,'Times New Roman',serif;color:#d8b579}
+.v52-stat span{display:block;margin-top:2px;font:700 clamp(5px,1.45vw,6.8px)/1 'Courier New',monospace;letter-spacing:.45px;color:#c9a36c}
+
+/* Current Reading: no standalone widget box. The book sits directly on the shared desk. */
+.v52-current{position:relative;width:96%;aspect-ratio:592/360;margin:0 auto -3px;color:#3b271e;z-index:4}
+.v52-current-plaque{position:absolute;left:16%;top:0;width:68%;height:auto;z-index:5;pointer-events:none}
+.v52-current-title{position:absolute;left:27%;right:27%;top:3.4%;z-index:7;text-align:center;color:#ead19a;font:700 clamp(10.5px,2.95vw,14px)/1 Georgia,'Times New Roman',serif;letter-spacing:.35px;white-space:nowrap}
+.v52-book-art{position:absolute;left:1%;top:12.5%;width:98%;height:auto;z-index:3;pointer-events:none}
+.v52-ribbon{position:absolute;right:4.8%;top:19.5%;width:12.6%;height:auto;z-index:8;pointer-events:none}
+.v52-book-left,.v52-book-right{position:absolute;z-index:7}
+.v52-book-left{left:15%;top:27%;width:32%;height:54%}
+.v52-book-right{left:55%;top:27%;width:29%;height:54%}
+.v52-book-label{font:700 clamp(5.6px,1.58vw,7.7px)/1 'Courier New',monospace;color:#745093;letter-spacing:.4px}
+.v52-book-title{margin-top:5px;font:700 clamp(12px,3.45vw,17px)/1.02 Georgia,'Times New Roman',serif;color:#3a2419;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v52-mode{margin-top:7px;font:700 clamp(5.5px,1.6vw,7.7px)/1 'Courier New',monospace;color:#76509a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v52-session-row{margin-top:15px}.v52-chapter-row{margin-top:11px}
+.v52-session-value{margin-top:4px;font:700 clamp(8.5px,2.45vw,11.5px)/1 Georgia,'Times New Roman',serif;color:#3b271e}
+.v52-page{margin-top:6px;font:700 clamp(11px,3.15vw,15.5px)/1 Georgia,'Times New Roman',serif;color:#3a2419;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v52-readbar{position:relative;width:82%;height:19px;margin:9px auto 0}
+.v52-readbar-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v52-read-track{position:absolute;left:6%;top:31%;width:88%;height:38%;overflow:hidden}
+.v52-percent{text-align:center;margin-top:4px;font:700 clamp(8.8px,2.5vw,11.8px)/1 Georgia,'Times New Roman',serif;color:#3b271e}
+.v52-last2{margin-top:15px}.v52-last2-title{margin-top:4px;font:700 clamp(7.8px,2.2vw,10.5px)/1.05 Georgia,'Times New Roman',serif;color:#3b271e;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v52-open{right:6.3%!important;top:31%!important;width:9.5%!important;height:27%!important;color:#f4e3bf!important;font:700 clamp(5.5px,1.55vw,7.4px)/1.05 'Courier New',monospace!important;text-align:center!important;text-shadow:1px 1px 0 #352042!important}
+
+/* Accessory plaques tuck into the desk rather than forming another section. */
+.v52-actions{display:grid;grid-template-columns:1fr 1fr;gap:4%;width:72%;margin:-10px auto 0;position:relative;z-index:7}
+.v52-action{position:relative;height:38px}.v52-action>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.v52-action .v52-hit{inset:0!important;color:#ead4a3!important;font:700 clamp(6.5px,1.9vw,8.8px)/1 'Courier New',monospace!important;text-shadow:1px 1px 0 #26130d!important}
+.v52-sync-state{width:75%;min-height:8px;margin:0 auto 0;text-align:center;color:#bba17d;font-size:6px;line-height:1.2}
+.v52-ledger{position:relative;width:52%;height:46px;margin:0 auto 0;z-index:7}.v52-ledger>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v52-ledger>.v52-hit{inset:0!important;color:#ead4a3!important;font:700 clamp(7px,2vw,9.5px)/1 Georgia,'Times New Roman',serif!important;text-shadow:1px 1px 0 #26130d!important}
+.v52-save{text-align:center;color:#a99172;font-size:6px;margin:1px 0 1px;position:relative;z-index:7}
+.v52-bottom{position:relative;width:100%;height:auto;margin:-2px auto 0;z-index:2;pointer-events:none;opacity:.96}
+
+.v52-ledger-panel{position:relative;width:70%;aspect-ratio:365/194;margin:2px auto;color:#3b281d;z-index:9}.v52-ledger-panel[hidden]{display:none!important}.v52-ledger-panel>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v52-ledger-close{position:absolute;right:8%;top:8%;z-index:10;background:transparent!important;border:0!important;color:#76509b!important;font-size:7px;font-weight:900}.v52-ledger-grid{position:absolute;left:10%;right:10%;top:29%;display:grid;grid-template-columns:repeat(3,1fr);gap:5%;text-align:center;z-index:10}.v52-ledger-grid span{display:block;font-size:6.5px;color:#74583f;font-weight:900}.v52-ledger-grid b{display:block;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#654586;margin-top:3px}.v52-ledger-note{position:absolute;left:10%;right:10%;bottom:13%;text-align:center;z-index:10;font-size:6.5px;color:#6c543e}
+.bottomnav,.bottom-nav{background:#28170f!important}
+@media(max-width:380px){.v52-stage{padding-left:10px;padding-right:10px}.v52-quests,.v52-current{width:98%}.v52-reader{width:93%}.v52-actions{width:78%}.v52-ledger{width:58%}.v52-qtitle{font-size:10.4px}.v52-qobj{font-size:7.2px}}
+</style>
+
+
+<style id="v53-tabbed-widget-home">
+/* v5.3 — Tabbed Widget Home: one illustrated parent shell, one visible widget interior at a time. */
+#home.v53-home{padding:0 0 22px!important;background:#1c100b url('./v53-wood-tile.png') center top/512px auto repeat!important;overflow:hidden!important}
+body:has(#home.screen.active) > header{
+  position:relative;min-height:72px;padding:13px 18px 11px!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:hidden;
+}
+body:has(#home.screen.active) > header:before{content:"";position:absolute;inset:0;background:url('./v53-header.png') center/100% 100% no-repeat;z-index:0;pointer-events:none}
+body:has(#home.screen.active) > header>*{position:relative;z-index:1}
+body:has(#home.screen.active) > header .header-title{justify-content:center;gap:7px;margin-top:0}
+body:has(#home.screen.active) > header .header-goose{width:24px;height:24px;image-rendering:auto}
+body:has(#home.screen.active) > header h1{font-family:Georgia,'Times New Roman',serif;font-size:20px!important;letter-spacing:1.2px;color:#ead29b;text-shadow:1px 2px 0 #2b160e;margin:0}
+body:has(#home.screen.active) > header .sub{font-size:7px;color:#d8bd8b;margin-top:3px}
+body:has(#home.screen.active) > header .appstatus{font-size:6.5px;color:#cfb68c;margin-top:3px}
+
+.v53-stage{width:100%;max-width:440px;margin:0 auto;padding:19px 10px 8px;position:relative}
+.v53-shell{position:relative;width:96%;aspect-ratio:592/410;margin:0 auto;color:#3b271e}
+.v53-shell-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;z-index:1}
+.v53-tabs{position:absolute;left:8%;right:8%;top:-19px;height:61px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;z-index:12;align-items:start}
+.v53-tab{position:relative;height:55px;border:0!important;background:transparent!important;padding:0!important;margin:0!important;color:#ead9b0!important;font:700 clamp(7.2px,2vw,9px)/1 Georgia,'Times New Roman',serif!important;text-shadow:1px 1px 0 #2c1820;letter-spacing:.3px;cursor:pointer;overflow:visible}
+.v53-tab img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;z-index:0}
+.v53-tab span{position:relative;z-index:1;display:block;padding:14px 4px 0;white-space:nowrap}
+.v53-tab.active{transform:translateY(4px)}
+.v53-tab.active span{color:#fff0c7}
+
+.v53-panel{position:absolute;left:6.5%;right:6.5%;top:14%;bottom:7.5%;z-index:4;display:none}
+.v53-panel.active{display:block}
+
+/* Reading tab */
+.v53-reading{top:14.5%;bottom:7%}
+.v53-open-book{position:absolute;left:1%;right:1%;top:8%;width:98%;height:auto;pointer-events:none}
+.v53-read-left,.v53-read-right{position:absolute;z-index:6;color:#3a271d}
+.v53-read-left{left:11.5%;width:36.5%;top:23%}
+.v53-read-right{left:53.5%;width:31.5%;top:23%}
+.v53-label{font:800 clamp(5.8px,1.55vw,7.2px)/1.05 ui-monospace,SFMono-Regular,Consolas,monospace;color:#72548e;letter-spacing:.7px;margin-bottom:5px}
+.v53-book-title{font:700 clamp(13px,3.8vw,18px)/1.02 Georgia,'Times New Roman',serif;color:#3e281d;overflow-wrap:anywhere;margin-bottom:7px}
+.v53-mode{font:800 clamp(5.6px,1.55vw,7px)/1.15 ui-monospace,SFMono-Regular,Consolas,monospace;color:#78558e;margin:5px 0 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v53-value{font:700 clamp(9.5px,2.8vw,13px)/1.1 Georgia,'Times New Roman',serif;color:#432b20;margin-bottom:12px}
+.v53-page{font:700 clamp(12px,3.5vw,17px)/1.05 Georgia,'Times New Roman',serif;text-align:center;color:#3f291f;margin:2px -8px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v53-progress{position:relative;width:88%;height:16px;margin:4px auto 8px}
+.v53-progress>img.frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.v53-progress .fillclip{position:absolute;left:6.5%;right:6.5%;top:30%;bottom:30%;overflow:hidden}
+.v53-progress .fillclip img{height:100%;width:0%;object-fit:fill;object-position:left center;display:block}
+.v53-percent{text-align:center;font:700 clamp(9px,2.6vw,12px)/1 Georgia,'Times New Roman',serif;color:#3f291f;margin-bottom:18px}
+.v53-last{font:700 clamp(8.5px,2.45vw,11.5px)/1.08 Georgia,'Times New Roman',serif;color:#432b20;overflow-wrap:anywhere}
+.v53-reader-ribbon{position:absolute;right:1.2%;top:18.5%;height:39%;width:auto;z-index:7;pointer-events:none}
+.v53-open-hit{position:absolute;right:1%;top:18.5%;width:16%;height:39%;z-index:8;border:0!important;background:transparent!important;color:#f4dfb1!important;padding:0!important;font:800 clamp(5.7px,1.6vw,7.5px)/1.05 ui-monospace,SFMono-Regular,Consolas,monospace!important;text-shadow:1px 1px 0 #38223e!important}
+.v53-open-hit:active{transform:translateY(1px)}
+.v53-read-decor{position:absolute;z-index:5;pointer-events:none;opacity:.92}
+.v53-read-decor.candle{left:0;bottom:8%;width:7%}.v53-read-decor.quill{right:0;bottom:5%;width:7%}.v53-read-decor.books{left:1%;bottom:0;width:14%}
+
+/* Reader Level tab */
+.v53-level-panel{top:17%;bottom:8%}
+.v53-level-art{position:absolute;left:1.5%;right:1.5%;top:5%;width:97%;height:auto;pointer-events:none}
+.v53-level-title{position:absolute;left:29%;right:27%;top:21%;text-align:center;font:700 clamp(20px,5.8vw,28px)/.95 Georgia,'Times New Roman',serif;color:#4b1712;white-space:nowrap}
+.v53-rank{position:absolute;left:29%;right:27%;top:39%;text-align:center;font:700 clamp(8px,2.2vw,10.5px)/1 Georgia,'Times New Roman',serif;color:#43251a}
+.v53-xpbar{position:absolute;left:24.8%;right:24%;top:51.2%;height:16px}
+.v53-xpbar>img.frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v53-xpbar .fillclip{position:absolute;left:6.5%;right:6.5%;top:31%;bottom:31%;overflow:hidden}.v53-xpbar .fillclip img{height:100%;width:0%;object-fit:fill;object-position:left center;display:block}
+.v53-xptxt{position:absolute;left:29%;right:27%;top:59.5%;text-align:center;font:700 clamp(6px,1.7vw,7.8px)/1 Georgia,'Times New Roman',serif;color:#47291d}
+.v53-lastread{position:absolute;left:37%;right:27%;top:68%;text-align:center;font:700 clamp(5.7px,1.6vw,7.3px)/1 Georgia,'Times New Roman',serif;color:#e3c994;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v53-stat{position:absolute;bottom:6%;text-align:center;color:#d6b775}.v53-stat b{display:block;font:700 clamp(9px,2.55vw,12px)/1 Georgia,'Times New Roman',serif}.v53-stat span{display:block;font:700 clamp(4.6px,1.3vw,5.8px)/1 ui-monospace,monospace;letter-spacing:.4px;margin-top:2px}.v53-stat.books{left:28%;width:13%}.v53-stat.pages{left:47%;width:16%}.v53-stat.days{right:22%;width:13%}
+.v53-region-hidden{display:none}
+
+/* Quests tab */
+.v53-quests-panel{top:15.5%;bottom:6.5%}
+.v53-quests-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v53-qslot{position:absolute;left:4.5%;right:4.5%;height:27.2%;z-index:6}.v53-qslot.s1{top:12.2%}.v53-qslot.s2{top:40.6%}.v53-qslot.s3{top:69.2%}
+.v53-qtitle{position:absolute;left:8%;right:20%;top:11%;text-align:center;font:700 clamp(10px,2.8vw,13.2px)/1 Georgia,'Times New Roman',serif;color:#3f281c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v53-qobj{position:absolute;left:7%;right:7%;top:40%;text-align:center;font:600 clamp(6.4px,1.8vw,8.2px)/1.07 Georgia,'Times New Roman',serif;color:#4c3426;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.v53-qmeta{position:absolute;right:4%;top:10%;text-align:right;font:700 clamp(5.6px,1.55vw,7.1px)/1 Georgia,'Times New Roman',serif;color:#745091}.v53-qmeta.easy{color:#52733e}.v53-qmeta.normal{color:#765093}.v53-qmeta.hard{color:#a35043}.v53-qmeta.legendary{color:#a97721}
+.v53-qxp{position:absolute;right:4%;top:28%;font:700 clamp(5.4px,1.5vw,6.9px)/1 Georgia,'Times New Roman',serif;color:#40291e}
+
+/* Utilities */
+.v53-utils{width:76%;margin:12px auto 4px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.v53-util{position:relative;aspect-ratio:253/35}.v53-util img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v53-util button{position:absolute!important;inset:0!important;border:0!important;background:transparent!important;color:#e7cf9e!important;padding:0!important;font:700 clamp(6.5px,1.85vw,8.5px)/1 Georgia,'Times New Roman',serif!important;text-shadow:1px 1px 0 #25130d!important}
+.v53-sync-state{text-align:center;color:#bda37a;font-size:6px;min-height:8px;margin-top:1px}
+.v53-ledger{position:relative;width:47%;aspect-ratio:253/35;margin:6px auto 3px}.v53-ledger img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v53-ledger button{position:absolute!important;inset:0!important;border:0!important;background:transparent!important;color:#e7cf9e!important;padding:0!important;font:700 clamp(6.5px,1.85vw,8.5px)/1 Georgia,'Times New Roman',serif!important;text-shadow:1px 1px 0 #25130d!important}
+.v53-ledger-panel{position:relative;width:70%;aspect-ratio:365/194;margin:5px auto;color:#3b281d}.v53-ledger-panel[hidden]{display:none!important}.v53-ledger-panel>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}.v53-ledger-close{position:absolute;right:8%;top:8%;z-index:10;background:transparent!important;border:0!important;color:#76509b!important;font-size:7px;font-weight:900}.v53-ledger-grid{position:absolute;left:10%;right:10%;top:29%;display:grid;grid-template-columns:repeat(3,1fr);gap:5%;text-align:center;z-index:10}.v53-ledger-grid span{display:block;font-size:6.5px;color:#74583f;font-weight:900}.v53-ledger-grid b{display:block;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#654586;margin-top:3px}.v53-ledger-note{position:absolute;left:10%;right:10%;bottom:13%;text-align:center;z-index:10;font-size:6.5px;color:#6c543e}
+.v53-save{text-align:center;color:#9e876d;font-size:6px;margin:4px 0 0}
+@media(max-width:380px){.v53-stage{padding-left:7px;padding-right:7px}.v53-tabs{left:6%;right:6%;gap:2px}.v53-tab span{font-size:6.8px}.v53-shell{width:98%}.v53-utils{width:82%}.v53-ledger{width:53%}}
+</style>
+
 </head>
 <body>
 <div class="app">
 <header>
   <div class="header-title"><img src="./asset-goose.png" class="header-goose" alt=""><h1>READING MMO</h1></div>
-  <div class="sub">Enchanted Library • Candlelit Reading Desk</div>
+  <div class="sub">Enchanted Library</div>
   <div class="appstatus">
     <span id="onlineDot" class="status-dot">●</span>
     <span id="onlineText">Online</span>
@@ -1164,114 +1490,78 @@ header{background-image:url('./hyb-header.png')!important}
   </div>
 </header>
 
-<section id="home" class="screen active hyb-home">
-  <div class="hyb-home-stage">
 
-    <div class="hyb-board-zone" aria-label="Active quest board">
-      <img class="hyb-board-frame" src="./hyb-board-frame.png" alt="Illustrated wooden quest board">
+<section id="home" class="screen active v53-home">
+  <div class="v53-stage">
+    <div class="v53-shell" aria-label="Reading MMO Home">
+      <img class="v53-shell-art" src="./v53-shell.png" alt="Illustrated widget-style Home frame">
 
-      <div class="hyb-note hyb-note-1">
-        <img class="hyb-note-art" src="./hyb-note-hunt.png" alt="Pinned Hunt parchment">
-        <img class="hyb-role-icon" src="./hyb-icon-hunt.png" alt="">
-        <div class="hyb-role hyb-hunt">HUNT</div>
-        <div id="homeQ1Title" class="hyb-qtitle">Empty Slot</div>
-        <div id="homeQ1Objective" class="hyb-qobj">Roll a Hunt quest.</div>
-        <div id="homeQ1Meta" class="hyb-qmeta"></div>
-        <div id="homeQ1Xp" class="hyb-qxp"></div>
+      <div class="v53-tabs" role="tablist" aria-label="Home views">
+        <button class="v53-tab active" id="homeTabReading" role="tab" aria-selected="true" onclick="setHomeTab('reading',this)"><img src="./v53-tab-active.png" alt=""><span>READING</span></button>
+        <button class="v53-tab" id="homeTabLevel" role="tab" aria-selected="false" onclick="setHomeTab('level',this)"><img src="./v53-tab-inactive.png" alt=""><span>READER LEVEL</span></button>
+        <button class="v53-tab" id="homeTabQuests" role="tab" aria-selected="false" onclick="setHomeTab('quests',this)"><img src="./v53-tab-inactive.png" alt=""><span>QUESTS</span></button>
       </div>
 
-      <div class="hyb-note hyb-note-2">
-        <img class="hyb-note-art" src="./hyb-note-gather.png" alt="Pinned Gather parchment">
-        <img class="hyb-role-icon" src="./hyb-icon-gather.png" alt="">
-        <div class="hyb-role hyb-gather">GATHER</div>
-        <div id="homeQ2Title" class="hyb-qtitle">Empty Slot</div>
-        <div id="homeQ2Objective" class="hyb-qobj">Roll a Gather quest.</div>
-        <div id="homeQ2Meta" class="hyb-qmeta"></div>
-        <div id="homeQ2Xp" class="hyb-qxp"></div>
+      <div id="homePanelReading" class="v53-panel v53-reading active" role="tabpanel" aria-labelledby="homeTabReading">
+        <img class="v53-open-book" src="./v53-open-book.png" alt="Illustrated open reading book">
+        <img class="v53-reader-ribbon" src="./v53-reader-ribbon.png" alt="Purple Open Reader bookmark">
+        <img class="v53-read-decor candle" src="./v53-candle.png" alt="">
+        <img class="v53-read-decor quill" src="./v53-quill.png" alt="">
+        <img class="v53-read-decor books" src="./v53-books.png" alt="">
+        <div class="v53-read-left">
+          <div class="v53-label">CURRENT BOOK</div>
+          <div id="homeBookTitle" class="v53-book-title">No current book</div>
+          <div id="homeReadMode" class="v53-mode">CURRENT READ</div>
+          <div class="v53-label">THIS SESSION</div>
+          <div id="homeSessionTime" class="v53-value">00:00:00</div>
+          <div class="v53-label">CHAPTERS THIS SESSION</div>
+          <div id="homeSessionChapters" class="v53-value">0 chapters</div>
+        </div>
+        <div class="v53-read-right">
+          <div class="v53-label" style="text-align:center">PROGRESS</div>
+          <div id="homePageText" class="v53-page">Page 0 of 0</div>
+          <div class="v53-progress"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="homeBookProgressBar" src="./v53-fill.png" alt=""></div></div>
+          <div id="homePercentText" class="v53-percent">0.0%</div>
+          <div class="v53-label">LAST FINISHED</div>
+          <div id="homeLastFinished" class="v53-last">Nothing logged yet</div>
+        </div>
+        <button class="v53-open-hit" aria-label="Open Reader" onclick="go('reading')">OPEN<br>READER</button>
       </div>
 
-      <div class="hyb-note hyb-note-3">
-        <img class="hyb-note-art" src="./hyb-note-alchemy.png" alt="Pinned Alchemy parchment">
-        <img class="hyb-role-icon" src="./hyb-icon-alchemy.png" alt="">
-        <div class="hyb-role hyb-alchemy">ALCHEMY</div>
-        <div id="homeQ3Title" class="hyb-qtitle">Empty Slot</div>
-        <div id="homeQ3Objective" class="hyb-qobj">Roll an Alchemy quest.</div>
-        <div id="homeQ3Meta" class="hyb-qmeta"></div>
-        <div id="homeQ3Xp" class="hyb-qxp"></div>
+      <div id="homePanelLevel" class="v53-panel v53-level-panel" role="tabpanel" aria-labelledby="homeTabLevel" hidden>
+        <img class="v53-level-art" src="./v53-level-panel.png" alt="Reader Level widget interior">
+        <div id="homeLevel" class="v53-level-title">Level 1</div>
+        <div id="homeRank" class="v53-rank">Page Wanderer</div>
+        <div id="homeRegion" class="v53-region-hidden" aria-hidden="true"></div>
+        <div class="v53-xpbar"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="xpBar" src="./v53-fill.png" alt=""></div></div>
+        <div id="xpText" class="v53-xptxt">0 / 1,000 XP</div>
+        <div id="homeReaderLast" class="v53-lastread">Nothing logged yet</div>
+        <div class="v53-stat books"><b id="homeBooksStat">0</b><span>BOOKS</span></div>
+        <div class="v53-stat pages"><b id="homePagesStat">0</b><span>PAGES</span></div>
+        <div class="v53-stat days"><b id="homeDaysStat">0</b><span>DAYS</span></div>
+      </div>
+
+      <div id="homePanelQuests" class="v53-panel v53-quests-panel" role="tabpanel" aria-labelledby="homeTabQuests" hidden>
+        <img class="v53-quests-art" src="./v53-quests-panel.png" alt="Quest widget interior">
+        <div class="v53-qslot s1"><div id="homeQ1Title" class="v53-qtitle">Empty Slot</div><div id="homeQ1Objective" class="v53-qobj">Roll a Hunt quest.</div><div id="homeQ1Meta" class="v53-qmeta"></div><div id="homeQ1Xp" class="v53-qxp"></div></div>
+        <div class="v53-qslot s2"><div id="homeQ2Title" class="v53-qtitle">Empty Slot</div><div id="homeQ2Objective" class="v53-qobj">Roll a Gather quest.</div><div id="homeQ2Meta" class="v53-qmeta"></div><div id="homeQ2Xp" class="v53-qxp"></div></div>
+        <div class="v53-qslot s3"><div id="homeQ3Title" class="v53-qtitle">Empty Slot</div><div id="homeQ3Objective" class="v53-qobj">Roll an Alchemy quest.</div><div id="homeQ3Meta" class="v53-qmeta"></div><div id="homeQ3Xp" class="v53-qxp"></div></div>
       </div>
     </div>
 
-    <div class="hyb-rank-zone" aria-label="Reader Level">
-      <img class="hyb-rank-art" src="./hyb-rank-plaque.png" alt="Illustrated Reader Level plaque">
-      <img class="hyb-badge-art" src="./hyb-level-badge.png" alt="">
-      <img class="hyb-gem-art" src="./hyb-rank-gem.png" alt="">
-      <div class="hyb-rank-label">READER LEVEL</div>
-      <div class="hyb-rank-level">LV.<br><span id="homeLevel">1</span></div>
-      <div id="homeRank" class="hyb-rank-title">Page Wanderer</div>
-      <div id="homeRegion" class="hyb-rank-region">The Mossy Stacks • Front Stacks</div>
-      <div class="hyb-rank-fill-clip"><img id="xpBar" src="./hyb-xp-fill.png" alt=""></div>
-      <div id="xpText" class="hyb-rank-xp">0 / 1,000 XP</div>
+    <div class="v53-utils">
+      <div class="v53-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
+      <div class="v53-util"><img src="./v53-small-button.png" alt=""><button onclick="toggleHomeLedger()">CHARACTER LEDGER</button></div>
     </div>
+    <div id="homeKwgtSyncState" class="v53-sync-state"></div>
 
-    <div class="hyb-book-zone" aria-label="Currently reading">
-      <img class="hyb-book-art" src="./hyb-open-book.png" alt="Illustrated open reading journal">
-      <img class="hyb-decor hyb-candle" src="./hyb-decor-candle.png" alt="">
-      <img class="hyb-decor hyb-mug" src="./hyb-decor-mug.png" alt="">
-      <img class="hyb-decor hyb-quill" src="./hyb-decor-quill.png" alt="">
-      <img class="hyb-decor hyb-books" src="./hyb-decor-books.png" alt="">
-      <img class="hyb-decor hyb-plant" src="./hyb-decor-plant.png" alt="">
-      <img class="hyb-ribbon-art" src="./hyb-open-reader-ribbon.png" alt="">
-
-      <img class="hyb-book-icon" src="./asset-book.png" alt="">
-      <div class="hyb-jlabel hyb-current-label">CURRENTLY READING</div>
-      <div id="homeBookTitle" class="hyb-book-title">No current book</div>
-      <div id="homeReadMode" class="hyb-read-mode">CURRENT READ</div>
-      <div class="hyb-jlabel hyb-session-label">THIS SESSION</div>
-      <div id="homeSessionTime" class="hyb-session-time">00:00:00</div>
-      <div class="hyb-jlabel hyb-chapters-label">CHAPTERS THIS SESSION</div>
-      <div id="homeSessionChapters" class="hyb-session-chapters">0 chapters</div>
-
-      <div class="hyb-jlabel hyb-progress-label">PROGRESS</div>
-      <div id="homePageText" class="hyb-page-text">Page 0 of 0</div>
-      <div class="hyb-read-fill-clip"><img id="homeBookProgressBar" src="./hyb-read-fill.png" alt=""></div>
-      <div id="homePercentText" class="hyb-percent">0.0%</div>
-      <div class="hyb-jlabel hyb-last-label">LAST FINISHED</div>
-      <div id="homeLastFinished" class="hyb-last-finished">Nothing logged yet</div>
-      <button class="hyb-hit hyb-open-reader" aria-label="Open Reader" onclick="go('reading')">OPEN<br>READER</button>
+    <div id="homeLedgerPanel" class="v53-ledger-panel" hidden>
+      <img src="./v53-ledger-panel.png" alt="Illustrated Character Ledger panel">
+      <button class="v53-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
+      <div class="v53-ledger-grid"><div><span>XP</span><b id="homeXp">0</b></div><div><span>QUESTS</span><b id="homeQuests">0</b></div><div><span>GOLDENS</span><b id="homeGoldens">0</b></div></div>
+      <div id="homeBonuses" class="v53-ledger-note"></div>
     </div>
-
-    <div class="hyb-actions-zone">
-      <div class="hyb-action-wrap">
-        <img src="./hyb-btn-board.png" class="hyb-action-art" alt="">
-        <img src="./asset-scroll.png" class="hyb-action-icon" alt="">
-        <button class="hyb-hit hyb-action-hit" onclick="go('quests')">VIEW BOARD</button>
-      </div>
-      <div class="hyb-action-wrap">
-        <img src="./hyb-btn-sync.png" class="hyb-action-art" alt="">
-        <img src="./asset-ivy.png" class="hyb-action-icon" alt="">
-        <button id="homeKwgtSyncBtn" class="hyb-hit hyb-action-hit" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button>
-      </div>
-      <div id="homeKwgtSyncState" class="hyb-sync-state"></div>
-    </div>
-
-    <div class="hyb-ledger-zone">
-      <img src="./hyb-ledger-tab.png" class="hyb-ledger-art" alt="">
-      <img src="./asset-ledger.png" class="hyb-ledger-icon" alt="">
-      <button class="hyb-hit hyb-ledger-hit" onclick="toggleHomeLedger()">Character Ledger <span aria-hidden="true">⌄</span></button>
-    </div>
-
-    <div id="homeLedgerPanel" class="hyb-ledger-panel" hidden>
-      <img src="./hyb-ledger-open.png" class="hyb-ledger-open-art" alt="">
-      <button class="hyb-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
-      <div class="hyb-ledger-grid">
-        <div><span>XP</span><b id="homeXp">0</b></div>
-        <div><span>QUESTS</span><b id="homeQuests">0</b></div>
-        <div><span>GOLDENS</span><b id="homeGoldens">0</b></div>
-      </div>
-      <div id="homeBonuses" class="hyb-ledger-note"></div>
-    </div>
-
-    <div id="homeSaveMini" class="hyb-save">Progress saves automatically.</div>
+    <div id="homeSaveMini" class="v53-save">Progress saves automatically.</div>
   </div>
 </section>
 
@@ -2432,18 +2722,28 @@ function startReadingUiClock(){
 
 function renderHome(){
  const xp=Math.max(0,totalXp()),l=levelFor(xp),lx=Math.max(0,lvlXp(xp,l)),need=lvlNeed(l);
- $('homeLevel').textContent=l;$('homeXp').textContent=xp.toLocaleString();$('homeQuests').textContent=S.questsCompleted;$('homeGoldens').textContent=goldCount();
- $('homeRank').textContent=rankFor(l);const homeRegionName=regionFor(l).replace(/^[^A-Za-z]*/,"").replace(/\s*•\s*Levels.*$/i,"");$('homeRegion').textContent=`${homeRegionName} • ${S.world.activeArea||"Front Stacks"}`;$('xpText').textContent=`${lx.toLocaleString()} / ${need.toLocaleString()} XP`;
- $('xpBar').style.width=Math.min(100,(lx/need)*100)+'%';
+ if($('homeLevel'))$('homeLevel').textContent=`Level ${l}`;
+ if($('homeXp'))$('homeXp').textContent=xp.toLocaleString();
+ if($('homeQuests'))$('homeQuests').textContent=S.questsCompleted;
+ if($('homeGoldens'))$('homeGoldens').textContent=goldCount();
+ if($('homeRank'))$('homeRank').textContent=rankFor(l);
+ const homeRegionName=regionFor(l).replace(/^[^A-Za-z]*/,"").replace(/\s*•\s*Levels.*$/i,"");
+ if($('homeRegion'))$('homeRegion').textContent=`${homeRegionName} • ${S.world.activeArea||"Front Stacks"}`;
+ if($('xpText'))$('xpText').textContent=`${lx.toLocaleString()} / ${need.toLocaleString()} XP`;
+ if($('xpBar'))$('xpBar').style.width=Math.min(100,(lx/need)*100)+'%';
+ if($('homeReaderLast'))$('homeReaderLast').textContent=S.reading?.lastFinishedBook||'Nothing logged yet';
+ if($('homeBooksStat'))$('homeBooksStat').textContent=Number(S.books||0).toLocaleString();
+ if($('homePagesStat'))$('homePagesStat').textContent=Number(S.pages||0).toLocaleString();
+ if($('homeDaysStat'))$('homeDaysStat').textContent=Number(S.days||0).toLocaleString();
  S.quests.forEach((q,i)=>{
    const n=i+1;
    const title=$(`homeQ${n}Title`),obj=$(`homeQ${n}Objective`),meta=$(`homeQ${n}Meta`),xpel=$(`homeQ${n}Xp`);
    if(title)title.textContent=q?.name||'Empty Slot';
    if(obj)obj.textContent=q?.name?(q.objective||'Quest details live on the board.'):(i===0?'Roll a Hunt quest.':i===1?'Roll a Gather quest.':'Roll an Alchemy quest.');
-   if(meta)meta.textContent=q?.name?(q.difficulty||''):'Waiting';
+   if(meta){meta.textContent=q?.name?(q.difficulty||''):'Waiting';meta.className='v51-qmeta '+String(q?.difficulty||'').toLowerCase();}
    if(xpel)xpel.textContent=q?.name?`+${q.xp} XP`:'';
  });
- $('homeBonuses').innerHTML=bonusSummaryHtml();
+ if($('homeBonuses'))$('homeBonuses').innerHTML=bonusSummaryHtml();
  renderHomeReading();
 }
 function renderQuestCards(){
@@ -3695,6 +3995,25 @@ startKustomUiClock();
 startReadingUiClock();
 renderAppStatus();
 setInterval(renderAppStatus,30000);
+
+function setHomeTab(name,btn){
+  const map={reading:'homePanelReading',level:'homePanelLevel',quests:'homePanelQuests'};
+  const tabs=['homeTabReading','homeTabLevel','homeTabQuests'];
+  Object.entries(map).forEach(([key,id])=>{
+    const p=$(id); if(!p)return;
+    const on=key===name;
+    p.hidden=!on; p.classList.toggle('active',on);
+  });
+  tabs.forEach(id=>{
+    const t=$(id); if(!t)return;
+    const on=t===btn || (name==='reading'&&id==='homeTabReading') || (name==='level'&&id==='homeTabLevel') || (name==='quests'&&id==='homeTabQuests');
+    t.classList.toggle('active',on); t.setAttribute('aria-selected',on?'true':'false');
+    const img=t.querySelector('img'); if(img)img.src=on?'./v53-tab-active.png':'./v53-tab-inactive.png';
+  });
+}
+function restoreHomeTab(){ const b=$('homeTabReading'); if(b)setHomeTab('reading',b); }
+
+setTimeout(restoreHomeTab,0);
 </script>
 
 <script>

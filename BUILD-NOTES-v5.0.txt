@@ -1,0 +1,10 @@
+Reading MMO v5.0 — Strict Cozy Desk (Home only)
+
+Home rebuilt as strict hybrid illustrated layers.
+- No visible CSS cards/boxes for Home structure.
+- Separate illustrated assets for quest board, quest papers, rank plaque, book, ribbon, action buttons, ledger, and decor.
+- Live text only in preplanned safe zones.
+- No ruled lines/random cream overlays behind text.
+- One consistent crisp pixel-art scale and palette.
+- Existing app state, quest logic, reading tools, save system, and rate-safe KWGT sync preserved.
+- Other tabs intentionally left unchanged.

@@ -1,0 +1,12 @@
+Reading MMO v5.3 — Tabbed Widget Home
+
+HOME ONLY
+- One illustrated parent frame instead of stacked widget modules.
+- Three purple bookmark tabs: Reading (default), Reader Level, Quests.
+- Only one Home view is visible at a time.
+- Reading uses the open-book widget artwork.
+- Reader Level uses the exact widget-derived interior.
+- Quests uses the exact widget-derived interior.
+- Sync Widgets and Character Ledger remain as small accessory plaques below the frame.
+- Live app data remains live text; game/save/KWGT logic preserved.
+- Other app tabs unchanged.

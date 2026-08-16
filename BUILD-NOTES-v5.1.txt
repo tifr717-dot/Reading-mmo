@@ -1,0 +1,17 @@
+Reading MMO v5.1 — Widget Clone Home
+
+HOME ONLY visual rebuild.
+
+Design target:
+- Home should look like the existing finished KWGT widgets first, and an app second.
+- Quest block is derived directly from the user's Quest Board widget art.
+- Reader Level block is derived directly from the user's Reader Level widget art.
+- Current Reading is a new third widget built from the same carved Quest-frame language with an illustrated open book.
+- Decorative surfaces are image assets. Live data remains HTML text.
+- No visible CSS card surfaces are used for Home.
+- High-resolution illustrated widget art uses normal image resampling rather than chunky forced pixel scaling.
+
+Scope:
+- Home visual only.
+- Read / Quests / Play / Me mechanics and layouts are unchanged.
+- Save data, reading tools, quest mechanics, and rate-safe KWGT syncing are preserved.
