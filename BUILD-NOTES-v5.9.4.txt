@@ -1,0 +1,9 @@
+Reading MMO PWA v5.9.4
+
+Home Character Ledger bugfix only.
+- Rebuilt the Home ledger as a centered modal instead of a tiny illustrated overlay.
+- Added a backdrop that closes the ledger when tapped.
+- Added a large reliable Close button and Escape-key support.
+- Auto-closes the ledger on navigation and Home sub-tab switches.
+- Scoped and compacted the six active bonus rows so they cannot overflow the ledger.
+- Home, Read, Quests, Play, and Me page compositions otherwise remain unchanged.

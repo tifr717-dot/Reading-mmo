@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.9.3-play-me-finish';
+const CACHE = 'reading-mmo-v5.9.4-home-ledger-fix';
 const CORE = [
   './',
   './asset-book.png',

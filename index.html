@@ -2443,6 +2443,147 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 @media(max-width:390px){.v593-play-heading small{display:none}.v593-gate small{display:none}.v593-gate{min-height:58px}.v593-hub-gates{gap:6px}.v593-enchant-grid{grid-template-columns:1fr}.v593-enchant-grid .v593-control-row:last-child{grid-column:auto}.v593-profile-two-up,.v593-save-grid{grid-template-columns:1fr}#profile .v593-profile-tabs button{height:44px!important;font-size:6.2px!important}#profile .v593-profile-tabs button b{font-size:6.1px!important}.v593-stat-grid{gap:6px}}
 </style>
 
+
+<style id="v594-home-ledger-fix">
+/* v5.9.4 — Home Character Ledger bugfix. Keep all completed page layouts frozen. */
+.v594-ledger-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:110;
+  background:rgba(12,6,4,.67);
+  backdrop-filter:blur(1px);
+  -webkit-backdrop-filter:blur(1px);
+}
+.v594-ledger-backdrop[hidden]{display:none!important}
+
+.v58-ledger-panel{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translate(-50%,-50%)!important;
+  width:min(86vw,410px)!important;
+  max-height:min(64vh,520px)!important;
+  aspect-ratio:auto!important;
+  margin:0!important;
+  padding:48px 16px 16px!important;
+  z-index:120!important;
+  overflow:auto!important;
+  box-sizing:border-box!important;
+  color:#42291d!important;
+  background:
+    linear-gradient(rgba(255,246,211,.20),rgba(103,63,34,.04)),
+    #ead5a8!important;
+  border:2px solid #6d4428!important;
+  outline:2px solid #b48745!important;
+  outline-offset:-7px!important;
+  border-radius:2px!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.72),inset 0 0 24px rgba(89,51,27,.10)!important;
+}
+.v58-ledger-panel[hidden]{display:none!important}
+.v58-ledger-panel>img{display:none!important}
+.v58-ledger-panel:before{
+  content:'CHARACTER LEDGER';
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding-right:58px;
+  box-sizing:border-box;
+  background:linear-gradient(#553421,#392218);
+  border-bottom:2px solid #a77b3e;
+  color:#f0ddb0;
+  font:700 clamp(9px,2.7vw,12px)/1 Georgia,'Times New Roman',serif;
+  letter-spacing:.7px;
+  text-shadow:1px 1px #1a0d08;
+}
+.v58-ledger-close{
+  position:absolute!important;
+  right:9px!important;
+  top:7px!important;
+  z-index:125!important;
+  min-width:48px!important;
+  height:25px!important;
+  padding:0 8px!important;
+  border:1px solid #bd944e!important;
+  background:#6e4a8e!important;
+  color:#fff0c9!important;
+  box-shadow:1px 2px 0 #24150e!important;
+  font:800 6.7px/1 ui-monospace,monospace!important;
+  text-shadow:1px 1px #2b1735!important;
+}
+.v58-ledger-grid{
+  position:static!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:7px!important;
+  text-align:center!important;
+  margin:0 0 10px!important;
+}
+.v58-ledger-grid>div{
+  padding:8px 4px!important;
+  background:rgba(255,243,208,.66)!important;
+  border:1px solid #ad8249!important;
+}
+.v58-ledger-grid span{
+  display:block!important;
+  font:800 5.8px/1 ui-monospace,monospace!important;
+  color:#765d45!important;
+  letter-spacing:.35px!important;
+}
+.v58-ledger-grid b{
+  display:block!important;
+  margin-top:4px!important;
+  font:700 clamp(14px,4.2vw,19px)/1 Georgia,'Times New Roman',serif!important;
+  color:#68458c!important;
+}
+.v58-ledger-note{
+  position:static!important;
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:6px!important;
+  margin:0!important;
+  padding:9px 0 0!important;
+  border-top:1px dashed #a98250!important;
+  text-align:left!important;
+  color:#533723!important;
+}
+.v58-ledger-note:before{
+  content:'ACTIVE BONUSES';
+  flex:0 0 100%;
+  margin-bottom:1px;
+  color:#755036;
+  font:800 6.2px/1 ui-monospace,monospace;
+  letter-spacing:.5px;
+}
+.v58-ledger-note .inventory-row{
+  float:none!important;
+  flex:1 1 calc(50% - 3px)!important;
+  min-width:120px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  box-sizing:border-box!important;
+  padding:7px 8px!important;
+  border:1px solid rgba(134,91,51,.38)!important;
+  background:rgba(255,239,201,.52)!important;
+  font:700 6.5px/1.1 ui-monospace,monospace!important;
+  color:#543825!important;
+}
+.v58-ledger-note .inventory-row b{font:inherit!important;color:#543825!important;white-space:nowrap!important}
+.v58-ledger-note .inventory-row span{float:none!important;margin-left:auto!important;color:#6c4a8d!important;font-weight:900!important;white-space:nowrap!important}
+@media(max-width:380px){
+  .v58-ledger-panel{width:91vw!important;padding-left:13px!important;padding-right:13px!important}
+  .v58-ledger-note .inventory-row{min-width:105px!important;font-size:6.1px!important}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2524,7 +2665,9 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     </div>
     <div id="homeKwgtSyncState" class="v58-sync-state"></div>
 
-    <div id="homeLedgerPanel" class="v58-ledger-panel" hidden>
+    <div id="homeLedgerBackdrop" class="v594-ledger-backdrop" hidden onclick="toggleHomeLedger(false)" aria-hidden="true"></div>
+
+    <div id="homeLedgerPanel" class="v58-ledger-panel" role="dialog" aria-modal="true" aria-label="Character Ledger" hidden>
       <img src="./v53-ledger-panel.png" alt="Character Ledger panel">
       <button class="v58-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
       <div class="v58-ledger-grid"><div><span>XP</span><b id="homeXp">0</b></div><div><span>QUESTS</span><b id="homeQuests">0</b></div><div><span>GOLDENS</span><b id="homeGoldens">0</b></div></div>
@@ -3217,7 +3360,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.9.3</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.9.4</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -3257,12 +3400,23 @@ function rollWeighted(arr,weightIndex=2){let total=arr.reduce((a,x)=>a+Number(x[
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
 function rangeUpdate(el){el.nextElementSibling.textContent=el.value}
 function toggleHomeLedger(force){
- const p=$('homeLedgerPanel');if(!p)return;
+ const p=$('homeLedgerPanel'),bd=$('homeLedgerBackdrop');if(!p)return;
  const shouldOpen=force===undefined?p.hasAttribute('hidden'):!!force;
- if(shouldOpen)p.removeAttribute('hidden');else p.setAttribute('hidden','');
- if(shouldOpen)setTimeout(()=>p.scrollIntoView({behavior:'smooth',block:'nearest'}),20);
+ p.toggleAttribute('hidden',!shouldOpen);
+ if(bd)bd.toggleAttribute('hidden',!shouldOpen);
+ document.body.classList.toggle('home-ledger-open',shouldOpen);
+ if(shouldOpen){
+  const close=p.querySelector('.v58-ledger-close');
+  setTimeout(()=>{if(close)close.focus({preventScroll:true})},20);
+ }
 }
+
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape')toggleHomeLedger(false);
+});
+
 function go(id,btn){
+ toggleHomeLedger(false);
  document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
  $(id).classList.add("active");
  document.querySelectorAll(".bottomnav button").forEach(x=>x.classList.remove("active"));
@@ -5009,6 +5163,7 @@ renderAppStatus();
 setInterval(renderAppStatus,30000);
 
 function setHomeTab(name,btn){
+  toggleHomeLedger(false);
   const map={reading:'homePanelReading',level:'homePanelLevel',quests:'homePanelQuests'};
   const tabs=['homeTabReading','homeTabLevel','homeTabQuests'];
   Object.entries(map).forEach(([key,id])=>{
