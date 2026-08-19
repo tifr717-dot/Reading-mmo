@@ -1,0 +1,16 @@
+Reading MMO v5.9.5 — Session → Quest Progress Bridge
+
+NEW
+- Reading sessions now feed progress into all active quests.
+- "+ Add to MMO" applies newly logged pages to active quest page requirements immediately.
+- New "End Session + Check Quests" action records elapsed reading time, chapters, pages, and one completed session.
+- Quest cards now show tracked progress for page, time, chapter, session, percentage, choice, relay, and finish-book requirements.
+- Fully measurable quests gain a themed "Requirements Met · Turn In Quest" button.
+- Quests with subjective flavor requirements show "Reading Target Met · Verify Requirement" before turn-in.
+- Home Quest tab shows READY or VERIFY when appropriate.
+- End Session shows a session-complete sequence and calls out newly satisfied quest requirements.
+- Session state resets cleanly for the next reading session while retaining a last-session summary.
+
+UNCHANGED
+- Home, Read, Quests, Play, and Me visual compositions from v5.9.4 remain intact except for the new session/quest progress controls.
+- Quest reward completion remains user-triggered; reading progress never silently claims rewards.
