@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.9.9-library-polish';
+const CACHE = 'reading-mmo-v5.10.0-archive-rebuild';
 const CORE = [
   './',
   './asset-book.png',

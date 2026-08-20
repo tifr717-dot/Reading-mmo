@@ -2763,6 +2763,213 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 @media(max-width:370px){#library .v598-book-grid{gap:9px 8px}#library .v598-book-card{min-height:119px!important}#library .v598-book-title{font-size:7.7px!important}#library .v599-book-plate{left:11px;right:11px}}
 </style>
 
+
+<style id="v510-library-rebuild">
+/* v5.10.0 — rebuild the Archive as a real shelf: compact chrome, portrait volumes, grouped series shelves. */
+#library.v598-library{
+  padding:8px 10px 108px!important;
+  background:
+    linear-gradient(rgba(15,7,5,.04),rgba(10,5,4,.18)),
+    url('./v53-wood-tile.png') center/170px auto repeat!important
+}
+#library .v598-library-stage{gap:6px!important}
+
+/* Quiet breadcrumb instead of another huge panel. */
+#library .v598-library-back{
+  justify-self:start!important;width:auto!important;min-height:27px!important;
+  padding:5px 9px!important;margin:0 0 1px!important;
+  background:rgba(34,18,12,.88)!important;border:1px solid #76502b!important;
+  color:#cdb587!important;box-shadow:none!important;
+  font:800 5.25px/1 ui-monospace,monospace!important;letter-spacing:.35px!important
+}
+
+/* Archive title + counters read as one piece of furniture. */
+#library .v598-library-heading{
+  padding:9px 10px!important;gap:8px!important;
+  background:linear-gradient(180deg,#4a2b1b,#29150e)!important;
+  border:1px solid #9b7037!important;outline:1px solid rgba(236,198,113,.16)!important;
+  outline-offset:-4px!important;box-shadow:0 3px 0 rgba(13,6,4,.48)!important
+}
+#library .v598-library-heading img{width:22px!important;height:22px!important}
+#library .v598-library-heading b{font-size:9px!important;letter-spacing:.55px!important}
+#library .v598-library-heading small{margin-top:3px!important;font-size:5.15px!important;color:#bda474!important}
+
+#library .v598-library-stats{
+  display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:0!important;
+  padding:0!important;background:#22120d!important;border:1px solid #684522!important;
+  overflow:hidden!important
+}
+#library .v598-library-stat{
+  min-height:37px!important;padding:6px 2px 5px!important;
+  background:linear-gradient(180deg,#3b2418,#27150f)!important;border:0!important;
+  border-right:1px solid #64411f!important;box-shadow:none!important
+}
+#library .v598-library-stat:last-child{border-right:0!important}
+#library .v598-library-stat b{font-size:8.7px!important;color:#f1d79a!important}
+#library .v598-library-stat span{margin-top:4px!important;font-size:4.15px!important;color:#9f865f!important}
+
+/* Compact search desk. */
+#library .v598-library-tools{
+  padding:6px!important;background:linear-gradient(180deg,#342016,#21120d)!important;
+  border:1px solid #75502a!important;box-shadow:inset 0 0 0 1px rgba(211,166,82,.07)!important
+}
+#library .v598-library-searchrow{grid-template-columns:1fr 69px!important;gap:5px!important}
+#library .v598-library-searchrow input{
+  height:30px!important;padding:0 9px!important;background:#e9d7ae!important;
+  border:1px solid #9b7441!important;font-size:5.9px!important
+}
+#library .v598-library-searchrow button{
+  min-height:30px!important;padding:4px 5px!important;
+  background:linear-gradient(#4f6d3e,#334a2b)!important;border:1px solid #879c63!important;
+  font-size:5px!important;letter-spacing:.1px!important
+}
+#library .v598-library-filters{gap:3px!important;margin-top:5px!important}
+#library .v598-library-filter{
+  min-height:24px!important;padding:4px 2px!important;
+  background:#2a1711!important;border:1px solid #5e3d25!important;
+  color:#aa936c!important;font-size:4.75px!important
+}
+#library .v598-library-filter.active{
+  background:linear-gradient(#6e4d89,#513569)!important;border-color:#a989c1!important;
+  color:#f6e3b9!important;box-shadow:inset 0 0 0 1px rgba(255,235,190,.10)!important
+}
+
+#library .v598-library-shelf-title{
+  padding:5px 3px 4px!important;border-bottom:0!important;
+  background:linear-gradient(90deg,rgba(48,26,17,.8),rgba(48,26,17,.12))!important
+}
+#library .v598-library-shelf-title b{font-size:6.1px!important}
+#library .v598-library-shelf-title span{font-size:4.7px!important;color:#99805c!important}
+
+/* JS now inserts actual shelf rows. */
+#library .v598-book-grid{
+  display:block!important;padding:0!important;margin:0!important
+}
+#library .v510-shelf-row{
+  position:relative;margin:0 1px 7px!important;padding:3px 4px 13px!important;
+  background:linear-gradient(180deg,rgba(22,10,7,.06),rgba(22,10,7,.18))!important
+}
+#library .v510-books{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-items:end
+}
+#library .v510-shelf-plank{
+  position:absolute;left:0;right:0;bottom:2px;height:11px;
+  background:
+    linear-gradient(180deg,#a86f33 0 12%,#6d421f 12% 45%,#3d2114 45% 78%,#1c0d08 78% 100%);
+  border:1px solid #71451f;border-top-color:#c18a45;
+  box-shadow:0 4px 0 rgba(12,6,4,.50),inset 0 1px 0 rgba(255,210,124,.18);
+  z-index:1
+}
+
+/* Portrait books. No parchment form plate. */
+#library .v598-book-card{
+  --accent:#755590;--deep:#35213f;
+  position:relative!important;display:flex!important;flex-direction:column!important;
+  width:100%!important;aspect-ratio:.71!important;min-height:0!important;
+  margin:0!important;padding:10px 7px 9px!important;
+  text-align:center!important;color:#f4dfad!important;
+  background:
+    radial-gradient(circle at 28% 16%,rgba(255,255,255,.12),transparent 24%),
+    linear-gradient(145deg,rgba(255,255,255,.08),transparent 38%),
+    linear-gradient(180deg,var(--accent),var(--deep))!important;
+  border:2px solid #25120c!important;outline:1px solid rgba(218,174,88,.88)!important;
+  outline-offset:-5px!important;border-radius:2px!important;
+  box-shadow:3px 4px 0 #130906,0 7px 10px rgba(0,0,0,.22)!important;
+  overflow:hidden!important;z-index:2
+}
+#library .v598-book-card:before{
+  content:"";position:absolute;inset:7px;border:1px solid rgba(238,199,113,.52);
+  box-shadow:inset 0 0 0 2px rgba(30,13,8,.16);pointer-events:none
+}
+#library .v598-book-card:after{
+  content:"✦";position:absolute;left:50%;top:14px;transform:translateX(-50%);
+  width:auto;height:auto;background:none!important;border:0!important;
+  color:#edc96e;font:900 7px/1 Georgia,serif;text-shadow:0 1px 1px #1d0d08;pointer-events:none
+}
+#library .v598-book-card.c0{--accent:#765792;--deep:#382347}
+#library .v598-book-card.c1{--accent:#8d5243;--deep:#47261f}
+#library .v598-book-card.c2{--accent:#4f7664;--deep:#243c33}
+#library .v598-book-card.c3{--accent:#9b7435;--deep:#4f391a}
+#library .v598-book-card.c4{--accent:#567b91;--deep:#293f4c}
+#library .v598-book-card.c5{--accent:#825064;--deep:#432631}
+#library .v598-book-card.c6{--accent:#6c6753;--deep:#373328}
+#library .v598-book-card.c7{--accent:#9b6847;--deep:#4c2e21}
+
+#library .v599-book-volume{
+  position:absolute!important;left:10px!important;top:10px!important;z-index:3!important;
+  font:900 3.85px/1 ui-monospace,monospace!important;letter-spacing:.25px!important;
+  color:rgba(255,235,187,.72)!important
+}
+#library .v598-book-fav{
+  position:absolute!important;right:9px!important;top:8px!important;z-index:3!important;
+  font-size:7px!important;color:#ffe17f!important
+}
+#library .v599-book-plate{
+  position:static!important;display:flex!important;flex:1!important;min-height:0!important;
+  margin:31px 2px 7px!important;padding:6px 4px!important;
+  flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  background:rgba(25,12,8,.21)!important;border:1px solid rgba(234,196,112,.44)!important;
+  outline:0!important;box-shadow:inset 0 0 12px rgba(17,8,5,.12)!important
+}
+#library .v598-book-title{
+  padding:0!important;font:900 6.55px/1.08 Georgia,'Times New Roman',serif!important;
+  color:#fff0c6!important;text-shadow:0 1px 1px rgba(20,8,4,.72)!important;
+  overflow-wrap:anywhere!important
+}
+#library .v598-book-author{
+  margin-top:5px!important;font:700 3.8px/1.15 ui-monospace,monospace!important;
+  color:#d8bd87!important;text-shadow:0 1px 1px rgba(24,10,5,.7)!important
+}
+#library .v598-book-series{
+  position:static!important;display:block!important;max-width:100%!important;
+  margin:0 2px 5px!important;padding:3px 4px!important;
+  background:rgba(22,10,7,.34)!important;border:1px solid rgba(233,193,106,.34)!important;
+  color:#ebcb88!important;font:800 3.7px/1 ui-monospace,monospace!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important
+}
+#library .v598-book-bottom{
+  position:static!important;display:flex!important;align-items:center!important;
+  justify-content:space-between!important;gap:4px!important;margin:0 2px!important
+}
+#library .v598-book-rating{
+  font:900 4.3px/1 Georgia,'Times New Roman',serif!important;color:#ffe093!important
+}
+#library .v598-book-date{
+  font:800 3.35px/1.05 ui-monospace,monospace!important;color:#d7b979!important;text-align:right!important
+}
+
+/* Series filter becomes actual grouped shelves. */
+#library .v510-series-group{margin:0 0 8px}
+#library .v510-series-label{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin:1px 2px 4px;padding:5px 7px;
+  background:linear-gradient(90deg,#432819,#28150f);border-left:3px solid #8b6a9f;
+  color:#e7ce96
+}
+#library .v510-series-label b{font:900 6px/1 Georgia,'Times New Roman',serif;letter-spacing:.25px}
+#library .v510-series-label span{font:800 4.2px/1 ui-monospace,monospace;color:#a9926a}
+
+/* Empty filters should look intentional, not like a giant blank page. */
+#library .v598-library-empty{
+  margin:5px 2px 0!important;padding:15px 12px!important;
+  background:linear-gradient(180deg,#3a2418,#24130e)!important;
+  border:1px solid #76502c!important;color:#bda678!important;
+  box-shadow:inset 0 0 0 2px rgba(213,169,82,.06)!important;
+  font:800 5.6px/1.45 ui-monospace,monospace!important
+}
+#library .v598-library-empty b{
+  display:block;margin-bottom:5px;color:#efd398;font:900 6.7px/1 Georgia,'Times New Roman',serif
+}
+#library .v599-shelf-end{display:none!important}
+
+@media(max-width:350px){
+  #library .v510-books{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  #library .v598-book-title{font-size:7px!important}
+  #library .v598-book-author{font-size:4px!important}
+  #library .v598-book-series{font-size:3.9px!important}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -3657,7 +3864,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.9.9</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.10.0</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -5694,6 +5901,20 @@ function setLibraryFilter(filter,btn){
  document.querySelectorAll('[data-library-filter]').forEach(x=>x.classList.toggle('active',x===btn||x.dataset.libraryFilter===libraryFilter));
  renderLibrary();
 }
+function libraryBookCardMarkup(b,volumeNo){
+ return `<button class="v598-book-card c${Number(b.color)%8}" onclick="openLibraryRecord('${esc(b.id)}')" aria-label="Open library record for ${esc(b.title)}">
+   <span class="v599-book-volume">VOL ${String(volumeNo||1).padStart(2,'0')}</span>
+   ${b.favorite?'<span class="v598-book-fav">★</span>':''}
+   <div class="v599-book-plate"><div class="v598-book-title">${esc(b.title)}</div><div class="v598-book-author">${esc(b.author||'Unknown author')}</div></div>
+   <div class="v598-book-series">${esc(b.series||'Standalone')}</div>
+   <div class="v598-book-bottom"><span class="v598-book-rating">${esc(libraryRatingLabel(b.rating))}</span><span class="v598-book-date">${esc(libraryDateLabel(b.finishDate))}</span></div>
+  </button>`;
+}
+function libraryShelfRowsMarkup(rows,volumeNo){
+ const chunks=[];
+ for(let i=0;i<rows.length;i+=3)chunks.push(rows.slice(i,i+3));
+ return chunks.map(chunk=>`<div class="v510-shelf-row"><div class="v510-books">${chunk.map(b=>libraryBookCardMarkup(b,volumeNo.get(String(b.id))||1)).join("")}</div><div class="v510-shelf-plank" aria-hidden="true"></div></div>`).join("");
+}
 function renderLibrary(){
  const shelf=$("libraryShelf");if(!shelf)return;
  S.library=Array.isArray(S.library)?S.library.map(normalizeLibraryRecord):starterLibrary();
@@ -5707,25 +5928,45 @@ function renderLibrary(){
  if($("libraryFavoriteCount"))$("libraryFavoriteCount").textContent=favorite.toLocaleString();
  if($("libraryPageCount"))$("libraryPageCount").textContent=pagesKnown?pages.toLocaleString():"—";
  if($("librarySeriesCount"))$("librarySeriesCount").textContent=series.size.toLocaleString();
+
  let rows=all.filter(b=>{
   const hay=`${b.title} ${b.author} ${b.series}`.toLowerCase();
   if(q&&!hay.includes(q))return false;
   if(libraryFilter==="favorites"&&!b.favorite)return false;
   if(libraryFilter==="five"&&Number(b.rating)!==5)return false;
-  if(libraryFilter==="series"&&(!b.series||b.series.toLowerCase()==="standalone"))return false;
+  if(libraryFilter==="series"&&(!b.series||String(b.series).toLowerCase()==="standalone"))return false;
   return true;
  }).sort((a,b)=>String(b.finishDate||"").localeCompare(String(a.finishDate||""))||String(a.title).localeCompare(String(b.title)));
+
  if($("libraryResultCount"))$("libraryResultCount").textContent=`${rows.length} shown`;
- if(!rows.length){shelf.innerHTML='<div class="v598-library-empty">No volumes match this shelf view.<br>Try another filter or archive a finished book.</div>';return;}
+ if(!rows.length){
+   const emptyCopy=libraryFilter==="favorites"
+     ?'<b>NO FAVORITES YET</b>Open any volume and mark it ★ Favorite to build this shelf.'
+     :libraryFilter==="series"
+       ?'<b>NO SERIES ON THIS SHELF</b>Series volumes will be grouped together here automatically.'
+       :libraryFilter==="five"
+         ?'<b>NO 5★ VOLUMES HERE</b>Your five-star reads will collect on this shelf.'
+         :'<b>NO VOLUMES FOUND</b>Try another search or archive a finished book.';
+   shelf.innerHTML=`<div class="v598-library-empty">${emptyCopy}</div>`;
+   return;
+ }
+
  const chronology=all.slice().sort((a,b)=>String(a.finishDate||"").localeCompare(String(b.finishDate||""))||String(a.title).localeCompare(String(b.title)));
  const volumeNo=new Map(chronology.map((b,i)=>[String(b.id),i+1]));
- shelf.innerHTML=rows.map((b,i)=>`<button class="v598-book-card c${Number(b.color)%8}" onclick="openLibraryRecord('${esc(b.id)}')" aria-label="Open library record for ${esc(b.title)}">
-   <span class="v599-book-volume">VOL ${String(volumeNo.get(String(b.id))||i+1).padStart(2,'0')}</span>
-   ${b.favorite?'<span class="v598-book-fav">★</span>':''}
-   <div class="v599-book-plate"><div class="v598-book-title">${esc(b.title)}</div><div class="v598-book-author">${esc(b.author||'Unknown author')}</div></div>
-   <div class="v598-book-series">${esc(b.series||'Standalone')}</div>
-   <div class="v598-book-bottom"><span class="v598-book-rating">${esc(libraryRatingLabel(b.rating))}</span><span class="v598-book-date">${esc(libraryDateLabel(b.finishDate))}</span></div>
-  </button>`).join("");
+
+ if(libraryFilter==="series"){
+   const grouped=new Map();
+   rows.forEach(b=>{
+     const key=librarySeriesName(b.series)||"Other Series";
+     if(!grouped.has(key))grouped.set(key,[]);
+     grouped.get(key).push(b);
+   });
+   shelf.innerHTML=[...grouped.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([name,books])=>
+     `<section class="v510-series-group"><div class="v510-series-label"><b>${esc(name)}</b><span>${books.length} ${books.length===1?'volume':'volumes'}</span></div>${libraryShelfRowsMarkup(books,volumeNo)}</section>`
+   ).join("");
+ }else{
+   shelf.innerHTML=libraryShelfRowsMarkup(rows,volumeNo);
+ }
 }
 function fillLibraryEditor(b,{source="past",isEdit=false}={}){
  libraryDraftSource=source;editingLibraryId=isEdit?b.id:null;

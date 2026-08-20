@@ -1,0 +1,18 @@
+Reading MMO v5.10.0 — Archive Rebuild
+
+Focused visual/interaction rebuild of the Enchanted Archive.
+
+Changes:
+- Replaced landscape plaque-like archive cards with compact portrait book covers.
+- Books are now arranged three per wooden shelf row on normal phone widths.
+- Added real shelf planks beneath each book row.
+- Reduced stacked header/search/filter bulk.
+- Reworked stats into one compact dark ledger strip.
+- Series filter now groups books by series with a series shelf heading.
+- Empty Favorites / 5-star / Series states are compact themed plaques rather than large blank parchment boxes.
+- Removed the stray shelf-ending bar from the visible Archive.
+- Existing archive records, edit modal, search, filters, favorites, and current-book archiving behavior are preserved.
+- App Health version: v5.10.0.
+- Service worker cache: reading-mmo-v5.10.0-archive-rebuild.
+
+Package contains only this build note; old backup HTML/build notes are intentionally excluded.
