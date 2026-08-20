@@ -1,0 +1,14 @@
+Reading MMO v5.9.8 — Enchanted Archive
+
+- Adds an in-app Library / Enchanted Archive for finished books.
+- Read tab now includes Open Library + Archive Finished Volume actions.
+- Archive form stores title, author, series, rating, start/finish dates, pages, favorite, shelf mark, and notes.
+- Library supports search plus All / Favorites / 5-star / Series filters.
+- Finished-volume records are editable and removable without altering Reader Level totals.
+- New current-volume archives can optionally add +1 to Reader Level books.
+- Current-volume archive updates Last Finished automatically.
+- Existing save migrations receive the known completed 2026 reading records without changing existing Reader Level totals.
+- Adds a Library shortcut from Me.
+- Home / Quests / Play systems are otherwise unchanged.
+- App Health version: v5.9.8
+- Service worker cache: reading-mmo-v5.9.8-enchanted-library

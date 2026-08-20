@@ -2654,64 +2654,6 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 }
 </style>
 
-
-<style id="v598-reading-library">
-/* v5.9.8 — enchanted finished-volume archive. */
-#library.v598-library{padding-bottom:105px!important}
-.v598-library-stage{display:grid;gap:10px}
-.v598-library-back{width:100%;min-height:34px!important;margin:0!important;background:#2b1811!important;border:1px solid #7e5a32!important;color:#d8c08e!important;font:800 6.4px/1 ui-monospace,monospace!important;letter-spacing:.45px!important}
-.v598-library-heading{display:flex;align-items:center;gap:9px;padding:11px 12px;background:linear-gradient(180deg,#42271a,#2a170f);border:2px solid #8d6635;outline:1px solid rgba(210,171,91,.35);outline-offset:-5px;color:#efd79d;box-shadow:0 4px 0 rgba(22,11,7,.45)}
-.v598-library-heading img{width:27px;height:27px;image-rendering:pixelated;object-fit:contain}
-.v598-library-heading b{display:block;font:900 10px/1 Georgia,'Times New Roman',serif;letter-spacing:.7px}
-.v598-library-heading small{display:block;margin-top:4px;font:700 5.8px/1.2 ui-monospace,monospace;color:#ad956e}
-.v598-library-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:7px;background:#2b1811;border:1px solid #76512d}
-.v598-library-stat{min-width:0;padding:7px 4px;text-align:center;background:#efe0bd;border:1px solid #b48d56;box-shadow:inset 0 0 0 2px rgba(255,248,222,.45)}
-.v598-library-stat b{display:block;font:900 10px/1 Georgia,'Times New Roman',serif;color:#4a2e20}
-.v598-library-stat span{display:block;margin-top:3px;font:900 4.9px/1 ui-monospace,monospace;letter-spacing:.35px;color:#775f45;text-transform:uppercase}
-.v598-library-tools{padding:9px;background:linear-gradient(180deg,#eee0be,#dcc79b);border:2px solid #6e4a2e;box-shadow:inset 0 0 0 2px rgba(255,249,224,.42)}
-.v598-library-searchrow{display:grid;grid-template-columns:1fr auto;gap:6px}
-.v598-library-searchrow input{min-width:0;margin:0!important;height:35px!important;background:#fff8e7!important;border:1px solid #9c784c!important;color:#3e2a20!important;font-size:7px!important}
-.v598-library-searchrow button{min-height:35px!important;margin:0!important;padding:6px 9px!important;white-space:nowrap;font-size:6px!important}
-.v598-library-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
-.v598-library-filter{min-height:29px!important;margin:0!important;padding:5px 3px!important;background:#3b2318!important;border:1px solid #76512d!important;color:#bda77d!important;font:800 5.5px/1 ui-monospace,monospace!important;box-shadow:none!important}
-.v598-library-filter.active{background:#6d4b89!important;border-color:#aa89c6!important;color:#fff1cf!important}
-.v598-library-shelf-title{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 2px;color:#ddc38d}
-.v598-library-shelf-title b{font:900 7px/1 ui-monospace,monospace;letter-spacing:.7px}
-.v598-library-shelf-title span{font:700 5.5px/1 ui-monospace,monospace;color:#9f8967}
-.v598-book-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.v598-book-card{--accent:#72568e;position:relative;min-width:0;min-height:142px!important;margin:0!important;padding:11px 9px 9px 15px!important;text-align:left!important;background:linear-gradient(90deg,var(--accent) 0 8px,#ead9af 8px 100%)!important;border:2px solid #4e3424!important;outline:1px solid #ad8750!important;outline-offset:-5px!important;color:#3d291f!important;box-shadow:4px 5px 0 rgba(27,14,9,.44)!important;overflow:hidden}
-.v598-book-card:after{content:"";position:absolute;right:7px;top:7px;bottom:7px;width:1px;background:rgba(113,78,45,.22)}
-.v598-book-card.c0{--accent:#704f87}.v598-book-card.c1{--accent:#8b503f}.v598-book-card.c2{--accent:#426b59}.v598-book-card.c3{--accent:#9b712f}.v598-book-card.c4{--accent:#486b82}.v598-book-card.c5{--accent:#7a3f58}.v598-book-card.c6{--accent:#5d5948}.v598-book-card.c7{--accent:#9a6241}
-.v598-book-fav{position:absolute;right:10px;top:8px;font-size:9px;color:#8a642c;text-shadow:none}
-.v598-book-title{padding-right:15px;font:900 9.2px/1.08 Georgia,'Times New Roman',serif;color:#3a261c;overflow-wrap:anywhere}
-.v598-book-author{margin-top:5px;font:800 5.8px/1.2 ui-monospace,monospace;color:#705541;overflow-wrap:anywhere}
-.v598-book-series{display:inline-block;max-width:100%;margin-top:7px;padding:3px 5px;border:1px solid #aa8555;background:rgba(255,248,225,.55);font:800 5px/1 ui-monospace,monospace;color:#75563a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.v598-book-bottom{position:absolute;left:15px;right:12px;bottom:10px;display:flex;align-items:end;justify-content:space-between;gap:6px}
-.v598-book-rating{font:900 7px/1 Georgia,'Times New Roman',serif;color:#7a5524}.v598-book-date{font:800 4.8px/1.15 ui-monospace,monospace;color:#775f49;text-align:right}
-.v598-library-empty{grid-column:1/-1;padding:24px 15px;text-align:center;background:#ead9af;border:2px dashed #8f6c43;color:#67503b;font:800 6.5px/1.35 ui-monospace,monospace}
-.v598-read-library-row{display:grid;grid-template-columns:1fr 1.35fr;gap:6px;margin-top:6px;width:100%}
-.v598-read-library-row button{min-height:34px!important;margin:0!important;padding:6px!important;font-size:6px!important}
-.v598-library-shortcut{width:100%;margin-top:8px!important;min-height:36px!important;background:linear-gradient(#5b456e,#433150)!important;border-color:#76598d!important;color:#f0dfbd!important}
-.v598-library-modal{position:fixed;inset:0;z-index:260;display:grid;place-items:center;padding:14px;background:rgba(13,7,5,.78);backdrop-filter:blur(2px)}
-.v598-library-modal[hidden]{display:none!important}
-.v598-library-editor{width:min(94vw,430px);max-height:86vh;overflow:auto;padding:12px;background:linear-gradient(180deg,#eadbb7,#d9c092);border:3px solid #4d3021;outline:2px solid #a47736;outline-offset:-7px;box-shadow:0 12px 30px #0008;color:#3c291f}
-.v598-library-editor-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 3px 10px;border-bottom:1px solid #ab8554}
-.v598-library-editor-head b{font:900 9px/1 Georgia,'Times New Roman',serif}.v598-library-editor-head button{min-height:28px!important;margin:0!important;padding:5px 8px!important;font-size:5.7px!important}
-.v598-library-editor-copy{margin:8px 2px;font:700 5.8px/1.3 ui-monospace,monospace;color:#6d553f}
-.v598-library-form{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.v598-library-form .wide{grid-column:1/-1}
-.v598-library-field label{display:block;margin:0 0 4px;font:900 5.2px/1 ui-monospace,monospace;color:#6c4d35;text-transform:uppercase;letter-spacing:.35px}
-.v598-library-field input,.v598-library-field select,.v598-library-field textarea{width:100%;margin:0!important;background:#fff7e4!important;border:1px solid #987044!important;color:#3f2b20!important;font-size:7px!important}
-.v598-library-field input,.v598-library-field select{height:35px!important}.v598-library-field textarea{min-height:62px!important;resize:vertical;padding:8px!important}
-.v598-library-checks{grid-column:1/-1;display:grid;grid-template-columns:1fr;gap:6px;margin-top:2px}
-.v598-library-check{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;background:rgba(255,248,226,.5);border:1px solid #b08b5a;font:800 5.8px/1.2 ui-monospace,monospace;color:#654832}
-.v598-library-check input{width:18px!important;height:18px!important;flex:none}
-.v598-library-editor-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
-.v598-library-editor-actions button{min-height:39px!important;margin:0!important;font-size:6.4px!important}
-.v598-library-delete{width:100%;margin-top:7px!important;min-height:32px!important;font-size:5.8px!important}
-@media(max-width:370px){.v598-library-stats{gap:4px}.v598-library-stat{padding:6px 2px}.v598-library-stat b{font-size:9px}.v598-book-grid{gap:7px}.v598-book-card{min-height:136px!important;padding-left:13px!important}.v598-book-title{font-size:8.5px}.v598-library-form{gap:6px}}
-</style>
-
 </head>
 <body>
 <div class="app">
@@ -2851,11 +2793,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 
       <div class="v591-book-actions">
         <button class="btn-blue" onclick="saveReadingDesk()">💾 Save Reading Info</button>
-        <div class="v598-read-library-row">
-          <button class="btn-plain" onclick="openLibrary()">📚 OPEN LIBRARY</button>
-          <button class="btn-gold" onclick="openArchiveCurrentBook()">🏁 ARCHIVE FINISHED VOLUME</button>
-        </div>
-        <div class="v591-sync-note">Widgets sync from Home • finished books can be archived here.</div>
+        <div class="v591-sync-note">Widgets sync from Home.</div>
       </div>
     </div>
 
@@ -2931,40 +2869,6 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     </div>
   </div>
 </section>
-
-<section id="library" class="screen v598-library">
-  <div class="v598-library-stage">
-    <button class="v598-library-back" onclick="go('reading')">← RETURN TO READING DESK</button>
-    <div class="v598-library-heading">
-      <img src="./asset-books-stack.png" alt="">
-      <div><b>THE ENCHANTED ARCHIVE</b><small>Every finished volume earns a permanent place on your shelves.</small></div>
-    </div>
-
-    <div class="v598-library-stats">
-      <div class="v598-library-stat"><b id="libraryVolumeCount">0</b><span>Volumes</span></div>
-      <div class="v598-library-stat"><b id="libraryFavoriteCount">0</b><span>Favorites</span></div>
-      <div class="v598-library-stat"><b id="libraryPageCount">0</b><span>Pages</span></div>
-      <div class="v598-library-stat"><b id="librarySeriesCount">0</b><span>Series</span></div>
-    </div>
-
-    <div class="v598-library-tools">
-      <div class="v598-library-searchrow">
-        <input id="librarySearch" type="search" placeholder="Search title, author, or series…" oninput="renderLibrary()">
-        <button class="btn-green" onclick="openAddPastBook()">＋ ADD VOLUME</button>
-      </div>
-      <div class="v598-library-filters">
-        <button class="v598-library-filter active" data-library-filter="all" onclick="setLibraryFilter('all',this)">ALL</button>
-        <button class="v598-library-filter" data-library-filter="favorites" onclick="setLibraryFilter('favorites',this)">★ FAVORITES</button>
-        <button class="v598-library-filter" data-library-filter="five" onclick="setLibraryFilter('five',this)">5★</button>
-        <button class="v598-library-filter" data-library-filter="series" onclick="setLibraryFilter('series',this)">SERIES</button>
-      </div>
-    </div>
-
-    <div class="v598-library-shelf-title"><b>📚 ARCHIVED VOLUMES</b><span id="libraryResultCount"></span></div>
-    <div id="libraryShelf" class="v598-book-grid"></div>
-  </div>
-</section>
-
 <section id="quests" class="screen quest-rebuild">
   <div class="quest-guild-counter">
     <div class="section quest-main-title"><img src="./asset-goose.png" alt="">GUILD QUEST COUNTER</div>
@@ -3163,8 +3067,6 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
         <div class="v593-baseline-note">Frozen baselines: 3,411 pages • 9 books • 1,740 days. Quest XP is added on top.</div>
       </div>
 
-      <button class="v598-library-shortcut" onclick="openLibrary()">📚 OPEN THE ENCHANTED ARCHIVE</button>
-
       <div class="v593-profile-two-up">
         <div class="v593-ledger-card v593-character-summary">
           <div class="v593-ledger-head compact"><span>✨</span><div><b>CHARACTER SUMMARY</b></div></div>
@@ -3271,36 +3173,6 @@ lastread → $br(remote,lastread)$</div>
   <button data-screen="adventure" onclick="go('adventure',this)">Play</button>
   <button data-screen="profile" onclick="go('profile',this)">Me</button>
 </nav>
-</div>
-
-<div id="libraryRecordModal" class="v598-library-modal" hidden onclick="libraryModalBackdrop(event)">
-  <div class="v598-library-editor" role="dialog" aria-modal="true" aria-labelledby="libraryEditorTitle">
-    <div class="v598-library-editor-head">
-      <b id="libraryEditorTitle">ARCHIVE A VOLUME</b>
-      <button class="btn-plain" onclick="closeLibraryEditor()">CLOSE</button>
-    </div>
-    <div class="v598-library-editor-copy" id="libraryEditorCopy">Record the finished volume. You can edit this shelf entry later.</div>
-    <div class="v598-library-form">
-      <div class="v598-library-field wide"><label>Title</label><input id="libTitle" type="text" placeholder="Book title"></div>
-      <div class="v598-library-field wide"><label>Author</label><input id="libAuthor" type="text" placeholder="Author"></div>
-      <div class="v598-library-field"><label>Series</label><input id="libSeries" type="text" placeholder="Standalone or Series #1"></div>
-      <div class="v598-library-field"><label>Rating</label><select id="libRating"><option value="0">Unrated</option><option value="0.5">0.5 ★</option><option value="1">1 ★</option><option value="1.5">1.5 ★</option><option value="2">2 ★</option><option value="2.5">2.5 ★</option><option value="3">3 ★</option><option value="3.5">3.5 ★</option><option value="4">4 ★</option><option value="4.5">4.5 ★</option><option value="5">5 ★</option></select></div>
-      <div class="v598-library-field"><label>Started</label><input id="libStarted" type="date"></div>
-      <div class="v598-library-field"><label>Finished</label><input id="libFinished" type="date"></div>
-      <div class="v598-library-field"><label>Book Pages</label><input id="libPages" type="number" min="0" placeholder="0"></div>
-      <div class="v598-library-field"><label>Shelf Mark</label><select id="libColor"><option value="0">Amethyst</option><option value="1">Ember</option><option value="2">Moss</option><option value="3">Gold</option><option value="4">Storm</option><option value="5">Rosewood</option><option value="6">Ash</option><option value="7">Copper</option></select></div>
-      <div class="v598-library-field wide"><label>Notes</label><textarea id="libNotes" placeholder="Optional memory, favorite moment, or reading note…"></textarea></div>
-      <div class="v598-library-checks">
-        <label class="v598-library-check"><span>★ Mark as a favorite</span><input id="libFavorite" type="checkbox"></label>
-        <label id="libCountBookWrap" class="v598-library-check"><span>📚 Add +1 to Reader Level book count</span><input id="libCountBook" type="checkbox"></label>
-      </div>
-    </div>
-    <div class="v598-library-editor-actions">
-      <button class="btn-plain" onclick="closeLibraryEditor()">CANCEL</button>
-      <button class="btn-gold" onclick="saveLibraryRecord()">✨ SAVE TO SHELF</button>
-    </div>
-    <button id="libDeleteBtn" class="btn-red v598-library-delete" onclick="deleteLibraryRecord()" style="display:none">🗑 REMOVE FROM LIBRARY</button>
-  </div>
 </div>
 
 <div id="modal" class="modal">
@@ -3485,27 +3357,6 @@ const formatMods={
  5:["use two different formats and track which felt faster","alternate between two reads at fixed checkpoints"]
 };
 
-
-function starterLibrary(){
- return [
-  {id:"lib-seed-stage",title:"A Stage Set for Villains",author:"Shannon J. Spann",series:"Standalone",rating:4.5,startDate:"2026-02-19",finishDate:"2026-04-20",pages:0,favorite:false,color:5,notes:""},
-  {id:"lib-seed-angels",title:"Angels' Blood",author:"Nalini Singh",series:"Guild Hunter #1",rating:0,startDate:"2026-05-06",finishDate:"2026-05-11",pages:0,favorite:false,color:1,notes:""},
-  {id:"lib-seed-kiss",title:"Archangel's Kiss",author:"Nalini Singh",series:"Guild Hunter #2",rating:5,startDate:"2026-05-11",finishDate:"2026-05-18",pages:0,favorite:false,color:0,notes:""},
-  {id:"lib-seed-consort",title:"Archangel's Consort",author:"Nalini Singh",series:"Guild Hunter #3",rating:5,startDate:"2026-05-18",finishDate:"2026-05-26",pages:0,favorite:false,color:2,notes:""},
-  {id:"lib-seed-blade",title:"Archangel's Blade",author:"Nalini Singh",series:"Guild Hunter #4",rating:4.5,startDate:"2026-05-26",finishDate:"2026-06-23",pages:0,favorite:false,color:4,notes:""},
-  {id:"lib-seed-storm",title:"Archangel's Storm",author:"Nalini Singh",series:"Guild Hunter #5",rating:4.5,startDate:"2026-06-23",finishDate:"2026-06-25",pages:0,favorite:false,color:6,notes:""},
-  {id:"lib-seed-legion",title:"Archangel's Legion",author:"Nalini Singh",series:"Guild Hunter #6",rating:5,startDate:"2026-06-25",finishDate:"2026-07-08",pages:0,favorite:false,color:3,notes:""}
- ];
-}
-function normalizeLibraryRecord(b,i=0){
- const x=b&&typeof b==="object"?b:{};
- return {
-  id:String(x.id||`LIB-${Date.now()}-${i}`),title:String(x.title||"Untitled Volume"),author:String(x.author||""),series:String(x.series||"Standalone"),
-  rating:Math.max(0,Math.min(5,Number(x.rating)||0)),startDate:String(x.startDate||""),finishDate:String(x.finishDate||""),pages:Math.max(0,Number(x.pages)||0),
-  favorite:!!x.favorite,color:Math.max(0,Math.min(7,Number(x.color)||0)),notes:String(x.notes||""),archivedAt:Number(x.archivedAt||0)
- };
-}
-
 function fresh(){
  let ms={};materials.forEach(x=>ms[x]=0);
  let eq={};slots.forEach(s=>eq[s]="");
@@ -3516,7 +3367,6 @@ function fresh(){
   items:{},materials:ms,potions:pots,enchantments:{},equipment:eq,
   world:{frontHunts:0,mossbackUnlocked:false,mossbackDefeated:false,glowcapUnlocked:false,activeArea:"Front Stacks",glowcapProgress:0,whisperUnlocked:false,whisperProgress:0,innerUnlocked:false,mossbackWins:0,mossbackAttempt:null},
   history:[],firstFind:{},firstGolden:{},lastCompletionUndo:null,recentQuestNames:[],
-  library:starterLibrary(),
   meta:{lastSavedAt:0,lastBackupAt:0},
   reading:{bookName:"",lastFinishedBook:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,sessionLoggedPages:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false,lastSession:null},
   settings:{style:"Adventurous",currentBookFirst:true,hideSpoilers:true,testMode:false,genre:1,tbr:0,focus:2,atmos:0,format:1,time:2,seasonal:1,chaos:0},
@@ -3539,7 +3389,6 @@ function migrate(x){
  n.potions=Object.assign(fresh().potions,x.potions||{});
  n.equipment=Object.assign(fresh().equipment,x.equipment||{});
  n.history=Array.isArray(x.history)?x.history:[];
- n.library=(Array.isArray(x.library)?x.library:starterLibrary()).map(normalizeLibraryRecord);
  n.firstFind=x.firstFind||{};
  n.firstGolden=x.firstGolden||{};
  n.lastCompletionUndo=x.lastCompletionUndo||null;
@@ -3605,7 +3454,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.9.8</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.9.7</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -3657,7 +3506,7 @@ function toggleHomeLedger(force){
 }
 
 document.addEventListener('keydown',e=>{
- if(e.key==='Escape'){toggleHomeLedger(false);closeLibraryEditor();}
+ if(e.key==='Escape')toggleHomeLedger(false);
 });
 
 function go(id,btn){
@@ -3668,7 +3517,7 @@ function go(id,btn){
  if(btn&&btn.matches&&btn.matches(".bottomnav button")){
   btn.classList.add("active");
  }else{
-  const navId=(id==="world"||id==="bag")?"adventure":(id==="library"?"reading":id);
+  const navId=(id==="world"||id==="bag")?"adventure":id;
   const nav=document.querySelector(`.bottomnav button[data-screen="${navId}"]`);
   if(nav)nav.classList.add("active");
  }
@@ -5614,116 +5463,6 @@ function renderBestiary(){
  </div>`;
 }
 
-
-let libraryFilter="all";
-let editingLibraryId=null;
-let libraryDraftSource="past";
-function localIsoDate(){
- const d=new Date(),off=d.getTimezoneOffset();
- return new Date(d.getTime()-off*60000).toISOString().slice(0,10);
-}
-function libraryDateLabel(v){
- if(!v)return "Date unknown";
- const d=new Date(`${v}T12:00:00`);
- if(isNaN(d))return v;
- return d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
-}
-function libraryRatingLabel(v){
- const n=Number(v)||0;return n?`${Number.isInteger(n)?n:n.toFixed(1)} ★`:"Unrated";
-}
-function openLibrary(){go('library');}
-function setLibraryFilter(filter,btn){
- libraryFilter=filter||"all";
- document.querySelectorAll('[data-library-filter]').forEach(x=>x.classList.toggle('active',x===btn||x.dataset.libraryFilter===libraryFilter));
- renderLibrary();
-}
-function renderLibrary(){
- const shelf=$("libraryShelf");if(!shelf)return;
- S.library=Array.isArray(S.library)?S.library.map(normalizeLibraryRecord):starterLibrary();
- const all=S.library;
- const q=($("librarySearch")?.value||"").trim().toLowerCase();
- const favorite=all.filter(x=>x.favorite).length;
- const pages=all.reduce((a,x)=>a+(Number(x.pages)||0),0);
- const series=new Set(all.map(x=>(x.series||"").trim()).filter(x=>x&&x.toLowerCase()!=="standalone"));
- if($("libraryVolumeCount"))$("libraryVolumeCount").textContent=all.length.toLocaleString();
- if($("libraryFavoriteCount"))$("libraryFavoriteCount").textContent=favorite.toLocaleString();
- if($("libraryPageCount"))$("libraryPageCount").textContent=pages.toLocaleString();
- if($("librarySeriesCount"))$("librarySeriesCount").textContent=series.size.toLocaleString();
- let rows=all.filter(b=>{
-  const hay=`${b.title} ${b.author} ${b.series}`.toLowerCase();
-  if(q&&!hay.includes(q))return false;
-  if(libraryFilter==="favorites"&&!b.favorite)return false;
-  if(libraryFilter==="five"&&Number(b.rating)!==5)return false;
-  if(libraryFilter==="series"&&(!b.series||b.series.toLowerCase()==="standalone"))return false;
-  return true;
- }).sort((a,b)=>String(b.finishDate||"").localeCompare(String(a.finishDate||""))||String(a.title).localeCompare(String(b.title)));
- if($("libraryResultCount"))$("libraryResultCount").textContent=`${rows.length} shown`;
- if(!rows.length){shelf.innerHTML='<div class="v598-library-empty">No volumes match this shelf view.<br>Try another filter or archive a finished book.</div>';return;}
- shelf.innerHTML=rows.map((b,i)=>`<button class="v598-book-card c${Number(b.color)%8}" onclick="openLibraryRecord('${esc(b.id)}')">
-   ${b.favorite?'<span class="v598-book-fav">★</span>':''}
-   <div class="v598-book-title">${esc(b.title)}</div>
-   <div class="v598-book-author">${esc(b.author||'Unknown author')}</div>
-   <div class="v598-book-series">${esc(b.series||'Standalone')}</div>
-   <div class="v598-book-bottom"><span class="v598-book-rating">${esc(libraryRatingLabel(b.rating))}</span><span class="v598-book-date">${esc(libraryDateLabel(b.finishDate))}</span></div>
-  </button>`).join("");
-}
-function fillLibraryEditor(b,{source="past",isEdit=false}={}){
- libraryDraftSource=source;editingLibraryId=isEdit?b.id:null;
- $("libTitle").value=b.title||"";$("libAuthor").value=b.author||"";$("libSeries").value=b.series||"Standalone";
- $("libRating").value=String(Number(b.rating)||0);$("libStarted").value=b.startDate||"";$("libFinished").value=b.finishDate||"";
- $("libPages").value=Number(b.pages)||"";$("libColor").value=String(Number(b.color)||0);$("libNotes").value=b.notes||"";$("libFavorite").checked=!!b.favorite;
- $("libCountBook").checked=source==="current"&&!isEdit;$("libCountBookWrap").style.display=isEdit?"none":"flex";
- $("libDeleteBtn").style.display=isEdit?"block":"none";
- $("libraryEditorTitle").textContent=isEdit?"LIBRARY RECORD":"ARCHIVE A VOLUME";
- $("libraryEditorCopy").textContent=isEdit?"Edit this permanent shelf record. Removing it does not change your Reader Level stats.":(source==="current"?"Current-volume details are prefilled. Add anything you want remembered before shelving it.":"Add a previously finished book. Reader Level count is optional so old books are not double-counted.");
- $("libraryRecordModal").hidden=false;
- setTimeout(()=>$("libTitle")?.focus({preventScroll:true}),20);
-}
-function openArchiveCurrentBook(){
- saveReadingDesk(true);
- const r=S.reading||{};
- if(!(r.bookName||"").trim()){toast("Add your current book title first.");return;}
- const color=Math.abs([...r.bookName].reduce((a,c)=>a+c.charCodeAt(0),0))%8;
- fillLibraryEditor({title:r.bookName,author:"",series:"Standalone",rating:0,startDate:"",finishDate:localIsoDate(),pages:r.bookTotal||0,favorite:false,color,notes:""},{source:"current"});
-}
-function openAddPastBook(){
- const color=(S.library?.length||0)%8;
- fillLibraryEditor({title:"",author:"",series:"Standalone",rating:0,startDate:"",finishDate:"",pages:0,favorite:false,color,notes:""},{source:"past"});
-}
-function openLibraryRecord(id){
- const b=(S.library||[]).find(x=>String(x.id)===String(id));if(!b)return;
- fillLibraryEditor(b,{source:"edit",isEdit:true});
-}
-function closeLibraryEditor(){const m=$("libraryRecordModal");if(m)m.hidden=true;editingLibraryId=null;}
-function libraryModalBackdrop(e){if(e.target===$("libraryRecordModal"))closeLibraryEditor();}
-function saveLibraryRecord(){
- const wasEdit=!!editingLibraryId;
- const title=$("libTitle").value.trim();if(!title){toast("Give the volume a title first.");return;}
- const rec=normalizeLibraryRecord({
-  id:editingLibraryId||`LIB-${Date.now()}-${Math.floor(Math.random()*900+100)}`,title,author:$("libAuthor").value.trim(),series:$("libSeries").value.trim()||"Standalone",
-  rating:Number($("libRating").value)||0,startDate:$("libStarted").value,finishDate:$("libFinished").value,pages:Number($("libPages").value)||0,
-  favorite:$("libFavorite").checked,color:Number($("libColor").value)||0,notes:$("libNotes").value.trim(),archivedAt:Date.now()
- });
- S.library=Array.isArray(S.library)?S.library:[];
- if(editingLibraryId){const i=S.library.findIndex(x=>String(x.id)===String(editingLibraryId));if(i>=0)S.library[i]=rec;}
- else{
-  S.library.push(rec);
-  if($("libCountBook").checked)S.books=Math.max(0,Number(S.books)||0)+1;
-  if(libraryDraftSource==="current"){
-   S.reading.lastFinishedBook=rec.title;
-   if($("readLastFinishedBook"))$("readLastFinishedBook").value=rec.title;
-  }
- }
- persistSilent();closeLibraryEditor();renderLibrary();renderReading();renderHome();renderProfile();
- toast(wasEdit?"Library record updated.":"Volume archived to the enchanted shelves.");
-}
-function deleteLibraryRecord(){
- if(!editingLibraryId)return;
- const b=(S.library||[]).find(x=>String(x.id)===String(editingLibraryId));
- if(!confirm(`Remove ${b?.title||'this volume'} from the Library? Reader Level totals will not be changed.`))return;
- S.library=(S.library||[]).filter(x=>String(x.id)!==String(editingLibraryId));persistSilent();closeLibraryEditor();renderLibrary();toast("Volume removed from the Library.");
-}
-
 function achievementData(){
  const q=S.questsCompleted;
  const countSet=mob=>mobs[mob].drops.filter(x=>S.items[x[0]]?.normal>0).length;
@@ -5803,7 +5542,7 @@ function importSave(ev){
 }
 function resetGame(){if(confirm("Reset this browser's Reading MMO save? This cannot be undone unless you exported a backup.")){S=fresh();save()}}
 function renderAll(){
- loadSettingsUI();renderHome();renderReading();renderLibrary();renderQuestCards();renderHuntSelect();renderHuntInfo();renderMaterials();renderPotionSelectors();renderPotion();renderTargets();renderPotionBag();renderEquipment();renderCollections();renderMap();renderGatherAreas();renderBestiary();renderJournal();renderAchievements();renderProfile();renderCompletionSafety();loadKustomToken();renderReaderSyncPreview();renderAppStatus();
+ loadSettingsUI();renderHome();renderReading();renderQuestCards();renderHuntSelect();renderHuntInfo();renderMaterials();renderPotionSelectors();renderPotion();renderTargets();renderPotionBag();renderEquipment();renderCollections();renderMap();renderGatherAreas();renderBestiary();renderJournal();renderAchievements();renderProfile();renderCompletionSafety();loadKustomToken();renderReaderSyncPreview();renderAppStatus();
 }
 renderAll();
 if(kustomNextAllowed()-Date.now()>90000){
