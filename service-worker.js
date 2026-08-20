@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.9.8-enchanted-library';
+const CACHE = 'reading-mmo-v5.9.9-library-polish';
 const CORE = [
   './',
   './asset-book.png',

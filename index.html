@@ -2712,6 +2712,57 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 @media(max-width:370px){.v598-library-stats{gap:4px}.v598-library-stat{padding:6px 2px}.v598-library-stat b{font-size:9px}.v598-book-grid{gap:7px}.v598-book-card{min-height:136px!important;padding-left:13px!important}.v598-book-title{font-size:8.5px}.v598-library-form{gap:6px}}
 </style>
 
+
+<style id="v599-library-polish">
+/* v5.9.9 — make the archive feel like a magical shelf, not blank parchment forms. */
+#library.v598-library{padding:10px 11px 108px!important;background:linear-gradient(rgba(16,8,6,.08),rgba(10,5,4,.20)),url('./v53-wood-tile.png') center/170px auto repeat!important}
+#library .v598-library-stage{gap:8px}
+#library .v598-library-back{min-height:31px!important;border:1px solid #9b7138!important;box-shadow:inset 0 0 0 2px rgba(235,197,113,.06)!important}
+#library .v598-library-heading{padding:10px 11px!important;background:linear-gradient(180deg,#4d2e1d,#29150e)!important;border-color:#a27539!important;box-shadow:0 4px 0 rgba(15,7,4,.55),inset 0 0 0 2px rgba(237,199,114,.08)!important}
+#library .v598-library-heading img{width:24px;height:24px}
+#library .v598-library-heading b{font-size:9.7px}
+#library .v598-library-heading small{font-size:5.45px;color:#c1a777}
+#library .v598-library-stats{padding:6px;gap:4px;background:linear-gradient(#28150e,#1d0f0b)!important;border-color:#6f4928!important}
+#library .v598-library-stat{padding:6px 3px!important;background:linear-gradient(180deg,#ead6aa,#d7bd88)!important;border-color:#9e7744!important;box-shadow:inset 0 0 0 2px rgba(255,244,207,.32)!important}
+#library .v598-library-stat b{font-size:9px!important}
+#library .v598-library-stat span{font-size:4.45px!important}
+#library .v598-library-tools{padding:7px!important;background:linear-gradient(180deg,#342016,#21120d)!important;border:1px solid #7e582f!important;box-shadow:inset 0 0 0 2px rgba(208,165,80,.08)!important}
+#library .v598-library-searchrow input{height:32px!important;background:#efe1bd!important;border:1px solid #a27d49!important;font-size:6.4px!important}
+#library .v598-library-searchrow button{min-height:32px!important;padding:5px 8px!important;font-size:5.6px!important}
+#library .v598-library-filters{gap:4px;margin-top:6px}
+#library .v598-library-filter{min-height:27px!important;font-size:5.1px!important;border-color:#68452b!important}
+#library .v598-library-filter.active{background:linear-gradient(#755492,#5f407c)!important;border-color:#b397ce!important;box-shadow:inset 0 0 0 1px rgba(255,235,190,.12)!important}
+#library .v598-library-shelf-title{padding:5px 4px 3px;border-bottom:1px solid rgba(177,128,61,.45)}
+#library .v598-library-shelf-title b{font-size:6.5px!important}
+#library .v598-library-shelf-title span{font-size:5px!important}
+
+/* Two-column enchanted hardcovers. The small card stays readable but visually fills its space. */
+#library .v598-book-grid{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 10px;padding:2px 3px 12px}
+#library .v598-book-card{
+ --accent:#6d4c88;--deep:#382244;
+ position:relative;min-width:0;min-height:124px!important;margin:0!important;padding:10px 9px 10px!important;
+ text-align:center!important;color:#f5e5bd!important;
+ background:linear-gradient(145deg,rgba(255,255,255,.08),transparent 30%),linear-gradient(180deg,var(--accent),var(--deep))!important;
+ border:2px solid #2b160f!important;outline:1px solid #b98a45!important;outline-offset:-5px!important;
+ border-radius:2px!important;box-shadow:4px 6px 0 #160b07,0 7px 10px rgba(0,0,0,.22)!important;overflow:hidden
+}
+#library .v598-book-card:before{content:"";position:absolute;inset:7px;border:1px solid rgba(239,202,124,.52);pointer-events:none}
+#library .v598-book-card:after{content:"✦";position:absolute;left:50%;top:12px;transform:translateX(-50%);width:24px;height:13px;display:grid;place-items:center;color:#dfbd6d;font:900 8px/1 Georgia,serif;background:var(--deep);border-left:1px solid rgba(235,196,111,.45);border-right:1px solid rgba(235,196,111,.45);pointer-events:none}
+#library .v598-book-card.c0{--accent:#755590;--deep:#35213f}#library .v598-book-card.c1{--accent:#8b5141;--deep:#47251f}#library .v598-book-card.c2{--accent:#49715f;--deep:#243d33}#library .v598-book-card.c3{--accent:#9a7434;--deep:#4e381a}#library .v598-book-card.c4{--accent:#52778d;--deep:#293f4d}#library .v598-book-card.c5{--accent:#80495f;--deep:#432432}#library .v598-book-card.c6{--accent:#68634f;--deep:#373327}#library .v598-book-card.c7{--accent:#9a6543;--deep:#4b2d20}
+#library .v598-book-fav{right:11px;top:10px;z-index:2;font-size:8px!important;color:#ffe18a!important;text-shadow:0 1px 1px #2b160f!important}
+#library .v599-book-volume{position:absolute;left:11px;top:11px;z-index:2;font:900 4.2px/1 ui-monospace,monospace;letter-spacing:.35px;color:rgba(255,236,192,.68)}
+#library .v599-book-plate{position:absolute;left:12px;right:12px;top:33px;min-height:55px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 6px 6px;background:linear-gradient(180deg,#f1dfb8,#dfc48e);border:1px solid #4d3020;outline:1px solid rgba(255,247,211,.45);outline-offset:-3px;box-shadow:0 2px 0 rgba(29,13,8,.35)}
+#library .v598-book-title{padding:0!important;font:900 8.1px/1.05 Georgia,'Times New Roman',serif!important;color:#3a241a!important;overflow-wrap:anywhere;text-shadow:none!important}
+#library .v598-book-author{margin-top:4px!important;font:800 4.8px/1.1 ui-monospace,monospace!important;color:#715039!important;overflow-wrap:anywhere}
+#library .v598-book-series{position:absolute;left:12px;right:12px;bottom:28px;display:block!important;margin:0!important;padding:3px 4px!important;background:rgba(29,14,10,.33)!important;border:1px solid rgba(235,197,112,.38)!important;color:#f0d59d!important;font:800 4.55px/1 ui-monospace,monospace!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#library .v598-book-bottom{left:12px!important;right:12px!important;bottom:11px!important;z-index:2;align-items:center!important}
+#library .v598-book-rating{font:900 5.7px/1 Georgia,'Times New Roman',serif!important;color:#ffe09a!important;text-shadow:0 1px 1px #24110c}
+#library .v598-book-date{font:800 4.25px/1.1 ui-monospace,monospace!important;color:#e6c890!important;text-align:right}
+#library .v599-shelf-end{margin:-4px 3px 0;height:12px;background:linear-gradient(180deg,#704624 0 22%,#3d2114 22% 68%,#1f0f0b 68% 100%);border:1px solid #8f5f30;border-top-color:#b17a3c;box-shadow:0 5px 0 rgba(15,7,4,.48)}
+#library .v598-library-empty{background:#e2cca0!important;padding:19px 13px!important}
+@media(max-width:370px){#library .v598-book-grid{gap:9px 8px}#library .v598-book-card{min-height:119px!important}#library .v598-book-title{font-size:7.7px!important}#library .v599-book-plate{left:11px;right:11px}}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -2943,7 +2994,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     <div class="v598-library-stats">
       <div class="v598-library-stat"><b id="libraryVolumeCount">0</b><span>Volumes</span></div>
       <div class="v598-library-stat"><b id="libraryFavoriteCount">0</b><span>Favorites</span></div>
-      <div class="v598-library-stat"><b id="libraryPageCount">0</b><span>Pages</span></div>
+      <div class="v598-library-stat"><b id="libraryPageCount">—</b><span>Pages Logged</span></div>
       <div class="v598-library-stat"><b id="librarySeriesCount">0</b><span>Series</span></div>
     </div>
 
@@ -2962,6 +3013,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 
     <div class="v598-library-shelf-title"><b>📚 ARCHIVED VOLUMES</b><span id="libraryResultCount"></span></div>
     <div id="libraryShelf" class="v598-book-grid"></div>
+    <div class="v599-shelf-end" aria-hidden="true"></div>
   </div>
 </section>
 
@@ -3605,7 +3657,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.9.8</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.9.9</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -5631,6 +5683,11 @@ function libraryDateLabel(v){
 function libraryRatingLabel(v){
  const n=Number(v)||0;return n?`${Number.isInteger(n)?n:n.toFixed(1)} ★`:"Unrated";
 }
+function librarySeriesName(v){
+ const raw=String(v||"").trim();
+ if(!raw||raw.toLowerCase()==="standalone")return "";
+ return raw.replace(/\s+#\d+\s*$/i,"").trim()||raw;
+}
 function openLibrary(){go('library');}
 function setLibraryFilter(filter,btn){
  libraryFilter=filter||"all";
@@ -5644,10 +5701,11 @@ function renderLibrary(){
  const q=($("librarySearch")?.value||"").trim().toLowerCase();
  const favorite=all.filter(x=>x.favorite).length;
  const pages=all.reduce((a,x)=>a+(Number(x.pages)||0),0);
- const series=new Set(all.map(x=>(x.series||"").trim()).filter(x=>x&&x.toLowerCase()!=="standalone"));
+ const pagesKnown=all.some(x=>Number(x.pages)>0);
+ const series=new Set(all.map(x=>librarySeriesName(x.series)).filter(Boolean));
  if($("libraryVolumeCount"))$("libraryVolumeCount").textContent=all.length.toLocaleString();
  if($("libraryFavoriteCount"))$("libraryFavoriteCount").textContent=favorite.toLocaleString();
- if($("libraryPageCount"))$("libraryPageCount").textContent=pages.toLocaleString();
+ if($("libraryPageCount"))$("libraryPageCount").textContent=pagesKnown?pages.toLocaleString():"—";
  if($("librarySeriesCount"))$("librarySeriesCount").textContent=series.size.toLocaleString();
  let rows=all.filter(b=>{
   const hay=`${b.title} ${b.author} ${b.series}`.toLowerCase();
@@ -5659,10 +5717,12 @@ function renderLibrary(){
  }).sort((a,b)=>String(b.finishDate||"").localeCompare(String(a.finishDate||""))||String(a.title).localeCompare(String(b.title)));
  if($("libraryResultCount"))$("libraryResultCount").textContent=`${rows.length} shown`;
  if(!rows.length){shelf.innerHTML='<div class="v598-library-empty">No volumes match this shelf view.<br>Try another filter or archive a finished book.</div>';return;}
- shelf.innerHTML=rows.map((b,i)=>`<button class="v598-book-card c${Number(b.color)%8}" onclick="openLibraryRecord('${esc(b.id)}')">
+ const chronology=all.slice().sort((a,b)=>String(a.finishDate||"").localeCompare(String(b.finishDate||""))||String(a.title).localeCompare(String(b.title)));
+ const volumeNo=new Map(chronology.map((b,i)=>[String(b.id),i+1]));
+ shelf.innerHTML=rows.map((b,i)=>`<button class="v598-book-card c${Number(b.color)%8}" onclick="openLibraryRecord('${esc(b.id)}')" aria-label="Open library record for ${esc(b.title)}">
+   <span class="v599-book-volume">VOL ${String(volumeNo.get(String(b.id))||i+1).padStart(2,'0')}</span>
    ${b.favorite?'<span class="v598-book-fav">★</span>':''}
-   <div class="v598-book-title">${esc(b.title)}</div>
-   <div class="v598-book-author">${esc(b.author||'Unknown author')}</div>
+   <div class="v599-book-plate"><div class="v598-book-title">${esc(b.title)}</div><div class="v598-book-author">${esc(b.author||'Unknown author')}</div></div>
    <div class="v598-book-series">${esc(b.series||'Standalone')}</div>
    <div class="v598-book-bottom"><span class="v598-book-rating">${esc(libraryRatingLabel(b.rating))}</span><span class="v598-book-date">${esc(libraryDateLabel(b.finishDate))}</span></div>
   </button>`).join("");

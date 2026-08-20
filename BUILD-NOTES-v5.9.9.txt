@@ -1,0 +1,11 @@
+Reading MMO v5.9.9 — Enchanted Archive Polish
+
+Library-only visual/usability pass based on v5.9.8.
+- Reworked archived-volume cards into compact enchanted hardcovers with colored leather covers, gold framing, parchment title plates, volume numbers, series ribbon, rating, and finish date.
+- Added a wood shelf/end-cap treatment beneath the archive grid.
+- Tightened archive header, stats, search, filters, and spacing for mobile.
+- Fixed Series count so Guild Hunter #1–#6 counts as one series instead of six.
+- Changed seeded unknown page totals from misleading 0 display to an em dash until page counts are entered; user-entered page totals still sum normally.
+- No changes to reading-session, quest, combat, gathering, alchemy, Home, Play, or Me logic.
+- Service-worker cache bumped to reading-mmo-v5.9.9-library-polish.
+- Distribution cleanup: only this build note is included; historical build notes and intermediate backup HTML files are intentionally omitted.
