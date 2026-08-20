@@ -1,0 +1,9 @@
+Reading MMO v5.9.6 — Role Turn-In Integration
+
+- Requirements Met buttons are now role-specific: Turn In & Fight / Turn In & Gather / Turn In & Brew.
+- Turn-in calls the existing Hunt, Gather, or Alchemy resolution directly.
+- The quest's selected mob, area, or recipe is restored before resolution.
+- Direct Play completion buttons respect tracked reading requirements instead of bypassing them.
+- Successful tracked turn-ins add a compact Adventure Recap to the existing result sequence.
+- Subjective flavor requirements still require verification before turn-in.
+- Visual layouts are unchanged from v5.9.5.

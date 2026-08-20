@@ -2606,9 +2606,6 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 .quest-session-track.verify{border-style:solid;border-color:#78579a;background:rgba(111,76,151,.10);color:#5b3f70}
 .quest-turnin-btn{position:relative;z-index:3;width:100%;min-height:36px!important;margin:8px 0 2px!important;padding:6px 8px!important;border:2px solid #8b672b!important;outline:1px solid #d6b15a!important;outline-offset:-4px!important;background:linear-gradient(#9a7228,#745016)!important;color:#fff2c8!important;font:800 7.2px/1.05 Georgia,'Times New Roman',serif!important;text-shadow:1px 1px #35200d!important;box-shadow:0 3px 0 rgba(49,29,13,.38)!important}
 .quest-turnin-btn.verify{background:linear-gradient(#745592,#54386f)!important;border-color:#60417d!important}
-.quest-turnin-btn.hunt{background:linear-gradient(#a15243,#71382f)!important;border-color:#7d3f35!important}
-.quest-turnin-btn.gather{background:linear-gradient(#5f8248,#3e6134)!important;border-color:#476d39!important}
-.quest-turnin-btn.alchemy{background:linear-gradient(#76579a,#533a70)!important;border-color:#60437e!important}
 .quest-slip.ready{box-shadow:0 0 0 2px #21150f,0 0 0 5px #9a762f,0 0 0 7px var(--gold),5px 7px 0 #110b08!important}
 @media(max-width:390px){.quest-session-track{font-size:5.9px}.quest-turnin-btn{min-height:34px!important;font-size:6.8px!important}}
 </style>
@@ -3403,7 +3400,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.9.6</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.9.5</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -3805,56 +3802,11 @@ function confirmQuestRequirements(i){
  if(!confirm(`${q.name}\n\nYour tracked reading target is complete. Did you also complete the quest's flavor / observation requirement?`))return;
  q.requirementsConfirmed=true;persistSilent();renderQuestCards();renderHome();toast('Quest requirements confirmed.');
 }
-let pendingTrackedTurnIn=null;
-function trackedProgressSummary(ctx){
- const p=ctx?.progress||{};
- const bits=[];
- if(Number(p.pages||0)>0)bits.push(`📖 ${Math.floor(Number(p.pages)||0)} pages`);
- if(Number(p.minutes||0)>0)bits.push(`⏱ ${Math.floor(Number(p.minutes)||0)} min`);
- if(Number(p.chapters||0)>0)bits.push(`📚 ${Math.floor(Number(p.chapters)||0)} chapters`);
- if(Number(p.sessions||0)>1)bits.push(`🔁 ${Math.floor(Number(p.sessions)||0)} sessions`);
- return bits.length?bits.join(' • '):'Reading requirement cleared';
-}
-function questActionLabel(i){
- if(i===0)return {icon:'⚔️',label:'TURN IN & FIGHT',cls:'hunt'};
- if(i===1)return {icon:'🌿',label:'TURN IN & GATHER',cls:'gather'};
- return {icon:'⚗️',label:'TURN IN & BREW',cls:'alchemy'};
-}
-function trackedTurnInRecap(slot,role,q,result,xp){
- const ctx=pendingTrackedTurnIn;
- if(!ctx||ctx.slot!==slot||ctx.questId!==q.id)return null;
- const roleLine=role==='Hunt'?`⚔️ ${result}`:role==='Gather'?`🌿 ${result}`:`⚗️ ${result}`;
- return {icon:'📜',title:'ADVENTURE RECAP',text:`${q.name}
-
-${trackedProgressSummary(ctx)}
-${roleLine}
-✨ +${Number(xp||0).toLocaleString()} quest XP`};
-}
-function clearTrackedTurnInContext(){pendingTrackedTurnIn=null}
-function questCompletionAllowed(slot){
- const q=S.quests[slot];
- if(!q||!q.name||q.status!=='Active')return false;
- if(S.settings?.testMode)return true;
- const state=questRequirementState(q);
- if(state.needsConfirm){toast('Reading target met — verify the flavor requirement on the Quest Board first.');return false}
- if(!state.met){toast('That quest is still in progress. Finish its reading requirements first.');return false}
- return true;
-}
 function turnInTrackedQuest(i){
  const q=S.quests[i],state=questRequirementState(q);if(!q)return;
  if(state.needsConfirm){confirmQuestRequirements(i);return}
  if(!state.met){toast('That quest is still in progress.');return}
- pendingTrackedTurnIn={slot:i,questId:q.id,questName:q.name,progress:JSON.parse(JSON.stringify(q.progress||freshQuestProgress())),requirementText:state.text,lastSession:Object.assign({},S.reading?.lastSession||{})};
- if(i===0){
-  const mob=$('huntMob');if(mob&&q.extra)mob.value=q.extra;
-  completeHunt();
- }else if(i===1){
-  const area=$('gatherArea');if(area&&q.extra)area.value=q.extra;
-  completeGather();
- }else{
-  const potion=$('potionSelect');if(potion&&q.extra&&recipes[q.extra]){potion.value=q.extra;renderPotion();}
-  brewPotion();
- }
+ if(i===0)completeHunt();else if(i===1)completeGather();else brewPotion();
 }
 
 function rollQuest(i,goose=false){
@@ -4150,7 +4102,7 @@ function renderQuestCards(){
    const progress=q.name&&state.tracked?`<div class="quest-session-track ${state.met?'met':state.needsConfirm?'verify':''}">${esc(state.text)}</div>`:'';
    let readyAction='';
    if(q.name&&state.needsConfirm)readyAction=`<button class="quest-turnin-btn verify" onclick="confirmQuestRequirements(${i})">✨ READING TARGET MET · VERIFY REQUIREMENT</button>`;
-   else if(q.name&&state.met){const act=questActionLabel(i);readyAction=`<button class="quest-turnin-btn ${act.cls}" onclick="turnInTrackedQuest(${i})">${act.icon} ${act.label}</button>`;}
+   else if(q.name&&state.met)readyAction=`<button class="quest-turnin-btn" onclick="turnInTrackedQuest(${i})">🏆 REQUIREMENTS MET · TURN IN QUEST</button>`;
    return `<article class="quest-slip ${cls} ${state.met?'ready':''}">
      <span class="quest-pin" aria-hidden="true"></span>
      <div class="quest-slip-head"><span class="quest-role">${icon} SLOT ${i+1} · ${role}</span><span class="quest-id">${q.id||"WAITING"}</span></div>
@@ -4688,8 +4640,7 @@ function completionTitleSteps(before){
  return newlyUnlocked(before).map(name=>({icon:"🏆",title:"TITLE UNLOCKED",text:name}));
 }
 function completeHunt(){
- if(!S.quests[0].name||S.quests[0].status!=="Active"){toast("You need an active Hunt quest first.");clearTrackedTurnInContext();return}
- if(!questCompletionAllowed(0)){clearTrackedTurnInContext();return}
+ if(!S.quests[0].name||S.quests[0].status!=="Active"){toast("You need an active Hunt quest first.");return}
  const realState=beginCompletionTest();
  const q=S.quests[0],mob=$("huntMob").value,questBefore=JSON.parse(JSON.stringify(q));
  const before=unlockedAchievementNames();
@@ -4751,11 +4702,10 @@ function completeHunt(){
  steps.push({icon:"📚",title:"XP GAINED",text:`+${xp} bonus XP\nTotal quest clears: ${S.questsCompleted}`});
  steps.push(...completionTitleSteps(before));
  steps.push({icon:"📖",title:"JOURNAL UPDATED",text:`${q.name}\nHunt • ${q.difficulty}\nTarget: ${mob}\nReward: ${rewardParts.join(" • ")}`});
- const trackedRecap=trackedTurnInRecap(0,"Hunt",q,`${mob} defeated • ${rewardParts.join(" • ")}`,xp);if(trackedRecap)steps.push(trackedRecap);
 
  $("huntResult").textContent=`${mob} defeated.\n${rewardParts.join("\n")}\n+${xp} XP`;
 
- if(endCompletionTest(realState,steps)){clearTrackedTurnInContext();return;}
+ if(endCompletionTest(realState,steps))return;
 
  recordCompletionUndo({
   kind:"Hunt",slot:0,label:`Hunt — ${q.name}`,questBefore,xp,mob,
@@ -4763,15 +4713,13 @@ function completeHunt(){
  });
  save();
  showSequence(steps,0);
- clearTrackedTurnInContext();
 }
 
 function renderMaterials(){
  $("materialList").innerHTML=materials.map(x=>`<div class="inventory-row"><b>${x}</b><span style="float:right">${S.materials[x]||0}</span></div>`).join("");
 }
 function completeGather(){
- if(!S.quests[1].name||S.quests[1].status!=="Active"){toast("You need an active Gather quest first.");clearTrackedTurnInContext();return}
- if(!questCompletionAllowed(1)){clearTrackedTurnInContext();return}
+ if(!S.quests[1].name||S.quests[1].status!=="Active"){toast("You need an active Gather quest first.");return}
  const realState=beginCompletionTest();
  const q=S.quests[1],questBefore=JSON.parse(JSON.stringify(S.quests[1]));
  const before=unlockedAchievementNames();
@@ -4800,9 +4748,8 @@ function completeGather(){
   ...completionTitleSteps(before),
   {icon:"📖",title:"JOURNAL UPDATED",text:`${q.name}\nGather • ${q.difficulty}\n${reward}`}
  ];
- const trackedRecap=trackedTurnInRecap(1,"Gather",q,`${q.extra} • ${reward}`,xp);if(trackedRecap)steps.push(trackedRecap);
 
- if(endCompletionTest(realState,steps)){clearTrackedTurnInContext();return;}
+ if(endCompletionTest(realState,steps))return;
 
  recordCompletionUndo({
   kind:"Gather",slot:1,label:`Gather — ${q.name}`,questBefore,xp,
@@ -4810,7 +4757,6 @@ function completeGather(){
  });
  save();
  showSequence(steps,1);
- clearTrackedTurnInContext();
 }
 
 function renderPotionSelectors(){
@@ -4826,11 +4772,10 @@ function renderPotion(){
  $("potionInfo").innerHTML=`<b>${name}</b><br><small>Unlock Level ${r.level}</small><br><br>${r.effect.label}<hr>${r.ing.map(([m,q])=>`${m}: <b>${S.materials[m]||0}</b> / ${q}`).join("<br>")}<hr><b>${ok?"✅ CAN BREW":"🔒 NOT READY"}</b>`;
 }
 function brewPotion(){
- if(!S.quests[2].name||S.quests[2].status!=="Active"){toast("You need an active Alchemy quest first.");clearTrackedTurnInContext();return}
- if(!questCompletionAllowed(2)){clearTrackedTurnInContext();return}
+ if(!S.quests[2].name||S.quests[2].status!=="Active"){toast("You need an active Alchemy quest first.");return}
  const name=$("potionSelect").value,r=recipes[name],lvl=levelFor(Math.max(0,totalXp()));
- if(!r||lvl<r.level){toast("That recipe is still locked.");clearTrackedTurnInContext();return}
- if(!r.ing.every(([m,n])=>(S.materials[m]||0)>=n)){toast("You do not have the ingredients yet.");clearTrackedTurnInContext();return}
+ if(!r||lvl<r.level){toast("That recipe is still locked.");return}
+ if(!r.ing.every(([m,n])=>(S.materials[m]||0)>=n)){toast("You do not have the ingredients yet.");return}
 
  const realState=beginCompletionTest();
  const q=S.quests[2],questBefore=JSON.parse(JSON.stringify(S.quests[2]));
@@ -4856,9 +4801,8 @@ function brewPotion(){
   ...completionTitleSteps(before),
   {icon:"📖",title:"JOURNAL UPDATED",text:`${q.name}\nAlchemy • ${q.difficulty}\nBrewed: ${name}`}
  ];
- const trackedRecap=trackedTurnInRecap(2,"Alchemy",q,`${name} brewed • ${r.effect.label}`,xp);if(trackedRecap)steps.push(trackedRecap);
 
- if(endCompletionTest(realState,steps)){clearTrackedTurnInContext();return;}
+ if(endCompletionTest(realState,steps))return;
 
  recordCompletionUndo({
   kind:"Alchemy",slot:2,label:`Alchemy — ${q.name}`,questBefore,xp,
@@ -4866,7 +4810,6 @@ function brewPotion(){
  });
  save();
  showSequence(steps,2);
- clearTrackedTurnInContext();
 }
 function randomAura(big=false){
  const pool=[
