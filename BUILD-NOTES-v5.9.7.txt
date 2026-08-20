@@ -1,0 +1,11 @@
+Reading MMO v5.9.7 — Active Adventure HUD
+
+- Adds a compact Active Adventure HUD inside the Read tab's Reading Session panel.
+- Shows every active Hunt, Gather, and Alchemy quest while you read.
+- Live page, timer, and chapter progress is projected before the session is banked.
+- Prevents double-counting pages already committed with + Add to MMO.
+- Distinguishes In Progress, Tracking Live, Ready When Session Ends, Verify Requirement, and Ready to Turn In.
+- Session/round-based quests note that the current round is banked when End Session is pressed.
+- Quest Board shortcut opens directly from the HUD.
+- HUD refreshes every second and immediately after quest roll/clear/turn-in.
+- No changes to the established Home, Quests, Play, or Me compositions.

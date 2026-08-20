@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.9.6-role-turnin';
+const CACHE = 'reading-mmo-v5.9.7-active-adventure-hud';
 const CORE = [
   './',
   './asset-book.png',
