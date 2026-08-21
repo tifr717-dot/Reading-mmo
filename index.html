@@ -2970,6 +2970,147 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 }
 </style>
 
+
+<style id="v5101-library-spine-shelf">
+/* v5.10.1 — full-screen Archivist bookshelf: large readable spines + dedicated volume detail screen. */
+#library.v598-library{padding:8px 10px 108px!important}
+#library .v598-library-heading small{font-size:5.2px!important}
+#library .v598-library-tools{padding:5px!important}
+#library .v598-library-searchrow{grid-template-columns:1fr 64px!important}
+#library .v598-library-filters{margin-top:4px!important}
+#library .v598-library-shelf-title{margin-top:1px!important}
+
+/* The archive is now a bookcase, not a card gallery. */
+#library .v598-book-grid{
+  display:block!important;
+  padding:0 5px 7px!important;
+  margin:0!important;
+  background:linear-gradient(90deg,#2a150e 0 5px,#1a0c08 5px calc(100% - 5px),#2a150e calc(100% - 5px))!important;
+  border-left:3px solid #6c421f!important;border-right:3px solid #6c421f!important;
+  box-shadow:inset 5px 0 8px rgba(0,0,0,.25),inset -5px 0 8px rgba(0,0,0,.25)!important
+}
+#library .v510-shelf-row{
+  position:relative!important;
+  min-height:174px!important;
+  margin:0!important;padding:16px 8px 18px!important;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(109,67,32,.18),transparent 48%),
+    linear-gradient(180deg,#2c160e,#170a07)!important;
+  border-top:1px solid rgba(132,82,39,.48)!important
+}
+#library .v510-shelf-row:first-child{border-top:0!important}
+#library .v510-books{
+  min-height:140px!important;
+  display:flex!important;align-items:flex-end!important;justify-content:flex-start!important;
+  gap:4px!important;padding:0 2px!important
+}
+#library .v510-shelf-plank{
+  left:-5px!important;right:-5px!important;bottom:2px!important;height:15px!important;
+  background:linear-gradient(180deg,#b47a39 0 10%,#815027 10% 38%,#4b2b19 38% 73%,#211008 73% 100%)!important;
+  border:1px solid #7d4d26!important;border-top-color:#c8914b!important;
+  box-shadow:0 5px 0 #100705,inset 0 1px 0 rgba(255,215,139,.22)!important
+}
+
+/* Larger spine books. Deterministic size classes keep the shelf from looking copied-and-pasted. */
+#library .v598-book-card{
+  --accent:#755590;--deep:#35213f;
+  flex:0 0 40px!important;width:40px!important;height:145px!important;aspect-ratio:auto!important;
+  min-height:0!important;margin:0!important;padding:0!important;
+  display:block!important;position:relative!important;overflow:hidden!important;
+  border:1px solid #1a0b07!important;border-radius:2px 2px 1px 1px!important;
+  outline:1px solid rgba(229,190,102,.62)!important;outline-offset:-3px!important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.13),transparent 13%,transparent 84%,rgba(0,0,0,.24)),
+    linear-gradient(180deg,var(--accent),var(--deep))!important;
+  box-shadow:2px 2px 0 #0f0604,0 4px 5px rgba(0,0,0,.32)!important;
+  transform:none!important;text-align:center!important;color:#f4dfad!important;z-index:2!important
+}
+#library .v598-book-card.s1{height:137px!important}
+#library .v598-book-card.s2{height:154px!important}
+#library .v598-book-card.s3{height:142px!important}
+#library .v598-book-card.s4{height:160px!important}
+#library .v598-book-card:before{
+  content:""!important;position:absolute!important;inset:4px 5px!important;
+  border-left:1px solid rgba(246,211,129,.40)!important;border-right:1px solid rgba(246,211,129,.26)!important;
+  border-top:0!important;border-bottom:0!important;box-shadow:none!important;pointer-events:none!important
+}
+#library .v598-book-card:after{display:none!important}
+#library .v599-book-volume{display:none!important}
+#library .v598-book-fav{
+  top:6px!important;right:50%!important;transform:translateX(50%)!important;
+  color:#ffe18b!important;font-size:6px!important;text-shadow:0 1px 1px #1a0905!important
+}
+#library .v599-book-plate{
+  position:absolute!important;inset:13px 6px 24px!important;margin:0!important;padding:0!important;
+  min-height:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important
+}
+#library .v598-book-title{
+  display:block!important;max-height:108px!important;overflow:hidden!important;
+  writing-mode:vertical-rl!important;text-orientation:mixed!important;transform:rotate(180deg)!important;
+  white-space:nowrap!important;padding:0!important;
+  font:900 6.4px/1 Georgia,'Times New Roman',serif!important;letter-spacing:.12px!important;
+  color:#fff0c3!important;text-shadow:0 1px 1px #1b0b06,0 0 3px rgba(0,0,0,.5)!important
+}
+#library .v598-book-author{display:none!important}
+#library .v598-book-series{
+  position:absolute!important;left:5px!important;right:5px!important;bottom:6px!important;
+  height:14px!important;margin:0!important;padding:3px 1px!important;
+  display:block!important;overflow:hidden!important;white-space:nowrap!important;text-overflow:ellipsis!important;
+  background:rgba(20,8,5,.34)!important;border-top:1px solid rgba(239,200,110,.30)!important;border-left:0!important;border-right:0!important;border-bottom:0!important;
+  color:#e5c883!important;font:900 3.35px/1 ui-monospace,monospace!important
+}
+#library .v598-book-bottom{display:none!important}
+#library .v510-series-label{margin:0!important;border-left-width:2px!important}
+#library .v510-series-group .v598-book-grid{margin-top:0!important}
+
+/* A dedicated book-record screen lives inside the Archive. */
+#libraryDetailView[hidden]{display:none!important}
+#libraryDetailView{display:grid;gap:8px;padding-bottom:8px}
+.v5101-detail-back{
+  justify-self:start!important;min-height:29px!important;margin:0!important;padding:6px 10px!important;
+  background:#2b1811!important;border:1px solid #80582e!important;color:#d7bc87!important;
+  font:900 5.4px/1 ui-monospace,monospace!important;letter-spacing:.3px!important
+}
+.v5101-detail-shell{
+  padding:10px;background:linear-gradient(180deg,#4a2b1b,#24120d);border:2px solid #8d6332;
+  box-shadow:inset 0 0 0 2px rgba(239,199,112,.08),0 5px 0 rgba(12,6,4,.45)
+}
+.v5101-detail-top{display:grid;grid-template-columns:116px 1fr;gap:11px;align-items:start}
+.v5101-cover-frame{
+  position:relative;width:116px;aspect-ratio:2/3;display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(145deg,#6e4c88,#35223f);border:2px solid #1c0d08;outline:1px solid #b78946;outline-offset:-5px;
+  box-shadow:3px 4px 0 #120705,0 7px 12px rgba(0,0,0,.28)
+}
+.v5101-cover-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.v5101-cover-placeholder{padding:11px;text-align:center;color:#f3d89d}
+.v5101-cover-placeholder span{display:block;font-size:25px;line-height:1;margin-bottom:8px}
+.v5101-cover-placeholder b{display:block;font:900 7px/1.15 Georgia,'Times New Roman',serif;overflow-wrap:anywhere}
+.v5101-cover-actions{display:grid;gap:5px;margin-top:7px}
+.v5101-cover-actions button{min-height:28px!important;margin:0!important;padding:5px!important;font-size:4.7px!important}
+.v5101-detail-entry{font:900 4.9px/1 ui-monospace,monospace;color:#bfa36e;letter-spacing:.45px;text-transform:uppercase}
+.v5101-detail-title{margin:8px 0 4px;font:900 13px/1.03 Georgia,'Times New Roman',serif;color:#f2d89d;overflow-wrap:anywhere}
+.v5101-detail-author{font:800 6.1px/1.2 ui-monospace,monospace;color:#bfa77d}
+.v5101-detail-rating{display:inline-block;margin-top:9px;padding:5px 7px;background:#2d1912;border:1px solid #72502d;color:#f6d37f;font:900 7px/1 Georgia,'Times New Roman',serif}
+.v5101-detail-favorite{display:inline-block;margin:9px 0 0 5px;padding:5px 6px;color:#ffe08b;font:900 5px/1 ui-monospace,monospace}
+.v5101-detail-ledger{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.v5101-detail-field{min-width:0;padding:7px;background:linear-gradient(180deg,#ead8ae,#d7bd8b);border:1px solid #9b7342;color:#3d281d;box-shadow:inset 0 0 0 2px rgba(255,246,214,.28)}
+.v5101-detail-field span{display:block;margin-bottom:4px;font:900 4.2px/1 ui-monospace,monospace;color:#74553b;text-transform:uppercase;letter-spacing:.25px}
+.v5101-detail-field b{display:block;font:900 6.1px/1.15 Georgia,'Times New Roman',serif;overflow-wrap:anywhere}
+.v5101-detail-notes{margin-top:8px;padding:9px;background:#e6d1a4;border:1px solid #96703f;color:#4c3425;font:700 5.7px/1.45 ui-monospace,monospace}
+.v5101-detail-notes b{display:block;margin-bottom:5px;color:#6e4d31;font-size:4.6px;letter-spacing:.3px;text-transform:uppercase}
+.v5101-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+.v5101-detail-actions button{min-height:34px!important;margin:0!important;font-size:5.3px!important}
+
+@media(max-width:350px){
+ #library .v510-books{gap:3px!important;padding:0!important}
+ #library .v598-book-card{flex-basis:37px!important;width:37px!important}
+ #library .v598-book-title{font-size:6px!important}
+ .v5101-detail-top{grid-template-columns:103px 1fr;gap:9px}.v5101-cover-frame{width:103px}
+ .v5101-detail-title{font-size:11.5px}
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -3195,7 +3336,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     <button class="v598-library-back" onclick="go('reading')">← RETURN TO READING DESK</button>
     <div class="v598-library-heading">
       <img src="./asset-books-stack.png" alt="">
-      <div><b>THE ENCHANTED ARCHIVE</b><small>Every finished volume earns a permanent place on your shelves.</small></div>
+      <div><b>THE ENCHANTED ARCHIVE</b><small>Tap a spine to open its full archive record.</small></div>
     </div>
 
     <div class="v598-library-stats">
@@ -3221,6 +3362,42 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     <div class="v598-library-shelf-title"><b>📚 ARCHIVED VOLUMES</b><span id="libraryResultCount"></span></div>
     <div id="libraryShelf" class="v598-book-grid"></div>
     <div class="v599-shelf-end" aria-hidden="true"></div>
+  </div>
+
+  <div id="libraryDetailView" hidden>
+    <button class="v5101-detail-back" onclick="closeLibraryDetail()">← BACK TO THE SHELVES</button>
+    <div class="v5101-detail-shell">
+      <div class="v5101-detail-top">
+        <div>
+          <div class="v5101-cover-frame">
+            <img id="libraryDetailCoverImg" alt="Book cover" hidden>
+            <div id="libraryDetailCoverPlaceholder" class="v5101-cover-placeholder"><span>📖</span><b id="libraryDetailCoverTitle">Archived Volume</b></div>
+          </div>
+          <input id="libraryCoverInput" type="file" accept="image/*" hidden onchange="handleLibraryCoverUpload(event)">
+          <div class="v5101-cover-actions">
+            <button class="btn-purple" onclick="document.getElementById('libraryCoverInput').click()">🖼 ADD / CHANGE COVER</button>
+            <button id="libraryRemoveCoverBtn" class="btn-plain" onclick="removeLibraryCover()" hidden>REMOVE COVER</button>
+          </div>
+        </div>
+        <div>
+          <div id="libraryDetailEntry" class="v5101-detail-entry">LIBRARY ENTRY #001</div>
+          <div id="libraryDetailTitle" class="v5101-detail-title">Archived Volume</div>
+          <div id="libraryDetailAuthor" class="v5101-detail-author">Unknown author</div>
+          <div><span id="libraryDetailRating" class="v5101-detail-rating">Unrated</span><span id="libraryDetailFavorite" class="v5101-detail-favorite" hidden>★ FAVORITE</span></div>
+          <div class="v5101-detail-ledger">
+            <div class="v5101-detail-field"><span>Series</span><b id="libraryDetailSeries">Standalone</b></div>
+            <div class="v5101-detail-field"><span>Pages</span><b id="libraryDetailPages">—</b></div>
+            <div class="v5101-detail-field"><span>Started</span><b id="libraryDetailStarted">—</b></div>
+            <div class="v5101-detail-field"><span>Finished</span><b id="libraryDetailFinished">—</b></div>
+          </div>
+        </div>
+      </div>
+      <div id="libraryDetailNotes" class="v5101-detail-notes" hidden><b>Archivist's Notes</b><span id="libraryDetailNotesText"></span></div>
+      <div class="v5101-detail-actions">
+        <button class="btn-plain" onclick="closeLibraryDetail()">📚 SHELF VIEW</button>
+        <button class="btn-gold" onclick="editCurrentLibraryRecord()">✒ EDIT RECORD</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -3761,7 +3938,7 @@ function normalizeLibraryRecord(b,i=0){
  return {
   id:String(x.id||`LIB-${Date.now()}-${i}`),title:String(x.title||"Untitled Volume"),author:String(x.author||""),series:String(x.series||"Standalone"),
   rating:Math.max(0,Math.min(5,Number(x.rating)||0)),startDate:String(x.startDate||""),finishDate:String(x.finishDate||""),pages:Math.max(0,Number(x.pages)||0),
-  favorite:!!x.favorite,color:Math.max(0,Math.min(7,Number(x.color)||0)),notes:String(x.notes||""),archivedAt:Number(x.archivedAt||0)
+  favorite:!!x.favorite,color:Math.max(0,Math.min(7,Number(x.color)||0)),notes:String(x.notes||""),cover:String(x.cover||""),archivedAt:Number(x.archivedAt||0)
  };
 }
 
@@ -3864,7 +4041,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.10.0</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.10.1</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -5895,24 +6072,29 @@ function librarySeriesName(v){
  if(!raw||raw.toLowerCase()==="standalone")return "";
  return raw.replace(/\s+#\d+\s*$/i,"").trim()||raw;
 }
-function openLibrary(){go('library');}
+let libraryDetailId=null;
+function openLibrary(){closeLibraryDetail(true);go('library');}
 function setLibraryFilter(filter,btn){
  libraryFilter=filter||"all";
  document.querySelectorAll('[data-library-filter]').forEach(x=>x.classList.toggle('active',x===btn||x.dataset.libraryFilter===libraryFilter));
  renderLibrary();
 }
+function librarySeriesShort(v){
+ const raw=String(v||"Standalone").trim();
+ const m=raw.match(/#\s*(\d+)\s*$/);if(m)return `#${m[1]}`;
+ return raw.toLowerCase()==="standalone"?"STANDALONE":(librarySeriesName(raw)||raw).slice(0,12);
+}
 function libraryBookCardMarkup(b,volumeNo){
- return `<button class="v598-book-card c${Number(b.color)%8}" onclick="openLibraryRecord('${esc(b.id)}')" aria-label="Open library record for ${esc(b.title)}">
-   <span class="v599-book-volume">VOL ${String(volumeNo||1).padStart(2,'0')}</span>
+ const size=(Number(volumeNo||1)-1)%5;
+ return `<button class="v598-book-card c${Number(b.color)%8} s${size}" onclick="openLibraryRecord('${esc(b.id)}')" aria-label="Open library record for ${esc(b.title)} by ${esc(b.author||'Unknown author')}">
    ${b.favorite?'<span class="v598-book-fav">★</span>':''}
    <div class="v599-book-plate"><div class="v598-book-title">${esc(b.title)}</div><div class="v598-book-author">${esc(b.author||'Unknown author')}</div></div>
-   <div class="v598-book-series">${esc(b.series||'Standalone')}</div>
-   <div class="v598-book-bottom"><span class="v598-book-rating">${esc(libraryRatingLabel(b.rating))}</span><span class="v598-book-date">${esc(libraryDateLabel(b.finishDate))}</span></div>
+   <div class="v598-book-series">${esc(librarySeriesShort(b.series))}</div>
   </button>`;
 }
 function libraryShelfRowsMarkup(rows,volumeNo){
  const chunks=[];
- for(let i=0;i<rows.length;i+=3)chunks.push(rows.slice(i,i+3));
+ for(let i=0;i<rows.length;i+=7)chunks.push(rows.slice(i,i+7));
  return chunks.map(chunk=>`<div class="v510-shelf-row"><div class="v510-books">${chunk.map(b=>libraryBookCardMarkup(b,volumeNo.get(String(b.id))||1)).join("")}</div><div class="v510-shelf-plank" aria-hidden="true"></div></div>`).join("");
 }
 function renderLibrary(){
@@ -5941,7 +6123,7 @@ function renderLibrary(){
  if($("libraryResultCount"))$("libraryResultCount").textContent=`${rows.length} shown`;
  if(!rows.length){
    const emptyCopy=libraryFilter==="favorites"
-     ?'<b>NO FAVORITES YET</b>Open any volume and mark it ★ Favorite to build this shelf.'
+     ?'<b>NO FAVORITES YET</b>Open a volume and mark it ★ Favorite to build this shelf.'
      :libraryFilter==="series"
        ?'<b>NO SERIES ON THIS SHELF</b>Series volumes will be grouped together here automatically.'
        :libraryFilter==="five"
@@ -5968,6 +6150,68 @@ function renderLibrary(){
    shelf.innerHTML=libraryShelfRowsMarkup(rows,volumeNo);
  }
 }
+function libraryEntryNumber(id){
+ const chronology=(S.library||[]).slice().sort((a,b)=>String(a.finishDate||"").localeCompare(String(b.finishDate||""))||String(a.title).localeCompare(String(b.title)));
+ const i=chronology.findIndex(x=>String(x.id)===String(id));return i<0?1:i+1;
+}
+function openLibraryRecord(id){
+ const b=(S.library||[]).find(x=>String(x.id)===String(id));if(!b)return;
+ libraryDetailId=String(id);
+ const browse=document.querySelector('#library .v598-library-stage'),detail=$("libraryDetailView");
+ if(browse)browse.hidden=true;if(detail)detail.hidden=false;
+ renderLibraryDetail(id);
+ try{document.getElementById('library')?.scrollIntoView({block:'start'});}catch(e){}
+}
+function renderLibraryDetail(id=libraryDetailId){
+ const b=(S.library||[]).find(x=>String(x.id)===String(id));if(!b)return;
+ libraryDetailId=String(b.id);
+ const set=(id,val)=>{const el=$(id);if(el)el.textContent=val};
+ set('libraryDetailEntry',`LIBRARY ENTRY #${String(libraryEntryNumber(b.id)).padStart(3,'0')}`);
+ set('libraryDetailTitle',b.title||'Untitled Volume');set('libraryDetailAuthor',b.author||'Unknown author');
+ set('libraryDetailRating',libraryRatingLabel(b.rating));set('libraryDetailSeries',b.series||'Standalone');
+ set('libraryDetailPages',Number(b.pages)>0?Number(b.pages).toLocaleString():'—');
+ set('libraryDetailStarted',b.startDate?libraryDateLabel(b.startDate):'—');set('libraryDetailFinished',b.finishDate?libraryDateLabel(b.finishDate):'—');
+ set('libraryDetailCoverTitle',b.title||'Archived Volume');
+ const fav=$("libraryDetailFavorite");if(fav)fav.hidden=!b.favorite;
+ const notes=$("libraryDetailNotes");if(notes)notes.hidden=!String(b.notes||'').trim();set('libraryDetailNotesText',b.notes||'');
+ const img=$("libraryDetailCoverImg"),placeholder=$("libraryDetailCoverPlaceholder"),remove=$("libraryRemoveCoverBtn");
+ if(b.cover){img.src=b.cover;img.hidden=false;placeholder.hidden=true;remove.hidden=false}else{img.removeAttribute('src');img.hidden=true;placeholder.hidden=false;remove.hidden=true}
+}
+function closeLibraryDetail(silent=false){
+ const browse=document.querySelector('#library .v598-library-stage'),detail=$("libraryDetailView");
+ if(browse)browse.hidden=false;if(detail)detail.hidden=true;libraryDetailId=null;
+ if(!silent)renderLibrary();
+}
+function editCurrentLibraryRecord(){
+ const b=(S.library||[]).find(x=>String(x.id)===String(libraryDetailId));if(!b)return;
+ fillLibraryEditor(b,{source:"edit",isEdit:true});
+}
+function handleLibraryCoverUpload(event){
+ const file=event?.target?.files?.[0];if(!file||!libraryDetailId)return;
+ if(!String(file.type||'').startsWith('image/')){toast('Choose an image file for the book cover.');return;}
+ const reader=new FileReader();
+ reader.onload=()=>{
+  const im=new Image();
+  im.onload=()=>{
+   const maxW=180,maxH=270,scale=Math.min(maxW/im.width,maxH/im.height,1);
+   const w=Math.max(1,Math.round(im.width*scale)),h=Math.max(1,Math.round(im.height*scale));
+   const c=document.createElement('canvas');c.width=w;c.height=h;
+   const ctx=c.getContext('2d');ctx.fillStyle='#ead8ae';ctx.fillRect(0,0,w,h);ctx.drawImage(im,0,0,w,h);
+   let data='';try{data=c.toDataURL('image/webp',0.68)}catch(e){data=c.toDataURL('image/jpeg',0.68)}
+   const b=(S.library||[]).find(x=>String(x.id)===String(libraryDetailId));if(!b)return;
+   const old=b.cover||'';b.cover=data;
+   try{persistSilent();renderLibraryDetail();renderLibrary();toast('Book cover added to the archive record.');}
+   catch(e){b.cover=old;toast('That cover could not be saved. Try a smaller image.');}
+   event.target.value='';
+  };
+  im.onerror=()=>toast('That image could not be opened.');im.src=reader.result;
+ };
+ reader.readAsDataURL(file);
+}
+function removeLibraryCover(){
+ const b=(S.library||[]).find(x=>String(x.id)===String(libraryDetailId));if(!b||!b.cover)return;
+ b.cover='';persistSilent();renderLibraryDetail();renderLibrary();toast('Cover removed from this archive record.');
+}
 function fillLibraryEditor(b,{source="past",isEdit=false}={}){
  libraryDraftSource=source;editingLibraryId=isEdit?b.id:null;
  $("libTitle").value=b.title||"";$("libAuthor").value=b.author||"";$("libSeries").value=b.series||"Standalone";
@@ -5991,14 +6235,11 @@ function openAddPastBook(){
  const color=(S.library?.length||0)%8;
  fillLibraryEditor({title:"",author:"",series:"Standalone",rating:0,startDate:"",finishDate:"",pages:0,favorite:false,color,notes:""},{source:"past"});
 }
-function openLibraryRecord(id){
- const b=(S.library||[]).find(x=>String(x.id)===String(id));if(!b)return;
- fillLibraryEditor(b,{source:"edit",isEdit:true});
-}
 function closeLibraryEditor(){const m=$("libraryRecordModal");if(m)m.hidden=true;editingLibraryId=null;}
 function libraryModalBackdrop(e){if(e.target===$("libraryRecordModal"))closeLibraryEditor();}
 function saveLibraryRecord(){
  const wasEdit=!!editingLibraryId;
+ const editedId=editingLibraryId;
  const title=$("libTitle").value.trim();if(!title){toast("Give the volume a title first.");return;}
  const rec=normalizeLibraryRecord({
   id:editingLibraryId||`LIB-${Date.now()}-${Math.floor(Math.random()*900+100)}`,title,author:$("libAuthor").value.trim(),series:$("libSeries").value.trim()||"Standalone",
@@ -6016,13 +6257,14 @@ function saveLibraryRecord(){
   }
  }
  persistSilent();closeLibraryEditor();renderLibrary();renderReading();renderHome();renderProfile();
+ if(wasEdit&&libraryDetailId&&String(libraryDetailId)===String(editedId))renderLibraryDetail(libraryDetailId);
  toast(wasEdit?"Library record updated.":"Volume archived to the enchanted shelves.");
 }
 function deleteLibraryRecord(){
  if(!editingLibraryId)return;
  const b=(S.library||[]).find(x=>String(x.id)===String(editingLibraryId));
  if(!confirm(`Remove ${b?.title||'this volume'} from the Library? Reader Level totals will not be changed.`))return;
- S.library=(S.library||[]).filter(x=>String(x.id)!==String(editingLibraryId));persistSilent();closeLibraryEditor();renderLibrary();toast("Volume removed from the Library.");
+ const deletingId=editingLibraryId;S.library=(S.library||[]).filter(x=>String(x.id)!==String(editingLibraryId));persistSilent();closeLibraryEditor();if(libraryDetailId&&String(libraryDetailId)===String(deletingId))closeLibraryDetail(true);renderLibrary();toast("Volume removed from the Library.");
 }
 
 function achievementData(){

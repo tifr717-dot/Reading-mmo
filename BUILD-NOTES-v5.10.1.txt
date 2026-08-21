@@ -1,0 +1,16 @@
+Reading MMO v5.10.1 — Archivist Spine Library
+
+Changes
+- Rebuilt the Enchanted Archive shelf as a true bookcase with larger readable book spines.
+- Finished books now sit seven per shelf and display their title vertically on the spine.
+- Spines keep distinct shelf colors, variable heights, favorite stars, and compact series markers.
+- Tapping a spine opens a dedicated full-screen Library Record instead of immediately opening the edit form.
+- Library Record shows cover, title, author, rating, series, pages, start date, finish date, entry number, favorite status, and notes.
+- Added Add / Change Cover and Remove Cover controls on the detailed record screen.
+- Uploaded covers are resized/compressed locally before being stored in the Reading MMO save.
+- Edit Record remains available from the detailed record screen.
+- Existing Home, Read, Quests, Play, session/quest bridge, HUD, and MMO state systems are unchanged.
+- Distribution contains only the current build note.
+
+Cache
+- reading-mmo-v5.10.1-spine-library
