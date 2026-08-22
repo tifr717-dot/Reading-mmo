@@ -2972,7 +2972,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 
 
 <style id="v5101-library-spine-shelf">
-/* v5.10.1 — full-screen Archivist bookshelf: large readable spines + dedicated volume detail screen. */
+/* v5.10.4 — full-screen Archivist bookshelf: large readable spines + dedicated volume detail screen. */
 #library.v598-library{padding:8px 10px 108px!important}
 #library .v598-library-heading small{font-size:5.2px!important}
 #library .v598-library-tools{padding:5px!important}
@@ -3112,131 +3112,99 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 </style>
 
 
-<style id="v5103-archive-art-rebuild">
-/* v5.10.3 — Archive rebuilt around real illustrated pixel-art assets, not generic boxes. */
-#library,#library *{box-sizing:border-box}
-#library.v598-library{
+<style id="v5104-reference-archive">
+/* v5.10.4 — Archive rebuilt around the exact approved visual composition. */
+#library.v5104-library{
+  padding:7px 8px 112px!important;
   overflow-x:hidden!important;
-  padding:7px 8px 114px!important;
-  background:linear-gradient(rgba(19,8,5,.12),rgba(12,5,4,.30)),url('./v53-wood-tile.png') center/384px 128px repeat!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,214,133,.08),transparent 28%),
+    linear-gradient(180deg,rgba(24,12,8,.08),rgba(10,5,4,.30)),
+    url('./v53-wood-tile.png') center/175px auto repeat!important;
 }
-#library .v598-library-stage{display:grid!important;gap:7px!important;width:100%!important;max-width:100%!important;min-width:0!important}
-#library .v598-library-back{
-  justify-self:start!important;width:auto!important;max-width:100%!important;min-height:28px!important;margin:0!important;padding:6px 10px!important;
-  border:1px solid #80582f!important;border-radius:4px!important;background:linear-gradient(#41251a,#28140e)!important;color:#d7bc88!important;
-  box-shadow:0 3px 0 #140806!important;font:900 5px/1 ui-monospace,monospace!important
+.v5104-library-wrap{display:grid;gap:8px;max-width:760px;margin:0 auto}
+.v5104-back{
+  justify-self:start;width:auto!important;min-height:31px!important;padding:7px 11px!important;margin:0!important;
+  border:1px solid #80572e!important;border-radius:7px!important;background:linear-gradient(#3c2217,#24120d)!important;
+  color:#d9bf8d!important;box-shadow:0 4px 0 rgba(13,6,4,.38)!important;
+  font:900 5.1px/1 ui-monospace,monospace!important;letter-spacing:.28px!important
 }
-#library .v598-library-heading{
-  position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;min-height:76px!important;
-  padding:27px 20px 9px!important;margin:0!important;overflow:hidden!important;border:0!important;outline:0!important;border-radius:0!important;
-  background:url('./archive-title-frame.png') center/100% 100% no-repeat!important;box-shadow:none!important
+.v5104-approved-chrome{
+  position:relative;width:100%;aspect-ratio:941/520;overflow:hidden;border-radius:7px;
+  box-shadow:0 7px 18px rgba(0,0,0,.26);background:#24130e
 }
-#library .v598-library-heading img{display:none!important}
-#library .v598-library-heading>div{text-align:center!important;max-width:84%!important}
-#library .v598-library-heading b{display:block!important;color:#efd39b!important;font:900 10.4px/1.05 Georgia,'Times New Roman',serif!important;letter-spacing:.5px!important;text-shadow:1px 2px 0 #1b0b07!important}
-#library .v598-library-heading small{display:block!important;margin-top:4px!important;color:#ccb083!important;font:700 4.75px/1.2 ui-monospace,monospace!important}
-#library .v598-library-stats{
-  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;width:100%!important;min-width:0!important;
-  padding:0!important;margin:0!important;background:transparent!important;border:0!important;overflow:visible!important
+.v5104-approved-chrome>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.v5104-stat-overlay{position:absolute;top:39.5%;width:7.2%;height:8%;display:grid;place-items:center;background:rgba(65,37,22,.96);border-radius:4px;box-shadow:inset 0 0 0 1px rgba(224,178,94,.08)}
+.v5104-stat-overlay b{color:#f1d49a;font:900 clamp(11px,2.5vw,19px)/1 Georgia,'Times New Roman',serif;text-shadow:0 1px 1px #1d0d08}
+.v5104-stat-overlay.volumes{left:17.4%}.v5104-stat-overlay.favorites{left:37.9%}.v5104-stat-overlay.pages{left:58.1%}.v5104-stat-overlay.series{left:79.3%}
+.v5104-search{
+  position:absolute;left:7.2%;top:62.1%;width:56.9%;height:14.9%;padding:0 4% 0 5.4%!important;margin:0!important;
+  border:0!important;border-radius:9px!important;background:rgba(238,221,184,.97)!important;color:#4a3020!important;
+  font:700 clamp(8px,1.65vw,12px)/1 ui-monospace,monospace!important;box-shadow:none!important
 }
-#library .v598-library-stat{
-  min-width:0!important;min-height:43px!important;padding:7px 2px 6px!important;border:1px solid #8f6231!important;border-radius:6px!important;
-  background:linear-gradient(180deg,#4a2a1b,#2b1710)!important;box-shadow:0 3px 0 #150906,inset 0 0 0 1px rgba(244,208,131,.08)!important
+.v5104-search::placeholder{color:#765a40;opacity:.74}
+.v5104-add{
+  position:absolute;left:66.7%;top:62.1%;width:27.2%;height:14.9%;margin:0!important;padding:0!important;
+  border:1px solid rgba(221,176,88,.72)!important;border-radius:9px!important;background:rgba(47,80,48,.95)!important;color:#f1d694!important;
+  font:900 clamp(7px,1.5vw,11px)/1 Georgia,'Times New Roman',serif!important;letter-spacing:.25px!important;
+  box-shadow:inset 0 0 0 2px rgba(239,203,128,.10),0 3px 0 rgba(18,8,5,.32)!important
 }
-#library .v598-library-stat b{font:900 8.7px/1 Georgia,'Times New Roman',serif!important;color:#f1d499!important}
-#library .v598-library-stat span{display:block!important;margin-top:4px!important;font:800 3.65px/1 ui-monospace,monospace!important;color:#ad9369!important;white-space:nowrap!important}
-#library .v598-library-tools{
-  display:grid!important;gap:6px!important;width:100%!important;min-width:0!important;padding:7px!important;margin:0!important;
-  border:1px solid #77502b!important;border-radius:6px!important;background:linear-gradient(180deg,#382016,#21110c)!important;box-shadow:0 3px 0 #140806!important
+.v5104-filter-row{position:absolute;left:6.8%;right:6.8%;top:81.1%;height:13.2%;display:grid;grid-template-columns:repeat(4,1fr);gap:1.4%}
+.v5104-filter{
+  margin:0!important;padding:0!important;border:1px solid rgba(188,137,65,.50)!important;border-radius:7px!important;background:rgba(48,26,17,.88)!important;
+  color:#e0c58b!important;font:900 clamp(6px,1.25vw,9px)/1 Georgia,'Times New Roman',serif!important;box-shadow:none!important
 }
-#library .v598-library-searchrow{display:grid!important;grid-template-columns:minmax(0,1fr) 82px!important;gap:6px!important;width:100%!important;min-width:0!important}
-#library .v598-library-searchrow input{width:100%!important;min-width:0!important;height:31px!important;margin:0!important;padding:0 9px!important;border:1px solid #a57b45!important;border-radius:5px!important;background:#ead7ae!important;color:#4b3020!important;font:700 5.45px/1 ui-monospace,monospace!important}
-#library .v598-library-searchrow button{width:82px!important;min-width:0!important;min-height:31px!important;margin:0!important;padding:4px!important;border:1px solid #8aa168!important;border-radius:5px!important;background:linear-gradient(#52713e,#31482a)!important;color:#f3dfaf!important;font:900 4.55px/1 ui-monospace,monospace!important;box-shadow:0 3px 0 #160906!important}
-#library .v598-library-filters{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;width:100%!important;min-width:0!important;margin:0!important}
-#library .v598-library-filter{
-  min-width:0!important;min-height:26px!important;margin:0!important;padding:5px 1px!important;border:0!important;border-radius:0!important;
-  background:url('./v53-tab-inactive.png') center/100% 100% no-repeat!important;color:#d1ba8c!important;box-shadow:none!important;font:900 4.2px/1 Georgia,'Times New Roman',serif!important
+.v5104-filter.active{background:rgba(104,70,130,.96)!important;border-color:#c0a0d2!important;box-shadow:inset 0 0 0 2px rgba(255,236,194,.08)!important}
+.v5104-shelf-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;background:linear-gradient(90deg,#47291b,#28150f 76%,rgba(40,21,15,.45));border:1px solid #73502b;border-radius:6px;color:#e5c98d}
+.v5104-shelf-heading b{font:900 6px/1 ui-monospace,monospace;letter-spacing:.4px}.v5104-shelf-heading span{font:800 4.8px/1 ui-monospace,monospace;color:#a9936b}
+.v5104-shelves{display:grid;gap:10px}
+.v5104-shelf-row{
+  position:relative;min-height:345px;padding:28px 34px 34px;overflow:hidden;border:1px solid #8d6032;border-radius:10px;
+  background:
+    radial-gradient(circle at 50% 20%,rgba(122,69,36,.15),transparent 45%),
+    linear-gradient(180deg,rgba(20,9,6,.16),rgba(9,4,3,.12)),
+    url('./v53-wood-tile.png') center/180px auto repeat;
+  box-shadow:0 8px 16px rgba(0,0,0,.26),inset 0 0 0 5px #3d2115,inset 0 0 0 7px #8f6031
 }
-#library .v598-library-filter.active{background:url('./v53-tab-active.png') center/100% 100% no-repeat!important;color:#fff0c7!important}
-#library .v598-library-shelf-title{display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;min-width:0!important;margin:0!important;padding:5px 4px!important;border:0!important;background:linear-gradient(90deg,rgba(63,32,20,.86),rgba(63,32,20,.12))!important}
-#library .v598-library-shelf-title b{font:900 5.7px/1 Georgia,'Times New Roman',serif!important;color:#e6c88d!important}
-#library .v598-library-shelf-title span{font:800 4px/1 ui-monospace,monospace!important;color:#9b835f!important}
-#library .v598-book-grid{display:block!important;width:100%!important;min-width:0!important;margin:0!important;padding:0!important;border:0!important;background:none!important;overflow:visible!important}
-#library .v510-series-group{width:100%!important;min-width:0!important;margin:0 0 8px!important}
-#library .v510-series-label{display:flex!important;align-items:center!important;justify-content:space-between!important;margin:0 4px 4px!important;padding:5px 7px!important;border:1px solid #77502c!important;border-radius:5px!important;background:linear-gradient(90deg,#432619,#29140e)!important;color:#e7ce96!important}
-#library .v510-series-label b{font:900 5.8px/1 Georgia,'Times New Roman',serif!important}
-#library .v510-series-label span{font:800 3.8px/1 ui-monospace,monospace!important;color:#a9926a!important}
-#library .v510-shelf-row{
-  position:relative!important;width:100%!important;min-width:0!important;height:226px!important;margin:0 0 8px!important;padding:52px 58px 42px!important;
-  background:url('./archive-shelf-cubby.png') center/100% 100% no-repeat!important;overflow:hidden!important
+.v5104-shelf-row::before{content:"";position:absolute;left:12px;right:12px;top:14px;height:16px;border-radius:8px;background:linear-gradient(#9d6b34,#512d19 55%,#2c160e);border:1px solid #b07b3d;box-shadow:0 4px 0 rgba(15,7,4,.35)}
+.v5104-shelf-row::after{content:"";position:absolute;left:16px;right:16px;bottom:14px;height:18px;background:linear-gradient(#b27a3c 0 15%,#754722 15% 46%,#3e2114 46% 80%,#1d0e09 80%);border:1px solid #8b592a;border-top-color:#d0954c;box-shadow:0 5px 0 rgba(13,6,4,.45)}
+.v5104-shelf-decor{position:absolute;pointer-events:none;z-index:1;image-rendering:pixelated}.v5104-shelf-decor.candle{left:18px;bottom:35px;width:13px;transform:scale(2.2);transform-origin:bottom left}.v5104-shelf-decor.books{right:17px;bottom:37px;width:30px;transform:scale(1.25);transform-origin:bottom right}.v5104-shelf-decor.ivy-l{left:8px;top:5px;width:21px;transform:scale(1.7) rotate(-12deg);transform-origin:top left}.v5104-shelf-decor.ivy-r{right:8px;top:5px;width:21px;transform:scale(1.7) rotate(12deg) scaleX(-1);transform-origin:top right}
+.v5104-books{position:absolute;left:8.5%;right:8.5%;top:34px;bottom:31px;display:flex;align-items:flex-end;justify-content:center;gap:5px;z-index:2}
+.v5104-book{
+  --c1:#6f4d8f;--c2:#34213f;position:relative;flex:1 1 0;max-width:76px;min-width:0;height:88%;padding:13px 4px 20px;
+  overflow:hidden;border:2px solid #2a140d;border-radius:8px 8px 3px 3px;background:
+    linear-gradient(90deg,rgba(255,255,255,.15),transparent 15%,transparent 83%,rgba(0,0,0,.24)),
+    linear-gradient(180deg,var(--c1),var(--c2));
+  box-shadow:3px 4px 0 #160906,0 7px 9px rgba(0,0,0,.3),inset 0 0 0 2px rgba(239,201,117,.20);color:#f7e1aa;transition:.15s ease
 }
-#library .v510-books{
-  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;align-items:end!important;justify-items:center!important;gap:8px!important;
-  width:100%!important;height:100%!important;min-width:0!important;padding:0!important;margin:0!important;overflow:visible!important
-}
-#library .v510-shelf-plank{display:none!important}
-#library .v598-book-card{
-  --accent:#72518f;--deep:#33203d;
-  position:relative!important;display:block!important;width:100%!important;min-width:0!important;max-width:68px!important;height:132px!important;margin:0!important;padding:0!important;
-  overflow:hidden!important;border:1px solid #1a0b07!important;border-radius:4px 4px 2px 2px!important;outline:1px solid rgba(231,192,103,.72)!important;outline-offset:-4px!important;
-  background:linear-gradient(90deg,rgba(255,255,255,.13),transparent 12%,transparent 84%,rgba(0,0,0,.27)),linear-gradient(180deg,var(--accent),var(--deep))!important;
-  box-shadow:3px 4px 0 #120704,0 7px 8px rgba(0,0,0,.27)!important;transform:none!important;color:#f6dfab!important
-}
-#library .v598-book-card.s1{height:138px!important}#library .v598-book-card.s2{height:150px!important}#library .v598-book-card.s3{height:144px!important}#library .v598-book-card.s4{height:155px!important}
-#library .v598-book-card.c0{--accent:#765792;--deep:#382347}#library .v598-book-card.c1{--accent:#8d5243;--deep:#47261f}#library .v598-book-card.c2{--accent:#4f7664;--deep:#243c33}#library .v598-book-card.c3{--accent:#9b7435;--deep:#4f391a}#library .v598-book-card.c4{--accent:#567b91;--deep:#293f4c}#library .v598-book-card.c5{--accent:#825064;--deep:#432631}#library .v598-book-card.c6{--accent:#6c6753;--deep:#373328}#library .v598-book-card.c7{--accent:#9b6847;--deep:#4c2e21}
-#library .v598-book-card::before{content:"✦"!important;position:absolute!important;left:50%!important;top:7px!important;transform:translateX(-50%)!important;color:#e6c16d!important;font:900 6px/1 Georgia,serif!important;text-shadow:0 1px 1px #1a0905!important;z-index:4!important}
-#library .v598-book-card::after{content:""!important;display:block!important;position:absolute!important;inset:5px!important;border-left:1px solid rgba(245,207,118,.37)!important;border-right:1px solid rgba(245,207,118,.26)!important;pointer-events:none!important}
-#library .v598-book-card.selected{transform:translateY(-5px)!important;box-shadow:0 0 0 1px rgba(255,223,154,.75),0 0 12px rgba(255,199,83,.30),3px 7px 0 #120704!important}
-#library .v598-book-fav{position:absolute!important;right:4px!important;top:5px!important;transform:none!important;color:#ffe183!important;font-size:5.5px!important;z-index:5!important}
-#library .v599-book-plate{position:absolute!important;inset:19px 6px 24px!important;display:flex!important;align-items:center!important;justify-content:center!important;margin:0!important;padding:0!important;background:none!important;border:0!important;outline:0!important;box-shadow:none!important}
-#library .v598-book-title{display:block!important;max-height:101px!important;padding:0!important;overflow:hidden!important;white-space:nowrap!important;writing-mode:vertical-rl!important;text-orientation:mixed!important;transform:rotate(180deg)!important;color:#fff0c4!important;font:900 6.25px/1 Georgia,'Times New Roman',serif!important;letter-spacing:.06px!important;text-shadow:0 1px 1px #1a0905!important}
-#library .v598-book-author{display:none!important}
-#library .v598-book-series{position:absolute!important;left:5px!important;right:5px!important;bottom:5px!important;height:14px!important;margin:0!important;padding:3px 1px!important;overflow:hidden!important;white-space:nowrap!important;text-overflow:ellipsis!important;border:0!important;border-top:1px solid rgba(235,195,109,.28)!important;background:rgba(17,7,5,.36)!important;color:#e4c47e!important;font:900 3.3px/1 ui-monospace,monospace!important}
-#library .v598-book-bottom,#library .v599-book-volume{display:none!important}
-#library .v598-library-empty{margin:0 4px!important;padding:16px 12px!important;border:1px solid #77502c!important;border-radius:6px!important;background:linear-gradient(180deg,#3a2418,#24130e)!important;color:#bca478!important;font:700 5.3px/1.35 ui-monospace,monospace!important;text-align:center!important}
-#library .v599-shelf-end{display:none!important}
-/* Selected book opens as an illustrated open-book scene, not another rectangle. */
-#libraryDetailView[hidden]{display:none!important}
-#libraryDetailView{display:grid!important;gap:7px!important;width:100%!important;min-width:0!important;margin:2px 0 0!important;padding:0!important}
-.v5101-detail-back{justify-self:start!important;width:auto!important;min-height:28px!important;margin:0!important;padding:6px 10px!important;border:1px solid #80582f!important;border-radius:4px!important;background:linear-gradient(#41251a,#28140e)!important;color:#d7bc88!important;box-shadow:0 3px 0 #140806!important;font:900 4.8px/1 ui-monospace,monospace!important}
-.v5101-detail-shell{
-  position:relative!important;width:100%!important;min-width:0!important;min-height:420px!important;margin:0!important;padding:0!important;overflow:hidden!important;
-  border:0!important;background:url('./v56-open-book-scene.png') center/100% 100% no-repeat!important;box-shadow:none!important
-}
-.v5101-detail-top{position:absolute!important;left:7%!important;right:7%!important;top:8%!important;height:58%!important;display:grid!important;grid-template-columns:35% 1fr!important;gap:6%!important;align-items:start!important;margin:0!important;padding:0!important}
-.v5101-detail-top>div{min-width:0!important}
-.v5101-cover-frame{width:100%!important;height:auto!important;aspect-ratio:2/3!important;margin:0!important;border:2px solid #4a2718!important;border-radius:2px!important;outline:1px solid #b78946!important;outline-offset:-5px!important;background:linear-gradient(145deg,#6e4c88,#35223f)!important;box-shadow:3px 4px 0 #1a0b07!important;overflow:hidden!important}
-.v5101-cover-frame img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
-.v5101-cover-placeholder{width:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;padding:8px!important;color:#f2d69c!important;text-align:center!important}
-.v5101-cover-placeholder span{font-size:18px!important;margin-bottom:6px!important}.v5101-cover-placeholder b{font-size:5.5px!important;line-height:1.1!important}
-.v5101-cover-actions{display:grid!important;gap:4px!important;margin-top:6px!important}.v5101-cover-actions button{min-height:24px!important;margin:0!important;padding:4px 3px!important;border-radius:3px!important;font-size:3.7px!important}
-.v5101-detail-entry{display:inline-block!important;margin:0 0 6px!important;padding:3px 7px!important;border:1px solid #a06d3d!important;border-radius:999px!important;background:rgba(130,76,48,.78)!important;color:#f1d6a3!important;font:900 3.7px/1 ui-monospace,monospace!important;letter-spacing:.25px!important}
-.v5101-detail-title{margin:0 0 3px!important;color:#4d2e20!important;font:900 clamp(10px,3.2vw,14px)/1.02 Georgia,'Times New Roman',serif!important;text-shadow:0 1px 0 rgba(255,248,227,.55)!important;overflow-wrap:anywhere!important}
-.v5101-detail-author{color:#75513a!important;font:800 4.7px/1.1 ui-monospace,monospace!important}
-.v5101-detail-rating{display:inline-block!important;margin-top:7px!important;padding:4px 6px!important;border:1px solid #7e572f!important;border-radius:4px!important;background:#4a291b!important;color:#f2cf78!important;font:900 5.3px/1 Georgia,serif!important}.v5101-detail-favorite{display:inline-block!important;margin:7px 0 0 4px!important;padding:4px!important;color:#9b6926!important;font:900 3.8px/1 ui-monospace,monospace!important}
-.v5101-detail-ledger{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin-top:7px!important}
-.v5101-detail-field{min-width:0!important;padding:5px!important;border:1px solid rgba(151,107,59,.42)!important;border-radius:2px!important;background:rgba(244,229,194,.46)!important;color:#3f2a1e!important;box-shadow:none!important}
-.v5101-detail-field span{display:block!important;margin-bottom:3px!important;color:#806047!important;font:900 3px/1 ui-monospace,monospace!important;letter-spacing:.15px!important;text-transform:uppercase!important}.v5101-detail-field b{display:block!important;color:#4b3020!important;font:900 4.2px/1.08 Georgia,serif!important;overflow-wrap:anywhere!important}
-.v5101-detail-notes{position:absolute!important;left:49%!important;right:9%!important;top:56%!important;max-height:11%!important;overflow:auto!important;margin:0!important;padding:5px 6px!important;border:0!important;border-top:1px solid rgba(138,94,50,.35)!important;background:rgba(240,224,187,.28)!important;color:#63442f!important;font:700 3.4px/1.25 ui-monospace,monospace!important}.v5101-detail-notes b{display:none!important}
-.v5101-detail-actions{position:absolute!important;left:28%!important;right:28%!important;bottom:8%!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important;margin:0!important}.v5101-detail-actions button{min-height:27px!important;margin:0!important;padding:4px!important;border-radius:3px!important;font-size:3.8px!important}
-/* Editor stays readable, but loses the giant box-on-box feeling. */
-#libraryRecordModal{padding:10px!important;background:rgba(13,6,4,.74)!important;backdrop-filter:blur(3px)!important}
-.v598-library-editor{width:min(540px,100%)!important;max-height:calc(100dvh - 30px)!important;overflow:auto!important;padding:12px!important;border:2px solid #a57843!important;border-radius:7px!important;background:linear-gradient(180deg,#eee0bd,#dfc89b)!important;color:#4a3021!important;box-shadow:0 14px 30px rgba(0,0,0,.35)!important}
-.v598-library-editor-head{padding-bottom:8px!important;border-bottom:1px solid rgba(151,108,57,.35)!important}.v598-library-editor-head b{color:#5b3926!important;font:900 10px/1 Georgia,serif!important}.v598-library-editor-copy{color:#74533c!important}
-.v598-library-field input,.v598-library-field select,.v598-library-field textarea{border:1px solid #aa814e!important;border-radius:4px!important;background:rgba(255,249,231,.78)!important;color:#452c1f!important;box-shadow:inset 0 0 0 1px rgba(255,246,219,.30)!important}.v598-library-field label,.v598-library-check span{color:#6e4b34!important}
-.v598-library-check{border:1px solid rgba(165,122,66,.42)!important;border-radius:4px!important;background:rgba(233,215,178,.56)!important}.v598-library-editor-actions button,#libDeleteBtn{border-radius:4px!important}
-@media(max-width:390px){
- #library .v510-shelf-row{height:214px!important;padding:50px 50px 40px!important}
- #library .v510-books{gap:6px!important}
- #library .v598-book-card{max-width:61px!important;height:126px!important}
- #library .v598-book-card.s1{height:132px!important}#library .v598-book-card.s2{height:143px!important}#library .v598-book-card.s3{height:137px!important}#library .v598-book-card.s4{height:148px!important}
- .v5101-detail-shell{min-height:392px!important}.v5101-detail-top{left:6.5%!important;right:6.5%!important;gap:5%!important}.v5101-detail-actions{left:23%!important;right:23%!important}
-}
-@media(max-width:345px){
- #library .v598-library-searchrow{grid-template-columns:minmax(0,1fr) 73px!important}#library .v598-library-searchrow button{width:73px!important;font-size:4px!important}
- #library .v510-shelf-row{height:198px!important;padding:48px 44px 38px!important}#library .v510-books{gap:4px!important}
- #library .v598-book-card{max-width:56px!important;height:118px!important}#library .v598-book-title{font-size:5.6px!important}
- .v5101-detail-shell{min-height:365px!important}
+.v5104-book:hover,.v5104-book:focus-visible{transform:translateY(-4px)}
+.v5104-book::before{content:"";position:absolute;inset:6px 5px 18px;border-left:1px solid rgba(250,214,126,.62);border-right:1px solid rgba(250,214,126,.35);border-top:1px solid rgba(250,214,126,.42);border-bottom:1px solid rgba(250,214,126,.22);border-radius:5px}
+.v5104-book::after{content:"";position:absolute;left:6px;right:6px;bottom:18px;height:1px;background:rgba(244,205,116,.44)}
+.v5104-book.h1{height:86%}.v5104-book.h2{height:93%}.v5104-book.h3{height:89%}.v5104-book.h4{height:96%}.v5104-book.h5{height:91%}
+.v5104-book.c0{--c1:#76539a;--c2:#3b234d}.v5104-book.c1{--c1:#985b4e;--c2:#4d2921}.v5104-book.c2{--c1:#4e836d;--c2:#243e34}.v5104-book.c3{--c1:#a67a32;--c2:#533b18}.v5104-book.c4{--c1:#487f9e;--c2:#243f50}.v5104-book.c5{--c1:#8a516b;--c2:#442633}.v5104-book.c6{--c1:#777361;--c2:#3d392c}.v5104-book.c7{--c1:#9f6846;--c2:#4e2e21}
+.v5104-book-title{position:absolute;inset:28px 12px 38px;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;overflow:hidden;color:#f8e5b6;font:900 clamp(7px,1.45vw,11px)/1 Georgia,'Times New Roman',serif;text-shadow:0 1px 1px #1d0c07}
+.v5104-book-icon{position:absolute;left:50%;top:10px;transform:translateX(-50%);color:#f0c76f;font:900 clamp(8px,1.7vw,12px)/1 Georgia,serif;text-shadow:0 1px 1px #1d0c07}
+.v5104-book-series{position:absolute;left:5px;right:5px;bottom:6px;height:11px;display:grid;place-items:center;color:#e8c986;font:900 clamp(4px,.83vw,6px)/1 ui-monospace,monospace;background:rgba(21,9,6,.32);border-top:1px solid rgba(243,204,113,.31)}
+.v5104-book-fav{position:absolute;right:7px;top:8px;color:#ffe079;font-size:8px;z-index:4}
+.v5104-book.selected{transform:translateY(-5px);box-shadow:0 0 0 1px #e8c779,0 0 16px rgba(250,198,79,.35),3px 8px 0 #160906,0 10px 14px rgba(0,0,0,.34)}
+.v5104-series-label{margin-bottom:5px;padding:6px 9px;border-radius:7px;background:linear-gradient(90deg,#503020,#2a1710);border-left:3px solid #8f6aa5;color:#e8ce94;box-shadow:0 3px 0 rgba(15,7,4,.25)}.v5104-series-label b{font:900 6px/1 Georgia,serif}.v5104-series-label span{float:right;font:800 4.5px/1 ui-monospace,monospace;color:#a98e66}
+.v5104-empty{padding:17px 14px;text-align:center;border:1px solid #80582f;border-radius:9px;background:linear-gradient(#3d2518,#25140e);color:#c6ae7c;font:700 5.5px/1.5 ui-monospace,monospace}.v5104-empty b{display:block;margin-bottom:4px;color:#ead098;font:900 7px/1 Georgia,serif}
+.v5104-detail-view{margin-top:2px}
+.v5104-detail-view[hidden]{display:none!important}
+.v5104-detail-book{position:relative;width:100%;aspect-ratio:845/434;min-height:310px;overflow:hidden}
+.v5104-detail-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none}
+.v5104-detail-left{position:absolute;left:7.2%;top:11%;width:31%;bottom:10%;display:flex;flex-direction:column;align-items:center;gap:6px}
+.v5104-cover-frame{width:67%;aspect-ratio:2/3;display:grid;place-items:center;overflow:hidden;background:linear-gradient(160deg,#72518e,#3c274b);border:2px solid #261109;outline:1px solid #a87a42;outline-offset:-5px;box-shadow:3px 5px 0 rgba(43,20,11,.62),0 7px 11px rgba(0,0,0,.22)}
+.v5104-cover-frame img{width:100%;height:100%;object-fit:cover;display:block}.v5104-cover-placeholder{width:100%;height:100%;display:grid;place-items:center;align-content:center;padding:8px;text-align:center;color:#f3d99d}.v5104-cover-placeholder span{font-size:22px}.v5104-cover-placeholder b{margin-top:6px;font:900 6.5px/1.12 Georgia,serif;overflow-wrap:anywhere}
+.v5104-cover-actions{width:78%;display:grid;gap:4px}.v5104-cover-actions button{min-height:25px!important;margin:0!important;padding:4px!important;border-radius:7px!important;font-size:4.3px!important}
+.v5104-detail-right{position:absolute;left:45.7%;right:7.2%;top:13%;bottom:10%;color:#543822}
+.v5104-entry{display:inline-block;padding:4px 8px;border-radius:999px;background:#8d5b42;color:#f5dfb6;font:900 4.2px/1 ui-monospace,monospace;letter-spacing:.3px}.v5104-title{margin:8px 0 3px;font:900 clamp(13px,3vw,20px)/1 Georgia,'Times New Roman',serif;color:#4a2e1d}.v5104-author{font:800 5.4px/1.2 ui-monospace,monospace;color:#7a583d}.v5104-rating-row{margin-top:7px}.v5104-rating{display:inline-block;padding:5px 7px;border-radius:7px;background:#59351f;border:1px solid #8c6337;color:#f5d381;font:900 6px/1 Georgia,serif}.v5104-favorite{margin-left:5px;color:#a36b20;font:900 4.2px/1 ui-monospace,monospace}
+.v5104-ledger{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px}.v5104-ledger>div{min-width:0;padding:5px 6px;border:1px solid rgba(159,114,63,.52);background:rgba(255,247,222,.40);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}.v5104-ledger span{display:block;margin-bottom:3px;color:#876144;font:900 3.8px/1 ui-monospace,monospace;text-transform:uppercase}.v5104-ledger b{display:block;color:#493120;font:900 5.3px/1.12 Georgia,serif;overflow-wrap:anywhere}
+.v5104-notes{margin-top:6px;padding:6px 7px;border-top:1px solid rgba(148,105,58,.40);color:#664733;font:700 4.6px/1.35 ui-monospace,monospace}.v5104-notes b{display:block;margin-bottom:3px;font-size:3.8px;text-transform:uppercase}.v5104-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px;position:absolute;left:0;right:0;bottom:0}.v5104-detail-actions button{min-height:26px!important;margin:0!important;padding:4px!important;border-radius:7px!important;font-size:4.4px!important}
+#libraryRecordModal{background:rgba(14,7,5,.72)!important;backdrop-filter:blur(3px)}
+.v598-library-editor{border-radius:13px!important;background:linear-gradient(#efe1bd,#ddc399)!important;border:2px solid #a97a42!important;color:#4c3020!important;box-shadow:0 16px 34px rgba(0,0,0,.34)!important}.v598-library-editor-head b{color:#563522!important}.v598-library-editor-copy{color:#77553d!important}.v598-library-field label,.v598-library-check span{color:#704d34!important}.v598-library-field input,.v598-library-field select,.v598-library-field textarea{border-radius:7px!important;background:#f5e8c6!important;color:#452d20!important;border-color:#a97c47!important}.v598-library-check{border-radius:8px!important;background:#ead6ac!important;border-color:#b98e58!important}.v598-library-editor-actions button,#libDeleteBtn{border-radius:8px!important}
+@media(max-width:420px){
+ .v5104-shelf-row{min-height:300px;padding-left:24px;padding-right:24px}.v5104-books{left:7.5%;right:7.5%;gap:3px}.v5104-book{max-width:55px}.v5104-book-title{inset-left:9px;inset-right:9px}.v5104-detail-book{min-height:270px}.v5104-detail-left{left:6.8%;width:31.5%}.v5104-detail-right{left:45.5%;right:6.8%}.v5104-title{font-size:13.5px}.v5104-ledger>div{padding:4px 5px}.v5104-detail-actions button{font-size:4px!important}
 }
 </style>
 
@@ -3460,71 +3428,63 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
   </div>
 </section>
 
-<section id="library" class="screen v598-library">
-  <div class="v598-library-stage">
-    <button class="v598-library-back" onclick="go('reading')">← RETURN TO READING DESK</button>
-    <div class="v598-library-heading">
-      <img src="./asset-books-stack.png" alt="">
-      <div><b>THE ENCHANTED ARCHIVE</b><small>Tap a spine to open its full archive record.</small></div>
-    </div>
+<section id="library" class="screen v5104-library">
+  <div class="v5104-library-wrap">
+    <button class="v5104-back" onclick="go('reading')">← RETURN TO READING DESK</button>
 
-    <div class="v598-library-stats">
-      <div class="v598-library-stat"><b id="libraryVolumeCount">0</b><span>Volumes</span></div>
-      <div class="v598-library-stat"><b id="libraryFavoriteCount">0</b><span>Favorites</span></div>
-      <div class="v598-library-stat"><b id="libraryPageCount">—</b><span>Pages Logged</span></div>
-      <div class="v598-library-stat"><b id="librarySeriesCount">0</b><span>Series</span></div>
-    </div>
+    <div class="v5104-approved-chrome" aria-label="The Enchanted Archive controls">
+      <img src="./archive-approved-controls.jpg" alt="The Enchanted Archive illustrated header">
 
-    <div class="v598-library-tools">
-      <div class="v598-library-searchrow">
-        <input id="librarySearch" type="search" placeholder="Search title, author, or series…" oninput="renderLibrary()">
-        <button class="btn-green" onclick="openAddPastBook()">＋ ADD VOLUME</button>
-      </div>
-      <div class="v598-library-filters">
-        <button class="v598-library-filter active" data-library-filter="all" onclick="setLibraryFilter('all',this)">ALL</button>
-        <button class="v598-library-filter" data-library-filter="favorites" onclick="setLibraryFilter('favorites',this)">★ FAVORITES</button>
-        <button class="v598-library-filter" data-library-filter="five" onclick="setLibraryFilter('five',this)">5★</button>
-        <button class="v598-library-filter" data-library-filter="series" onclick="setLibraryFilter('series',this)">SERIES</button>
+      <div class="v5104-stat-overlay volumes"><b id="libraryVolumeCount">0</b></div>
+      <div class="v5104-stat-overlay favorites"><b id="libraryFavoriteCount">0</b></div>
+      <div class="v5104-stat-overlay pages"><b id="libraryPageCount">—</b></div>
+      <div class="v5104-stat-overlay series"><b id="librarySeriesCount">0</b></div>
+
+      <input id="librarySearch" class="v5104-search" type="search" placeholder="Search title, author, or series…" oninput="renderLibrary()">
+      <button class="v5104-add" onclick="openAddPastBook()" aria-label="Add volume">＋ ADD VOLUME</button>
+
+      <div class="v5104-filter-row" aria-label="Archive filters">
+        <button class="v5104-filter active" data-library-filter="all" onclick="setLibraryFilter('all',this)">ALL</button>
+        <button class="v5104-filter" data-library-filter="favorites" onclick="setLibraryFilter('favorites',this)">★ FAVORITES</button>
+        <button class="v5104-filter" data-library-filter="five" onclick="setLibraryFilter('five',this)">5★</button>
+        <button class="v5104-filter" data-library-filter="series" onclick="setLibraryFilter('series',this)">SERIES</button>
       </div>
     </div>
 
-    <div class="v598-library-shelf-title"><b>📚 ARCHIVED VOLUMES</b><span id="libraryResultCount"></span></div>
-    <div id="libraryShelf" class="v598-book-grid"></div>
-    <div class="v599-shelf-end" aria-hidden="true"></div>
-  </div>
+    <div class="v5104-shelf-heading"><b>📚 ARCHIVED VOLUMES</b><span id="libraryResultCount"></span></div>
+    <div id="libraryShelf" class="v5104-shelves"></div>
 
-  <div id="libraryDetailView" hidden>
-    <button class="v5101-detail-back" onclick="closeLibraryDetail()">← BACK TO THE SHELVES</button>
-    <div class="v5101-detail-shell">
-      <div class="v5101-detail-top">
-        <div>
-          <div class="v5101-cover-frame">
+    <div id="libraryDetailView" class="v5104-detail-view" hidden>
+      <div class="v5104-detail-book">
+        <img class="v5104-detail-bg" src="./v53-open-book.png" alt="Open archive record book">
+        <div class="v5104-detail-left">
+          <div class="v5104-cover-frame">
             <img id="libraryDetailCoverImg" alt="Book cover" hidden>
-            <div id="libraryDetailCoverPlaceholder" class="v5101-cover-placeholder"><span>📖</span><b id="libraryDetailCoverTitle">Archived Volume</b></div>
+            <div id="libraryDetailCoverPlaceholder" class="v5104-cover-placeholder"><span>📖</span><b id="libraryDetailCoverTitle">Archived Volume</b></div>
           </div>
           <input id="libraryCoverInput" type="file" accept="image/*" hidden onchange="handleLibraryCoverUpload(event)">
-          <div class="v5101-cover-actions">
+          <div class="v5104-cover-actions">
             <button class="btn-purple" onclick="document.getElementById('libraryCoverInput').click()">🖼 ADD / CHANGE COVER</button>
             <button id="libraryRemoveCoverBtn" class="btn-plain" onclick="removeLibraryCover()" hidden>REMOVE COVER</button>
           </div>
         </div>
-        <div>
-          <div id="libraryDetailEntry" class="v5101-detail-entry">LIBRARY ENTRY #001</div>
-          <div id="libraryDetailTitle" class="v5101-detail-title">Archived Volume</div>
-          <div id="libraryDetailAuthor" class="v5101-detail-author">Unknown author</div>
-          <div><span id="libraryDetailRating" class="v5101-detail-rating">Unrated</span><span id="libraryDetailFavorite" class="v5101-detail-favorite" hidden>★ FAVORITE</span></div>
-          <div class="v5101-detail-ledger">
-            <div class="v5101-detail-field"><span>Series</span><b id="libraryDetailSeries">Standalone</b></div>
-            <div class="v5101-detail-field"><span>Pages</span><b id="libraryDetailPages">—</b></div>
-            <div class="v5101-detail-field"><span>Started</span><b id="libraryDetailStarted">—</b></div>
-            <div class="v5101-detail-field"><span>Finished</span><b id="libraryDetailFinished">—</b></div>
+        <div class="v5104-detail-right">
+          <div id="libraryDetailEntry" class="v5104-entry">LIBRARY ENTRY #001</div>
+          <div id="libraryDetailTitle" class="v5104-title">Archived Volume</div>
+          <div id="libraryDetailAuthor" class="v5104-author">Unknown author</div>
+          <div class="v5104-rating-row"><span id="libraryDetailRating" class="v5104-rating">Unrated</span><span id="libraryDetailFavorite" class="v5104-favorite" hidden>★ FAVORITE</span></div>
+          <div class="v5104-ledger">
+            <div><span>Series</span><b id="libraryDetailSeries">Standalone</b></div>
+            <div><span>Pages</span><b id="libraryDetailPages">—</b></div>
+            <div><span>Started</span><b id="libraryDetailStarted">—</b></div>
+            <div><span>Finished</span><b id="libraryDetailFinished">—</b></div>
+          </div>
+          <div id="libraryDetailNotes" class="v5104-notes" hidden><b>Archivist's Notes</b><span id="libraryDetailNotesText"></span></div>
+          <div class="v5104-detail-actions">
+            <button class="btn-plain" onclick="closeLibraryDetail()">📚 SHELF VIEW</button>
+            <button class="btn-gold" onclick="editCurrentLibraryRecord()">✒ EDIT RECORD</button>
           </div>
         </div>
-      </div>
-      <div id="libraryDetailNotes" class="v5101-detail-notes" hidden><b>Archivist's Notes</b><span id="libraryDetailNotesText"></span></div>
-      <div class="v5101-detail-actions">
-        <button class="btn-plain" onclick="closeLibraryDetail()">📚 SHELF VIEW</button>
-        <button class="btn-gold" onclick="editCurrentLibraryRecord()">✒ EDIT RECORD</button>
       </div>
     </div>
   </div>
@@ -4170,7 +4130,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.10.3</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.10.4</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -6214,18 +6174,26 @@ function librarySeriesShort(v){
  return raw.toLowerCase()==="standalone"?"STANDALONE":(librarySeriesName(raw)||raw).slice(0,12);
 }
 function libraryBookCardMarkup(b,volumeNo){
- const size=(Number(volumeNo||1)-1)%5;
+ const n=Number(volumeNo||1), h=(n-1)%5+1;
  const selected=String(libraryDetailId||'')===String(b.id)?' selected':'';
- return `<button class="v598-book-card c${Number(b.color)%8} s${size}${selected}" onclick="openLibraryRecord('${esc(b.id)}')" aria-label="Open library record for ${esc(b.title)} by ${esc(b.author||'Unknown author')}">
-   ${b.favorite?'<span class="v598-book-fav">★</span>':''}
-   <div class="v599-book-plate"><div class="v598-book-title">${esc(b.title)}</div><div class="v598-book-author">${esc(b.author||'Unknown author')}</div></div>
-   <div class="v598-book-series">${esc(librarySeriesShort(b.series))}</div>
+ const series=librarySeriesShort(b.series);
+ const icons=['✦','♦','❀','✧','⚔','♡','☁','◈'];
+ return `<button class="v5104-book c${Number(b.color)%8} h${h}${selected}" onclick="openLibraryRecord('${esc(b.id)}')" aria-label="Open library record for ${esc(b.title)} by ${esc(b.author||'Unknown author')}">
+   ${b.favorite?'<span class="v5104-book-fav">★</span>':''}
+   <span class="v5104-book-icon">${icons[Number(b.color)%icons.length]}</span>
+   <span class="v5104-book-title">${esc(b.title)}</span>
+   <span class="v5104-book-series">${esc(series)}</span>
   </button>`;
 }
 function libraryShelfRowsMarkup(rows,volumeNo){
- const chunks=[];
- for(let i=0;i<rows.length;i+=4)chunks.push(rows.slice(i,i+4));
- return chunks.map(chunk=>`<div class="v510-shelf-row"><div class="v510-books">${chunk.map(b=>libraryBookCardMarkup(b,volumeNo.get(String(b.id))||1)).join("")}</div><div class="v510-shelf-plank" aria-hidden="true"></div></div>`).join("");
+ const chunks=[];for(let i=0;i<rows.length;i+=7)chunks.push(rows.slice(i,i+7));
+ return chunks.map(chunk=>`<div class="v5104-shelf-row">
+   <img class="v5104-shelf-decor candle" src="./v53-candle.png" alt="">
+   <img class="v5104-shelf-decor books" src="./v53-books.png" alt="">
+   <img class="v5104-shelf-decor ivy-l" src="./asset-ivy.png" alt="">
+   <img class="v5104-shelf-decor ivy-r" src="./asset-ivy.png" alt="">
+   <div class="v5104-books">${chunk.map(b=>libraryBookCardMarkup(b,volumeNo.get(String(b.id))||1)).join("")}</div>
+  </div>`).join("");
 }
 function renderLibrary(){
  const shelf=$("libraryShelf");if(!shelf)return;
@@ -6259,7 +6227,7 @@ function renderLibrary(){
        :libraryFilter==="five"
          ?'<b>NO 5★ VOLUMES HERE</b>Your five-star reads will collect on this shelf.'
          :'<b>NO VOLUMES FOUND</b>Try another search or archive a finished book.';
-   shelf.innerHTML=`<div class="v598-library-empty">${emptyCopy}</div>`;
+   shelf.innerHTML=`<div class="v5104-empty">${emptyCopy}</div>`;
    return;
  }
 
@@ -6274,7 +6242,7 @@ function renderLibrary(){
      grouped.get(key).push(b);
    });
    shelf.innerHTML=[...grouped.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([name,books])=>
-     `<section class="v510-series-group"><div class="v510-series-label"><b>${esc(name)}</b><span>${books.length} ${books.length===1?'volume':'volumes'}</span></div>${libraryShelfRowsMarkup(books,volumeNo)}</section>`
+     `<section class="v5104-series-group"><div class="v5104-series-label"><b>${esc(name)}</b><span>${books.length} ${books.length===1?'volume':'volumes'}</span></div>${libraryShelfRowsMarkup(books,volumeNo)}</section>`
    ).join("");
  }else{
    shelf.innerHTML=libraryShelfRowsMarkup(rows,volumeNo);
@@ -6287,10 +6255,8 @@ function libraryEntryNumber(id){
 function openLibraryRecord(id){
  const b=(S.library||[]).find(x=>String(x.id)===String(id));if(!b)return;
  libraryDetailId=String(id);
- const detail=$("libraryDetailView");
- if(detail)detail.hidden=false;
- renderLibrary();
- renderLibraryDetail(id);
+ const detail=$("libraryDetailView");if(detail)detail.hidden=false;
+ renderLibrary();renderLibraryDetail(id);
  try{detail?.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}
 }
 function renderLibraryDetail(id=libraryDetailId){
@@ -6306,12 +6272,11 @@ function renderLibraryDetail(id=libraryDetailId){
  const fav=$("libraryDetailFavorite");if(fav)fav.hidden=!b.favorite;
  const notes=$("libraryDetailNotes");if(notes)notes.hidden=!String(b.notes||'').trim();set('libraryDetailNotesText',b.notes||'');
  const img=$("libraryDetailCoverImg"),placeholder=$("libraryDetailCoverPlaceholder"),remove=$("libraryRemoveCoverBtn");
- if(img)img.onerror=()=>{img.removeAttribute('src');img.hidden=true;if(placeholder)placeholder.hidden=false;if(remove)remove.hidden=true;};
+ if(img)img.onerror=()=>{img.removeAttribute('src');img.hidden=true;if(placeholder)placeholder.hidden=false;};
  if(b.cover){img.src=b.cover;img.hidden=false;placeholder.hidden=true;remove.hidden=false}else{img.removeAttribute('src');img.hidden=true;placeholder.hidden=false;remove.hidden=true}
 }
 function closeLibraryDetail(silent=false){
- const detail=$("libraryDetailView");
- if(detail)detail.hidden=true;libraryDetailId=null;
+ const detail=$("libraryDetailView");if(detail)detail.hidden=true;libraryDetailId=null;
  if(!silent)renderLibrary();
 }
 function editCurrentLibraryRecord(){

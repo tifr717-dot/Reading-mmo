@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.10.3-archive-art-rebuild';
+const CACHE = 'reading-mmo-v5.10.4-archive-reference-spine-library';
 const CORE = [
   './',
   './asset-book.png',
@@ -10,9 +10,6 @@ const CORE = [
   './asset-ledger.png',
   './asset-potion.png',
   './asset-scroll.png',
-  './archive-title-frame.png',
-  './archive-shelf-cubby.png',
-  './archive-parchment-texture.png',
   './hyb-header.png',
   './hyb-wood-tile.png',
   './icon-192.png',
@@ -57,6 +54,7 @@ const CORE = [
   './v586-seamless-library-footer.png',
   './v587-clean-cabinet-footer.png',
   './v588-built-in-cabinet-footer.png',
+  './archive-approved-controls.jpg',
   './v5810-quiet-panel-footer.png'
 ];
 self.addEventListener('install', event => {

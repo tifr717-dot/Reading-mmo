@@ -1,0 +1,12 @@
+Reading MMO v5.10.4 — Archive Reference Rebuild
+
+- Rebuilt Archive from stable v5.10.1 base.
+- Uses the approved Enchanted Archive composition as the visual anchor for title/stats/search/filter chrome.
+- Dynamic library books render beneath it in one illustrated shelf row of up to 7 volumes.
+- Additional books create additional shelf rows automatically.
+- Search and filters remain functional.
+- Series view groups volumes by series.
+- Tapping a spine keeps the shelf visible and opens the detailed record directly below.
+- Detailed record uses the compact open-book artwork rather than a giant plain panel.
+- Broken cover images fall back to the themed placeholder.
+- No old build notes or backup HTML files included.
