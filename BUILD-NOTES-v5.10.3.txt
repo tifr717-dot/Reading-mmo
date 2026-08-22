@@ -1,0 +1,12 @@
+Reading MMO v5.10.3 — Archive Art Rebuild
+
+- Rebased from the stable v5.10.1 package after v5.10.2 caused mobile overflow/jank.
+- Archive uses real illustrated pixel-art assets from the existing Reading MMO visual language.
+- Fixed archive width overflow: stats, search, filters, shelf rows all stay inside the mobile viewport.
+- Books are larger: 4 per illustrated shelf row instead of 7 squeezed across one row.
+- Shelf rows use a dedicated ornate library cubby asset with wood, ivy, candle, books, gold trim.
+- Book titles remain readable on vertical spines.
+- Tapping a spine keeps the shelves visible and opens the detailed record beneath them.
+- Detailed record now uses the existing illustrated open-book scene instead of a plain rectangular panel.
+- Existing library data, cover uploads, filters, editing, and save logic are preserved.
+- Includes only this build note.
