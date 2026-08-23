@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.10.4-archive-reference-spine-library';
+const CACHE = 'reading-mmo-v5.10.5-archive-shelf-record-polish';
 const CORE = [
   './',
   './asset-book.png',

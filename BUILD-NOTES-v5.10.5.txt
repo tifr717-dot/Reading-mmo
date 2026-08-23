@@ -1,0 +1,17 @@
+Reading MMO v5.10.5 — Archive Shelf + Record Polish
+
+LOCKED / unchanged:
+- Approved Enchanted Archive header, stats, search, Add Volume, and filter artwork.
+
+Shelf:
+- Richer leather-like fantasy spines closer to the approved concept.
+- Gold inner borders, crown marks, individual series motifs, subtler height variation, selected-book bookmark/glow.
+- Seven-book shelf behavior retained.
+
+Open-book record:
+- Repositioned cover, title, author, rating, favorite state, metadata, notes, and actions to fit the left/right pages.
+- Long titles wrap to two lines.
+- Added Close Record.
+- Broken/stale cover images fall back cleanly.
+
+App Health and service-worker cache bumped to v5.10.5.
