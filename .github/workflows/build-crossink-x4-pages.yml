@@ -7,6 +7,12 @@ on:
     paths:
       - ".github/workflows/build-crossink-x4-pages.yml"
       - "firmware/crossink-x4-pages/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-crossink-x4-pages.yml"
+      - "firmware/crossink-x4-pages/**"
   workflow_dispatch:
 
 permissions:
@@ -155,7 +161,6 @@ jobs:
             exit 1
           fi
 
-          # Formatter must not alter the already-reviewed source diff.
           git diff > "$GITHUB_WORKSPACE/after-format.patch"
           if ! cmp -s "$GITHUB_WORKSPACE/before-format.patch" "$GITHUB_WORKSPACE/after-format.patch"; then
             echo "clang-format changed patch content; regenerate the patch before release."
