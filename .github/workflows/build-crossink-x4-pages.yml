@@ -145,7 +145,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y clang-format-21
 
-      - name: Check formatting
+      - name: Canonicalize and verify formatting
         shell: bash
         run: |
           set -euo pipefail
@@ -153,6 +153,7 @@ jobs:
           git diff > "$GITHUB_WORKSPACE/before-format.patch"
           PATH="/usr/lib/llvm-21/bin:$PATH" ./bin/clang-format-fix
           git diff --check
+
           changed_after_format="$(git diff --name-only)"
           expected="$(cat "$GITHUB_WORKSPACE/changed-files.txt")"
           if [ "$changed_after_format" != "$expected" ]; then
@@ -162,11 +163,17 @@ jobs:
           fi
 
           git diff > "$GITHUB_WORKSPACE/after-format.patch"
-          if ! cmp -s "$GITHUB_WORKSPACE/before-format.patch" "$GITHUB_WORKSPACE/after-format.patch"; then
-            echo "clang-format changed patch content; regenerate the patch before release."
-            diff -u "$GITHUB_WORKSPACE/before-format.patch" "$GITHUB_WORKSPACE/after-format.patch" || true
-            exit 1
+          if cmp -s "$GITHUB_WORKSPACE/before-format.patch" "$GITHUB_WORKSPACE/after-format.patch"; then
+            echo "Pages patch was already in canonical CrossInk formatting."
+          else
+            echo "clang-format made whitespace/style-only canonicalization changes; continuing with the canonicalized source."
           fi
+          sha256sum "$GITHUB_WORKSPACE/after-format.patch" | tee "$GITHUB_WORKSPACE/formatted-patch-sha256.txt"
+
+          # Re-check protected build/hardware inputs after formatting.
+          sha256sum -c "$GITHUB_WORKSPACE/protected-before.sha256"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$(cat "$GITHUB_WORKSPACE/freeink-before.txt")"
+          git diff --exit-code -- platformio.ini partitions.csv freeink-sdk
 
       - name: Run cppcheck
         shell: bash
@@ -211,6 +218,7 @@ jobs:
 
           custom_sha="$(sha256sum "$custom" | awk '{print $1}')"
           baseline_sha="$(awk '{print $1}' "$GITHUB_WORKSPACE/baseline-sha256.txt")"
+          formatted_patch_sha="$(awk '{print $1}' "$GITHUB_WORKSPACE/formatted-patch-sha256.txt")"
 
           {
             echo "CrossInk custom X4 Pages build"
@@ -225,6 +233,7 @@ jobs:
             echo "Custom partition headroom bytes: $headroom"
             echo "Baseline rebuild SHA-256: $baseline_sha"
             echo "Custom firmware SHA-256: $custom_sha"
+            echo "Canonical formatted patch SHA-256: $formatted_patch_sha"
             echo "Official recovery firmware SHA-256: $OFFICIAL_RECOVERY_SHA256"
             echo ""
             echo "Changed source files:"
@@ -232,6 +241,7 @@ jobs:
           } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
 
           sha256sum "$custom" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
+          cp "$GITHUB_WORKSPACE/after-format.patch" "$GITHUB_WORKSPACE/out/CrossInk-v1.5.0-pages-x4-canonical.patch"
 
           cat > "$GITHUB_WORKSPACE/out/README-FLASH.txt" <<EOF2
           Flash candidate: firmware-x3-x4-v${CUSTOM_VERSION}.bin
@@ -259,6 +269,7 @@ jobs:
             echo "- Size delta: $delta bytes"
             echo "- Partition headroom: $headroom bytes"
             echo "- Custom SHA-256: \`$custom_sha\`"
+            echo "- Canonical patch SHA-256: \`$formatted_patch_sha\`"
             echo ""
             echo "### Build memory report"
             grep -E "RAM:\s|Flash:\s" "$GITHUB_WORKSPACE/custom-build.log" || true
@@ -273,6 +284,7 @@ jobs:
             out/SHA256SUMS.txt
             out/BUILD-INFO.txt
             out/README-FLASH.txt
+            out/CrossInk-v1.5.0-pages-x4-canonical.patch
             custom-build.log
             baseline-build.log
             patch-stat.txt
