@@ -1,0 +1,281 @@
+name: Build CrossInk X4 Pages Firmware
+
+on:
+  push:
+    branches:
+      - crossink-x4-pages-1.5.0
+    paths:
+      - ".github/workflows/build-crossink-x4-pages.yml"
+      - "firmware/crossink-x4-pages/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-crossink-x4-pages.yml"
+      - "firmware/crossink-x4-pages/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CROSSINK_COMMIT: 0de623ed24acd94ae2301e8e1f4a42e32613110b
+  FREEINK_COMMIT: 1ff020263cd2202ea79ce3eb811f5ac8489b8cde
+  CUSTOM_VERSION: 1.5.0-pages1
+  OFFICIAL_RECOVERY_SHA256: b5debe8b6b3f26f1af53410f388a2eb8def78b19b0c04aa94e46e942684dce2f
+  PATCH_B64_PATH: firmware/crossink-x4-pages/CrossInk-v1.5.0-pages-x4.patch.gz.b64
+  PATCH_SHA256: 0be82cde68b51c485dbd735937fd438b8ee405ff7091ee87e5cf969f399049fc
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout isolated build inputs
+        uses: actions/checkout@v6
+
+      - name: Fetch exact CrossInk 1.5.0 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone https://github.com/uxjulia/CrossInk.git crossink
+          cd crossink
+          git checkout --detach "$CROSSINK_COMMIT"
+          git submodule update --init --recursive
+          test "$(git rev-parse HEAD)" = "$CROSSINK_COMMIT"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$FREEINK_COMMIT"
+          test "$(git config -f .gitmodules --get submodule.freeink-sdk.url)" = "https://github.com/Free-Ink/freeink-sdk.git"
+
+      - name: Record protected base inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd crossink
+          sha256sum platformio.ini partitions.csv > "$GITHUB_WORKSPACE/protected-before.sha256"
+          git -C freeink-sdk rev-parse HEAD > "$GITHUB_WORKSPACE/freeink-before.txt"
+          git diff --exit-code
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-crossink-1.5.0-platformio-${{ hashFiles('crossink/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-crossink-1.5.0-platformio-
+
+      - name: Install exact PlatformIO Core used by CrossInk CI
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv pip install --system -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.1.19.zip
+          pio --version
+
+      - name: Build pristine 1.5.0 baseline
+        shell: bash
+        env:
+          CROSSINK_RELEASE_VERSION: 1.5.0
+        run: |
+          set -euo pipefail
+          cd crossink
+          pio run -j1 -e default | tee "$GITHUB_WORKSPACE/baseline-build.log"
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          baseline=.pio/build/default/firmware-x3-x4-v1.5.0.bin
+          test -s "$baseline"
+          cp "$baseline" "$GITHUB_WORKSPACE/out/baseline-rebuild-v1.5.0.bin"
+          stat -c '%s' "$baseline" > "$GITHUB_WORKSPACE/baseline-size.txt"
+          sha256sum "$baseline" > "$GITHUB_WORKSPACE/baseline-sha256.txt"
+          pio run -e default -t clean
+
+      - name: Decode, verify, and apply Pages patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          encoded="$GITHUB_WORKSPACE/$PATCH_B64_PATH"
+          patch_file="$GITHUB_WORKSPACE/CrossInk-v1.5.0-pages-x4.patch"
+          test -s "$encoded"
+          base64 -d "$encoded" | gzip -d > "$patch_file"
+          test -s "$patch_file"
+          actual_sha="$(sha256sum "$patch_file" | awk '{print $1}')"
+          test "$actual_sha" = "$PATCH_SHA256"
+          cd crossink
+          git apply --check "$patch_file"
+          git apply "$patch_file"
+          git diff --check
+
+          allowed='^(CHANGELOG\.md|lib/I18n/translations/english\.yaml|src/activities/boot_sleep/SleepActivity\.cpp|src/activities/home/HomeActivity\.cpp|src/activities/home/RecentBookProgress\.(cpp|h)|src/activities/reader/BookStatsActivity\.(cpp|h)|src/activities/reader/BookStatsView\.(cpp|h)|src/activities/reader/EpubReaderActivity\.(cpp|h)|src/activities/reader/XtcReaderActivity\.cpp)$'
+          unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files changed by patch:"
+            printf '%s\n' "$unexpected"
+            exit 1
+          fi
+
+          changed_count="$(git diff --name-only | wc -l | tr -d ' ')"
+          test "$changed_count" -eq 13
+          git diff --name-only | tee "$GITHUB_WORKSPACE/changed-files.txt"
+          git diff --stat | tee "$GITHUB_WORKSPACE/patch-stat.txt"
+
+      - name: Verify hardware and flashing inputs stayed unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd crossink
+          sha256sum -c "$GITHUB_WORKSPACE/protected-before.sha256"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$(cat "$GITHUB_WORKSPACE/freeink-before.txt")"
+          git diff --exit-code -- platformio.ini partitions.csv freeink-sdk
+
+      - name: Install clang-format 21
+        shell: bash
+        run: |
+          set -euo pipefail
+          wget -q https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 21
+          sudo apt-get update -qq
+          sudo apt-get install -y clang-format-21
+
+      - name: Check formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd crossink
+          git diff > "$GITHUB_WORKSPACE/before-format.patch"
+          PATH="/usr/lib/llvm-21/bin:$PATH" ./bin/clang-format-fix
+          git diff --check
+          changed_after_format="$(git diff --name-only)"
+          expected="$(cat "$GITHUB_WORKSPACE/changed-files.txt")"
+          if [ "$changed_after_format" != "$expected" ]; then
+            echo "clang-format changed the patch surface unexpectedly."
+            git diff --stat
+            exit 1
+          fi
+
+          git diff > "$GITHUB_WORKSPACE/after-format.patch"
+          if ! cmp -s "$GITHUB_WORKSPACE/before-format.patch" "$GITHUB_WORKSPACE/after-format.patch"; then
+            echo "clang-format changed patch content; regenerate the patch before release."
+            diff -u "$GITHUB_WORKSPACE/before-format.patch" "$GITHUB_WORKSPACE/after-format.patch" || true
+            exit 1
+          fi
+
+      - name: Run cppcheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd crossink
+          pio check --fail-on-defect low --fail-on-defect medium --fail-on-defect high
+
+      - name: Build custom X3/X4 firmware
+        shell: bash
+        env:
+          CROSSINK_RELEASE_VERSION: ${{ env.CUSTOM_VERSION }}
+        run: |
+          set -euo pipefail
+          cd crossink
+          pio run -j1 -e default | tee "$GITHUB_WORKSPACE/custom-build.log"
+          custom=".pio/build/default/firmware-x3-x4-v${CUSTOM_VERSION}.bin"
+          test -s "$custom"
+          cp "$custom" "$GITHUB_WORKSPACE/out/firmware-x3-x4-v${CUSTOM_VERSION}.bin"
+
+      - name: Validate firmware artifact and write release report
+        shell: bash
+        run: |
+          set -euo pipefail
+          custom="$GITHUB_WORKSPACE/out/firmware-x3-x4-v${CUSTOM_VERSION}.bin"
+          test -s "$custom"
+
+          baseline_size="$(cat "$GITHUB_WORKSPACE/baseline-size.txt")"
+          custom_size="$(stat -c '%s' "$custom")"
+          delta="$((custom_size - baseline_size))"
+          partition_limit=6553600
+          headroom="$((partition_limit - custom_size))"
+
+          if [ "$custom_size" -ge "$partition_limit" ]; then
+            echo "Custom firmware exceeds X3/X4 app partition limit."
+            exit 1
+          fi
+          if [ "$headroom" -lt 100000 ]; then
+            echo "Custom firmware headroom is below 100 KB; refusing release artifact."
+            exit 1
+          fi
+
+          custom_sha="$(sha256sum "$custom" | awk '{print $1}')"
+          baseline_sha="$(awk '{print $1}' "$GITHUB_WORKSPACE/baseline-sha256.txt")"
+
+          {
+            echo "CrossInk custom X4 Pages build"
+            echo "Base CrossInk commit: $CROSSINK_COMMIT"
+            echo "FreeInk SDK commit: $FREEINK_COMMIT"
+            echo "Custom version: $CUSTOM_VERSION"
+            echo "PlatformIO environment: default (x3-x4)"
+            echo "X3/X4 app partition limit bytes: $partition_limit"
+            echo "Baseline rebuild bytes: $baseline_size"
+            echo "Custom firmware bytes: $custom_size"
+            echo "Custom size delta bytes: $delta"
+            echo "Custom partition headroom bytes: $headroom"
+            echo "Baseline rebuild SHA-256: $baseline_sha"
+            echo "Custom firmware SHA-256: $custom_sha"
+            echo "Official recovery firmware SHA-256: $OFFICIAL_RECOVERY_SHA256"
+            echo ""
+            echo "Changed source files:"
+            sed 's/^/  - /' "$GITHUB_WORKSPACE/changed-files.txt"
+          } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
+
+          sha256sum "$custom" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
+
+          cat > "$GITHUB_WORKSPACE/out/README-FLASH.txt" <<EOF2
+          Flash candidate: firmware-x3-x4-v${CUSTOM_VERSION}.bin
+          Target: Xteink X3/X4 CrossInk 1.5.0 base
+
+          Only use this file after the GitHub Actions job finishes successfully.
+          Keep the untouched official CrossInk 1.5.0 firmware available as a recovery image.
+          Official recovery SHA-256: ${OFFICIAL_RECOVERY_SHA256}
+
+          This build changes Reading Stats presentation and page-position plumbing only.
+          It does not modify the partition table, board configuration, FreeInk SDK/display drivers, OTA/flash code, or bootloader/recovery paths.
+          EOF2
+          sed -i 's/^          //' "$GITHUB_WORKSPACE/out/README-FLASH.txt"
+
+          cat "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
+          cat "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
+
+          {
+            echo "## CrossInk X4 Pages build"
+            echo "- Base: \`$CROSSINK_COMMIT\`"
+            echo "- FreeInk SDK: \`$FREEINK_COMMIT\`"
+            echo "- Firmware version: \`$CUSTOM_VERSION\`"
+            echo "- Baseline size: $baseline_size bytes"
+            echo "- Custom size: $custom_size bytes"
+            echo "- Size delta: $delta bytes"
+            echo "- Partition headroom: $headroom bytes"
+            echo "- Custom SHA-256: \`$custom_sha\`"
+            echo ""
+            echo "### Build memory report"
+            grep -E "RAM:\s|Flash:\s" "$GITHUB_WORKSPACE/custom-build.log" || true
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload validated flash package
+        uses: actions/upload-artifact@v7
+        with:
+          name: CrossInk-X4-Pages-${{ env.CUSTOM_VERSION }}
+          path: |
+            out/firmware-x3-x4-v${{ env.CUSTOM_VERSION }}.bin
+            out/SHA256SUMS.txt
+            out/BUILD-INFO.txt
+            out/README-FLASH.txt
+            custom-build.log
+            baseline-build.log
+            patch-stat.txt
+            changed-files.txt
+          if-no-files-found: error
+          retention-days: 30
