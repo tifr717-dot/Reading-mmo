@@ -1,0 +1,7 @@
+Reading MMO v5.10.7 — Archive Visual Match Pass
+
+- Keeps the approved Enchanted Archive top/header/stats/search/filter composition unchanged.
+- Makes shelf books feel more like illustrated fantasy spines with richer leather depth, gold trim, varied width/height rhythm, stronger crests, and a cleaner selected-book state.
+- Repositions the open-book record so cover controls live naturally on the left page and title/author/rating/metadata/notes/actions sit cleanly on the right page.
+- Preserves all existing Archive functionality and saved library data.
+- App Health/header badge/service-worker cache bumped to v5.10.7.
