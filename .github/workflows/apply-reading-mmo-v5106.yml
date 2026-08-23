@@ -1,0 +1,100 @@
+name: Apply Reading MMO v5.10.6 update visibility
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v5106.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add visible version and stronger app refresh
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text()
+
+          # Bump any visible v5.10.5 labels in the app to v5.10.6.
+          text = text.replace('v5.10.5', 'v5.10.6')
+
+          # Add a permanently visible build badge to the header status line.
+          marker = '<span id="headerSaveText">Saved locally</span>'
+          replacement = marker + '\n    <span>•</span>\n    <span id="headerVersionText" class="app-version-badge">v5.10.6</span>'
+          if 'id="headerVersionText"' not in text and marker in text:
+              text = text.replace(marker, replacement, 1)
+
+          css = r'''
+          <style id="v5106-visible-version">
+          .app-version-badge{
+            display:inline-flex;align-items:center;justify-content:center;
+            padding:2px 6px;border:1px solid rgba(220,181,101,.55);border-radius:999px;
+            background:rgba(59,31,21,.72);color:#e7ca8e!important;
+            font:900 4.6px/1 ui-monospace,monospace;letter-spacing:.25px;
+            vertical-align:middle;white-space:nowrap
+          }
+          </style>
+          '''
+          if 'v5106-visible-version' not in text:
+              text = text.replace('</head>', css + '\n</head>', 1)
+
+          helper = r'''
+          <script id="v5106-force-update">
+          (function(){
+            const BUILD='v5.10.6';
+            const badge=document.getElementById('headerVersionText');
+            if(badge) badge.textContent=BUILD;
+            window.checkForAppUpdate=async function(){
+              const status=document.getElementById('updateStatus');
+              if(status) status.textContent='Checking for '+BUILD+'…';
+              try{
+                if('serviceWorker' in navigator){
+                  const regs=await navigator.serviceWorker.getRegistrations();
+                  await Promise.all(regs.map(r=>r.update().catch(()=>null)));
+                }
+                if('caches' in window){
+                  const keys=await caches.keys();
+                  await Promise.all(keys.filter(k=>String(k).startsWith('reading-mmo-')).map(k=>caches.delete(k)));
+                }
+                await fetch('./index.html?build='+encodeURIComponent(BUILD)+'&t='+Date.now(),{cache:'no-store'});
+                if(status) status.textContent='New app files fetched. Reloading '+BUILD+'…';
+                const u=new URL(location.href);
+                u.searchParams.set('build',BUILD);
+                u.searchParams.set('t',Date.now());
+                location.replace(u.toString());
+              }catch(err){
+                if(status) status.textContent='Refresh requested. Reopening the app…';
+                location.reload();
+              }
+            };
+          })();
+          </script>
+          '''
+          if 'v5106-force-update' not in text:
+              text = text.replace('</body>', helper + '\n</body>', 1)
+
+          p.write_text(text)
+
+          sw = Path('service-worker.js')
+          sw_text = sw.read_text()
+          sw_text = sw_text.replace('reading-mmo-v5.10.5-archive-shelf-record-polish','reading-mmo-v5.10.6-visible-version-refresh')
+          sw_text = sw_text.replace('reading-mmo-v5.10.4-archive-reference-spine-library','reading-mmo-v5.10.6-visible-version-refresh')
+          sw.write_text(sw_text)
+
+          Path('BUILD-NOTES-v5.10.6.txt').write_text('''Reading MMO v5.10.6 — Update Visibility + Refresh Reliability\n\n- Adds a visible v5.10.6 badge to the app header so the active build is obvious after refresh.\n- Keeps the v5.10.5 Archive shelf/open-book polish already pushed.\n- Strengthens Check for App Update + Reload by updating the service worker, clearing old Reading MMO caches, fetching index.html with no-store, and reloading with a build query.\n- Service-worker cache bumped to v5.10.6.\n''')
+          PY
+
+      - name: Commit v5.10.6
+        run: |
+          git config user.name "Reading MMO updater"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html service-worker.js BUILD-NOTES-v5.10.6.txt
+          git commit -m "Reading MMO v5.10.6 visible version and refresh reliability"
+          git push
