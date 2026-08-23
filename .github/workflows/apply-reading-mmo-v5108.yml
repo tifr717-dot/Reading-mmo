@@ -1,0 +1,264 @@
+name: Apply Reading MMO v5.10.8 archive polish
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v5108.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply v5.10.8 archive shelf and open-book polish
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text()
+
+          css = r'''
+          <style id="v5108-archive-polish">
+          /* v5.10.8 — approved archive top remains LOCKED. Shelf + open-book record only. */
+
+          /* --- SHELF: closer to the approved concept art --- */
+          #library .v5104-shelf-row{
+            min-height:332px!important;
+            padding:24px 24px 38px!important;
+            background:
+              radial-gradient(ellipse at 50% 28%,rgba(117,71,36,.18),transparent 50%),
+              linear-gradient(180deg,rgba(20,9,6,.10),rgba(8,4,3,.18)),
+              url('./v53-wood-tile.png') center/176px auto repeat!important;
+            border-radius:10px!important;
+          }
+          #library .v5104-books{
+            left:6.1%!important;right:6.1%!important;top:34px!important;bottom:36px!important;
+            gap:3px!important;align-items:flex-end!important;justify-content:center!important;
+          }
+          #library .v5104-book{
+            flex:1 1 0!important;min-width:0!important;max-width:76px!important;
+            height:94%!important;padding:17px 5px 24px!important;overflow:visible!important;
+            border:1px solid #160906!important;
+            border-radius:5px 5px 2px 2px!important;
+            outline:1px solid rgba(232,188,93,.86)!important;outline-offset:-4px!important;
+            background:
+              linear-gradient(90deg,rgba(255,247,221,.18),transparent 10%,transparent 86%,rgba(0,0,0,.33)),
+              linear-gradient(180deg,rgba(255,255,255,.08),transparent 14%),
+              linear-gradient(180deg,var(--c1),var(--c2))!important;
+            box-shadow:3px 5px 0 #100604,0 9px 12px rgba(0,0,0,.34),inset 0 0 12px rgba(0,0,0,.13)!important;
+          }
+          #library .v5104-book:nth-child(1){flex-grow:1.10!important;height:96%!important}
+          #library .v5104-book:nth-child(2){flex-grow:.96!important;height:91%!important}
+          #library .v5104-book:nth-child(3){flex-grow:1.05!important;height:95%!important}
+          #library .v5104-book:nth-child(4){flex-grow:1.09!important;height:98%!important}
+          #library .v5104-book:nth-child(5){flex-grow:.97!important;height:93%!important}
+          #library .v5104-book:nth-child(6){flex-grow:1.06!important;height:96%!important}
+          #library .v5104-book:nth-child(7){flex-grow:1.02!important;height:92%!important}
+
+          #library .v5104-book::before{
+            inset:7px 7px 25px!important;
+            border:1px solid rgba(249,211,120,.66)!important;
+            border-radius:2px!important;
+            box-shadow:
+              inset 0 0 0 1px rgba(49,20,10,.20),
+              inset 0 10px 0 rgba(255,220,137,.025),
+              inset 0 -11px 0 rgba(8,3,2,.10)!important;
+          }
+          #library .v5104-book::after{
+            left:8px!important;right:8px!important;bottom:25px!important;height:43px!important;
+            background:
+              linear-gradient(180deg,
+                transparent 0 7%,rgba(239,196,99,.70) 7% 9%,transparent 9% 73%,
+                rgba(239,196,99,.62) 73% 75%,transparent 75%)!important;
+            opacity:.82!important;
+          }
+          #library .v5105-spine-crown{
+            top:9px!important;color:#e8bc63!important;font-size:6.8px!important;opacity:.98!important;
+            text-shadow:0 1px 1px #1a0905,0 0 4px rgba(255,212,114,.22)!important;
+          }
+          #library .v5104-book-title{
+            inset:34px 9px 69px!important;
+            color:#f7e5b4!important;
+            font:900 clamp(7.3px,1.48vw,11.2px)/1 Georgia,'Times New Roman',serif!important;
+            letter-spacing:.08px!important;
+            text-shadow:0 1px 1px #160805,0 0 4px rgba(0,0,0,.30)!important;
+          }
+          #library .v5104-book-icon{
+            top:auto!important;bottom:39px!important;
+            width:22px!important;height:22px!important;
+            color:#e8bd67!important;font-size:clamp(8px,1.7vw,12px)!important;
+            text-shadow:0 1px 1px #170906,0 0 5px rgba(255,211,112,.15)!important;
+          }
+          #library .v5104-book-series{
+            left:6px!important;right:6px!important;bottom:7px!important;height:15px!important;
+            color:#f0cf87!important;
+            background:linear-gradient(180deg,rgba(33,13,7,.15),rgba(9,4,3,.48))!important;
+            border-top:1px solid rgba(242,202,109,.56)!important;
+            border-bottom:1px solid rgba(8,3,2,.34)!important;
+            font-size:clamp(4px,.84vw,6px)!important;
+          }
+          #library .v5104-book-fav{right:8px!important;top:9px!important;font-size:8px!important;color:#ffe58d!important}
+          #library .v5105-spine-bookmark{right:7px!important;top:-2px!important;height:32px!important}
+          #library .v5104-book.selected{
+            transform:translateY(-7px)!important;
+            box-shadow:0 0 0 1px #f3d183,0 0 20px rgba(255,198,72,.42),3px 10px 0 #110704,0 13px 18px rgba(0,0,0,.36)!important;
+          }
+
+          /* --- OPEN BOOK RECORD: treat the spread like two real pages, not floating boxes --- */
+          #library .v5104-detail-view{margin-top:9px!important}
+          #library .v5104-detail-book{aspect-ratio:845/434!important;min-height:0!important;overflow:visible!important}
+
+          #library .v5104-detail-left{
+            left:5.8%!important;top:9.8%!important;width:38.0%!important;bottom:8.8%!important;
+            display:flex!important;flex-direction:column!important;align-items:center!important;
+            justify-content:flex-start!important;gap:5px!important;
+          }
+          #library .v5104-cover-frame{
+            width:58%!important;max-height:71%!important;aspect-ratio:2/3!important;
+            border-radius:2px!important;border:2px solid #2a130c!important;
+            outline:1px solid #b98749!important;outline-offset:-5px!important;
+            box-shadow:3px 5px 0 rgba(43,20,11,.54),0 8px 11px rgba(0,0,0,.18)!important;
+          }
+          #library .v5104-cover-frame img{color:transparent!important;font-size:0!important}
+          #library .v5104-cover-placeholder{padding:7px!important}
+          #library .v5104-cover-placeholder span{font-size:18px!important}
+          #library .v5104-cover-placeholder b{font-size:5.8px!important;line-height:1.12!important}
+          #library .v5104-cover-actions{width:68%!important;gap:3px!important;margin-top:1px!important}
+          #library .v5104-cover-actions button{
+            min-height:23px!important;padding:3px 5px!important;border-radius:6px!important;
+            font-size:3.65px!important;box-shadow:0 3px 0 rgba(64,31,15,.23)!important;
+          }
+
+          #library .v5104-detail-right{
+            left:50.1%!important;right:7.5%!important;top:13.4%!important;bottom:10.2%!important;
+            display:grid!important;
+            grid-template-rows:auto auto auto auto minmax(0,1fr) auto!important;
+            align-content:start!important;min-width:0!important;color:#51341f!important;
+          }
+          #library .v5104-entry{
+            justify-self:start!important;align-self:start!important;
+            padding:3px 8px!important;border-radius:999px!important;
+            background:#8a563f!important;color:#f4ddb1!important;
+            font-size:3.45px!important;letter-spacing:.28px!important;
+            box-shadow:0 2px 0 rgba(74,35,20,.16)!important;
+          }
+          #library .v5104-title{
+            margin:6px 0 2px!important;max-width:96%!important;
+            color:#4a2c1a!important;
+            font:900 clamp(10px,2.45vw,16.5px)/1.02 Georgia,'Times New Roman',serif!important;
+            white-space:normal!important;overflow-wrap:anywhere!important;
+            display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;
+          }
+          #library .v5104-author{
+            margin:0 0 0!important;color:#77543a!important;
+            font:800 clamp(4.25px,.95vw,6px)/1.15 ui-monospace,monospace!important;
+            white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+          }
+          #library .v5104-rating-row{
+            margin-top:6px!important;min-height:21px!important;display:flex!important;
+            align-items:center!important;gap:5px!important;
+          }
+          #library .v5104-rating{
+            padding:4px 8px!important;border-radius:7px!important;
+            background:#59351f!important;border:1px solid #8b6337!important;color:#f6d480!important;
+            font-size:5.5px!important;
+          }
+          #library .v5104-favorite{
+            margin-left:0!important;color:#98611e!important;font-size:3.65px!important;white-space:nowrap!important;
+          }
+          #library .v5104-ledger{
+            display:grid!important;grid-template-columns:1fr 1fr!important;
+            gap:5px!important;margin-top:7px!important;
+          }
+          #library .v5104-ledger>div{
+            min-height:35px!important;padding:5px 6px!important;
+            border:1px solid rgba(158,113,63,.45)!important;border-radius:2px!important;
+            background:rgba(255,248,225,.31)!important;
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)!important;
+          }
+          #library .v5104-ledger span{
+            margin-bottom:3px!important;color:#866044!important;font-size:3.1px!important;letter-spacing:.14px!important;
+          }
+          #library .v5104-ledger b{color:#493020!important;font-size:4.6px!important;line-height:1.08!important}
+          #library .v5104-notes{
+            align-self:start!important;margin-top:5px!important;max-height:31px!important;overflow:hidden!important;
+            padding:4px 2px!important;border-top:1px solid rgba(148,105,58,.32)!important;
+            color:#654631!important;font:italic 700 3.95px/1.22 Georgia,'Times New Roman',serif!important;
+          }
+          #library .v5104-notes b{font-style:normal!important;font-size:3px!important;letter-spacing:.15px!important}
+          #library .v5104-detail-actions{
+            position:static!important;align-self:end!important;margin-top:5px!important;
+            display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;
+          }
+          #library .v5104-detail-actions button{
+            min-height:24px!important;padding:3px 4px!important;border-radius:7px!important;
+            font-size:3.65px!important;box-shadow:0 3px 0 rgba(64,31,15,.21)!important;
+          }
+          #library .v5104-detail-close{
+            right:7.2%!important;top:8.3%!important;padding:4px 7px!important;border-radius:999px!important;
+            background:#50301f!important;color:#ead09a!important;border-color:#946738!important;font-size:3.3px!important;
+          }
+
+          @media(max-width:420px){
+            #library .v5104-shelf-row{min-height:296px!important;padding:22px 18px 34px!important}
+            #library .v5104-books{left:5.8%!important;right:5.8%!important;gap:2px!important}
+            #library .v5104-book{max-width:59px!important}
+            #library .v5104-book-title{inset:32px 7px 64px!important;font-size:6.55px!important}
+            #library .v5104-book-icon{bottom:35px!important;font-size:8px!important}
+            #library .v5104-book-series{left:5px!important;right:5px!important;height:13px!important;font-size:3.5px!important}
+
+            #library .v5104-detail-left{left:5.6%!important;top:10.4%!important;width:38.3%!important;bottom:9.4%!important}
+            #library .v5104-cover-frame{width:59%!important}
+            #library .v5104-detail-right{left:50.3%!important;right:7.1%!important;top:14%!important;bottom:10.8%!important}
+            #library .v5104-title{font-size:10.4px!important;line-height:1!important;margin-top:5px!important}
+            #library .v5104-ledger>div{min-height:32px!important;padding:4px 5px!important}
+            #library .v5104-ledger b{font-size:4.15px!important}
+            #library .v5104-cover-actions button,#library .v5104-detail-actions button{font-size:3.25px!important;min-height:21px!important}
+          }
+          </style>
+          '''
+
+          if 'v5108-archive-polish' not in text:
+              text = text.replace('</head>', css + '\n</head>')
+
+          # Bump visible version text without touching the approved archive controls.
+          text = text.replace('v5.10.7</span>', 'v5.10.8</span>')
+          text = text.replace('Version</b><span>v5.10.7', 'Version</b><span>v5.10.8')
+
+          # Prevent any stale/broken uploaded cover from painting browser alt text over the page.
+          text = text.replace('<img id="libraryDetailCoverImg" alt="Book cover" hidden>', '<img id="libraryDetailCoverImg" alt="" hidden>')
+
+          p.write_text(text)
+
+          sw = Path('service-worker.js')
+          sw_text = sw.read_text().replace(
+              'reading-mmo-v5.10.7-archive-visual-match',
+              'reading-mmo-v5.10.8-archive-polish'
+          )
+          # Fallback if the exact prior cache label differs.
+          import re
+          sw_text = re.sub(r"const CACHE = 'reading-mmo-v5\.10\.7[^']*';", "const CACHE = 'reading-mmo-v5.10.8-archive-polish';", sw_text)
+          sw.write_text(sw_text)
+
+          Path('BUILD-NOTES-v5.10.8.txt').write_text('''Reading MMO v5.10.8 — Archive Polish\n\nLOCKED / unchanged:\n- Approved Enchanted Archive title/stats/search/Add Volume/filter panel.\n\nShelf:\n- Refined fantasy spines to better match the approved concept art.\n- Stronger leather depth, gold inset borders, decorative crown and lower crest placement.\n- More natural width/height rhythm while keeping all seven current books on one shelf.\n- Selected volume retains a subtle glow/bookmark treatment.\n\nOpen-book record:\n- Repositioned cover and cover controls on the left page.\n- Rebalanced title, author, rating/favorite, metadata, notes, and action buttons on the right page.\n- Long titles wrap cleanly to two lines and metadata stays away from the center fold.\n- Broken cover images no longer show browser alt-text artifacts.\n\nApp/header version and service-worker cache bumped to v5.10.8.\n''')
+
+      - name: Validate changed files
+        run: |
+          node -e "const fs=require('fs'); const s=fs.readFileSync('index.html','utf8'); const parts=[...s.matchAll(/<script(?:[^>]*)>([\\s\\S]*?)<\\/script>/gi)].map(m=>m[1]); fs.writeFileSync('/tmp/reading-mmo-inline.js',parts.join('\\n'));"
+          node --check /tmp/reading-mmo-inline.js
+          node --check service-worker.js
+          grep -q 'v5108-archive-polish' index.html
+          grep -q 'v5.10.8' index.html
+
+      - name: Commit app update
+        run: |
+          git config user.name "Reading MMO updater"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html service-worker.js BUILD-NOTES-v5.10.8.txt
+          git commit -m "Reading MMO v5.10.8 archive polish"
+          git push
