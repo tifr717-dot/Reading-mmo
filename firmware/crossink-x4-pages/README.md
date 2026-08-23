@@ -16,7 +16,7 @@ Target stats layout on the X4:
 - Current book: `Sessions | Reading Time | Progress` / `Pages | Time Left | Pages/Min`
 - This device: `Sessions | Reading Time | Pages/Min` / `Avg Session | Pages | Books Read`
 
-A successful GitHub Actions run uploads a `CrossInk-X4-Pages-1.5.0-pages1` artifact containing the flashable `.bin`, SHA-256 checksum, build information, and logs.
+A successful GitHub Actions run uploads a `CrossInk-X4-Pages-1.5.0-pages1` artifact containing the flashable `.bin`, SHA-256 checksum, build information, and logs. The draft pull request is being used only as an inspectable validation run and is not intended to merge firmware tooling into the app.
 
 The user's untouched official `firmware-x3-x4-v1.5.0.bin` recovery image has SHA-256:
 
