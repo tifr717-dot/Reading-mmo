@@ -14,21 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Apply v5.10.5 archive shelf and record polish
-        shell: python
+        shell: bash
         run: |
+          python3 - <<'PY'
           from pathlib import Path
-
-          p = Path('index.html')
-          text = p.read_text()
-
-          text = text.replace(
-              '<div class="health-row"><b>Version</b><span>v5.10.4</span></div>',
-              '<div class="health-row"><b>Version</b><span>v5.10.5</span></div>'
-          )
-
-          css = r'''
+          p=Path('index.html')
+          text=p.read_text()
+          text=text.replace('<div class="health-row"><b>Version</b><span>v5.10.4</span></div>','<div class="health-row"><b>Version</b><span>v5.10.5</span></div>')
+          css=r'''
           <style id="v5105-archive-shelf-record-polish">
-          /* v5.10.5 — LOCK approved Archive chrome; polish only shelf + open-book record. */
+          /* v5.10.5 — approved Archive chrome is locked; only shelf + open-book record change. */
           #library .v5104-shelf-row{min-height:326px!important;padding:24px 26px 34px!important;border-radius:13px!important;background:radial-gradient(ellipse at 50% 34%,rgba(106,63,34,.18),transparent 52%),linear-gradient(180deg,rgba(25,11,7,.18),rgba(9,4,3,.14)),url('./v53-wood-tile.png') center/170px auto repeat!important;box-shadow:0 8px 15px rgba(0,0,0,.25),inset 0 0 0 5px #351b12,inset 0 0 0 7px #8d5d31,inset 0 0 0 9px rgba(218,169,86,.18)!important}
           #library .v5104-shelf-row::before{left:18px!important;right:18px!important;top:16px!important;height:13px!important;background:linear-gradient(180deg,#aa773d,#62371c 58%,#2d160e)!important;border-color:#c18a48!important;border-radius:7px!important}
           #library .v5104-shelf-row::after{left:24px!important;right:24px!important;bottom:13px!important;height:18px!important;background:linear-gradient(180deg,#c58a47 0 13%,#7b4924 13% 47%,#452317 47% 80%,#20100a 80%)!important;border-color:#916033!important;border-top-color:#d9a15a!important}
@@ -41,7 +36,7 @@ jobs:
           #library .v5104-book.h1{height:93%!important}#library .v5104-book.h2{height:96%!important}#library .v5104-book.h3{height:94%!important}#library .v5104-book.h4{height:97%!important}#library .v5104-book.h5{height:95%!important}
           #library .v5104-book::before{inset:8px 7px 24px!important;border:1px solid rgba(247,208,118,.52)!important;border-radius:8px 8px 3px 3px!important;box-shadow:inset 0 0 0 1px rgba(45,19,10,.20)!important}
           #library .v5104-book::after{left:10px!important;right:10px!important;bottom:26px!important;height:34px!important;background:linear-gradient(180deg,transparent 0 8%,rgba(235,192,99,.52) 8% 11%,transparent 11% 78%,rgba(235,192,99,.48) 78% 81%,transparent 81%)!important;opacity:.8!important}
-          #library .v5104-book-icon{top:auto!important;bottom:34px!important;width:22px;height:22px;display:grid;place-items:center;color:#e8bd63!important;font:900 clamp(9px,1.7vw,13px)/1 Georgia,'Times New Roman',serif!important;text-shadow:0 1px 1px #1d0c07,0 0 4px rgba(255,212,119,.16)!important}
+          #library .v5104-book-icon{position:absolute!important;left:50%!important;top:auto!important;bottom:34px!important;transform:translateX(-50%)!important;width:22px;height:22px;display:grid!important;place-items:center!important;color:#e8bd63!important;font:900 clamp(9px,1.7vw,13px)/1 Georgia,'Times New Roman',serif!important;text-shadow:0 1px 1px #1d0c07,0 0 4px rgba(255,212,119,.16)!important}
           #library .v5104-book-title{inset:24px 11px 66px!important;color:#f5dfaa!important;font:900 clamp(7.3px,1.42vw,11.2px)/1 Georgia,'Times New Roman',serif!important;letter-spacing:.08px!important}
           #library .v5104-book-series{left:7px!important;right:7px!important;bottom:7px!important;height:14px!important;border-top:1px solid rgba(243,204,113,.42)!important;border-bottom:1px solid rgba(10,4,2,.26)!important;background:linear-gradient(180deg,rgba(22,9,6,.16),rgba(12,5,3,.42))!important;font-size:clamp(4px,.84vw,6px)!important}
           #library .v5104-book-fav{right:9px!important;top:10px!important;color:#ffe08b!important;font-size:7px!important}
@@ -68,20 +63,16 @@ jobs:
           @media(max-width:420px){#library .v5104-shelf-row{min-height:285px!important;padding-left:20px!important;padding-right:20px!important}#library .v5104-books{left:6.4%!important;right:6.4%!important;gap:3px!important}#library .v5104-book{max-width:56px!important;border-radius:9px 9px 3px 3px / 7px 7px 3px 3px!important}#library .v5104-book-title{inset:23px 8px 61px!important;font-size:6.5px!important}#library .v5104-book-icon{bottom:31px!important;font-size:8px!important}#library .v5104-book-series{left:5px!important;right:5px!important;height:13px!important;font-size:3.6px!important}#library .v5104-detail-left{left:6.5%!important;top:13%!important;width:35.5%!important;bottom:12%!important}#library .v5104-cover-frame{width:60%!important}#library .v5104-detail-right{left:49.5%!important;right:7.8%!important;top:15.7%!important;bottom:12.5%!important}#library .v5104-title{font-size:10.5px!important;line-height:1!important;margin-top:5px!important}#library .v5104-ledger>div{min-height:33px!important;padding:4px 5px!important}#library .v5104-ledger b{font-size:4.2px!important}#library .v5104-detail-actions button{font-size:3.4px!important;min-height:22px!important}}
           </style>
           '''
-
           if 'v5105-archive-shelf-record-polish' not in text:
-              text = text.replace('</head>', css + '\n</head>')
-
-          detail_needle = '<div class="v5104-detail-book">\n        <img class="v5104-detail-bg" src="./v53-open-book.png" alt="Open archive record book">'
-          detail_repl = '<div class="v5104-detail-book">\n        <img class="v5104-detail-bg" src="./v53-open-book.png" alt="Open archive record book">\n        <button class="v5104-detail-close" onclick="closeLibraryDetail()">CLOSE RECORD</button>'
-          if 'v5104-detail-close' not in text and detail_needle in text:
-              text = text.replace(detail_needle, detail_repl, 1)
-
-          text = text.replace('<img id="libraryDetailCoverImg" alt="Book cover" hidden>', '<img id="libraryDetailCoverImg" alt="" hidden>')
-
-          start = text.index('function libraryBookCardMarkup(b,volumeNo){')
-          end = text.index('function libraryShelfRowsMarkup', start)
-          new_func = '''function libraryBookCardMarkup(b,volumeNo){
+              text=text.replace('</head>',css+'\n</head>')
+          needle='<div class="v5104-detail-book">\n        <img class="v5104-detail-bg" src="./v53-open-book.png" alt="Open archive record book">'
+          repl='<div class="v5104-detail-book">\n        <img class="v5104-detail-bg" src="./v53-open-book.png" alt="Open archive record book">\n        <button class="v5104-detail-close" onclick="closeLibraryDetail()">CLOSE RECORD</button>'
+          if '<button class="v5104-detail-close"' not in text and needle in text:
+              text=text.replace(needle,repl,1)
+          text=text.replace('<img id="libraryDetailCoverImg" alt="Book cover" hidden>','<img id="libraryDetailCoverImg" alt="" hidden>')
+          start=text.index('function libraryBookCardMarkup(b,volumeNo){')
+          end=text.index('function libraryShelfRowsMarkup',start)
+          new_func='''function libraryBookCardMarkup(b,volumeNo){
            const n=Number(volumeNo||1), h=(n-1)%5+1;
            const selected=String(libraryDetailId||'')===String(b.id)?' selected':'';
            const series=librarySeriesShort(b.series);
@@ -96,43 +87,17 @@ jobs:
             </button>`;
           }
           '''
-          text = text[:start] + new_func + text[end:]
-
-          text = text.replace(
-              "if(img)img.onerror=()=>{img.removeAttribute('src');img.hidden=true;if(placeholder)placeholder.hidden=false;};",
-              "if(img)img.onerror=()=>{img.removeAttribute('src');img.hidden=true;if(placeholder)placeholder.hidden=false;if(remove)remove.hidden=true;};",
-              1
-          )
-
+          text=text[:start]+new_func+text[end:]
+          old="if(img)img.onerror=()=>{img.removeAttribute('src');img.hidden=true;if(placeholder)placeholder.hidden=false;};"
+          new="if(img)img.onerror=()=>{img.removeAttribute('src');img.hidden=true;if(placeholder)placeholder.hidden=false;if(remove)remove.hidden=true;};"
+          text=text.replace(old,new,1)
           p.write_text(text)
-
-          sw = Path('service-worker.js')
-          sw_text = sw.read_text().replace(
-              'reading-mmo-v5.10.4-archive-reference-spine-library',
-              'reading-mmo-v5.10.5-archive-shelf-record-polish'
-          )
-          sw.write_text(sw_text)
-
-          Path('BUILD-NOTES-v5.10.5.txt').write_text('''Reading MMO v5.10.5 — Archive Shelf + Record Polish
-
-LOCKED / unchanged:
-- Approved Enchanted Archive header, stats, search, Add Volume, and filter artwork.
-
-Shelf:
-- Richer leather-like fantasy spines closer to the approved concept.
-- Gold inner borders, crown marks, individual series motifs, subtler height variation, selected-book bookmark/glow.
-- Seven-book shelf behavior retained.
-
-Open-book record:
-- Repositioned cover, title, author, rating, favorite state, metadata, notes, and actions to fit the left/right pages.
-- Long titles wrap to two lines.
-- Added Close Record.
-- Broken/stale cover images fall back cleanly.
-
-App Health and service-worker cache bumped to v5.10.5.
-''')
-
+          sw=Path('service-worker.js')
+          sw.write_text(sw.read_text().replace('reading-mmo-v5.10.4-archive-reference-spine-library','reading-mmo-v5.10.5-archive-shelf-record-polish'))
+          Path('BUILD-NOTES-v5.10.5.txt').write_text('''Reading MMO v5.10.5 — Archive Shelf + Record Polish\n\nLOCKED / unchanged:\n- Approved Enchanted Archive header, stats, search, Add Volume, and filter artwork.\n\nShelf:\n- Richer leather-like fantasy spines closer to the approved concept.\n- Gold inner borders, crown marks, individual series motifs, subtler height variation, selected-book bookmark/glow.\n- Seven-book shelf behavior retained.\n\nOpen-book record:\n- Repositioned cover, title, author, rating, favorite state, metadata, notes, and actions to fit the left/right pages.\n- Long titles wrap to two lines.\n- Added Close Record.\n- Broken/stale cover images fall back cleanly.\n\nApp Health and service-worker cache bumped to v5.10.5.\n''')
+          PY
       - name: Commit app update
+        shell: bash
         run: |
           git config user.name "Reading MMO updater"
           git config user.email "actions@users.noreply.github.com"
