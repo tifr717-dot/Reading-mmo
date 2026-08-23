@@ -1,0 +1,6 @@
+Reading MMO v5.10.6 — Update Visibility + Refresh Reliability
+
+- Adds a visible v5.10.6 badge to the app header so the active build is obvious after refresh.
+- Keeps the v5.10.5 Archive shelf/open-book polish already pushed.
+- Strengthens Check for App Update + Reload by updating the service worker, clearing old Reading MMO caches, fetching index.html with no-store, and reloading with a build query.
+- Service-worker cache bumped to v5.10.6.

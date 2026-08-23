@@ -3210,7 +3210,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 
 
 <style id="v5105-archive-shelf-record-polish">
-/* v5.10.5 — approved Archive chrome is locked; only shelf + open-book record change. */
+/* v5.10.6 — approved Archive chrome is locked; only shelf + open-book record change. */
 #library .v5104-shelf-row{min-height:326px!important;padding:24px 26px 34px!important;border-radius:13px!important;background:radial-gradient(ellipse at 50% 34%,rgba(106,63,34,.18),transparent 52%),linear-gradient(180deg,rgba(25,11,7,.18),rgba(9,4,3,.14)),url('./v53-wood-tile.png') center/170px auto repeat!important;box-shadow:0 8px 15px rgba(0,0,0,.25),inset 0 0 0 5px #351b12,inset 0 0 0 7px #8d5d31,inset 0 0 0 9px rgba(218,169,86,.18)!important}
 #library .v5104-shelf-row::before{left:18px!important;right:18px!important;top:16px!important;height:13px!important;background:linear-gradient(180deg,#aa773d,#62371c 58%,#2d160e)!important;border-color:#c18a48!important;border-radius:7px!important}
 #library .v5104-shelf-row::after{left:24px!important;right:24px!important;bottom:13px!important;height:18px!important;background:linear-gradient(180deg,#c58a47 0 13%,#7b4924 13% 47%,#452317 47% 80%,#20100a 80%)!important;border-color:#916033!important;border-top-color:#d9a15a!important}
@@ -3250,6 +3250,17 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 @media(max-width:420px){#library .v5104-shelf-row{min-height:285px!important;padding-left:20px!important;padding-right:20px!important}#library .v5104-books{left:6.4%!important;right:6.4%!important;gap:3px!important}#library .v5104-book{max-width:56px!important;border-radius:9px 9px 3px 3px / 7px 7px 3px 3px!important}#library .v5104-book-title{inset:23px 8px 61px!important;font-size:6.5px!important}#library .v5104-book-icon{bottom:31px!important;font-size:8px!important}#library .v5104-book-series{left:5px!important;right:5px!important;height:13px!important;font-size:3.6px!important}#library .v5104-detail-left{left:6.5%!important;top:13%!important;width:35.5%!important;bottom:12%!important}#library .v5104-cover-frame{width:60%!important}#library .v5104-detail-right{left:49.5%!important;right:7.8%!important;top:15.7%!important;bottom:12.5%!important}#library .v5104-title{font-size:10.5px!important;line-height:1!important;margin-top:5px!important}#library .v5104-ledger>div{min-height:33px!important;padding:4px 5px!important}#library .v5104-ledger b{font-size:4.2px!important}#library .v5104-detail-actions button{font-size:3.4px!important;min-height:22px!important}}
 </style>
 
+
+<style id="v5106-visible-version">
+.app-version-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:2px 6px;border:1px solid rgba(220,181,101,.55);border-radius:999px;
+  background:rgba(59,31,21,.72);color:#e7ca8e!important;
+  font:900 4.6px/1 ui-monospace,monospace;letter-spacing:.25px;
+  vertical-align:middle;white-space:nowrap
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -3261,6 +3272,8 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     <span id="onlineText">Online</span>
     <span>•</span>
     <span id="headerSaveText">Saved locally</span>
+    <span>•</span>
+    <span id="headerVersionText" class="app-version-badge">v5.10.6</span>
   </div>
 </header>
 
@@ -4173,7 +4186,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.10.5</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.10.6</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -6532,6 +6545,38 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   });
 }
+</script>
+
+
+<script id="v5106-force-update">
+(function(){
+  const BUILD='v5.10.6';
+  const badge=document.getElementById('headerVersionText');
+  if(badge) badge.textContent=BUILD;
+  window.checkForAppUpdate=async function(){
+    const status=document.getElementById('updateStatus');
+    if(status) status.textContent='Checking for '+BUILD+'…';
+    try{
+      if('serviceWorker' in navigator){
+        const regs=await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r=>r.update().catch(()=>null)));
+      }
+      if('caches' in window){
+        const keys=await caches.keys();
+        await Promise.all(keys.filter(k=>String(k).startsWith('reading-mmo-')).map(k=>caches.delete(k)));
+      }
+      await fetch('./index.html?build='+encodeURIComponent(BUILD)+'&t='+Date.now(),{cache:'no-store'});
+      if(status) status.textContent='New app files fetched. Reloading '+BUILD+'…';
+      const u=new URL(location.href);
+      u.searchParams.set('build',BUILD);
+      u.searchParams.set('t',Date.now());
+      location.replace(u.toString());
+    }catch(err){
+      if(status) status.textContent='Refresh requested. Reopening the app…';
+      location.reload();
+    }
+  };
+})();
 </script>
 
 </body>
