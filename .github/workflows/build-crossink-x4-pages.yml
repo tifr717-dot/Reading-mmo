@@ -24,7 +24,7 @@ env:
   CUSTOM_VERSION: 1.5.0-pages2
   OFFICIAL_RECOVERY_SHA256: b5debe8b6b3f26f1af53410f388a2eb8def78b19b0c04aa94e46e942684dce2f
   PATCH_B64_PATH: firmware/crossink-x4-pages/CrossInk-v1.5.0-pages2-x4.patch.gz.b64
-  PATCH_SHA256: a284bb3d332d574502544fc40995bc74769ab820fdc2915f164ef8ad4690d000
+  PATCH_SHA256: d4afecbf839cdf8bf64b4568b247a18da42538da424320d4244a8588e653a122
 
 jobs:
   build-and-validate:
