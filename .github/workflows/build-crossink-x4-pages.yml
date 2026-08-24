@@ -109,8 +109,13 @@ jobs:
           actual_sha="$(sha256sum "$patch_file" | awk '{print $1}')"
           test "$actual_sha" = "$PATCH_SHA256"
           cd crossink
-          git apply --check "$patch_file"
-          git apply "$patch_file"
+          if git apply --check "$patch_file"; then
+            git apply "$patch_file"
+          else
+            echo "Strict patch check failed; retrying with --recount for repaired Pages2 hunks."
+            git apply --check --recount "$patch_file"
+            git apply --recount "$patch_file"
+          fi
           git diff --check
 
           allowed='^(CHANGELOG\.md|lib/I18n/translations/english\.yaml|src/activities/boot_sleep/SleepActivity\.cpp|src/activities/home/HomeActivity\.cpp|src/activities/home/RecentBookProgress\.(cpp|h)|src/activities/reader/BookStatsActivity\.(cpp|h)|src/activities/reader/BookStatsView\.(cpp|h)|src/activities/reader/EpubReaderActivity\.(cpp|h)|src/activities/reader/XtcReaderActivity\.cpp)$'
