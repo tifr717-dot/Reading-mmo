@@ -1,0 +1,7 @@
+Reading MMO v5.10.9 — Archive Visual Rebuild
+
+- Approved Archive title/stats/search/filter artwork remains locked and unchanged.
+- Removed the stale v5.10.6 runtime update override that was forcing the installed app badge/checker backward.
+- Rebuilt the shelf spines with deterministic Guild Hunter colors, stronger leather depth, gold inset trim, top filigree/gems, lower crests, and a clearer selected-book state.
+- Reworked the open-book record into a more natural ledger spread: larger cover, cleaner title/author hierarchy, decorative divider, unboxed parchment metadata, and less bulky cover controls.
+- App Health/header badge/service-worker cache bumped to v5.10.9.
