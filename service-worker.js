@@ -1,4 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.12-ornate-collector-spines';
+const CACHE = 'reading-mmo-v5.10.12-r2-force-refresh';
+const FORCE_VERSION = '51012r2';
 const CORE = [
   './',
   './asset-book.png',
@@ -67,22 +68,60 @@ const CORE = [
   './archive-spine-6.svg',
   './v5810-quiet-panel-footer.png'
 ];
+
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(CORE))
+      .then(() => self.skipWaiting())
+  );
 });
+
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
+    await self.clients.claim();
+
+    // v5.10.12 recovery: older installed builds could successfully update the
+    // worker but continue displaying the already-cached v5.10.11 document.
+    // Once this worker activates, navigate every open app window to a uniquely
+    // versioned URL so Android is forced to request the current index.html.
+    const windows = await self.clients.matchAll({type:'window', includeUncontrolled:true});
+    await Promise.all(windows.map(client => {
+      try {
+        const url = new URL(client.url);
+        if (url.origin !== self.location.origin) return Promise.resolve();
+        if (url.searchParams.get('appv') === FORCE_VERSION) return Promise.resolve();
+        url.searchParams.set('appv', FORCE_VERSION);
+        return client.navigate(url.href).catch(() => undefined);
+      } catch (_) {
+        return Promise.resolve();
+      }
+    }));
+  })());
 });
+
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+
   if (req.mode === 'navigate') {
-    event.respondWith(fetch(req).then(res => {
-      const copy=res.clone(); caches.open(CACHE).then(c=>c.put('./index.html',copy)); return res;
-    }).catch(() => caches.match('./index.html')));
+    event.respondWith(
+      fetch(req, {cache:'no-store'}).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put('./index.html', copy));
+        return res;
+      }).catch(() => caches.match('./index.html'))
+    );
     return;
   }
-  event.respondWith(caches.match(req).then(cached => cached || fetch(req).then(res => {
-    const copy=res.clone(); caches.open(CACHE).then(c=>c.put(req,copy)); return res;
-  })));
+
+  event.respondWith(
+    caches.match(req).then(cached => cached || fetch(req).then(res => {
+      const copy = res.clone();
+      caches.open(CACHE).then(c => c.put(req, copy));
+      return res;
+    }))
+  );
 });
