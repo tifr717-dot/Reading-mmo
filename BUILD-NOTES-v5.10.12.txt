@@ -1,0 +1,14 @@
+Reading MMO v5.10.12 — Ornate Collector Spines
+
+LOCKED / unchanged:
+- Approved Enchanted Archive header, stats, search, Add Volume, and filters.
+- v5.10.11 open-book record layout and cover controls.
+
+Shelf books:
+- Rebuilt the seven visible spines as collector-edition fantasy bindings rather than plain rounded rectangles.
+- Added raised binding bands, richer leather grain/depth, double gold borders, embossed filigree, top and bottom ornament fields, and individual volume motifs.
+- Legion, Storm, Blade, Consort, Kiss, Angels' Blood, and Standalone each have distinct decorative crest art.
+- Selected volume now receives a proper bookmark and glow.
+- Existing titles, series labels, favorites, click behavior, saved Library data, and cover uploads are preserved.
+
+Service-worker cache bumped to reading-mmo-v5.10.12-ornate-collector-spines.
