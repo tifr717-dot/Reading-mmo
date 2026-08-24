@@ -3542,7 +3542,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 
 
 <style id="v5109-archive-visual-rebuild">
-/* v5.10.10 — approved Archive top is LOCKED. Only shelf spines + open-book record are rebuilt. */
+/* v5.10.11 — approved Archive top is LOCKED. Only shelf spines + open-book record are rebuilt. */
 
 /* ---------- SHELF: illustrated collected-volume spines ---------- */
 #library .v5104-shelf-row{
@@ -3771,6 +3771,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 @media(max-width:420px){#library .v51010-shelf-row{height:318px}#library .v51010-books{left:7%;right:7%;top:36px;bottom:35px;gap:3px}#library .v51010-spine{max-width:58px;border-radius:10px 10px 3px 3px / 8px 8px 3px 3px}#library .v51010-spine-title{top:43px;bottom:67px;font-size:6.9px}#library .v51010-spine-series{left:6px;right:6px;bottom:10px;height:14px;font-size:3.65px}#library .v51010-shelf-candle{left:18px;transform:scale(1.7)}#library .v51010-shelf-books{right:17px;transform:scale(1.28)}#library .v51010-record-book{height:345px}#library .v51010-left-page{left:4.8%;top:9%;width:39.8%;bottom:8.5%;gap:6px}#library .v51010-cover-frame{width:71%;max-width:145px}#library .v51010-cover-actions{width:82%}#library .v51010-cover-main{min-height:29px;font-size:4px}#library .v51010-right-page{left:50.2%;right:5.8%;top:10%;bottom:9%}#library .v51010-entry-ribbon{padding:4px 9px;margin-bottom:5px;font-size:3.5px}#library .v51010-record-title{font-size:15px;line-height:1}#library .v51010-record-author{font-size:5.7px;margin-top:3px}#library .v51010-rating-row{margin-top:7px;min-height:24px;gap:5px}#library .v51010-rating{padding:5px 8px;font-size:6px}#library .v51010-favorite{font-size:4px}#library .v51010-ledger{gap:6px;margin-top:7px}#library .v51010-ledger>div{min-height:45px;padding:6px 7px}#library .v51010-ledger span{margin-bottom:4px;font-size:3.45px}#library .v51010-ledger b{font-size:5.4px}#library .v51010-notes{max-height:39px;margin-top:6px;font-size:4.6px}#library .v51010-record-actions{gap:6px}#library .v51010-record-actions button{min-height:29px;font-size:4px}}
 </style>
 
+<link rel="stylesheet" href="./archive-v51011.css">
 </head>
 <body>
 <div class="app">
@@ -3783,7 +3784,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     <span>•</span>
     <span id="headerSaveText">Saved locally</span>
     <span>•</span>
-    <span id="headerVersionText" class="app-version-badge">v5.10.10</span>
+    <span id="headerVersionText" class="app-version-badge">v5.10.11</span>
   </div>
 </header>
 
@@ -4695,7 +4696,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.10.10</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.10.11</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -7049,6 +7050,8 @@ function restoreHomeTab(){ const b=$('homeTabReading'); if(b)setHomeTab('reading
 
 setTimeout(restoreHomeTab,0);
 </script>
+
+<script src="./archive-v51011.js"></script>
 
 <script>
 if ("serviceWorker" in navigator) {

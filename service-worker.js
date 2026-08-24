@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.10.10-concept-faithful-archive';
+const CACHE = 'reading-mmo-v5.10.11-shelf-openbook-polish';
 const CORE = [
   './',
   './asset-book.png',
@@ -55,6 +55,8 @@ const CORE = [
   './v587-clean-cabinet-footer.png',
   './v588-built-in-cabinet-footer.png',
   './archive-approved-controls.jpg',
+  './archive-v51011.css',
+  './archive-v51011.js',
   './archive-spine-standalone.svg',
   './archive-spine-1.svg',
   './archive-spine-2.svg',

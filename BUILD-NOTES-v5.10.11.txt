@@ -1,0 +1,17 @@
+Reading MMO v5.10.11 — Shelf + Open-Book Polish
+
+LOCKED / unchanged:
+- Approved Enchanted Archive header, stats, search, Add Volume, and filter section.
+
+Shelf:
+- New wider leather-bound spine component with heavier gold filigree and richer depth.
+- More deliberate individual height/width rhythm and clearer vertical titles.
+- Cleaner carved shelf frame, side posts, selected-volume glow/bookmark.
+
+Open book:
+- Rebuilt placement again for phone readability.
+- Larger cover and cover action area on left page.
+- Larger title/author/rating and larger 2x2 metadata fields on right page.
+- More bottom breathing room so actions are not trapped behind the fixed nav.
+
+Saved library data and cover uploads are preserved.
