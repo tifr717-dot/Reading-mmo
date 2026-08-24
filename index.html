@@ -3542,7 +3542,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 
 
 <style id="v5109-archive-visual-rebuild">
-/* v5.10.11 — approved Archive top is LOCKED. Only shelf spines + open-book record are rebuilt. */
+/* v5.10.12 — approved Archive top is LOCKED. Only shelf spines + open-book record are rebuilt. */
 
 /* ---------- SHELF: illustrated collected-volume spines ---------- */
 #library .v5104-shelf-row{
@@ -3784,7 +3784,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     <span>•</span>
     <span id="headerSaveText">Saved locally</span>
     <span>•</span>
-    <span id="headerVersionText" class="app-version-badge">v5.10.11</span>
+    <span id="headerVersionText" class="app-version-badge">v5.10.12</span>
   </div>
 </header>
 
@@ -4696,7 +4696,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.10.11</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.10.12</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -7051,12 +7051,12 @@ function restoreHomeTab(){ const b=$('homeTabReading'); if(b)setHomeTab('reading
 setTimeout(restoreHomeTab,0);
 </script>
 
-<script src="./archive-v51011.js"></script>
+<script src="./archive-v51011.js?v=51012"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+    navigator.serviceWorker.register("./service-worker.js?v=51012").catch(() => {});
   });
 }
 </script>
