@@ -1,0 +1,61 @@
+name: Apply Reading MMO v5.10.12 bootstrap hotfix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51012-bootstrap-hotfix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch v5.10.12 PWA bootstrap
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          # Make the visible/app-health version agree with the shipped runtime.
+          text = text.replace('v5.10.11', 'v5.10.12')
+
+          # Cache-bust the Archive runtime so an installed v5.10.11 worker cannot
+          # keep returning the old cached JS under the unchanged URL.
+          text = text.replace(
+              '<script src="./archive-v51011.js"></script>',
+              '<script src="./archive-v51011.js?v=51012"></script>'
+          )
+
+          # Version the service-worker registration URL as well so Android/PWA
+          # performs a fresh worker update check for this build.
+          text = text.replace(
+              'navigator.serviceWorker.register("./service-worker.js")',
+              'navigator.serviceWorker.register("./service-worker.js?v=51012")'
+          )
+
+          p.write_text(text, encoding='utf-8')
+
+          # Sanity checks: fail the workflow rather than committing a partial fix.
+          out = p.read_text(encoding='utf-8')
+          assert 'v5.10.12' in out
+          assert './archive-v51011.js?v=51012' in out
+          assert './service-worker.js?v=51012' in out
+
+      - name: Commit bootstrap hotfix
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "No index.html changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "fix: force v5.10.12 PWA bootstrap refresh"
+          git push
