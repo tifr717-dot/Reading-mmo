@@ -1,0 +1,144 @@
+name: Apply Reading MMO v5.10.11 archive polish
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51011.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build v5.10.11 archive shelf and open-book polish
+        shell: python
+        run: |
+          from pathlib import Path
+
+          css = r'''/* Reading MMO v5.10.11 — shelf + open-book polish only. Approved Archive top is intentionally untouched. */
+          #library .v51011-shelf-row{position:relative;height:344px;margin:10px 0 15px;overflow:hidden;border-radius:15px;background:radial-gradient(ellipse at 50% 40%,rgba(128,74,38,.26),transparent 50%),linear-gradient(180deg,rgba(31,14,9,.08),rgba(8,3,2,.30)),url('./v53-wood-tile.png') center/178px auto repeat;border:2px solid #71451f;box-shadow:0 11px 18px rgba(0,0,0,.30),inset 0 0 0 4px #2b140d,inset 0 0 0 7px #97602e,inset 0 0 0 9px rgba(238,190,96,.16)}
+          #library .v51011-shelf-row:before{content:"";position:absolute;left:17px;right:17px;top:15px;height:17px;border-radius:9px;background:linear-gradient(180deg,#bd7d3d 0 12%,#74431e 12% 55%,#351a10 55% 100%);border:1px solid #c98f4e;box-shadow:0 4px 0 rgba(14,6,4,.34),inset 0 1px rgba(255,226,151,.16)}
+          #library .v51011-shelf-row:after{content:"";position:absolute;left:22px;right:22px;bottom:14px;height:24px;z-index:2;background:linear-gradient(180deg,#d2974e 0 13%,#855126 13% 47%,#472317 47% 79%,#1f0e09 79% 100%);border:1px solid #845229;border-top-color:#e4ac62;box-shadow:0 7px 0 rgba(11,5,3,.48),inset 0 1px rgba(255,224,150,.14)}
+          #library .v51011-side-post{position:absolute;top:30px;bottom:28px;width:13px;z-index:1;background:linear-gradient(90deg,#2d150d,#70421f 45%,#9a6332 52%,#492516 74%,#1b0c08);border:1px solid rgba(215,163,83,.28)}
+          #library .v51011-side-post.left{left:10px}.v51011-side-post.right{right:10px;transform:scaleX(-1)}
+          #library .v51011-books{position:absolute;left:7.8%;right:7.8%;top:37px;bottom:36px;z-index:3;display:flex;align-items:flex-end;justify-content:center;gap:4px}
+          #library .v51011-spine{--s1:#6f4d8f;--s2:#34213f;position:relative;flex:1 1 0;min-width:0;max-width:76px;height:94%;padding:0;border:1px solid #150806;border-radius:10px 10px 3px 3px/7px 7px 3px 3px;overflow:visible;color:#f6e4b4;text-align:center;background:radial-gradient(circle at 28% 14%,rgba(255,255,255,.16),transparent 22%),repeating-linear-gradient(95deg,rgba(255,255,255,.025) 0 2px,rgba(0,0,0,.026) 2px 4px),linear-gradient(90deg,rgba(255,246,214,.16),transparent 10%,transparent 87%,rgba(0,0,0,.31)),linear-gradient(180deg,var(--s1),var(--s2));box-shadow:3px 6px 0 #100603,0 10px 14px rgba(0,0,0,.35),inset 0 0 14px rgba(0,0,0,.14);transform-origin:50% 100%;transition:transform .17s ease,filter .17s ease}
+          #library .v51011-spine:nth-child(1){flex-grow:1.12;height:98%}#library .v51011-spine:nth-child(2){flex-grow:.94;height:89%;transform:rotate(-.45deg)}#library .v51011-spine:nth-child(3){flex-grow:1.02;height:94%;transform:rotate(.28deg)}#library .v51011-spine:nth-child(4){flex-grow:1.08;height:100%;transform:rotate(-.18deg)}#library .v51011-spine:nth-child(5){flex-grow:.94;height:91%;transform:rotate(.34deg)}#library .v51011-spine:nth-child(6){flex-grow:1.10;height:97%;transform:rotate(-.24deg)}#library .v51011-spine:nth-child(7){flex-grow:1.02;height:93%;transform:rotate(.22deg)}
+          #library .v51011-spine:hover,#library .v51011-spine:focus-visible{filter:brightness(1.08);transform:translateY(-5px)}
+          #library .v51011-spine:before{content:"";position:absolute;inset:7px 6px 22px;border:1px solid rgba(241,201,107,.62);border-radius:7px 7px 2px 2px;box-shadow:inset 0 0 0 1px rgba(43,17,9,.24);pointer-events:none;z-index:1}
+          #library .v51011-spine:after{content:"";position:absolute;left:7px;right:7px;bottom:24px;height:34px;background:linear-gradient(180deg,transparent 0 8%,rgba(235,191,96,.58) 8% 11%,transparent 11% 77%,rgba(235,191,96,.50) 77% 80%,transparent 80%);opacity:.82;z-index:1;pointer-events:none}
+          #library .v51011-spine-art{position:absolute;inset:4px;width:calc(100% - 8px);height:calc(100% - 8px);z-index:2;pointer-events:none;filter:drop-shadow(0 1px 0 rgba(40,15,7,.72))}
+          #library .v51011-spine-title{position:absolute;z-index:4;left:50%;top:54px;bottom:76px;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;text-orientation:mixed;display:block;white-space:nowrap;overflow:hidden;color:#f8e7bc;font:900 clamp(8.5px,1.65vw,12.3px)/1 Georgia,'Times New Roman',serif;letter-spacing:.07px;text-shadow:0 1px 1px #190a06,0 0 5px rgba(0,0,0,.28)}
+          #library .v51011-spine-series{position:absolute;z-index:4;left:8px;right:8px;bottom:8px;height:15px;display:grid;place-items:center;color:#f0d18b;background:linear-gradient(180deg,rgba(29,11,6,.18),rgba(8,3,2,.48));border-top:1px solid rgba(241,200,105,.54);border-bottom:1px solid rgba(8,3,2,.30);font:900 clamp(4px,.82vw,5.8px)/1 ui-monospace,monospace}
+          #library .v51011-spine-fav{position:absolute;right:8px;top:9px;z-index:6;color:#ffe58e;font-size:9px;text-shadow:0 1px 1px #1a0905}
+          #library .v51011-spine-bookmark{display:none;position:absolute;right:8px;top:-4px;width:10px;height:38px;z-index:7;background:linear-gradient(180deg,#b85b39,#772e23);border-left:1px solid #e2b05e;border-right:1px solid #e2b05e;clip-path:polygon(0 0,100% 0,100% 77%,50% 100%,0 77%);box-shadow:0 3px 5px rgba(0,0,0,.35)}
+          #library .v51011-spine.selected{transform:translateY(-8px)!important;filter:brightness(1.10);box-shadow:0 0 0 1px #f3d283,0 0 24px rgba(255,196,69,.42),3px 11px 0 #110704,0 14px 18px rgba(0,0,0,.36)}#library .v51011-spine.selected .v51011-spine-bookmark{display:block}
+          #library .v51011-shelf-lantern{position:absolute;left:16px;bottom:42px;width:22px;z-index:4;filter:drop-shadow(0 3px 4px rgba(0,0,0,.36));opacity:.95}#library .v51011-shelf-books{position:absolute;right:17px;bottom:40px;width:42px;z-index:4;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35));opacity:.96}
+
+          #library .v51011-detail-view{margin-top:12px;padding:0 0 118px}#library .v51011-detail-view[hidden]{display:none!important}
+          #library .v51011-record-book{position:relative;width:100%;height:430px;overflow:visible}
+          #library .v51011-record-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;filter:drop-shadow(0 8px 9px rgba(0,0,0,.23))}
+          #library .v51011-left-page{position:absolute;left:4.8%;top:8.3%;width:40.2%;bottom:8.4%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px}
+          #library .v51011-cover-frame{width:73%;max-width:172px;aspect-ratio:2/3;display:grid;place-items:center;overflow:hidden;background:linear-gradient(160deg,#72518e,#3c274b);border:2px solid #261109;outline:1px solid #b78243;outline-offset:-5px;border-radius:4px;box-shadow:4px 7px 0 rgba(43,20,11,.60),0 10px 14px rgba(0,0,0,.20)}
+          #library .v51011-cover-frame img{width:100%;height:100%;object-fit:cover;display:block;color:transparent;font-size:0}
+          #library .v51011-cover-placeholder{width:100%;height:100%;display:grid;place-items:center;align-content:center;padding:12px;text-align:center;color:#f3d99d;background:radial-gradient(circle at 50% 18%,rgba(255,255,255,.13),transparent 35%),linear-gradient(180deg,#765693,#3f2851)}
+          #library .v51011-cover-placeholder span{font-size:29px}#library .v51011-cover-placeholder b{margin-top:7px;font:900 8px/1.15 Georgia,serif;overflow-wrap:anywhere}
+          #library .v51011-cover-actions{width:80%;display:grid;gap:5px}
+          #library .v51011-cover-main{min-height:35px;margin:0;padding:6px 8px;border:2px solid #8d6131;border-radius:9px;background:linear-gradient(#745093,#54356d);color:#f5dfae;box-shadow:0 4px 0 rgba(54,25,13,.35);font:900 5.4px/1 ui-monospace,monospace}
+          #library .v51011-remove-cover{min-height:20px;margin:0;padding:3px 4px;border:0;background:transparent;color:#76523a;box-shadow:none;text-decoration:underline;text-underline-offset:2px;font:800 4.5px/1 ui-monospace,monospace}
+          #library .v51011-right-page{position:absolute;left:51.0%;right:6.0%;top:10.0%;bottom:8.9%;display:flex;flex-direction:column;min-width:0;color:#4d301d}
+          #library .v51011-entry-ribbon{align-self:flex-start;padding:5px 13px;margin-bottom:7px;border-radius:3px 3px 8px 8px;background:linear-gradient(#a06a4d,#7a4330);border:1px solid #6d3b2b;color:#f6dfb3;box-shadow:0 2px 0 rgba(74,35,20,.18);font:900 4.7px/1 ui-monospace,monospace;letter-spacing:.32px}
+          #library .v51011-record-title{max-width:100%;margin:0;color:#432716;font:900 21px/1.02 Georgia,'Times New Roman',serif;white-space:normal;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px rgba(255,248,226,.35)}
+          #library .v51011-record-author{margin-top:4px;color:#78543a;font:800 7.3px/1.15 ui-monospace,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+          #library .v51011-rating-row{margin-top:10px;display:flex;align-items:center;gap:8px;min-height:30px}
+          #library .v51011-rating{display:inline-block;padding:6px 10px;border-radius:8px;background:#58341f;border:1px solid #8b6136;color:#f7d987;font:900 8.4px/1 Georgia,serif;box-shadow:0 2px 0 rgba(72,34,18,.18)}
+          #library .v51011-favorite{color:#9b651f;font:900 5.2px/1 ui-monospace,monospace;white-space:nowrap}
+          #library .v51011-ledger{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}
+          #library .v51011-ledger>div{position:relative;min-height:58px;padding:9px 10px;background:rgba(255,247,221,.40);border:1px solid rgba(155,110,60,.52);box-shadow:inset 0 0 0 1px rgba(255,255,255,.13)}
+          #library .v51011-ledger>div:after{content:"❧";position:absolute;right:5px;bottom:4px;color:rgba(139,96,48,.45);font:900 8px/1 Georgia,serif}
+          #library .v51011-ledger span{display:block;margin-bottom:5px;color:#846044;font:900 4.6px/1 ui-monospace,monospace;letter-spacing:.2px}
+          #library .v51011-ledger b{display:block;padding-right:8px;color:#49301d;font:900 7.4px/1.12 Georgia,'Times New Roman',serif;overflow-wrap:anywhere}
+          #library .v51011-notes{margin-top:8px;max-height:50px;overflow:hidden;padding:7px 3px 6px;border-top:1px solid rgba(142,99,54,.34);color:#654531;font:italic 700 6.2px/1.32 Georgia,'Times New Roman',serif}
+          #library .v51011-notes b{display:block;margin-bottom:3px;color:#815b3c;font:900 4.2px/1 ui-monospace,monospace;font-style:normal;letter-spacing:.18px}
+          #library .v51011-record-actions{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+          #library .v51011-record-actions button{min-height:36px;margin:0;padding:6px;border-radius:8px;box-shadow:0 4px 0 rgba(54,25,13,.28);font:900 5.4px/1 ui-monospace,monospace}
+          #library .v51011-shelf-btn{background:#6f5846;color:#f5e1b6;border:2px solid #7d552f}#library .v51011-edit-btn{background:#82610f;color:#fff0c3;border:2px solid #93682d}
+          @media(max-width:420px){#library .v51011-shelf-row{height:326px}#library .v51011-books{left:7%;right:7%;top:35px;bottom:35px;gap:3px}#library .v51011-spine{max-width:59px;border-radius:9px 9px 3px 3px/7px 7px 3px 3px}#library .v51011-spine-title{top:49px;bottom:70px;font-size:7.3px}#library .v51011-spine-series{left:6px;right:6px;bottom:8px;height:13px;font-size:3.7px}#library .v51011-record-book{height:394px}#library .v51011-left-page{left:4.6%;top:8.6%;width:40.2%;bottom:8.8%;gap:6px}#library .v51011-cover-frame{width:74%;max-width:145px}#library .v51011-cover-actions{width:84%}#library .v51011-cover-main{min-height:31px;font-size:4.3px}#library .v51011-right-page{left:51.0%;right:5.5%;top:10.2%;bottom:9.2%}#library .v51011-entry-ribbon{padding:4px 9px;margin-bottom:5px;font-size:3.8px}#library .v51011-record-title{font-size:16px;line-height:1}#library .v51011-record-author{font-size:5.9px;margin-top:3px}#library .v51011-rating-row{margin-top:7px;min-height:25px}#library .v51011-rating{padding:5px 8px;font-size:6.7px}#library .v51011-favorite{font-size:4.1px}#library .v51011-ledger{gap:6px;margin-top:8px}#library .v51011-ledger>div{min-height:47px;padding:7px}#library .v51011-ledger span{font-size:3.5px;margin-bottom:4px}#library .v51011-ledger b{font-size:5.5px}#library .v51011-record-actions button{min-height:31px;font-size:4.1px}}
+          '''
+
+          js = r'''/* Reading MMO v5.10.11 — runtime shelf + open-book polish. */
+          (function(){
+            const BUILD='v5.10.11';
+            const escSvg=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            function art(key){
+              const motifs={
+                '6':'<path d="M50 45 l7 14 15 2-11 10 3 15-14-8-14 8 3-15-11-10 15-2z"/><path d="M50 211 v28 M36 225 h28 M40 216 l20 19 M60 216 l-20 19"/>',
+                '5':'<path d="M33 57 C37 46 52 45 58 55 C71 53 76 70 65 76 H36 C24 74 24 61 33 57z"/><path d="M42 82 l-6 15 M53 82 l-6 15 M64 82 l-6 15"/><path d="M34 217 C40 207 55 207 60 216 C72 215 76 229 66 235 H38 C27 232 26 220 34 217z"/>',
+                '4':'<path d="M34 49 l32 39 M66 49 L34 88 M38 47 l-8-8 M62 47 l8-8 M38 90 l-8 8 M62 90 l8 8"/><path d="M50 207 v34 M38 225 h24 M43 215 l7-8 7 8"/>',
+                '3':'<path d="M50 43 C34 58 35 73 50 86 C65 73 66 58 50 43z"/><path d="M50 86 v19 M50 91 C40 87 33 92 28 100 M50 96 C61 91 68 96 73 104"/><path d="M50 206 v36 M50 221 C37 212 31 218 27 229 M50 227 C63 216 70 221 74 233"/>',
+                '2':'<path d="M50 48 C42 37 27 43 29 57 C31 70 50 81 50 81 C50 81 69 70 71 57 C73 43 58 37 50 48z"/><path d="M50 211 C43 200 30 204 31 217 C32 229 50 241 50 241 C50 241 68 229 69 217 C70 204 57 200 50 211z"/>',
+                '1':'<path d="M50 42 l8 16 17 2-13 12 3 17-15-9-15 9 3-17-13-12 17-2z"/><path d="M50 206 C40 220 37 227 37 234 C37 244 42 251 50 251 C58 251 63 244 63 234 C63 227 60 220 50 206z"/>',
+                'standalone':'<path d="M50 45 l13 14-13 15-13-15z"/><path d="M31 82 C42 72 58 72 69 82 M34 89 C43 81 57 81 66 89"/><path d="M50 210 l15 13-15 13-15-13z"/><path d="M32 244 C42 235 58 235 68 244"/>'
+              };
+              return `<svg class="v51011-spine-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 300" fill="none" stroke="#e7c471" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path opacity=".95" d="M12 12 H88 Q94 12 94 20 V280 Q94 288 86 288 H14 Q6 288 6 280 V20 Q6 12 12 12z"/><path opacity=".65" d="M17 19 H83 M17 281 H83"/><path opacity=".9" d="M19 31 C31 15 40 23 50 9 C60 23 69 15 81 31 M25 38 C36 29 42 33 50 24 C58 33 64 29 75 38"/><g opacity=".98">${motifs[key]||motifs.standalone}</g><path opacity=".84" d="M19 251 C31 267 40 259 50 275 C60 259 69 267 81 251 M25 244 C36 253 42 249 50 258 C58 249 64 253 75 244"/><circle cx="50" cy="31" r="2.7" fill="#e7c471" stroke="none"/></svg>`;
+            }
+            window.libraryBookCardMarkup=function(b,volumeNo){
+              const n=Number(volumeNo||1),h=(n-1)%5+1;
+              const selected=String(window.libraryDetailId||'')===String(b.id)?' selected':'';
+              const series=window.librarySeriesShort?window.librarySeriesShort(b.series):String(b.series||'Standalone');
+              const key=series==='#6'?'6':series==='#5'?'5':series==='#4'?'4':series==='#3'?'3':series==='#2'?'2':series==='#1'?'1':'standalone';
+              const palettes={'6':['#aa7c2f','#4c3312'],'5':['#716f59','#312e25'],'4':['#34799b','#17394a'],'3':['#37775f','#173c31'],'2':['#684794','#2e1d46'],'1':['#8a4b3e','#41221d'],'standalone':['#80526e','#3f2436']};
+              const pal=palettes[key],safe=window.esc||escSvg;
+              return `<button class="v51011-spine k${key} h${h}${selected}" style="--s1:${pal[0]};--s2:${pal[1]}" onclick="openLibraryRecord('${safe(b.id)}')" aria-label="Open library record for ${safe(b.title)} by ${safe(b.author||'Unknown author')}">${art(key)}${b.favorite?'<span class="v51011-spine-fav">★</span>':''}<span class="v51011-spine-bookmark" aria-hidden="true"></span><span class="v51011-spine-title">${safe(b.title)}</span><span class="v51011-spine-series">${safe(series)}</span></button>`;
+            };
+            window.libraryShelfRowsMarkup=function(rows,volumeNo){
+              const chunks=[];for(let i=0;i<rows.length;i+=7)chunks.push(rows.slice(i,i+7));
+              return chunks.map(chunk=>`<div class="v51011-shelf-row"><span class="v51011-side-post left" aria-hidden="true"></span><span class="v51011-side-post right" aria-hidden="true"></span><img class="v51011-shelf-lantern" src="./asset-crystal-lamp.png" alt="" aria-hidden="true"><img class="v51011-shelf-books" src="./v53-books.png" alt="" aria-hidden="true"><div class="v51011-books">${chunk.map(b=>window.libraryBookCardMarkup(b,volumeNo.get(String(b.id))||1)).join('')}</div></div>`).join('');
+            };
+            function replaceDetail(){
+              const old=document.getElementById('libraryDetailView'); if(!old||old.classList.contains('v51011-detail-view'))return;
+              const hidden=old.hidden;
+              old.outerHTML=`<div id="libraryDetailView" class="v51011-detail-view" ${hidden?'hidden':''}><div class="v51011-record-book"><img class="v51011-record-bg" src="./v53-open-book.png" alt="Open archive record book"><section class="v51011-left-page" aria-label="Book cover"><div class="v51011-cover-frame"><img id="libraryDetailCoverImg" alt="" hidden><div id="libraryDetailCoverPlaceholder" class="v51011-cover-placeholder"><span>📖</span><b id="libraryDetailCoverTitle">Archived Volume</b></div></div><input id="libraryCoverInput" type="file" accept="image/*" hidden onchange="handleLibraryCoverUpload(event)"><div class="v51011-cover-actions"><button class="v51011-cover-main" onclick="document.getElementById('libraryCoverInput').click()">🖼 ADD / CHANGE COVER</button><button id="libraryRemoveCoverBtn" class="v51011-remove-cover" onclick="removeLibraryCover()" hidden>REMOVE COVER</button></div></section><section class="v51011-right-page" aria-label="Archive record"><div id="libraryDetailEntry" class="v51011-entry-ribbon">LIBRARY ENTRY #001</div><div id="libraryDetailTitle" class="v51011-record-title">Archived Volume</div><div id="libraryDetailAuthor" class="v51011-record-author">Unknown author</div><div class="v51011-rating-row"><span id="libraryDetailRating" class="v51011-rating">Unrated</span><span id="libraryDetailFavorite" class="v51011-favorite" hidden>★ FAVORITE</span></div><div class="v51011-ledger"><div><span>SERIES</span><b id="libraryDetailSeries">Standalone</b></div><div><span>PAGES</span><b id="libraryDetailPages">—</b></div><div><span>STARTED</span><b id="libraryDetailStarted">—</b></div><div><span>FINISHED</span><b id="libraryDetailFinished">—</b></div></div><div id="libraryDetailNotes" class="v51011-notes" hidden><b>ARCHIVIST'S NOTES</b><span id="libraryDetailNotesText"></span></div><div class="v51011-record-actions"><button class="v51011-shelf-btn" onclick="closeLibraryDetail()">📚 SHELF VIEW</button><button class="v51011-edit-btn" onclick="editCurrentLibraryRecord()">✒ EDIT RECORD</button></div></section></div></div>`;
+            }
+            function apply(){
+              replaceDetail();
+              const badge=document.getElementById('headerVersionText');if(badge)badge.textContent=BUILD;
+              document.querySelectorAll('.health-row').forEach(row=>{if(row.querySelector('b')?.textContent.trim()==='Version'){const s=row.querySelector('span');if(s)s.textContent=BUILD;}});
+              if(typeof window.renderLibrary==='function')window.renderLibrary();
+              if(window.libraryDetailId&&typeof window.renderLibraryDetail==='function')window.renderLibraryDetail(window.libraryDetailId);
+            }
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+          })();
+          '''
+
+          Path('archive-v51011.css').write_text(css)
+          Path('archive-v51011.js').write_text(js)
+
+          p=Path('index.html')
+          text=p.read_text()
+          if 'archive-v51011.css' not in text:
+              text=text.replace('</head>', '<link rel="stylesheet" href="./archive-v51011.css">\n</head>')
+          if 'archive-v51011.js' not in text:
+              marker='<script>\nif ("serviceWorker" in navigator) {'
+              text=text.replace(marker, '<script src="./archive-v51011.js"></script>\n\n'+marker)
+          text=text.replace('v5.10.10','v5.10.11')
+          p.write_text(text)
+
+          sw=Path('service-worker.js')
+          swt=sw.read_text().replace('reading-mmo-v5.10.10-concept-faithful-archive','reading-mmo-v5.10.11-shelf-openbook-polish')
+          if "'./archive-v51011.css'" not in swt:
+              swt=swt.replace("  './archive-spine-standalone.svg',", "  './archive-v51011.css',\n  './archive-v51011.js',\n  './archive-spine-standalone.svg',")
+          sw.write_text(swt)
+
+          Path('BUILD-NOTES-v5.10.11.txt').write_text('''Reading MMO v5.10.11 — Shelf + Open-Book Polish\n\nLOCKED / unchanged:\n- Approved Enchanted Archive header, stats, search, Add Volume, and filter section.\n\nShelf:\n- New wider leather-bound spine component with heavier gold filigree and richer depth.\n- More deliberate individual height/width rhythm and clearer vertical titles.\n- Cleaner carved shelf frame, side posts, selected-volume glow/bookmark.\n\nOpen book:\n- Rebuilt placement again for phone readability.\n- Larger cover and cover action area on left page.\n- Larger title/author/rating and larger 2x2 metadata fields on right page.\n- More bottom breathing room so actions are not trapped behind the fixed nav.\n\nSaved library data and cover uploads are preserved.\n''')
+
+      - name: Commit v5.10.11
+        run: |
+          git config user.name "Reading MMO updater"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html service-worker.js archive-v51011.css archive-v51011.js BUILD-NOTES-v5.10.11.txt
+          git commit -m "Reading MMO v5.10.11 shelf and open-book polish"
+          git push
