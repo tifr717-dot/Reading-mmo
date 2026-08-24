@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.10.9-archive-visual-rebuild';
+const CACHE = 'reading-mmo-v5.10.10-concept-faithful-archive';
 const CORE = [
   './',
   './asset-book.png',
@@ -55,6 +55,13 @@ const CORE = [
   './v587-clean-cabinet-footer.png',
   './v588-built-in-cabinet-footer.png',
   './archive-approved-controls.jpg',
+  './archive-spine-standalone.svg',
+  './archive-spine-1.svg',
+  './archive-spine-2.svg',
+  './archive-spine-3.svg',
+  './archive-spine-4.svg',
+  './archive-spine-5.svg',
+  './archive-spine-6.svg',
   './v5810-quiet-panel-footer.png'
 ];
 self.addEventListener('install', event => {

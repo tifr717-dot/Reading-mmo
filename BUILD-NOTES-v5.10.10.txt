@@ -1,0 +1,17 @@
+Reading MMO v5.10.10 — Concept-Faithful Archive Rebuild
+
+LOCKED / unchanged:
+- Approved Enchanted Archive header, stats, search, Add Volume, and filters.
+
+Shelf rebuild:
+- Completely new shelf/spine component instead of another override on the legacy rectangles.
+- Seven dedicated vector ornament overlays make the books feel like illustrated fantasy volumes.
+- More natural height/width rhythm, richer leather texture, gold filigree, unique motifs, larger shelf decor, selected-volume bookmark/glow.
+
+Open-book rebuild:
+- Completely new two-page journal component so old CSS cannot interfere.
+- Larger cover on the left page; title, author, rating, metadata, notes, and actions intentionally placed on the right page.
+- Increased text sizes and page spacing for phone readability.
+- Shelf View replaces the redundant floating Close Record control.
+
+Existing saved library data, uploaded covers, filters, editing, and archive behavior are preserved.
