@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.10.11-shelf-openbook-polish';
+const CACHE = 'reading-mmo-v5.10.12-ornate-collector-spines';
 const CORE = [
   './',
   './asset-book.png',
@@ -57,6 +57,7 @@ const CORE = [
   './archive-approved-controls.jpg',
   './archive-v51011.css',
   './archive-v51011.js',
+  './archive-v51012.css',
   './archive-spine-standalone.svg',
   './archive-spine-1.svg',
   './archive-spine-2.svg',
