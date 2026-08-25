@@ -102,12 +102,23 @@ jobs:
         run: |
           set -euo pipefail
           encoded="$GITHUB_WORKSPACE/$PATCH_B64_PATH"
+          compressed="$GITHUB_WORKSPACE/CrossInk-v1.5.0-pages2-x4.patch.gz"
           patch_file="$GITHUB_WORKSPACE/CrossInk-v1.5.0-pages2-x4.patch"
           test -s "$encoded"
-          base64 -d "$encoded" | gzip -d > "$patch_file"
+          base64 -d "$encoded" > "$compressed"
+          test -s "$compressed"
+          if ! gzip -dc "$compressed" > "$patch_file"; then
+            echo "gzip trailer validation failed; verifying recovered patch payload by SHA-256."
+          fi
           test -s "$patch_file"
           actual_sha="$(sha256sum "$patch_file" | awk '{print $1}')"
-          test "$actual_sha" = "$PATCH_SHA256"
+          if [ "$actual_sha" != "$PATCH_SHA256" ]; then
+            echo "Recovered Pages2 patch SHA-256 mismatch."
+            echo "Expected: $PATCH_SHA256"
+            echo "Actual:   $actual_sha"
+            exit 1
+          fi
+          echo "Recovered Pages2 patch payload matches expected SHA-256."
           cd crossink
           if git apply --check "$patch_file"; then
             git apply "$patch_file"
