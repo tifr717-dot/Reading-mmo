@@ -1,0 +1,20 @@
+Reading MMO v5.10.18 — Artistic Archive Shelf Refinement
+
+PURPOSE
+- Push the shelf and three image-asset prototype books closer to the approved vertical concept art.
+- Preserve the v5.10.17 Shelved Volumes reading-desk feature.
+- Keep the approved Archive title/stats/search/Add Volume/filter artwork unchanged.
+- Keep the open-book Archive detail unchanged for this checkpoint.
+
+ART DIRECTION CHANGES
+- Shelf is reshaped visually as a warm carved wooden alcove rather than a nested UI frame.
+- Archangel’s Legion, Angels’ Blood, and A Stage Set for Villains now use wider, softer, leather-textured illustrated spine assets.
+- Each prototype has one stronger, simpler crest intended to read clearly at phone size.
+- Vertical title typography is larger and more elegant.
+- #6, #1, and STANDALONE labels are larger and easier to read.
+- Decorative stacked books no longer overlap the standalone spine.
+- Prototype book heights are more balanced.
+
+LAYERING CHECKPOINT
+- The other four books intentionally remain in the previous style so the artistic direction can be approved before converting the whole shelf.
+- The open-book record is intentionally deferred until the shelf is locked.

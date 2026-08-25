@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 560" role="img" aria-label="Illustrated deep red fantasy book spine">
+<defs>
+  <linearGradient id="leather" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#190504"/><stop offset=".09" stop-color="#4b1111"/><stop offset=".28" stop-color="#812823"/><stop offset=".5" stop-color="#a23d33"/><stop offset=".72" stop-color="#74201e"/><stop offset=".91" stop-color="#3c0d0e"/><stop offset="1" stop-color="#130303"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe7a0"/><stop offset=".24" stop-color="#dcac54"/><stop offset=".55" stop-color="#905219"/><stop offset=".78" stop-color="#edc46c"/><stop offset="1" stop-color="#6b3511"/></linearGradient>
+  <radialGradient id="ruby"><stop stop-color="#ffc2b2"/><stop offset=".2" stop-color="#d64a3d"/><stop offset=".58" stop-color="#8d171a"/><stop offset="1" stop-color="#310407"/></radialGradient>
+  <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".38" numOctaves="4" seed="31"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .17"/></feComponentTransfer></filter>
+  <filter id="shadow"><feDropShadow dx="3" dy="6" stdDeviation="4" flood-color="#0f0202" flood-opacity=".8"/></filter>
+</defs>
+<g filter="url(#shadow)">
+  <path d="M27 9 Q15 9 12 24 L10 520 Q10 545 32 548 H148 Q170 545 170 520 L168 24 Q165 9 153 9Z" fill="url(#leather)" stroke="#120303" stroke-width="5"/>
+  <ellipse cx="76" cy="160" rx="50" ry="155" fill="#ffd3a0" opacity=".07" filter="url(#soft)"/>
+  <rect x="18" y="18" width="144" height="520" rx="15" fill="#fff" opacity=".065" filter="url(#grain)"/>
+  <path d="M28 16 C20 47 20 502 29 539 M152 16 C160 47 160 502 151 539" fill="none" stroke="#ffd5a5" stroke-width="3" opacity=".2"/>
+  <path d="M24 55 C49 63 131 63 156 55 M23 77 C52 85 128 85 157 77" fill="none" stroke="url(#gold)" stroke-width="5"/>
+  <path d="M23 477 C52 469 128 469 157 477 M24 500 C49 493 131 493 156 500" fill="none" stroke="url(#gold)" stroke-width="5"/>
+  <g transform="translate(90 116)" fill="none" stroke="url(#gold)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-4 2 C-22-19-48-20-59-3 C-42-6-28 0-15 14 C-27 12-38 18-44 29 C-27 24-16 27-6 38"/>
+    <path d="M4 2 C22-19 48-20 59-3 C42-6 28 0 15 14 C27 12 38 18 44 29 C27 24 16 27 6 38"/>
+  </g>
+  <g transform="translate(90 113)"><path d="M0-26 C15-5 20 5 20 18 C20 34 11 44 0 44 C-11 44-20 34-20 18 C-20 5-15-5 0-26Z" fill="url(#ruby)" stroke="#f0c36a" stroke-width="3"/><path d="M-6 8 C-2 0 3-5 8-8" fill="none" stroke="#ffe0bf" stroke-width="2" opacity=".55"/></g>
+  <g opacity=".64" fill="none" stroke="url(#gold)" stroke-width="2.2" stroke-linecap="round"><path d="M38 170 C53 157 61 158 69 163 M142 170 C127 157 119 158 111 163"/><path d="M38 407 C53 420 61 419 69 414 M142 407 C127 420 119 419 111 414"/></g>
+  <path d="M48 491 H132 Q141 491 141 502 V526 Q141 537 132 537 H48 Q39 537 39 526 V502 Q39 491 48 491Z" fill="#2b0909" opacity=".74" stroke="url(#gold)" stroke-width="2.5"/>
+  <path d="M43 506 H137" stroke="#f0c771" stroke-width="1" opacity=".45"/>
+</g>
+</svg>

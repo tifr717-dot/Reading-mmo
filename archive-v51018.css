@@ -1,0 +1,144 @@
+/* Reading MMO v5.10.18 — artistic shelf refinement.
+   ONLY the shelf and three prototype spines are refined here.
+   Approved Archive controls and open-book record remain untouched. */
+
+/* Carved storybook alcove: less nested-panel, more built-in wooden shelf. */
+#library .v51011-shelf-row{
+  height:350px!important;
+  margin:10px 0 18px!important;
+  overflow:hidden!important;
+  border:1px solid #5b3219!important;
+  border-radius:22px 22px 12px 12px!important;
+  background:
+    radial-gradient(ellipse at 50% 38%,rgba(227,166,83,.17),transparent 51%),
+    linear-gradient(180deg,rgba(10,4,2,.50) 0,rgba(34,15,8,.12) 19%,rgba(8,3,2,.30) 100%),
+    url('./v53-wood-tile.png') center/190px auto repeat!important;
+  box-shadow:
+    0 15px 26px rgba(0,0,0,.34),
+    inset 0 0 0 5px #1a0a06,
+    inset 0 0 0 8px rgba(150,87,37,.82),
+    inset 0 0 0 10px rgba(230,169,84,.18),
+    inset 0 28px 38px rgba(0,0,0,.42),
+    inset 0 -32px 38px rgba(0,0,0,.34)!important;
+}
+#library .v51011-shelf-row:before{
+  height:27px!important;
+  left:8px!important;right:8px!important;top:7px!important;
+  border-radius:15px 15px 6px 6px!important;
+  border:1px solid #9a6530!important;
+  background:
+    radial-gradient(ellipse at 50% -10%,rgba(255,221,147,.28),transparent 55%),
+    linear-gradient(180deg,#8d592b 0 12%,#4f2916 13% 58%,#24100a 59% 100%)!important;
+  box-shadow:inset 0 2px 0 rgba(246,196,112,.28),0 5px 8px rgba(0,0,0,.36)!important;
+}
+#library .v51011-shelf-row:after{
+  height:30px!important;
+  left:8px!important;right:8px!important;bottom:8px!important;
+  border-radius:4px 4px 10px 10px!important;
+  border-top:2px solid #c48645!important;
+  background:linear-gradient(180deg,#956033 0 12%,#63371e 13% 43%,#32180f 44% 76%,#160906 77% 100%)!important;
+  box-shadow:0 -4px 10px rgba(0,0,0,.28),inset 0 2px 0 rgba(250,200,119,.2)!important;
+}
+#library .v51011-side-post{
+  top:24px!important;bottom:28px!important;width:17px!important;
+  background:linear-gradient(90deg,#1a0906,#72411f 34%,#9c6330 54%,#4b2514 78%,#180806)!important;
+  border-color:#8d5828!important;
+  box-shadow:inset 1px 0 rgba(241,184,96,.24),inset -3px 0 5px rgba(0,0,0,.4)!important;
+}
+#library .v51011-side-post.left{left:9px!important}
+#library .v51011-side-post.right{right:9px!important}
+#library .v51011-books{
+  left:7.4%!important;right:7.4%!important;
+  top:44px!important;bottom:39px!important;
+  gap:2px!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+}
+#library .v51011-shelf-lantern{
+  left:10px!important;bottom:42px!important;width:22px!important;
+  z-index:5!important;opacity:.92!important;
+  filter:drop-shadow(0 4px 4px rgba(0,0,0,.48)) drop-shadow(0 0 8px rgba(245,178,79,.18))!important;
+}
+#library .v51011-shelf-books{display:none!important}
+
+/* Three image-asset prototypes: substantial leather volumes with live typography. */
+#library .v51018-spine{
+  position:relative!important;
+  flex:1.12 1 0!important;
+  min-width:0!important;
+  max-width:86px!important;
+  height:95%!important;
+  padding:0!important;margin:0!important;border:0!important;
+  background:transparent!important;color:#fff0c7!important;
+  box-shadow:none!important;overflow:visible!important;
+  transform-origin:50% 100%!important;isolation:isolate!important;
+}
+#library .v51018-spine.proto-legion{height:96%!important;flex-grow:1.15!important;transform:rotate(-.28deg)!important}
+#library .v51018-spine.proto-angels{height:94%!important;flex-grow:1.13!important;transform:rotate(.25deg)!important}
+#library .v51018-spine.proto-stage{height:92%!important;flex-grow:1.10!important;transform:rotate(-.16deg)!important}
+#library .v51018-spine-asset{
+  position:absolute!important;inset:-6px -8px -8px!important;
+  width:calc(100% + 16px)!important;height:calc(100% + 14px)!important;
+  object-fit:fill!important;pointer-events:none!important;z-index:1!important;
+  filter:drop-shadow(3px 8px 5px rgba(8,3,2,.48))!important;
+}
+#library .v51018-spine-title{
+  position:absolute!important;z-index:4!important;left:50%!important;
+  top:88px!important;bottom:73px!important;
+  transform:translateX(-50%) rotate(180deg)!important;
+  writing-mode:vertical-rl!important;text-orientation:mixed!important;
+  display:block!important;white-space:nowrap!important;overflow:hidden!important;
+  text-overflow:ellipsis!important;max-width:30px!important;
+  color:#fff2ca!important;
+  font:900 clamp(10px,2.05vw,14px)/1 Georgia,'Times New Roman',serif!important;
+  letter-spacing:.18px!important;
+  text-shadow:0 2px 1px #160705,0 0 5px rgba(0,0,0,.5)!important;
+  pointer-events:none!important;
+}
+#library .v51018-spine-series{
+  position:absolute!important;z-index:5!important;
+  left:12px!important;right:12px!important;bottom:17px!important;
+  min-height:22px!important;display:grid!important;place-items:center!important;
+  padding:2px 3px!important;color:#f6d68b!important;background:rgba(24,9,5,.35)!important;
+  border:0!important;border-radius:9px!important;
+  font:900 clamp(5.8px,1.15vw,7.4px)/1 Georgia,'Times New Roman',serif!important;
+  letter-spacing:.25px!important;text-shadow:0 1px 1px #120603!important;
+  pointer-events:none!important;
+}
+#library .v51018-spine-fav{
+  position:absolute!important;z-index:7!important;right:9px!important;top:18px!important;
+  width:20px!important;height:20px!important;display:grid!important;place-items:center!important;
+  color:#ffe8a0!important;background:#4a1d11!important;border:1px solid #e1b85f!important;
+  border-radius:50%!important;font-size:9px!important;box-shadow:0 2px 5px rgba(0,0,0,.3)!important;
+}
+#library .v51018-spine-bookmark{
+  display:none!important;position:absolute!important;z-index:8!important;right:7px!important;top:-4px!important;
+  width:13px!important;height:48px!important;background:linear-gradient(180deg,#b9583d,#76201f)!important;
+  border-left:1px solid #edbd67!important;border-right:1px solid #edbd67!important;
+  clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)!important;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.42))!important;
+}
+#library .v51018-spine.selected .v51018-spine-bookmark{display:block!important}
+#library .v51018-spine.selected{
+  transform:translateY(-8px)!important;filter:brightness(1.08) saturate(1.04)!important;
+}
+#library .v51018-spine.selected:after{
+  content:""!important;position:absolute!important;inset:4px 0 1px!important;z-index:0!important;
+  border-radius:16px!important;box-shadow:0 0 0 1px rgba(246,214,139,.92),0 0 20px rgba(240,179,68,.38)!important;
+  pointer-events:none!important;
+}
+@media (hover:hover) and (pointer:fine){#library .v51018-spine:hover{filter:brightness(1.06)!important;transform:translateY(-3px)!important}}
+@media(max-width:420px){
+  #library .v51011-shelf-row{height:338px!important}
+  #library .v51011-books{left:7.2%!important;right:7.2%!important;top:43px!important;bottom:39px!important;gap:1px!important}
+  #library .v51018-spine{max-width:66px!important}
+  #library .v51018-spine-asset{inset:-5px -7px -7px!important;width:calc(100% + 14px)!important;height:calc(100% + 12px)!important}
+  #library .v51018-spine-title{top:82px!important;bottom:69px!important;font-size:9.4px!important;letter-spacing:.1px!important}
+  #library .v51018-spine-series{left:7px!important;right:7px!important;bottom:15px!important;min-height:19px!important;font-size:5.2px!important}
+  #library .v51018-spine-fav{right:7px!important;top:17px!important;width:17px!important;height:17px!important;font-size:7px!important}
+}
+@media(max-width:365px){
+  #library .v51011-shelf-row{height:324px!important}
+  #library .v51018-spine-title{top:77px!important;bottom:65px!important;font-size:8.8px!important}
+  #library .v51018-spine-series{font-size:4.9px!important}
+}
