@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.22-pixel-archive-concept-match';
-const FORCE_VERSION = '51022';
+const CACHE = 'reading-mmo-v5.10.23-approved-concept-shelf';
+const FORCE_VERSION = '51023';
 const CORE = [
   './',
   './asset-book.png',
@@ -92,6 +92,14 @@ const CORE = [
   './archive-spine-4.svg',
   './archive-spine-5.svg',
   './archive-spine-6.svg',
+  './archive-concept-v51023-part01.b64',
+  './archive-concept-v51023-part02.b64',
+  './archive-concept-v51023-part03.b64',
+  './archive-concept-v51023-part04.b64',
+  './archive-concept-v51023-part05.b64',
+  './archive-concept-v51023-part06.b64',
+  './archive-concept-v51023-part07.b64',
+  './archive-concept-v51023-part08.b64',
   './v5810-quiet-panel-footer.png'
 ];
 

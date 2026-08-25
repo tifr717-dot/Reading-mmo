@@ -1,0 +1,10 @@
+Reading MMO v5.10.23 — Approved Concept Shelf
+
+- Replaces the failed v5.10.22 shelf interpretation with the literal shelf crop from the approved concept image.
+- The shelf artwork itself is not redrawn, simplified, vectorized, or restyled.
+- All seven canonical book spines remain tappable through transparent live hit areas that open their existing archive records.
+- Search/filter results dim nonmatching canonical spines while preserving the approved shelf artwork.
+- Additional user-created archive volumes still render below the approved shelf as a fallback.
+- The approved Archive top controls and the open-book archive record are not redesigned in this pass.
+- Shelved Volumes remains intact.
+- Android/PWA cache is bumped to v5.10.23 and the worker forces installed copies onto appv=51023.
