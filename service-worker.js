@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.13-archive-art-pass';
-const FORCE_VERSION = '51013';
+const CACHE = 'reading-mmo-v5.10.14-archive-visual-rebuild';
+const FORCE_VERSION = '51014';
 const CORE = [
   './',
   './asset-book.png',
@@ -59,6 +59,10 @@ const CORE = [
   './archive-v51011.css',
   './archive-v51011.js',
   './archive-v51012.css',
+  './archive-v51013.css',
+  './archive-v51013.js',
+  './archive-v51014.css',
+  './archive-v51014.js',
   './archive-v51013.css',
   './archive-v51013.js',
   './archive-spine-standalone.svg',

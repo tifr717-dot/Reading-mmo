@@ -1,0 +1,17 @@
+Reading MMO v5.10.14 — Archive Visual Rebuild
+
+LOCKED / unchanged:
+- Approved Enchanted Archive title/stats/search/Add Volume/filter artwork.
+
+Visible shelf changes:
+- Removed the busy full-height SVG filigree from v5.10.12.
+- Rebuilt the seven books as cleaner storybook/fantasy spines with a simple gold inner frame, small top crest, stronger title area, and more natural spacing/height variation.
+
+Visible open-book changes:
+- Repositioned cover and cover controls on the left page.
+- Rebuilt the right page hierarchy so entry number, title, author, rating, metadata lines, notes, and actions sit more naturally on the parchment.
+- Metadata is now a ruled ledger treatment instead of floating boxes.
+
+Versioning:
+- App badge and App Health both stamp v5.10.14.
+- Service-worker cache/forced navigation bumped to 51014.
