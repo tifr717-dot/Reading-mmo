@@ -1,7 +1,7 @@
 /* Reading MMO v5.10.21 — dedicated Shelved Volumes loader.
    Kept separate from Archive scripts so Android cache/version changes cannot hide the feature. */
 (function(){
-  const BUILD='v5.10.21';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.21';
   window.__readingMmoVersionOwner=BUILD;
   const $id=id=>document.getElementById(id);
   const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');

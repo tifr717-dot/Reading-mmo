@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.21-version-cache-repair';
-const FORCE_VERSION = '51021';
+const CACHE = 'reading-mmo-v5.10.22-pixel-archive-concept-match';
+const FORCE_VERSION = '51022';
 const CORE = [
   './',
   './asset-book.png',
@@ -70,6 +70,16 @@ const CORE = [
   './archive-proto-stage.svg',
   './archive-v51018.css',
   './archive-v51018.js',
+  './archive-v51022.css',
+  './archive-v51022.js',
+  './archive-pixel-shelf-v51022.svg',
+  './archive-pixel-spine-6-v51022.svg',
+  './archive-pixel-spine-5-v51022.svg',
+  './archive-pixel-spine-4-v51022.svg',
+  './archive-pixel-spine-3-v51022.svg',
+  './archive-pixel-spine-2-v51022.svg',
+  './archive-pixel-spine-1-v51022.svg',
+  './archive-pixel-spine-standalone-v51022.svg',
   './reading-shelf-v51019.js',
   './reading-shelf-v51021.js',
   './archive-proto-legion-art.svg',

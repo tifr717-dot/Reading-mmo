@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 560" shape-rendering="crispEdges" role="img" aria-label="Pixel art fantasy book spine">
+    <rect x="8" y="18" width="144" height="530" fill="#160a07"/>
+    <rect x="16" y="10" width="128" height="530" fill="#123a2e"/>
+    <rect x="24" y="18" width="112" height="514" fill="#24684f"/>
+    <rect x="24" y="18" width="14" height="514" fill="#4f9b73" opacity=".38"/>
+    <rect x="122" y="18" width="14" height="514" fill="#000" opacity=".22"/>
+    <rect x="30" y="28" width="100" height="8" fill="#d5a74f"/><rect x="30" y="42" width="100" height="4" fill="#7a4a1e"/>
+    <rect x="30" y="112" width="100" height="5" fill="#d5a74f"/><rect x="30" y="430" width="100" height="5" fill="#d5a74f"/>
+    <rect x="30" y="488" width="100" height="8" fill="#d5a74f"/><rect x="42" y="130" width="5" height="282" fill="#c89442" opacity=".85"/><rect x="113" y="130" width="5" height="282" fill="#c89442" opacity=".85"/>
+    <g fill="#e5bd66"><rect x="72" y="44" width="16" height="16"/><rect x="56" y="60" width="48" height="16"/><rect x="64" y="76" width="32" height="16"/><rect x="72" y="92" width="16" height="14"/></g>
+    <rect x="36" y="452" width="88" height="8" fill="#7a4a1e"/><rect x="36" y="462" width="88" height="4" fill="#d5a74f"/>
+    <rect x="34" y="500" width="92" height="30" fill="#123a2e" stroke="#d7aa56" stroke-width="4"/>
+    </svg>

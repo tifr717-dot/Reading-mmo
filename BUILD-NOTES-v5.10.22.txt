@@ -1,0 +1,7 @@
+Reading MMO v5.10.22 — Pixel Archive Concept Match
+
+- Rebuilds the Archive shelf as a chunky pixel-art carved wooden alcove matching the approved phone concept and existing widget language.
+- Converts all seven archive books to pixel-art image assets with live title and series text overlays.
+- Adds pixel lantern, plant, ivy, stacked books, quill, crystal, heavy wood beams, and crisp game-art shadows to the shelf asset.
+- Keeps Archive functionality, filters, record opening, cover data, and the open-book record intact.
+- Preserves Shelved Volumes and bumps Android service-worker cache/version to 5.10.22.
