@@ -1,0 +1,364 @@
+name: Apply Reading MMO v5.10.16 Shelf Prototype
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51016-shelf-prototype.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build v5.10.16 three-spine asset prototype
+        shell: python
+        run: |
+          from pathlib import Path
+
+          legion = r'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 520" role="img" aria-label="Gold fantasy book spine">
+          <defs>
+            <linearGradient id="leather" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#40270f"/><stop offset=".13" stop-color="#8b6223"/><stop offset=".48" stop-color="#b88b32"/><stop offset=".82" stop-color="#765019"/><stop offset="1" stop-color="#2d1909"/></linearGradient>
+            <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0a9"/><stop offset=".32" stop-color="#d9a848"/><stop offset=".72" stop-color="#8d5e18"/><stop offset="1" stop-color="#f4d27b"/></linearGradient>
+            <radialGradient id="gem"><stop stop-color="#fff9d7"/><stop offset=".28" stop-color="#e6c256"/><stop offset=".72" stop-color="#8a5b12"/><stop offset="1" stop-color="#2b1707"/></radialGradient>
+            <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".65" numOctaves="3" seed="7" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/><feComponentTransfer in="g" result="f"><feFuncA type="table" tableValues="0 .13"/></feComponentTransfer><feBlend in="SourceGraphic" in2="f" mode="multiply"/></filter>
+            <filter id="shadow"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-color="#160b04" flood-opacity=".7"/></filter>
+          </defs>
+          <g filter="url(#shadow)">
+            <path d="M18 9 Q10 9 10 19 V501 Q10 511 20 511 H120 Q130 511 130 501 V19 Q130 9 120 9 Z" fill="url(#leather)" stroke="#1e0e05" stroke-width="4"/>
+            <path d="M23 15 H117 Q124 15 124 22 V498 Q124 505 117 505 H23 Q16 505 16 498 V22 Q16 15 23 15Z" fill="none" stroke="#e3b85f" stroke-width="2.2" opacity=".85"/>
+            <g filter="url(#grain)" opacity=".75"><rect x="19" y="18" width="102" height="484" rx="5" fill="url(#leather)"/></g>
+            <path d="M25 43 H115 M25 83 H115 M25 437 H115 M25 477 H115" stroke="url(#gold)" stroke-width="3"/>
+            <path d="M31 99 V420 M109 99 V420" stroke="#c99a3f" stroke-width="1.5" opacity=".85"/>
+            <path d="M36 106 V413 M104 106 V413" stroke="#f0cf7a" stroke-width=".7" opacity=".42"/>
+            <g fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round">
+              <path d="M31 98 C45 87 56 92 70 76 C84 92 95 87 109 98"/>
+              <path d="M31 421 C45 432 56 427 70 443 C84 427 95 432 109 421"/>
+              <path d="M25 54 C40 49 49 42 55 30 M115 54 C100 49 91 42 85 30"/>
+              <path d="M25 466 C40 471 49 478 55 490 M115 466 C100 471 91 478 85 490"/>
+            </g>
+            <g transform="translate(70 61)" fill="url(#gold)" stroke="#fff0ad" stroke-width="1">
+              <path d="M0-24 7-9 24-7 11 4 15 21 0 12-15 21-11 4-24-7-7-9Z"/>
+              <circle r="5" fill="#4b260d"/>
+            </g>
+            <g transform="translate(70 458)"><circle r="14" fill="url(#gem)" stroke="#f3d778" stroke-width="2"/><path d="M-7 0 0-8 7 0 0 8Z" fill="#fff0a4" opacity=".7"/></g>
+            <path d="M19 20 C26 28 26 492 19 500 M121 20 C114 28 114 492 121 500" fill="none" stroke="#f3d986" stroke-width="2" opacity=".2"/>
+          </g>
+          </svg>'''
+
+          angels = r'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 520" role="img" aria-label="Red fantasy book spine">
+          <defs>
+            <linearGradient id="leather" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#220706"/><stop offset=".14" stop-color="#6a1f1d"/><stop offset=".5" stop-color="#963c34"/><stop offset=".82" stop-color="#57201c"/><stop offset="1" stop-color="#190605"/></linearGradient>
+            <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe6a0"/><stop offset=".4" stop-color="#d39a3a"/><stop offset=".78" stop-color="#855019"/><stop offset="1" stop-color="#f0c76d"/></linearGradient>
+            <radialGradient id="ruby"><stop stop-color="#ffd5cb"/><stop offset=".25" stop-color="#d54c43"/><stop offset=".7" stop-color="#761b1b"/><stop offset="1" stop-color="#260405"/></radialGradient>
+            <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="11" result="n"/><feComponentTransfer in="n" result="f"><feFuncA type="table" tableValues="0 .12"/></feComponentTransfer><feBlend in="SourceGraphic" in2="f" mode="multiply"/></filter>
+            <filter id="shadow"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-color="#120302" flood-opacity=".72"/></filter>
+          </defs>
+          <g filter="url(#shadow)">
+            <path d="M17 8 Q9 8 9 19 V501 Q9 512 20 512 H120 Q131 512 131 501 V19 Q131 8 123 8 Z" fill="url(#leather)" stroke="#180403" stroke-width="4"/>
+            <g filter="url(#grain)"><rect x="16" y="15" width="108" height="490" rx="7" fill="url(#leather)"/></g>
+            <path d="M22 18 H118 Q124 18 124 25 V495 Q124 502 118 502 H22 Q16 502 16 495 V25 Q16 18 22 18Z" fill="none" stroke="#d9a54d" stroke-width="2"/>
+            <path d="M24 47 H116 M24 88 H116 M24 432 H116 M24 474 H116" stroke="url(#gold)" stroke-width="3"/>
+            <path d="M30 102 V417 M110 102 V417" stroke="#d2a14a" stroke-width="1.6" opacity=".85"/>
+            <g fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round">
+              <path d="M33 101 C46 91 55 92 70 78 C85 92 94 91 107 101"/>
+              <path d="M33 418 C46 428 55 427 70 441 C85 427 94 428 107 418"/>
+              <path d="M29 63 C42 55 50 45 53 31 M111 63 C98 55 90 45 87 31"/>
+              <path d="M29 456 C42 464 50 474 53 488 M111 456 C98 464 90 474 87 488"/>
+            </g>
+            <g transform="translate(70 61)" fill="none" stroke="url(#gold)" stroke-width="2.4" stroke-linecap="round">
+              <path d="M0 8 C-15-11-33-12-39 0 C-27-1-18 4-9 14"/>
+              <path d="M0 8 C15-11 33-12 39 0 C27-1 18 4 9 14"/>
+              <path d="M-8 14 C-14 19-18 24-20 30 M8 14 C14 19 18 24 20 30"/>
+              <path d="M0-20 V13"/>
+            </g>
+            <g transform="translate(70 456)"><path d="M0-16 C10-16 16-8 16 1 16 11 8 18 0 25-8 18-16 11-16 1-16-8-10-16 0-16Z" fill="url(#ruby)" stroke="#f2c96f" stroke-width="2"/><path d="M0-9 V14 M-7 2 H7" stroke="#ffd996" stroke-width="1.4" opacity=".72"/></g>
+            <path d="M19 20 C25 34 25 486 19 500 M121 20 C115 34 115 486 121 500" fill="none" stroke="#ffd99a" stroke-width="2" opacity=".17"/>
+          </g>
+          </svg>'''
+
+          stage = r'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 520" role="img" aria-label="Purple fantasy book spine">
+          <defs>
+            <linearGradient id="leather" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#1c0b22"/><stop offset=".14" stop-color="#4e285a"/><stop offset=".5" stop-color="#765084"/><stop offset=".82" stop-color="#45234f"/><stop offset="1" stop-color="#140719"/></linearGradient>
+            <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8e9ad"/><stop offset=".38" stop-color="#cfa85d"/><stop offset=".75" stop-color="#7f5a27"/><stop offset="1" stop-color="#e8c97c"/></linearGradient>
+            <radialGradient id="amethyst"><stop stop-color="#f4dcff"/><stop offset=".28" stop-color="#a968bb"/><stop offset=".72" stop-color="#5c2b72"/><stop offset="1" stop-color="#1c0a25"/></radialGradient>
+            <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".58" numOctaves="3" seed="19" result="n"/><feComponentTransfer in="n" result="f"><feFuncA type="table" tableValues="0 .13"/></feComponentTransfer><feBlend in="SourceGraphic" in2="f" mode="multiply"/></filter>
+            <filter id="shadow"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-color="#0f0511" flood-opacity=".72"/></filter>
+          </defs>
+          <g filter="url(#shadow)">
+            <path d="M18 10 Q10 10 10 20 V500 Q10 510 20 510 H120 Q130 510 130 500 V20 Q130 10 122 10 Z" fill="url(#leather)" stroke="#17071b" stroke-width="4"/>
+            <g filter="url(#grain)"><rect x="17" y="17" width="106" height="486" rx="7" fill="url(#leather)"/></g>
+            <path d="M23 18 H117 Q124 18 124 25 V495 Q124 502 117 502 H23 Q16 502 16 495 V25 Q16 18 23 18Z" fill="none" stroke="#d4b46d" stroke-width="2"/>
+            <path d="M25 48 H115 M25 88 H115 M25 433 H115 M25 474 H115" stroke="url(#gold)" stroke-width="2.8"/>
+            <path d="M31 102 V418 M109 102 V418" stroke="#c9a55f" stroke-width="1.6" opacity=".85"/>
+            <g fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round">
+              <path d="M32 101 C41 89 56 92 70 77 C84 92 99 89 108 101"/>
+              <path d="M32 419 C41 431 56 428 70 443 C84 428 99 431 108 419"/>
+              <path d="M27 62 C40 54 47 43 51 31 M113 62 C100 54 93 43 89 31"/>
+              <path d="M27 457 C40 465 47 476 51 489 M113 457 C100 465 93 476 89 489"/>
+            </g>
+            <g transform="translate(70 61)" stroke="url(#gold)" stroke-width="2" fill="none" stroke-linejoin="round">
+              <path d="M0-22 18-5 0 15-18-5Z"/>
+              <path d="M-27 17 C-18 4-8 2 0 7 C8 2 18 4 27 17"/>
+              <path d="M-23 23 C-14 15-7 14 0 18 C7 14 14 15 23 23"/>
+              <circle cy="-5" r="4" fill="url(#amethyst)" stroke="#ead39a"/>
+            </g>
+            <g transform="translate(70 457)"><path d="M0-18 18 0 0 18-18 0Z" fill="url(#amethyst)" stroke="#e5c779" stroke-width="2"/><path d="M-6 0 0-7 6 0 0 7Z" fill="#f4dfff" opacity=".67"/></g>
+            <path d="M19 20 C25 33 25 487 19 500 M121 20 C115 33 115 487 121 500" fill="none" stroke="#f0dca3" stroke-width="2" opacity=".16"/>
+          </g>
+          </svg>'''
+
+          css = r'''/* Reading MMO v5.10.16 — Phase 1 shelf prototype only.
+             APPROVED Archive top and open-book detail remain untouched.
+             Three test volumes use actual spine image assets with live text layered above them. */
+
+          #library .v51016-spine{
+            position:relative!important;
+            flex:1 1 0!important;
+            min-width:0!important;
+            max-width:78px!important;
+            height:96%!important;
+            padding:0!important;
+            margin:0!important;
+            border:0!important;
+            border-radius:0!important;
+            background:transparent!important;
+            color:#f8e8ba!important;
+            box-shadow:none!important;
+            overflow:visible!important;
+            transform-origin:50% 100%!important;
+            isolation:isolate!important;
+          }
+          #library .v51016-spine.proto-legion{height:99%!important;flex-grow:1.08!important;transform:rotate(-.35deg)!important}
+          #library .v51016-spine.proto-angels{height:94%!important;flex-grow:1.02!important;transform:rotate(.42deg)!important}
+          #library .v51016-spine.proto-stage{height:91%!important;flex-grow:.98!important;transform:rotate(-.22deg)!important}
+          #library .v51016-spine-asset{
+            position:absolute!important;
+            inset:-5px -7px -7px!important;
+            width:calc(100% + 14px)!important;
+            height:calc(100% + 12px)!important;
+            object-fit:fill!important;
+            pointer-events:none!important;
+            z-index:1!important;
+            filter:drop-shadow(3px 7px 4px rgba(10,4,2,.46))!important;
+          }
+          #library .v51016-spine-title{
+            position:absolute!important;
+            z-index:4!important;
+            left:50%!important;
+            top:73px!important;
+            bottom:69px!important;
+            transform:translateX(-50%) rotate(180deg)!important;
+            writing-mode:vertical-rl!important;
+            text-orientation:mixed!important;
+            display:block!important;
+            max-width:24px!important;
+            white-space:nowrap!important;
+            overflow:hidden!important;
+            text-overflow:ellipsis!important;
+            color:#fff1c9!important;
+            font:900 clamp(8.5px,1.72vw,12.4px)/1 Georgia,'Times New Roman',serif!important;
+            letter-spacing:.05px!important;
+            text-shadow:0 1px 1px #170806,0 0 4px rgba(0,0,0,.48)!important;
+            pointer-events:none!important;
+          }
+          #library .v51016-spine-series{
+            position:absolute!important;
+            z-index:5!important;
+            left:9px!important;
+            right:9px!important;
+            bottom:18px!important;
+            min-height:16px!important;
+            display:grid!important;
+            place-items:center!important;
+            padding:2px 2px!important;
+            color:#f6d88f!important;
+            background:rgba(24,9,5,.66)!important;
+            border:1px solid rgba(237,198,104,.58)!important;
+            border-radius:3px!important;
+            font:900 clamp(4.2px,.86vw,6.1px)/1 ui-monospace,monospace!important;
+            letter-spacing:.12px!important;
+            pointer-events:none!important;
+          }
+          #library .v51016-spine-fav{
+            position:absolute!important;
+            z-index:6!important;
+            right:10px!important;
+            top:20px!important;
+            width:17px!important;
+            height:17px!important;
+            display:grid!important;
+            place-items:center!important;
+            color:#ffe89c!important;
+            background:rgba(34,12,6,.62)!important;
+            border:1px solid rgba(242,205,113,.58)!important;
+            border-radius:50%!important;
+            font-size:8px!important;
+            text-shadow:0 1px 1px #1b0905!important;
+          }
+          #library .v51016-spine-bookmark{
+            display:none!important;
+            position:absolute!important;
+            z-index:7!important;
+            right:7px!important;
+            top:-4px!important;
+            width:11px!important;
+            height:43px!important;
+            background:linear-gradient(180deg,#c66a45,#7f2e29)!important;
+            border-left:1px solid #f0c06d!important;
+            border-right:1px solid #f0c06d!important;
+            clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)!important;
+            filter:drop-shadow(0 3px 3px rgba(0,0,0,.4))!important;
+          }
+          #library .v51016-spine.selected .v51016-spine-bookmark{display:block!important}
+          #library .v51016-spine.selected{
+            transform:translateY(-9px)!important;
+            filter:brightness(1.08) saturate(1.04)!important;
+          }
+          #library .v51016-spine.selected::after{
+            content:""!important;
+            position:absolute!important;
+            inset:2px 1px 2px!important;
+            z-index:0!important;
+            border-radius:11px!important;
+            box-shadow:0 0 0 1px #f4d787,0 0 22px rgba(255,198,72,.52)!important;
+            pointer-events:none!important;
+          }
+          @media (hover:hover) and (pointer:fine){
+            #library .v51016-spine:hover{filter:brightness(1.06)!important;transform:translateY(-4px)!important}
+          }
+          @media(max-width:420px){
+            #library .v51016-spine{max-width:60px!important}
+            #library .v51016-spine-asset{inset:-4px -6px -6px!important;width:calc(100% + 12px)!important;height:calc(100% + 10px)!important}
+            #library .v51016-spine-title{top:62px!important;bottom:61px!important;font-size:7.45px!important}
+            #library .v51016-spine-series{left:6px!important;right:6px!important;bottom:15px!important;min-height:13px!important;font-size:3.7px!important}
+            #library .v51016-spine-fav{right:7px!important;top:17px!important;width:14px!important;height:14px!important;font-size:6px!important}
+          }
+          @media(max-width:365px){
+            #library .v51016-spine-title{top:57px!important;bottom:57px!important;font-size:6.9px!important}
+            #library .v51016-spine-series{font-size:3.35px!important}
+          }
+          '''
+
+          js = r'''/* Reading MMO v5.10.16 — Phase 1 asset-spine prototype.
+             Only three books are converted in this build. The approved Archive top
+             and the open-book detail implementation are intentionally untouched. */
+          (function(){
+            const BUILD='v5.10.16';
+            const prototypeByTitle={
+              "archangel's legion":{asset:'./archive-proto-legion.svg',cls:'proto-legion'},
+              "angels' blood":{asset:'./archive-proto-angels.svg',cls:'proto-angels'},
+              'a stage set for villains':{asset:'./archive-proto-stage.svg',cls:'proto-stage'}
+            };
+            const norm=v=>String(v||'').trim().toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ');
+            const safe=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+            const prior=window.libraryBookCardMarkup;
+
+            function ensureCss(){
+              let l=document.getElementById('archive-v51016-css');
+              if(l)return;
+              l=document.createElement('link');
+              l.id='archive-v51016-css';l.rel='stylesheet';l.href='./archive-v51016.css?v=51016';
+              document.head.appendChild(l);
+            }
+            function stamp(){
+              const badge=document.getElementById('headerVersionText');if(badge)badge.textContent=BUILD;
+              document.querySelectorAll('.health-row').forEach(row=>{
+                if(row.querySelector('b')?.textContent.trim()==='Version'){
+                  const s=row.querySelector('span');if(s)s.textContent=BUILD;
+                }
+              });
+            }
+            window.libraryBookCardMarkup=function(b,volumeNo){
+              const proto=prototypeByTitle[norm(b&&b.title)];
+              if(!proto)return typeof prior==='function'?prior(b,volumeNo):'';
+              const selected=String(window.__archiveSelectedId||'')===String(b.id)?' selected':'';
+              const series=window.librarySeriesShort?window.librarySeriesShort(b.series):String(b.series||'Standalone');
+              const sid=String(b.id||'').replace(/'/g,"\\'");
+              return `<button class="v51016-spine ${proto.cls}${selected}" onclick="window.__archiveSelectedId='${sid}';openLibraryRecord('${sid}')" aria-label="Open library record for ${safe(b.title)} by ${safe(b.author||'Unknown author')}"><img class="v51016-spine-asset" src="${proto.asset}?v=51016" alt="" aria-hidden="true">${b.favorite?'<span class="v51016-spine-fav">★</span>':''}<span class="v51016-spine-bookmark" aria-hidden="true"></span><span class="v51016-spine-title">${safe(b.title)}</span><span class="v51016-spine-series">${safe(series)}</span></button>`;
+            };
+            function apply(){
+              ensureCss();stamp();
+              if(typeof window.renderLibrary==='function')window.renderLibrary();
+              setTimeout(stamp,80);setTimeout(stamp,500);
+            }
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+          })();
+          '''
+
+          notes = '''Reading MMO v5.10.16 — Phase 1 Layered Shelf Prototype
+
+          PURPOSE
+          - Test the approved image-asset + live-text approach before rebuilding all seven volumes.
+          - Do not redesign the approved Archive top.
+          - Do not redesign the open-book detail yet.
+
+          THIS BUILD CHANGES ONLY THREE SHELF BOOKS
+          1. Archangel’s Legion — illustrated gold asset + live title + live #6 label
+          2. Angels’ Blood — illustrated red asset + live title + live #1 label
+          3. A Stage Set for Villains — illustrated purple asset + live title + live STANDALONE label
+
+          IMPLEMENTATION RULE
+          - The physical book/spine artwork is a reusable image asset.
+          - Title, series label, favorite marker, selection state, and click behavior remain live UI layers.
+          - The remaining four books intentionally retain the previous spine treatment in v5.10.16 so the new direction can be judged before expanding it.
+
+          APPROVAL CHECKPOINT
+          If these three books feel like the approved vertical phone concept, v5.10.17 will convert the remaining four books and polish the full shelf.
+          '''
+
+          Path('archive-proto-legion.svg').write_text(legion,encoding='utf-8')
+          Path('archive-proto-angels.svg').write_text(angels,encoding='utf-8')
+          Path('archive-proto-stage.svg').write_text(stage,encoding='utf-8')
+          Path('archive-v51016.css').write_text(css,encoding='utf-8')
+          Path('archive-v51016.js').write_text(js,encoding='utf-8')
+          Path('BUILD-NOTES-v5.10.16.txt').write_text(notes,encoding='utf-8')
+
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+          old='<script src="./archive-v51014.js?v=51015"></script>'
+          new=old+'\n<script src="./archive-v51016.js?v=51016"></script>'
+          if './archive-v51016.js?v=51016' not in text:
+              if old not in text: raise SystemExit('Could not find v5.10.15 archive runtime hook in index.html')
+              text=text.replace(old,new,1)
+          text=text.replace('service-worker.js?v=51015','service-worker.js?v=51016')
+          p.write_text(text,encoding='utf-8')
+
+          p=Path('service-worker.js')
+          sw=p.read_text(encoding='utf-8')
+          sw=sw.replace("const CACHE = 'reading-mmo-v5.10.15-archive-concept-polish';","const CACHE = 'reading-mmo-v5.10.16-shelf-asset-prototype';")
+          sw=sw.replace("const FORCE_VERSION = '51015';","const FORCE_VERSION = '51016';")
+          anchor="  './archive-v51014.js',\n"
+          additions="  './archive-v51016.css',\n  './archive-v51016.js',\n  './archive-proto-legion.svg',\n  './archive-proto-angels.svg',\n  './archive-proto-stage.svg',\n"
+          if "'./archive-v51016.js'" not in sw:
+              if anchor not in sw: raise SystemExit('Could not find archive v51014 service-worker anchor')
+              sw=sw.replace(anchor,anchor+additions,1)
+          p.write_text(sw,encoding='utf-8')
+
+      - name: Verify v5.10.16 prototype wiring
+        shell: bash
+        run: |
+          set -e
+          grep -q 'archive-v51016.js?v=51016' index.html
+          grep -q 'service-worker.js?v=51016' index.html
+          grep -q "FORCE_VERSION = '51016'" service-worker.js
+          grep -q 'archive-proto-legion.svg' service-worker.js
+          grep -q 'archive-proto-angels.svg' service-worker.js
+          grep -q 'archive-proto-stage.svg' service-worker.js
+          grep -q "const BUILD='v5.10.16'" archive-v51016.js
+
+      - name: Commit v5.10.16 shelf prototype
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html service-worker.js archive-v51016.css archive-v51016.js archive-proto-legion.svg archive-proto-angels.svg archive-proto-stage.svg BUILD-NOTES-v5.10.16.txt
+          if git diff --cached --quiet; then
+            echo 'No v5.10.16 changes to commit.'
+          else
+            git commit -m 'Reading MMO v5.10.16 three-spine asset prototype'
+            git push
+          fi
