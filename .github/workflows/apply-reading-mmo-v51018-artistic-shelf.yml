@@ -1,0 +1,114 @@
+name: Apply Reading MMO v5.10.18 Artistic Shelf
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51018-artistic-shelf.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build artistic shelf on top of current app
+        shell: python
+        run: |
+          from pathlib import Path
+          import re, textwrap
+
+          # Preserve the newest app wiring (including v5.10.17 Shelved Volumes).
+          original_index = Path('index.html').read_text(encoding='utf-8')
+          original_sw = Path('service-worker.js').read_text(encoding='utf-8')
+
+          # Reuse the already-authored illustrated asset/CSS source from the earlier
+          # refinement workflow, but do NOT keep its old index/service-worker patches.
+          source = Path('.github/workflows/apply-reading-mmo-v51016b-artistic-shelf.yml').read_text(encoding='utf-8')
+          marker = '      - name: Build v5.10.16b artistic shelf refinement\n'
+          pos = source.index(marker)
+          start = source.index('        run: |\n', pos) + len('        run: |\n')
+          end = source.index('\n      - name: Verify artistic shelf wiring', start)
+          script = textwrap.dedent(source[start:end])
+          exec(compile(script, '<artistic-shelf-source>', 'exec'), {'__name__':'__main__'})
+
+          # Restore current app wiring before integrating the new pass.
+          Path('index.html').write_text(original_index, encoding='utf-8')
+          Path('service-worker.js').write_text(original_sw, encoding='utf-8')
+
+          # Promote the refinement to the next real app version rather than
+          # stepping backward over the Shelved Volumes v5.10.17 feature.
+          js = Path('archive-v51016b.js').read_text(encoding='utf-8')
+          js = js.replace('v5.10.16b', 'v5.10.18').replace('v51016b', 'v51018').replace('51016b', '51018')
+          js = js.replace('archive-proto-legion-b.svg', 'archive-proto-legion-art.svg')
+          js = js.replace('archive-proto-angels-b.svg', 'archive-proto-angels-art.svg')
+          js = js.replace('archive-proto-stage-b.svg', 'archive-proto-stage-art.svg')
+          Path('archive-v51018.js').write_text(js, encoding='utf-8')
+
+          css = Path('archive-v51016b.css').read_text(encoding='utf-8')
+          css = css.replace('v5.10.16b', 'v5.10.18').replace('v51016b', 'v51018')
+          Path('archive-v51018.css').write_text(css, encoding='utf-8')
+
+          Path('archive-proto-legion-art.svg').write_text(Path('archive-proto-legion-b.svg').read_text(encoding='utf-8'), encoding='utf-8')
+          Path('archive-proto-angels-art.svg').write_text(Path('archive-proto-angels-b.svg').read_text(encoding='utf-8'), encoding='utf-8')
+          Path('archive-proto-stage-art.svg').write_text(Path('archive-proto-stage-b.svg').read_text(encoding='utf-8'), encoding='utf-8')
+
+          # Remove transient old-version generated files; only v5.10.18 is committed.
+          for transient in ['archive-v51016b.js','archive-v51016b.css','archive-proto-legion-b.svg','archive-proto-angels-b.svg','archive-proto-stage-b.svg','BUILD-NOTES-v5.10.16b.txt']:
+              p = Path(transient)
+              if p.exists(): p.unlink()
+
+          notes = '''Reading MMO v5.10.18 — Artistic Archive Shelf Refinement\n\nPURPOSE\n- Push the shelf and three image-asset prototype books closer to the approved vertical concept art.\n- Preserve the v5.10.17 Shelved Volumes reading-desk feature.\n- Keep the approved Archive title/stats/search/Add Volume/filter artwork unchanged.\n- Keep the open-book Archive detail unchanged for this checkpoint.\n\nART DIRECTION CHANGES\n- Shelf is reshaped visually as a warm carved wooden alcove rather than a nested UI frame.\n- Archangel’s Legion, Angels’ Blood, and A Stage Set for Villains now use wider, softer, leather-textured illustrated spine assets.\n- Each prototype has one stronger, simpler crest intended to read clearly at phone size.\n- Vertical title typography is larger and more elegant.\n- #6, #1, and STANDALONE labels are larger and easier to read.\n- Decorative stacked books no longer overlap the standalone spine.\n- Prototype book heights are more balanced.\n\nLAYERING CHECKPOINT\n- The other four books intentionally remain in the previous style so the artistic direction can be approved before converting the whole shelf.\n- The open-book record is intentionally deferred until the shelf is locked.\n'''
+          Path('BUILD-NOTES-v5.10.18.txt').write_text(notes, encoding='utf-8')
+
+          index = original_index
+          script_tag = '<script src="./archive-v51018.js?v=51018"></script>'
+          if script_tag not in index:
+              anchor = '<script src="./archive-v51016.js?v=51016"></script>'
+              if anchor not in index:
+                  raise SystemExit('Could not locate v5.10.16 Archive runtime anchor.')
+              index = index.replace(anchor, anchor + '\n' + script_tag, 1)
+          index = re.sub(r'service-worker\.js\?v=[A-Za-z0-9._-]+', 'service-worker.js?v=51018', index)
+          Path('index.html').write_text(index, encoding='utf-8')
+
+          sw = original_sw
+          sw = re.sub(r"const CACHE = '[^']+';", "const CACHE = 'reading-mmo-v5.10.18-artistic-shelf-refinement';", sw, count=1)
+          sw = re.sub(r"const FORCE_VERSION = '[^']+';", "const FORCE_VERSION = '51018';", sw, count=1)
+          new_core = [
+              "  './archive-v51018.css',",
+              "  './archive-v51018.js',",
+              "  './archive-proto-legion-art.svg',",
+              "  './archive-proto-angels-art.svg',",
+              "  './archive-proto-stage-art.svg',",
+          ]
+          if "'./archive-v51018.js'" not in sw:
+              anchor = "  './archive-proto-stage.svg',"
+              if anchor not in sw:
+                  # Safe fallback that preserves every existing CORE entry.
+                  anchor = "  './archive-v51016.js',"
+              if anchor not in sw:
+                  raise SystemExit('Could not locate Archive asset anchor in service worker.')
+              sw = sw.replace(anchor, anchor + '\n' + '\n'.join(new_core), 1)
+          Path('service-worker.js').write_text(sw, encoding='utf-8')
+
+          # Assertions protect the unrelated v5.10.17 feature from accidental removal.
+          assert 'archive-v51018.js?v=51018' in index
+          assert 'service-worker.js?v=51018' in index
+          assert "const CACHE = 'reading-mmo-v5.10.18-artistic-shelf-refinement';" in sw
+          assert "const FORCE_VERSION = '51018';" in sw
+          assert 'archive-proto-legion-art.svg' in sw
+          if 'shelvedBooks' in original_index:
+              assert 'shelvedBooks' in index
+          print('v5.10.18 artistic shelf integrated without removing current app features.')
+
+      - name: Commit v5.10.18 artistic shelf refinement
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html service-worker.js archive-v51018.js archive-v51018.css archive-proto-legion-art.svg archive-proto-angels-art.svg archive-proto-stage-art.svg BUILD-NOTES-v5.10.18.txt
+          git commit -m 'Reading MMO v5.10.18 artistic archive shelf refinement'
+          git push
