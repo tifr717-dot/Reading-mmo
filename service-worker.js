@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.19-shelved-volumes-hotfix';
-const FORCE_VERSION = '51019';
+const CACHE = 'reading-mmo-v5.10.20-single-version-owner';
+const FORCE_VERSION = '51020';
 const CORE = [
   './',
   './asset-book.png',

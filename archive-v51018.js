@@ -16,6 +16,7 @@
     l=document.createElement('link');l.id='archive-v51018-css';l.rel='stylesheet';l.href='./archive-v51018.css?v=51018';document.head.appendChild(l);
   }
   function stamp(){
+    if(window.__readingMmoVersionOwner)return;
     const badge=document.getElementById('headerVersionText');if(badge&&badge.textContent!==BUILD)badge.textContent=BUILD;
     document.querySelectorAll('.health-row').forEach(row=>{if(row.querySelector('b')?.textContent.trim()==='Version'){const s=row.querySelector('span');if(s&&s.textContent!==BUILD)s.textContent=BUILD;}});
   }
