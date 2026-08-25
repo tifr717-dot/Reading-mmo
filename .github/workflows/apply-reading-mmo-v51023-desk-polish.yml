@@ -1,0 +1,150 @@
+name: Apply Reading MMO v5.10.23 Reading Desk Polish
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51023-desk-polish.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Integrate the polished Reading Desk without touching Archive v5.10.22
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+
+          text=re.sub(r'(<span id="headerVersionText" class="app-version-badge">)v5\.10\.\d+(</span>)',r'\1v5.10.23\2',text,count=1)
+          text=re.sub(r'(<div class="health-row"><b>Version</b><span>)v5\.10\.\d+(</span></div>)',r'\1v5.10.23\2',text,count=1)
+
+          owner="<script>window.__readingMmoVersionOwner='v5.10.23';window.__dedicatedShelfRuntime=true;</script>"
+          text=re.sub(r"<script>window\.__readingMmoVersionOwner='v5\.10\.\d+';(?:window\.__dedicatedShelfRuntime=true;)?</script>",owner,text,count=1)
+
+          text=re.sub(r'\./archive-v51016\.js\?v=\d+','./archive-v51016.js?v=51023',text,count=1)
+          text=re.sub(r'\./reading-shelf-v51021\.js\?v=\d+','./reading-shelf-v51021.js?v=51023',text,count=1)
+
+          desk_tag='<script src="./reading-desk-v51022.js?v=51023"></script>'
+          if 'reading-desk-v51022.js' in text:
+              text=re.sub(r'<script src="\./reading-desk-v51022\.js\?v=\d+"></script>',desk_tag,text,count=1)
+          else:
+              shelf_match=re.search(r'<script src="\./reading-shelf-v51021\.js\?v=51023"></script>',text)
+              if not shelf_match:
+                  raise SystemExit('Could not locate dedicated shelf loader')
+              text=text[:shelf_match.end()]+'\n'+desk_tag+text[shelf_match.end():]
+
+          text=re.sub(r'\./service-worker\.js\?v=\d+','./service-worker.js?v=51023',text,count=1)
+
+          # Keep the parallel Archive concept work intact.
+          if './archive-v51022.js?v=51022' not in text:
+              raise SystemExit('Archive v5.10.22 loader is missing; refusing to overwrite concurrent Archive work')
+
+          p.write_text(text,encoding='utf-8')
+
+      - name: Disable only the legacy duplicate shelf UI
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('archive-v51016.js')
+          text=p.read_text(encoding='utf-8')
+          needle='  function injectShelfUi(){\n'
+          replacement='  function injectShelfUi(){\n    if(window.__dedicatedShelfRuntime)return;\n'
+          if replacement not in text:
+              if needle not in text:
+                  raise SystemExit('Could not find legacy injectShelfUi()')
+              text=text.replace(needle,replacement,1)
+          p.write_text(text,encoding='utf-8')
+
+      - name: Advance shelf and desk runtimes to v5.10.23
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p=Path('reading-shelf-v51021.js')
+          text=p.read_text(encoding='utf-8')
+          text=re.sub(r"const BUILD='v5\.10\.\d+';","const BUILD='v5.10.23';",text,count=1)
+          p.write_text(text,encoding='utf-8')
+
+          p=Path('reading-desk-v51022.js')
+          text=p.read_text(encoding='utf-8')
+          text=re.sub(r"const BUILD='v5\.10\.\d+';","const BUILD='v5.10.23';",text,count=1)
+
+          # Dedicated shelf runtime already creates the modal. Add our friendlier footer to that live shell too.
+          marker="    if(oldModal&&!oldModal.classList.contains('v51019-modal'))oldModal.remove();\n"
+          addition=marker+"    const liveWin=document.querySelector('#readingShelfModal .v51019-window');\n    if(liveWin&&!liveWin.querySelector('.v51022-shelf-foot')){const foot=document.createElement('div');foot.className='v51022-shelf-foot';foot.textContent='Switching books safely shelves whatever is currently on your Reading Desk.';liveWin.appendChild(foot);}\n"
+          if addition not in text:
+              if marker not in text:
+                  raise SystemExit('Could not find shelf shell marker in desk runtime')
+              text=text.replace(marker,addition,1)
+          p.write_text(text,encoding='utf-8')
+
+      - name: Bump service worker while preserving Archive assets
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p=Path('service-worker.js')
+          text=p.read_text(encoding='utf-8')
+          text=re.sub(r"const CACHE = 'reading-mmo-v5\.10\.22-[^']+';","const CACHE = 'reading-mmo-v5.10.23-reading-desk-polish';",text,count=1)
+          text=re.sub(r"const FORCE_VERSION = '\d+';","const FORCE_VERSION = '51023';",text,count=1)
+          if "'./reading-desk-v51022.js'" not in text:
+              needle="  './reading-shelf-v51021.js',\n"
+              if needle not in text:
+                  raise SystemExit('Could not find dedicated shelf asset in service worker')
+              text=text.replace(needle,needle+"  './reading-desk-v51022.js',\n",1)
+
+          for required in ["'./archive-v51022.js'","'./archive-v51022.css'","'./archive-pixel-shelf-v51022.svg'"]:
+              if required not in text:
+                  raise SystemExit(f'Missing preserved Archive asset: {required}')
+
+          p.write_text(text,encoding='utf-8')
+
+      - name: Verify v5.10.23
+        shell: python
+        run: |
+          from pathlib import Path
+          html=Path('index.html').read_text(encoding='utf-8')
+          sw=Path('service-worker.js').read_text(encoding='utf-8')
+          shelf=Path('reading-shelf-v51021.js').read_text(encoding='utf-8')
+          legacy=Path('archive-v51016.js').read_text(encoding='utf-8')
+          desk=Path('reading-desk-v51022.js').read_text(encoding='utf-8')
+
+          assert "window.__readingMmoVersionOwner='v5.10.23'" in html
+          assert 'window.__dedicatedShelfRuntime=true' in html
+          assert './archive-v51022.js?v=51022' in html
+          assert './reading-shelf-v51021.js?v=51023' in html
+          assert './reading-desk-v51022.js?v=51023' in html
+          assert './service-worker.js?v=51023' in html
+          assert "const BUILD='v5.10.23'" in shelf
+          assert "const BUILD='v5.10.23'" in desk
+          assert 'if(window.__dedicatedShelfRuntime)return;' in legacy
+          assert "FORCE_VERSION = '51023'" in sw
+          assert "'./reading-desk-v51022.js'" in sw
+          assert "'./archive-v51022.js'" in sw
+          assert 'MMO READING TOTAL' in desk
+          assert 'PAUSE & SWITCH' in desk
+          assert 'PAUSED VOLUMES' in desk
+          print('v5.10.23 Reading Desk polish verification passed.')
+
+      - name: Commit v5.10.23
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html archive-v51016.js reading-shelf-v51021.js reading-desk-v51022.js service-worker.js
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Reading MMO v5.10.23 polish Reading Desk and paused volumes"
+          git push
