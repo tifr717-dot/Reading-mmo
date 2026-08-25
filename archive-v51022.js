@@ -2,7 +2,7 @@
    IMPORTANT: the shelf visual is reconstructed from the exact approved concept-art crop.
    Do not redraw, simplify, vectorize, or reinterpret it. */
 (function(){
-  const BUILD='v5.10.23';
+  const BUILD='v5.10.24';
   window.__readingMmoVersionOwner=BUILD;
 
   const priorShelfRows=window.libraryShelfRowsMarkup;
@@ -27,7 +27,7 @@
   function ensureCss(){
     let l=document.getElementById('archive-v51022-css');
     if(!l){l=document.createElement('link');l.id='archive-v51022-css';l.rel='stylesheet';document.head.appendChild(l);}
-    l.href='./archive-v51022.css?v=51023';
+    l.href='./archive-v51022.css?v=51024';
   }
 
   function stamp(){
