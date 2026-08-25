@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.12-r2-force-refresh';
-const FORCE_VERSION = '51012r2';
+const CACHE = 'reading-mmo-v5.10.13-archive-art-pass';
+const FORCE_VERSION = '51013';
 const CORE = [
   './',
   './asset-book.png',
@@ -59,6 +59,8 @@ const CORE = [
   './archive-v51011.css',
   './archive-v51011.js',
   './archive-v51012.css',
+  './archive-v51013.css',
+  './archive-v51013.js',
   './archive-spine-standalone.svg',
   './archive-spine-1.svg',
   './archive-spine-2.svg',
@@ -83,7 +85,7 @@ self.addEventListener('activate', event => {
     await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
     await self.clients.claim();
 
-    // v5.10.12 recovery: older installed builds could successfully update the
+    // v5.10.13 refresh: older installed builds could successfully update the
     // worker but continue displaying the already-cached v5.10.11 document.
     // Once this worker activates, navigate every open app window to a uniquely
     // versioned URL so Android is forced to request the current index.html.

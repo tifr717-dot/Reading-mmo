@@ -1,0 +1,17 @@
+Reading MMO v5.10.13 — Archive Art Pass
+
+LOCKED / unchanged:
+- Approved Enchanted Archive top section, including title art, stats, search, Add Volume, and filters.
+
+Shelf changes:
+- Refined ornate collector spines to better match the approved concept art.
+- Cleaner gold filigree, less bulky banding, better proportions, and a more cohesive seven-volume shelf.
+- Selected volume keeps its glow/bookmark treatment.
+
+Open-book changes:
+- Repositioned cover and actions on the left page.
+- Rebalanced entry number, title, author, rating/favorite, metadata, notes, and actions on the right page.
+- Added a subtler divider and less boxed metadata treatment so content reads as part of the parchment.
+- Improved phone scaling and spacing.
+
+App cache + forced installed-app refresh bumped to v5.10.13.
