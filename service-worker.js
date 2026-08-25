@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.14-archive-visual-rebuild';
-const FORCE_VERSION = '51014';
+const CACHE = 'reading-mmo-v5.10.15-archive-concept-polish';
+const FORCE_VERSION = '51015';
 const CORE = [
   './',
   './asset-book.png',
@@ -43,7 +43,7 @@ const CORE = [
   './v53-wood-tile.png',
   './v53-xp-frame.png',
   './v54-desk-base.png',
-  './v54-level-panel.png',
+  './v54-level-panel-tall.png',
   './v54-shell.png',
   './v56-level-panel-tall.png',
   './v56-open-book-scene.png',
@@ -63,8 +63,6 @@ const CORE = [
   './archive-v51013.js',
   './archive-v51014.css',
   './archive-v51014.js',
-  './archive-v51013.css',
-  './archive-v51013.js',
   './archive-spine-standalone.svg',
   './archive-spine-1.svg',
   './archive-spine-2.svg',
@@ -89,10 +87,9 @@ self.addEventListener('activate', event => {
     await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
     await self.clients.claim();
 
-    // v5.10.13 refresh: older installed builds could successfully update the
-    // worker but continue displaying the already-cached v5.10.11 document.
-    // Once this worker activates, navigate every open app window to a uniquely
-    // versioned URL so Android is forced to request the current index.html.
+    // Force every open installed-app window onto the current Archive polish build.
+    // This avoids Android continuing to display an older cached document after
+    // the worker itself has already updated successfully.
     const windows = await self.clients.matchAll({type:'window', includeUncontrolled:true});
     await Promise.all(windows.map(client => {
       try {
