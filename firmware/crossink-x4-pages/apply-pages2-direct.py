@@ -20,6 +20,27 @@ if old not in s:
     raise SystemExit("Pages3 sleep stats target not found in SleepActivity.cpp")
 sleep.write_text(s.replace(old, new, 1))
 
+reader_h = root / "src/activities/reader/EpubReaderActivity.h"
+s = reader_h.read_text()
+old = '''  uint32_t getCurrentBookPageForStats() const;\n'''
+new = old + '''  uint32_t getCurrentBookPageCountForStats() const;\n'''
+if old not in s:
+    raise SystemExit("Pages3 reader header target not found")
+reader_h.write_text(s.replace(old, new, 1))
+
+reader_cpp = root / "src/activities/reader/EpubReaderActivity.cpp"
+s = reader_cpp.read_text()
+marker = '''\nvoid EpubReaderActivity::pauseReadingPaceTimer(const char* reason) {\n'''
+helper = '''\nuint32_t EpubReaderActivity::getCurrentBookPageCountForStats() const {\n  const int sectionPageCount = section ? section->estimatedTotalPages() : 0;\n  if (activeFootnotePreview || !epub || !section || sectionPageCount <= 0 || section->currentPage < 0 ||\n      currentSpineIndex < 0 || currentSpineIndex >= epub->getSpineItemsCount()) {\n    return 0;\n  }\n\n  const float sectionProgress =\n      static_cast<float>(section->currentPage) / static_cast<float>(sectionPageCount);\n\n  uint32_t referencePage = 0;\n  uint32_t referencePageCount = 0;\n  if (epub->resolveReferencePage(currentSpineIndex, sectionProgress, referencePage, referencePageCount) &&\n      referencePageCount > 0) {\n    return referencePageCount;\n  }\n\n  const size_t completedSpineBytes =\n      currentSpineIndex > 0 ? epub->getCumulativeSpineItemSize(currentSpineIndex - 1) : 0;\n  const size_t currentCumulativeBytes = epub->getCumulativeSpineItemSize(currentSpineIndex);\n  const size_t currentSpineBytes =\n      currentCumulativeBytes > completedSpineBytes ? currentCumulativeBytes - completedSpineBytes : 0;\n  const size_t bookBytes = epub->getBookSize();\n  if (currentSpineBytes == 0 || bookBytes == 0) {\n    return 0;\n  }\n\n  uint64_t estimatedPageCount =\n      (static_cast<uint64_t>(bookBytes) * static_cast<uint64_t>(sectionPageCount) +\n       static_cast<uint64_t>(currentSpineBytes) / 2ULL) /\n      static_cast<uint64_t>(currentSpineBytes);\n  estimatedPageCount = std::max<uint64_t>(estimatedPageCount, getCurrentBookPageForStats());\n  return static_cast<uint32_t>(\n      std::min<uint64_t>(estimatedPageCount, std::numeric_limits<uint32_t>::max()));\n}\n'''
+if marker not in s:
+    raise SystemExit("Pages3 whole-book page-count insertion target not found")
+s = s.replace(marker, helper + marker, 1)
+old = '''  if (activeFootnotePreview || !SETTINGS.stablePageNumbers ||\n      !epub->resolveReferencePage(currentSpineIndex, sectionProgress, referencePage, referencePageCount)) {\n    referencePage = 0;\n    referencePageCount = 0;\n  }\n'''
+new = old + '''  if (!activeFootnotePreview && SETTINGS.stablePageNumbers && (referencePage == 0 || referencePageCount == 0)) {\n    referencePage = getCurrentBookPageForStats();\n    referencePageCount = getCurrentBookPageCountForStats();\n    if (referencePage == 0 || referencePageCount == 0) {\n      referencePage = 0;\n      referencePageCount = 0;\n    }\n  }\n'''
+if old not in s:
+    raise SystemExit("Pages3 stable-page fallback target not found")
+reader_cpp.write_text(s.replace(old, new, 1))
+
 home = root / "src/activities/home/HomeActivity.cpp"
 s = home.read_text()
 anchor = '''bool hasAnyGlobalStats(const GlobalReadingStats& stats) {\n  return stats.totalSessions > 0 || stats.totalReadingSeconds > 0 || stats.totalPagesTurned > 0 ||\n         stats.completedBooks > 0 || stats.displayLongestReadingStreak() > 0;\n}\n'''
@@ -64,4 +85,6 @@ assert "drawCurrentBookPageBadge" in home.read_text()
 assert "RecentBookProgress::loadPageNumber(recentBooks[highlightedBookIndex])" in home.read_text()
 assert "tr(STR_STATS_PAGES_LBL)" in stats.read_text()
 assert "currentBookPage = RecentBookProgress::loadPageNumber(recentBook)" in sleep.read_text()
-print("Applied direct Pages3 source edits: current-book Pages stat + Home page badge + sleep stats page number")
+assert "getCurrentBookPageCountForStats" in reader_h.read_text()
+assert "referencePageCount = getCurrentBookPageCountForStats()" in reader_cpp.read_text()
+print("Applied direct Pages3 source edits: stats + Home + sleep Pages + selectable whole-book footer page count")
