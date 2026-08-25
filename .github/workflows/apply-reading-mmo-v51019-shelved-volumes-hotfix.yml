@@ -1,0 +1,82 @@
+name: Apply Reading MMO v5.10.19 Shelved Volumes Hotfix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51019-shelved-volumes-hotfix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wire dedicated Shelved Volumes runtime
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          shelf_tag = '<script src="./reading-shelf-v51019.js?v=51019"></script>'
+          archive_tag = '<script src="./archive-v51018.js?v=51018"></script>'
+
+          if shelf_tag not in text:
+              if archive_tag not in text:
+                  raise SystemExit('Could not find v5.10.18 archive script anchor in index.html')
+              text = text.replace(archive_tag, archive_tag + '\n' + shelf_tag, 1)
+
+          text = text.replace('./service-worker.js?v=51018', './service-worker.js?v=51019')
+          p.write_text(text, encoding='utf-8')
+
+      - name: Bump service worker and precache shelf runtime
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('service-worker.js')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace("const CACHE = 'reading-mmo-v5.10.18-artistic-shelf-refinement';", "const CACHE = 'reading-mmo-v5.10.19-shelved-volumes-hotfix';")
+          text = text.replace("const FORCE_VERSION = '51018';", "const FORCE_VERSION = '51019';")
+
+          shelf_core = "  './reading-shelf-v51019.js',"
+          archive_core = "  './archive-v51018.js',"
+          if shelf_core not in text:
+              if archive_core not in text:
+                  raise SystemExit('Could not find v5.10.18 archive CORE anchor in service-worker.js')
+              text = text.replace(archive_core, archive_core + '\n' + shelf_core, 1)
+
+          p.write_text(text, encoding='utf-8')
+
+      - name: Verify v5.10.19 hotfix
+        shell: python
+        run: |
+          from pathlib import Path
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          sw = Path('service-worker.js').read_text(encoding='utf-8')
+          js = Path('reading-shelf-v51019.js').read_text(encoding='utf-8')
+
+          assert '<script src="./reading-shelf-v51019.js?v=51019"></script>' in html
+          assert './service-worker.js?v=51019' in html
+          assert "FORCE_VERSION = '51019'" in sw
+          assert "'./reading-shelf-v51019.js'" in sw
+          assert "const BUILD='v5.10.19'" in js
+          assert 'SHELVE VOLUME' in js and 'SHELVED' in js
+          print('v5.10.19 Shelved Volumes hotfix verification passed.')
+
+      - name: Commit hotfix
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No hotfix changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html service-worker.js
+          git commit -m "Reading MMO v5.10.19 Shelved Volumes cache hotfix"
+          git push
