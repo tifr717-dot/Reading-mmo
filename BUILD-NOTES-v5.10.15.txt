@@ -1,0 +1,30 @@
+Reading MMO v5.10.15 — Enchanted Archive Concept Polish
+
+LOCKED / unchanged:
+- Approved Enchanted Archive title panel.
+- Archive stat boxes.
+- Search bar and Add Volume control.
+- All / Favorites / 5★ / Series filter row.
+
+Shelf changes:
+- Reworked the seven spines to better match the approved concept: richer leather depth, clearer gold inner trim, unique series/volume crests, deliberate height/width variation, and more natural book-to-book spacing.
+- Kept the shelf itself dark, dimensional, and decorative instead of turning it into a generic card/grid.
+- Selected volume still lifts and glows softly.
+
+Open-book changes:
+- Kept the detail record inside the open parchment spread.
+- Rebalanced the left-page cover and cover controls.
+- Increased title/author/rating/metadata legibility.
+- Metadata remains a ruled ledger treatment rather than floating boxes.
+- Action buttons are anchored at the bottom of the right page so they feel built into the spread.
+- Added a more deliberate hierarchy and spacing pass for small Android screens.
+
+Archive data correction:
+- Canonical seven-book archive list is synchronized without wiping saved covers, favorites, notes, page counts, or other user-added record data.
+- Corrected Angels’ Blood to 5★.
+- Canonical archive titles, series numbers, ratings, start dates, and finish dates now match the approved list.
+
+Versioning/cache:
+- App badge and App Health stamp v5.10.15 through the existing archive runtime hook.
+- Archive CSS cache-bust uses 51015.
+- Service worker cache and forced navigation bumped to 51015.
