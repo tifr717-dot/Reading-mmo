@@ -1,6 +1,6 @@
 /* Reading MMO v5.10.13 — final Archive shelf/detail override. */
 (function(){
-  const BUILD='v5.10.13';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.13';
   function apply(){
     if(!document.getElementById('archive-v51013-css')){
       const l=document.createElement('link');

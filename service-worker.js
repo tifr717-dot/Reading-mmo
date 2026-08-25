@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.20-single-version-owner';
-const FORCE_VERSION = '51020';
+const CACHE = 'reading-mmo-v5.10.21-version-cache-repair';
+const FORCE_VERSION = '51021';
 const CORE = [
   './',
   './asset-book.png',
@@ -71,6 +71,7 @@ const CORE = [
   './archive-v51018.css',
   './archive-v51018.js',
   './reading-shelf-v51019.js',
+  './reading-shelf-v51021.js',
   './archive-proto-legion-art.svg',
   './archive-proto-angels-art.svg',
   './archive-proto-stage-art.svg',
@@ -127,6 +128,19 @@ self.addEventListener('fetch', event => {
         caches.open(CACHE).then(c => c.put('./index.html', copy));
         return res;
       }).catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  const assetUrl = new URL(req.url);
+  const preferNetwork = req.destination === 'script' || req.destination === 'style' || assetUrl.searchParams.has('v');
+  if (preferNetwork) {
+    event.respondWith(
+      fetch(req, {cache:'no-store'}).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy));
+        return res;
+      }).catch(() => caches.match(req))
     );
     return;
   }

@@ -1,6 +1,6 @@
 /* Reading MMO v5.10.15 — Enchanted Archive polish + canonical archive records. */
 (function(){
-  const BUILD='v5.10.15';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.15';
   const CANONICAL=[
     {id:'lib-seed-stage',title:'A Stage Set for Villains',author:'Shannon J. Spann',series:'Standalone',rating:4.5,startDate:'2026-02-19',finishDate:'2026-04-20',pages:0,color:5},
     {id:'lib-seed-angels',title:'Angels’ Blood',author:'Nalini Singh',series:'Guild Hunter #1',rating:5,startDate:'2026-05-06',finishDate:'2026-05-11',pages:0,color:1},

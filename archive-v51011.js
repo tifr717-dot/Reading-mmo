@@ -1,7 +1,7 @@
 /* Reading MMO v5.10.12 — ornate collector spine runtime.
    Leaves the approved Archive top and v5.10.11 open-book record intact. */
 (function(){
-  const BUILD='v5.10.12';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.12';
   function ensureCss(){if(document.getElementById('archive-v51012-css'))return;const l=document.createElement('link');l.id='archive-v51012-css';l.rel='stylesheet';l.href='./archive-v51012.css?v=51012';document.head.appendChild(l)}
   const escSvg=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   function collectorArt(key){

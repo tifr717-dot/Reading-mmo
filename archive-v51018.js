@@ -1,7 +1,7 @@
 /* Reading MMO v5.10.18 — artistic three-spine refinement.
    The approved Archive top and open-book detail are deliberately left alone. */
 (function(){
-  const BUILD='v5.10.18';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.18';
   const prototypeByTitle={
     "archangel's legion":{asset:'./archive-proto-legion-art.svg',cls:'proto-legion'},
     "angels' blood":{asset:'./archive-proto-angels-art.svg',cls:'proto-angels'},

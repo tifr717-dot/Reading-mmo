@@ -2,7 +2,7 @@
    Adds safe multi-book pausing/resuming without redesigning the approved Archive top
    or open-book detail. Existing v5.10.16 three-spine prototype remains intact. */
 (function(){
-  const BUILD='v5.10.17';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.17';
   const prototypeByTitle={
     "archangel's legion":{asset:'./archive-proto-legion.svg',cls:'proto-legion'},
     "angels' blood":{asset:'./archive-proto-angels.svg',cls:'proto-angels'},
