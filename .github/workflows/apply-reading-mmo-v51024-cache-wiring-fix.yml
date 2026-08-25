@@ -1,0 +1,121 @@
+name: Apply Reading MMO v5.10.24 Cache Wiring Fix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51024-cache-wiring-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Repair version ownership and cache-busted runtime URLs
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          # Make the document itself identify the current build before any
+          # feature runtime executes.
+          text, n = re.subn(
+              r"window\.__readingMmoVersionOwner='v5\.10\.\d+';",
+              "window.__readingMmoVersionOwner='v5.10.24';",
+              text,
+              count=1,
+          )
+          if n != 1:
+              raise SystemExit('Could not update the index version owner')
+
+          # Every Archive/Shelved runtime gets a fresh URL in one atomic patch.
+          runtime_files = [
+              'archive-v51011.js',
+              'archive-v51013.js',
+              'archive-v51014.js',
+              'archive-v51016.js',
+              'archive-v51018.js',
+              'reading-shelf-v51021.js',
+              'archive-v51022.js',
+          ]
+          for filename in runtime_files:
+              pattern = rf'(src="\./{re.escape(filename)}\?v=)\d+("[^>]*>)'
+              text, count = re.subn(pattern, rf'\g<1>51024\g<2>', text, count=1)
+              if count != 1:
+                  raise SystemExit(f'Could not cache-bust {filename}')
+
+          # Use a brand-new worker script URL, not merely a new query string.
+          # This forces the installed Android/PWA registration to see the new worker.
+          text, n = re.subn(
+              r'navigator\.serviceWorker\.register\("\./service-worker(?:-v\d+)?\.js\?v=\d+",\{updateViaCache:"none"\}\)',
+              'navigator.serviceWorker.register("./service-worker-v51024.js?v=51024",{updateViaCache:"none"})',
+              text,
+              count=1,
+          )
+          if n != 1:
+              raise SystemExit('Could not update service-worker registration')
+
+          p.write_text(text, encoding='utf-8')
+
+      - name: Make newest Archive runtime own v5.10.24
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('archive-v51022.js')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace("const BUILD='v5.10.23';", "const BUILD='v5.10.24';", 1)
+          text = text.replace("./archive-v51022.css?v=51023", "./archive-v51022.css?v=51024", 1)
+          if "const BUILD='v5.10.24';" not in text:
+              raise SystemExit('archive-v51022.js did not gain v5.10.24 ownership')
+          if "./archive-v51022.css?v=51024" not in text:
+              raise SystemExit('archive CSS URL was not cache-busted')
+          p.write_text(text, encoding='utf-8')
+
+      - name: Build a uniquely named v5.10.24 service worker
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('service-worker.js')
+          text = p.read_text(encoding='utf-8')
+          text = re.sub(r"const CACHE = '[^']+';", "const CACHE = 'reading-mmo-v5.10.24-cache-wiring-repair';", text, count=1)
+          text = re.sub(r"const FORCE_VERSION = '\d+';", "const FORCE_VERSION = '51024';", text, count=1)
+          if "reading-mmo-v5.10.24-cache-wiring-repair" not in text or "FORCE_VERSION = '51024'" not in text:
+              raise SystemExit('service worker version bump failed')
+          p.write_text(text, encoding='utf-8')
+          Path('service-worker-v51024.js').write_text(text, encoding='utf-8')
+
+      - name: Verify v5.10.24 wiring
+        shell: python
+        run: |
+          from pathlib import Path
+          html = Path('index.html').read_text(encoding='utf-8')
+          runtime = Path('archive-v51022.js').read_text(encoding='utf-8')
+          sw = Path('service-worker-v51024.js').read_text(encoding='utf-8')
+
+          assert "window.__readingMmoVersionOwner='v5.10.24';" in html
+          for filename in [
+              'archive-v51011.js','archive-v51013.js','archive-v51014.js',
+              'archive-v51016.js','archive-v51018.js','reading-shelf-v51021.js',
+              'archive-v51022.js'
+          ]:
+              assert f'./{filename}?v=51024' in html, filename
+          assert './service-worker-v51024.js?v=51024' in html
+          assert "const BUILD='v5.10.24';" in runtime
+          assert './archive-v51022.css?v=51024' in runtime
+          assert "FORCE_VERSION = '51024'" in sw
+          print('v5.10.24 cache wiring verification passed.')
+
+      - name: Commit cache wiring repair
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html archive-v51022.js service-worker.js service-worker-v51024.js
+          git commit -m "Reading MMO v5.10.24 cache wiring repair"
+          git push
