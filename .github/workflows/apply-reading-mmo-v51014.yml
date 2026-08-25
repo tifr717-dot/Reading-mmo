@@ -1,0 +1,284 @@
+name: Apply Reading MMO v5.10.14 Archive Visual Rebuild
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51014.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write v5.10.14 archive visual override
+        shell: python
+        run: |
+          from pathlib import Path
+
+          css = r'''/* Reading MMO v5.10.14 — visible Archive lower-half rebuild.
+             LOCKED: approved Archive header/stats/search/filter art is untouched.
+             This pass deliberately makes the shelf spines and open-book record visibly different. */
+
+          /* ---------- SHELF ---------- */
+          #library .v51011-shelf-row{
+            height:326px!important;
+            margin:10px 0 15px!important;
+            border-radius:15px!important;
+            background:
+              radial-gradient(ellipse at 50% 38%,rgba(139,82,43,.22),transparent 52%),
+              linear-gradient(180deg,rgba(26,11,7,.04),rgba(8,3,2,.30)),
+              url('./v53-wood-tile.png') center/178px auto repeat!important;
+            box-shadow:0 12px 20px rgba(0,0,0,.31),inset 0 0 0 4px #28120c,inset 0 0 0 7px #97602e,inset 0 0 0 9px rgba(238,190,96,.15)!important;
+          }
+          #library .v51011-books{
+            left:7.3%!important;right:7.3%!important;top:40px!important;bottom:37px!important;
+            gap:7px!important;align-items:flex-end!important;justify-content:center!important;
+          }
+          #library .v51011-shelf-lantern{left:14px!important;bottom:43px!important;width:23px!important;opacity:.94!important}
+          #library .v51011-shelf-books{right:13px!important;bottom:40px!important;width:43px!important;opacity:.94!important}
+
+          /* Clean storybook spines: simpler than 5.10.12's full-height filigree. */
+          #library .v51012-spine{
+            --edge:#d5a858;
+            max-width:72px!important;
+            height:94%!important;
+            border:1px solid #160805!important;
+            border-radius:9px 9px 3px 3px / 7px 7px 3px 3px!important;
+            background:
+              linear-gradient(180deg,rgba(255,236,185,.20) 0 1px,transparent 1px 100%),
+              linear-gradient(90deg,rgba(255,247,215,.16),transparent 13%,transparent 86%,rgba(0,0,0,.28)),
+              repeating-linear-gradient(94deg,rgba(255,255,255,.018) 0 1px,rgba(0,0,0,.022) 1px 3px),
+              linear-gradient(180deg,var(--s1),var(--s2))!important;
+            box-shadow:3px 6px 0 #0e0503,0 11px 14px rgba(0,0,0,.34),inset 3px 0 4px rgba(255,239,195,.08),inset -4px 0 7px rgba(0,0,0,.20)!important;
+            overflow:visible!important;
+          }
+          #library .v51012-spine:nth-child(1){height:99%!important;flex-grow:1.08!important;transform:rotate(-.35deg)!important}
+          #library .v51012-spine:nth-child(2){height:90%!important;flex-grow:.93!important;transform:rotate(.45deg)!important}
+          #library .v51012-spine:nth-child(3){height:95%!important;flex-grow:1.02!important;transform:rotate(-.22deg)!important}
+          #library .v51012-spine:nth-child(4){height:100%!important;flex-grow:1.08!important;transform:rotate(.18deg)!important}
+          #library .v51012-spine:nth-child(5){height:92%!important;flex-grow:.95!important;transform:rotate(-.42deg)!important}
+          #library .v51012-spine:nth-child(6){height:97%!important;flex-grow:1.06!important;transform:rotate(.26deg)!important}
+          #library .v51012-spine:nth-child(7){height:93%!important;flex-grow:1.00!important;transform:rotate(-.20deg)!important}
+
+          #library .v51012-spine-art{display:none!important}
+          #library .v51012-band{display:none!important}
+          #library .v51012-spine::before{
+            content:""!important;position:absolute!important;z-index:2!important;
+            left:8px!important;right:8px!important;top:31px!important;bottom:27px!important;
+            border:1px solid rgba(239,198,105,.73)!important;
+            border-radius:5px 5px 2px 2px!important;
+            box-shadow:inset 0 0 0 1px rgba(54,21,10,.22)!important;
+            pointer-events:none!important;
+          }
+          #library .v51012-spine::after{
+            content:"✦"!important;position:absolute!important;z-index:4!important;
+            left:50%!important;top:10px!important;transform:translateX(-50%)!important;
+            width:24px!important;height:16px!important;display:grid!important;place-items:center!important;
+            color:#efc96f!important;border-top:1px solid rgba(239,198,105,.58)!important;border-bottom:1px solid rgba(239,198,105,.42)!important;
+            background:transparent!important;font:900 8px/1 Georgia,'Times New Roman',serif!important;
+            text-shadow:0 1px 1px #1b0b06!important;pointer-events:none!important;
+          }
+          #library .v51012-spine-title{
+            top:52px!important;bottom:61px!important;
+            color:#fff0c4!important;
+            font:900 clamp(8.7px,1.65vw,12.4px)/1 Georgia,'Times New Roman',serif!important;
+            letter-spacing:.08px!important;
+            text-shadow:0 1px 1px #160805,0 0 4px rgba(0,0,0,.34)!important;
+          }
+          #library .v51012-spine-title::before{content:none!important}
+          #library .v51012-spine-series{
+            left:7px!important;right:7px!important;bottom:7px!important;height:15px!important;
+            border:1px solid rgba(221,177,82,.46)!important;border-radius:2px!important;
+            background:linear-gradient(180deg,rgba(44,18,8,.20),rgba(10,3,2,.56))!important;
+            color:#f2d48b!important;font-size:clamp(4px,.82vw,5.8px)!important;
+          }
+          #library .v51012-spine-fav{right:7px!important;top:8px!important;color:#ffe28a!important;font-size:8px!important}
+          #library .v51012-spine-bookmark{right:6px!important;top:-5px!important;width:10px!important;height:39px!important}
+          #library .v51012-spine.selected{
+            transform:translateY(-8px)!important;filter:brightness(1.10)!important;
+            box-shadow:0 0 0 1px #f0cf82,0 0 22px rgba(255,198,72,.42),3px 12px 0 #0e0503,0 16px 20px rgba(0,0,0,.38)!important;
+          }
+
+          /* ---------- OPEN BOOK ---------- */
+          #library .v51011-detail-view{margin-top:10px!important;padding:0 0 92px!important}
+          #library .v51011-record-book{height:clamp(382px,103vw,432px)!important;overflow:visible!important}
+          #library .v51011-record-bg{object-fit:fill!important;filter:drop-shadow(0 9px 10px rgba(0,0,0,.24))!important}
+
+          /* Left page: a centered portrait cover with quiet actions beneath. */
+          #library .v51011-left-page{
+            left:5.1%!important;top:10.1%!important;width:39.5%!important;bottom:9.1%!important;
+            gap:5px!important;align-items:center!important;justify-content:flex-start!important;
+          }
+          #library .v51011-cover-frame{
+            width:67%!important;max-width:158px!important;aspect-ratio:2/3!important;
+            border:2px solid #28120b!important;outline:1px solid #b88244!important;outline-offset:-5px!important;
+            border-radius:4px!important;box-shadow:4px 7px 0 rgba(43,20,11,.59),0 10px 14px rgba(0,0,0,.20)!important;
+          }
+          #library .v51011-cover-placeholder{padding:9px!important}
+          #library .v51011-cover-placeholder span{font-size:23px!important}
+          #library .v51011-cover-placeholder b{font-size:6.5px!important;line-height:1.12!important}
+          #library .v51011-cover-actions{width:74%!important;gap:2px!important;margin-top:1px!important}
+          #library .v51011-cover-main{
+            min-height:28px!important;padding:4px 6px!important;border-radius:8px!important;
+            background:linear-gradient(#765195,#56386e)!important;font-size:4.2px!important;
+          }
+          #library .v51011-remove-cover{min-height:16px!important;padding:2px!important;font-size:3.6px!important;color:#6f4d36!important}
+
+          /* Right page: a real ledger hierarchy rather than floating boxes. */
+          #library .v51011-right-page{
+            left:51.6%!important;right:7.0%!important;top:10.5%!important;bottom:8.9%!important;
+            display:flex!important;flex-direction:column!important;min-width:0!important;color:#4b2d1c!important;
+          }
+          #library .v51011-entry-ribbon{
+            align-self:center!important;margin:0 0 7px!important;padding:4px 12px!important;
+            border-radius:999px!important;background:linear-gradient(#956047,#784330)!important;
+            font-size:4px!important;letter-spacing:.32px!important;
+          }
+          #library .v51011-record-title{
+            margin:0!important;padding:0 2px!important;max-width:100%!important;text-align:left!important;
+            color:#412616!important;font:900 clamp(15px,3.55vw,21px)/1.00 Georgia,'Times New Roman',serif!important;
+            white-space:normal!important;overflow-wrap:anywhere!important;display:-webkit-box!important;
+            -webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;
+          }
+          #library .v51011-record-author{
+            margin-top:3px!important;padding-left:2px!important;color:#76523a!important;
+            font:700 clamp(5.2px,1.18vw,7.1px)/1.15 Georgia,'Times New Roman',serif!important;
+          }
+          #library .v51011-rating-row{
+            position:relative!important;margin-top:8px!important;padding:0 2px 9px!important;min-height:26px!important;
+            display:flex!important;align-items:center!important;gap:6px!important;
+          }
+          #library .v51011-rating-row::after{
+            content:"✦  ─────────────  ✦";position:absolute;left:0;right:0;bottom:-1px;text-align:center;
+            color:#9a7046;font:700 4px/1 Georgia,serif;opacity:.60;
+          }
+          #library .v51011-rating{padding:5px 9px!important;border-radius:8px!important;font-size:6.5px!important}
+          #library .v51011-favorite{font-size:4px!important;color:#96601e!important}
+
+          #library .v51011-ledger{
+            display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px 12px!important;margin-top:8px!important;
+          }
+          #library .v51011-ledger>div{
+            min-height:45px!important;padding:5px 3px 7px!important;
+            background:transparent!important;border:0!important;border-bottom:1px solid rgba(144,99,53,.53)!important;
+            box-shadow:none!important;
+          }
+          #library .v51011-ledger>div:after{content:"❧"!important;right:2px!important;bottom:5px!important;color:rgba(138,95,48,.38)!important;font-size:6px!important}
+          #library .v51011-ledger span{
+            display:block!important;margin-bottom:4px!important;color:#8a6547!important;
+            font:900 3.6px/1 ui-monospace,monospace!important;letter-spacing:.20px!important;
+          }
+          #library .v51011-ledger b{
+            display:block!important;padding-right:8px!important;color:#452c1b!important;
+            font:700 5.5px/1.12 Georgia,'Times New Roman',serif!important;overflow-wrap:anywhere!important;
+          }
+          #library .v51011-notes{
+            margin-top:6px!important;max-height:38px!important;overflow:hidden!important;padding:5px 2px 0!important;
+            border-top:0!important;color:#63442f!important;font:italic 700 4.4px/1.26 Georgia,'Times New Roman',serif!important;
+          }
+          #library .v51011-notes b{font-style:normal!important;font-size:3.3px!important;color:#846043!important}
+          #library .v51011-record-actions{
+            margin-top:auto!important;width:94%!important;align-self:center!important;
+            display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;
+          }
+          #library .v51011-record-actions button{
+            min-height:28px!important;padding:4px 5px!important;border-radius:8px!important;
+            font-size:4.1px!important;box-shadow:0 3px 0 rgba(54,25,13,.23)!important;
+          }
+
+          @media(max-width:420px){
+            #library .v51011-shelf-row{height:300px!important}
+            #library .v51011-books{left:6.8%!important;right:6.8%!important;top:38px!important;bottom:35px!important;gap:4px!important}
+            #library .v51012-spine{max-width:58px!important;border-radius:8px 8px 3px 3px/6px 6px 3px 3px!important}
+            #library .v51012-spine-title{top:49px!important;bottom:59px!important;font-size:7.35px!important}
+            #library .v51012-spine-series{left:5px!important;right:5px!important;height:12px!important;font-size:3.5px!important}
+            #library .v51012-spine::before{left:6px!important;right:6px!important;top:29px!important;bottom:24px!important}
+            #library .v51012-spine::after{top:8px!important;font-size:7px!important}
+
+            #library .v51011-record-book{height:392px!important}
+            #library .v51011-left-page{left:5.0%!important;top:10.8%!important;width:39.6%!important;bottom:9.7%!important}
+            #library .v51011-cover-frame{width:68%!important}
+            #library .v51011-cover-actions{width:77%!important}
+            #library .v51011-right-page{left:51.8%!important;right:6.6%!important;top:11.0%!important;bottom:9.5%!important}
+            #library .v51011-record-title{font-size:14.8px!important;line-height:.99!important}
+            #library .v51011-record-author{font-size:5.4px!important}
+            #library .v51011-rating{font-size:5.7px!important}
+            #library .v51011-favorite{font-size:3.65px!important}
+            #library .v51011-ledger{gap:5px 8px!important;margin-top:7px!important}
+            #library .v51011-ledger>div{min-height:39px!important;padding:4px 2px 6px!important}
+            #library .v51011-ledger span{font-size:3.1px!important}
+            #library .v51011-ledger b{font-size:4.8px!important}
+            #library .v51011-record-actions button{min-height:24px!important;font-size:3.6px!important}
+            #library .v51011-cover-main{min-height:25px!important;font-size:3.65px!important}
+          }
+          '''
+          Path('archive-v51014.css').write_text(css)
+
+          js = r'''/* Reading MMO v5.10.14 — final visual/version stamp. */
+          (function(){
+            const BUILD='v5.10.14';
+            function stampVersion(){
+              const badge=document.getElementById('headerVersionText');
+              if(badge)badge.textContent=BUILD;
+              document.querySelectorAll('.health-row').forEach(row=>{
+                if(row.querySelector('b')?.textContent.trim()==='Version'){
+                  const s=row.querySelector('span'); if(s)s.textContent=BUILD;
+                }
+              });
+            }
+            function loadCss(){
+              if(document.getElementById('archive-v51014-css'))return;
+              const l=document.createElement('link');l.id='archive-v51014-css';l.rel='stylesheet';l.href='./archive-v51014.css?v=51014';document.head.appendChild(l);
+            }
+            function wrapHealth(){
+              const old=window.renderSaveHealth;
+              if(typeof old==='function'&&!old.__v51014){
+                const wrapped=function(){const r=old.apply(this,arguments);setTimeout(stampVersion,0);return r};
+                wrapped.__v51014=true;window.renderSaveHealth=wrapped;
+              }
+            }
+            function apply(){loadCss();wrapHealth();stampVersion();setTimeout(stampVersion,60);setTimeout(stampVersion,400);}
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
+          })();
+          '''
+          Path('archive-v51014.js').write_text(js)
+
+          notes = '''Reading MMO v5.10.14 — Archive Visual Rebuild\n\nLOCKED / unchanged:\n- Approved Enchanted Archive title/stats/search/Add Volume/filter artwork.\n\nVisible shelf changes:\n- Removed the busy full-height SVG filigree from v5.10.12.\n- Rebuilt the seven books as cleaner storybook/fantasy spines with a simple gold inner frame, small top crest, stronger title area, and more natural spacing/height variation.\n\nVisible open-book changes:\n- Repositioned cover and cover controls on the left page.\n- Rebuilt the right page hierarchy so entry number, title, author, rating, metadata lines, notes, and actions sit more naturally on the parchment.\n- Metadata is now a ruled ledger treatment instead of floating boxes.\n\nVersioning:\n- App badge and App Health both stamp v5.10.14.\n- Service-worker cache/forced navigation bumped to 51014.\n'''
+          Path('BUILD-NOTES-v5.10.14.txt').write_text(notes)
+
+          # Patch index: keep older archive runtime, then apply the new final visual override.
+          p=Path('index.html')
+          t=p.read_text()
+          if 'archive-v51014.js?v=51014' not in t:
+            t=t.replace('<script src="./archive-v51013.js?v=51013"></script>', '<script src="./archive-v51013.js?v=51013"></script>\n<script src="./archive-v51014.js?v=51014"></script>')
+          t=t.replace('service-worker.js?v=51013','service-worker.js?v=51014')
+          p.write_text(t)
+
+          # Patch service worker cache and add the two new static files.
+          sw=Path('service-worker.js')
+          s=sw.read_text()
+          s=s.replace("reading-mmo-v5.10.13-archive-art-pass","reading-mmo-v5.10.14-archive-visual-rebuild")
+          s=s.replace("const FORCE_VERSION = '51013';","const FORCE_VERSION = '51014';")
+          if "'./archive-v51014.css'" not in s:
+            s=s.replace("  './archive-v51012.css',", "  './archive-v51012.css',\n  './archive-v51013.css',\n  './archive-v51013.js',\n  './archive-v51014.css',\n  './archive-v51014.js',")
+          sw.write_text(s)
+
+      - name: Sanity check generated files
+        run: |
+          node --check archive-v51014.js
+          grep -q 'archive-v51014.js?v=51014' index.html
+          grep -q "FORCE_VERSION = '51014'" service-worker.js
+          test -s archive-v51014.css
+          test -s BUILD-NOTES-v5.10.14.txt
+
+      - name: Commit v5.10.14
+        run: |
+          git config user.name "Reading MMO updater"
+          git config user.email "actions@users.noreply.github.com"
+          git add archive-v51014.css archive-v51014.js index.html service-worker.js BUILD-NOTES-v5.10.14.txt
+          git commit -m "Reading MMO v5.10.14 visible Archive shelf and record rebuild"
+          git push
