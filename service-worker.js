@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.16-shelf-asset-prototype';
-const FORCE_VERSION = '51016';
+const CACHE = 'reading-mmo-v5.10.17-shelved-volumes';
+const FORCE_VERSION = '51017';
 const CORE = [
   './',
   './asset-book.png',
@@ -92,7 +92,7 @@ self.addEventListener('activate', event => {
     await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
     await self.clients.claim();
 
-    // Force every open installed-app window onto the current Archive polish build.
+    // Force every open installed-app window onto the current Reading MMO build.
     // This avoids Android continuing to display an older cached document after
     // the worker itself has already updated successfully.
     const windows = await self.clients.matchAll({type:'window', includeUncontrolled:true});
