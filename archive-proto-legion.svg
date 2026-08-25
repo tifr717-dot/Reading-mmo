@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 520" role="img" aria-label="Gold fantasy book spine">
+<defs>
+  <linearGradient id="leather" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#40270f"/><stop offset=".13" stop-color="#8b6223"/><stop offset=".48" stop-color="#b88b32"/><stop offset=".82" stop-color="#765019"/><stop offset="1" stop-color="#2d1909"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0a9"/><stop offset=".32" stop-color="#d9a848"/><stop offset=".72" stop-color="#8d5e18"/><stop offset="1" stop-color="#f4d27b"/></linearGradient>
+  <radialGradient id="gem"><stop stop-color="#fff9d7"/><stop offset=".28" stop-color="#e6c256"/><stop offset=".72" stop-color="#8a5b12"/><stop offset="1" stop-color="#2b1707"/></radialGradient>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".65" numOctaves="3" seed="7" result="n"/><feColorMatrix in="n" type="saturate" values="0" result="g"/><feComponentTransfer in="g" result="f"><feFuncA type="table" tableValues="0 .13"/></feComponentTransfer><feBlend in="SourceGraphic" in2="f" mode="multiply"/></filter>
+  <filter id="shadow"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-color="#160b04" flood-opacity=".7"/></filter>
+</defs>
+<g filter="url(#shadow)">
+  <path d="M18 9 Q10 9 10 19 V501 Q10 511 20 511 H120 Q130 511 130 501 V19 Q130 9 120 9 Z" fill="url(#leather)" stroke="#1e0e05" stroke-width="4"/>
+  <path d="M23 15 H117 Q124 15 124 22 V498 Q124 505 117 505 H23 Q16 505 16 498 V22 Q16 15 23 15Z" fill="none" stroke="#e3b85f" stroke-width="2.2" opacity=".85"/>
+  <g filter="url(#grain)" opacity=".75"><rect x="19" y="18" width="102" height="484" rx="5" fill="url(#leather)"/></g>
+  <path d="M25 43 H115 M25 83 H115 M25 437 H115 M25 477 H115" stroke="url(#gold)" stroke-width="3"/>
+  <path d="M31 99 V420 M109 99 V420" stroke="#c99a3f" stroke-width="1.5" opacity=".85"/>
+  <path d="M36 106 V413 M104 106 V413" stroke="#f0cf7a" stroke-width=".7" opacity=".42"/>
+  <g fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round">
+    <path d="M31 98 C45 87 56 92 70 76 C84 92 95 87 109 98"/>
+    <path d="M31 421 C45 432 56 427 70 443 C84 427 95 432 109 421"/>
+    <path d="M25 54 C40 49 49 42 55 30 M115 54 C100 49 91 42 85 30"/>
+    <path d="M25 466 C40 471 49 478 55 490 M115 466 C100 471 91 478 85 490"/>
+  </g>
+  <g transform="translate(70 61)" fill="url(#gold)" stroke="#fff0ad" stroke-width="1">
+    <path d="M0-24 7-9 24-7 11 4 15 21 0 12-15 21-11 4-24-7-7-9Z"/>
+    <circle r="5" fill="#4b260d"/>
+  </g>
+  <g transform="translate(70 458)"><circle r="14" fill="url(#gem)" stroke="#f3d778" stroke-width="2"/><path d="M-7 0 0-8 7 0 0 8Z" fill="#fff0a4" opacity=".7"/></g>
+  <path d="M19 20 C26 28 26 492 19 500 M121 20 C114 28 114 492 121 500" fill="none" stroke="#f3d986" stroke-width="2" opacity=".2"/>
+</g>
+</svg>

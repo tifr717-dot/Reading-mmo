@@ -1,0 +1,130 @@
+/* Reading MMO v5.10.16 — Phase 1 shelf prototype only.
+   APPROVED Archive top and open-book detail remain untouched.
+   Three test volumes use actual spine image assets with live text layered above them. */
+
+#library .v51016-spine{
+  position:relative!important;
+  flex:1 1 0!important;
+  min-width:0!important;
+  max-width:78px!important;
+  height:96%!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#f8e8ba!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  transform-origin:50% 100%!important;
+  isolation:isolate!important;
+}
+#library .v51016-spine.proto-legion{height:99%!important;flex-grow:1.08!important;transform:rotate(-.35deg)!important}
+#library .v51016-spine.proto-angels{height:94%!important;flex-grow:1.02!important;transform:rotate(.42deg)!important}
+#library .v51016-spine.proto-stage{height:91%!important;flex-grow:.98!important;transform:rotate(-.22deg)!important}
+#library .v51016-spine-asset{
+  position:absolute!important;
+  inset:-5px -7px -7px!important;
+  width:calc(100% + 14px)!important;
+  height:calc(100% + 12px)!important;
+  object-fit:fill!important;
+  pointer-events:none!important;
+  z-index:1!important;
+  filter:drop-shadow(3px 7px 4px rgba(10,4,2,.46))!important;
+}
+#library .v51016-spine-title{
+  position:absolute!important;
+  z-index:4!important;
+  left:50%!important;
+  top:73px!important;
+  bottom:69px!important;
+  transform:translateX(-50%) rotate(180deg)!important;
+  writing-mode:vertical-rl!important;
+  text-orientation:mixed!important;
+  display:block!important;
+  max-width:24px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  color:#fff1c9!important;
+  font:900 clamp(8.5px,1.72vw,12.4px)/1 Georgia,'Times New Roman',serif!important;
+  letter-spacing:.05px!important;
+  text-shadow:0 1px 1px #170806,0 0 4px rgba(0,0,0,.48)!important;
+  pointer-events:none!important;
+}
+#library .v51016-spine-series{
+  position:absolute!important;
+  z-index:5!important;
+  left:9px!important;
+  right:9px!important;
+  bottom:18px!important;
+  min-height:16px!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:2px 2px!important;
+  color:#f6d88f!important;
+  background:rgba(24,9,5,.66)!important;
+  border:1px solid rgba(237,198,104,.58)!important;
+  border-radius:3px!important;
+  font:900 clamp(4.2px,.86vw,6.1px)/1 ui-monospace,monospace!important;
+  letter-spacing:.12px!important;
+  pointer-events:none!important;
+}
+#library .v51016-spine-fav{
+  position:absolute!important;
+  z-index:6!important;
+  right:10px!important;
+  top:20px!important;
+  width:17px!important;
+  height:17px!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#ffe89c!important;
+  background:rgba(34,12,6,.62)!important;
+  border:1px solid rgba(242,205,113,.58)!important;
+  border-radius:50%!important;
+  font-size:8px!important;
+  text-shadow:0 1px 1px #1b0905!important;
+}
+#library .v51016-spine-bookmark{
+  display:none!important;
+  position:absolute!important;
+  z-index:7!important;
+  right:7px!important;
+  top:-4px!important;
+  width:11px!important;
+  height:43px!important;
+  background:linear-gradient(180deg,#c66a45,#7f2e29)!important;
+  border-left:1px solid #f0c06d!important;
+  border-right:1px solid #f0c06d!important;
+  clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%)!important;
+  filter:drop-shadow(0 3px 3px rgba(0,0,0,.4))!important;
+}
+#library .v51016-spine.selected .v51016-spine-bookmark{display:block!important}
+#library .v51016-spine.selected{
+  transform:translateY(-9px)!important;
+  filter:brightness(1.08) saturate(1.04)!important;
+}
+#library .v51016-spine.selected::after{
+  content:""!important;
+  position:absolute!important;
+  inset:2px 1px 2px!important;
+  z-index:0!important;
+  border-radius:11px!important;
+  box-shadow:0 0 0 1px #f4d787,0 0 22px rgba(255,198,72,.52)!important;
+  pointer-events:none!important;
+}
+@media (hover:hover) and (pointer:fine){
+  #library .v51016-spine:hover{filter:brightness(1.06)!important;transform:translateY(-4px)!important}
+}
+@media(max-width:420px){
+  #library .v51016-spine{max-width:60px!important}
+  #library .v51016-spine-asset{inset:-4px -6px -6px!important;width:calc(100% + 12px)!important;height:calc(100% + 10px)!important}
+  #library .v51016-spine-title{top:62px!important;bottom:61px!important;font-size:7.45px!important}
+  #library .v51016-spine-series{left:6px!important;right:6px!important;bottom:15px!important;min-height:13px!important;font-size:3.7px!important}
+  #library .v51016-spine-fav{right:7px!important;top:17px!important;width:14px!important;height:14px!important;font-size:6px!important}
+}
+@media(max-width:365px){
+  #library .v51016-spine-title{top:57px!important;bottom:57px!important;font-size:6.9px!important}
+  #library .v51016-spine-series{font-size:3.35px!important}
+}

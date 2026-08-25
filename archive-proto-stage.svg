@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 520" role="img" aria-label="Purple fantasy book spine">
+<defs>
+  <linearGradient id="leather" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#1c0b22"/><stop offset=".14" stop-color="#4e285a"/><stop offset=".5" stop-color="#765084"/><stop offset=".82" stop-color="#45234f"/><stop offset="1" stop-color="#140719"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8e9ad"/><stop offset=".38" stop-color="#cfa85d"/><stop offset=".75" stop-color="#7f5a27"/><stop offset="1" stop-color="#e8c97c"/></linearGradient>
+  <radialGradient id="amethyst"><stop stop-color="#f4dcff"/><stop offset=".28" stop-color="#a968bb"/><stop offset=".72" stop-color="#5c2b72"/><stop offset="1" stop-color="#1c0a25"/></radialGradient>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".58" numOctaves="3" seed="19" result="n"/><feComponentTransfer in="n" result="f"><feFuncA type="table" tableValues="0 .13"/></feComponentTransfer><feBlend in="SourceGraphic" in2="f" mode="multiply"/></filter>
+  <filter id="shadow"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-color="#0f0511" flood-opacity=".72"/></filter>
+</defs>
+<g filter="url(#shadow)">
+  <path d="M18 10 Q10 10 10 20 V500 Q10 510 20 510 H120 Q130 510 130 500 V20 Q130 10 122 10 Z" fill="url(#leather)" stroke="#17071b" stroke-width="4"/>
+  <g filter="url(#grain)"><rect x="17" y="17" width="106" height="486" rx="7" fill="url(#leather)"/></g>
+  <path d="M23 18 H117 Q124 18 124 25 V495 Q124 502 117 502 H23 Q16 502 16 495 V25 Q16 18 23 18Z" fill="none" stroke="#d4b46d" stroke-width="2"/>
+  <path d="M25 48 H115 M25 88 H115 M25 433 H115 M25 474 H115" stroke="url(#gold)" stroke-width="2.8"/>
+  <path d="M31 102 V418 M109 102 V418" stroke="#c9a55f" stroke-width="1.6" opacity=".85"/>
+  <g fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round">
+    <path d="M32 101 C41 89 56 92 70 77 C84 92 99 89 108 101"/>
+    <path d="M32 419 C41 431 56 428 70 443 C84 428 99 431 108 419"/>
+    <path d="M27 62 C40 54 47 43 51 31 M113 62 C100 54 93 43 89 31"/>
+    <path d="M27 457 C40 465 47 476 51 489 M113 457 C100 465 93 476 89 489"/>
+  </g>
+  <g transform="translate(70 61)" stroke="url(#gold)" stroke-width="2" fill="none" stroke-linejoin="round">
+    <path d="M0-22 18-5 0 15-18-5Z"/>
+    <path d="M-27 17 C-18 4-8 2 0 7 C8 2 18 4 27 17"/>
+    <path d="M-23 23 C-14 15-7 14 0 18 C7 14 14 15 23 23"/>
+    <circle cy="-5" r="4" fill="url(#amethyst)" stroke="#ead39a"/>
+  </g>
+  <g transform="translate(70 457)"><path d="M0-18 18 0 0 18-18 0Z" fill="url(#amethyst)" stroke="#e5c779" stroke-width="2"/><path d="M-6 0 0-7 6 0 0 7Z" fill="#f4dfff" opacity=".67"/></g>
+  <path d="M19 20 C25 33 25 487 19 500 M121 20 C115 33 115 487 121 500" fill="none" stroke="#f0dca3" stroke-width="2" opacity=".16"/>
+</g>
+</svg>

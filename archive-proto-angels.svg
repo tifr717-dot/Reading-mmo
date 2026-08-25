@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 520" role="img" aria-label="Red fantasy book spine">
+<defs>
+  <linearGradient id="leather" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#220706"/><stop offset=".14" stop-color="#6a1f1d"/><stop offset=".5" stop-color="#963c34"/><stop offset=".82" stop-color="#57201c"/><stop offset="1" stop-color="#190605"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe6a0"/><stop offset=".4" stop-color="#d39a3a"/><stop offset=".78" stop-color="#855019"/><stop offset="1" stop-color="#f0c76d"/></linearGradient>
+  <radialGradient id="ruby"><stop stop-color="#ffd5cb"/><stop offset=".25" stop-color="#d54c43"/><stop offset=".7" stop-color="#761b1b"/><stop offset="1" stop-color="#260405"/></radialGradient>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="11" result="n"/><feComponentTransfer in="n" result="f"><feFuncA type="table" tableValues="0 .12"/></feComponentTransfer><feBlend in="SourceGraphic" in2="f" mode="multiply"/></filter>
+  <filter id="shadow"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-color="#120302" flood-opacity=".72"/></filter>
+</defs>
+<g filter="url(#shadow)">
+  <path d="M17 8 Q9 8 9 19 V501 Q9 512 20 512 H120 Q131 512 131 501 V19 Q131 8 123 8 Z" fill="url(#leather)" stroke="#180403" stroke-width="4"/>
+  <g filter="url(#grain)"><rect x="16" y="15" width="108" height="490" rx="7" fill="url(#leather)"/></g>
+  <path d="M22 18 H118 Q124 18 124 25 V495 Q124 502 118 502 H22 Q16 502 16 495 V25 Q16 18 22 18Z" fill="none" stroke="#d9a54d" stroke-width="2"/>
+  <path d="M24 47 H116 M24 88 H116 M24 432 H116 M24 474 H116" stroke="url(#gold)" stroke-width="3"/>
+  <path d="M30 102 V417 M110 102 V417" stroke="#d2a14a" stroke-width="1.6" opacity=".85"/>
+  <g fill="none" stroke="url(#gold)" stroke-width="2" stroke-linecap="round">
+    <path d="M33 101 C46 91 55 92 70 78 C85 92 94 91 107 101"/>
+    <path d="M33 418 C46 428 55 427 70 441 C85 427 94 428 107 418"/>
+    <path d="M29 63 C42 55 50 45 53 31 M111 63 C98 55 90 45 87 31"/>
+    <path d="M29 456 C42 464 50 474 53 488 M111 456 C98 464 90 474 87 488"/>
+  </g>
+  <g transform="translate(70 61)" fill="none" stroke="url(#gold)" stroke-width="2.4" stroke-linecap="round">
+    <path d="M0 8 C-15-11-33-12-39 0 C-27-1-18 4-9 14"/>
+    <path d="M0 8 C15-11 33-12 39 0 C27-1 18 4 9 14"/>
+    <path d="M-8 14 C-14 19-18 24-20 30 M8 14 C14 19 18 24 20 30"/>
+    <path d="M0-20 V13"/>
+  </g>
+  <g transform="translate(70 456)"><path d="M0-16 C10-16 16-8 16 1 16 11 8 18 0 25-8 18-16 11-16 1-16-8-10-16 0-16Z" fill="url(#ruby)" stroke="#f2c96f" stroke-width="2"/><path d="M0-9 V14 M-7 2 H7" stroke="#ffd996" stroke-width="1.4" opacity=".72"/></g>
+  <path d="M19 20 C25 34 25 486 19 500 M121 20 C115 34 115 486 121 500" fill="none" stroke="#ffd99a" stroke-width="2" opacity=".17"/>
+</g>
+</svg>

@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.15-archive-concept-polish';
-const FORCE_VERSION = '51015';
+const CACHE = 'reading-mmo-v5.10.16-shelf-asset-prototype';
+const FORCE_VERSION = '51016';
 const CORE = [
   './',
   './asset-book.png',
@@ -63,6 +63,11 @@ const CORE = [
   './archive-v51013.js',
   './archive-v51014.css',
   './archive-v51014.js',
+  './archive-v51016.css',
+  './archive-v51016.js',
+  './archive-proto-legion.svg',
+  './archive-proto-angels.svg',
+  './archive-proto-stage.svg',
   './archive-spine-standalone.svg',
   './archive-spine-1.svg',
   './archive-spine-2.svg',

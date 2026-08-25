@@ -1,0 +1,19 @@
+Reading MMO v5.10.16 — Phase 1 Layered Shelf Prototype
+
+PURPOSE
+- Test the approved image-asset + live-text approach before rebuilding all seven volumes.
+- Do not redesign the approved Archive top.
+- Do not redesign the open-book detail yet.
+
+THIS BUILD CHANGES ONLY THREE SHELF BOOKS
+1. Archangel’s Legion — illustrated gold asset + live title + live #6 label
+2. Angels’ Blood — illustrated red asset + live title + live #1 label
+3. A Stage Set for Villains — illustrated purple asset + live title + live STANDALONE label
+
+IMPLEMENTATION RULE
+- The physical book/spine artwork is a reusable image asset.
+- Title, series label, favorite marker, selection state, and click behavior remain live UI layers.
+- The remaining four books intentionally retain the previous spine treatment in v5.10.16 so the new direction can be judged before expanding it.
+
+APPROVAL CHECKPOINT
+If these three books feel like the approved vertical phone concept, v5.10.17 will convert the remaining four books and polish the full shelf.
