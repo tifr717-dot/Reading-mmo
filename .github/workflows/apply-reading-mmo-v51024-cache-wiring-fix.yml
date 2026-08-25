@@ -81,6 +81,7 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
+          import re
           p = Path('service-worker.js')
           text = p.read_text(encoding='utf-8')
           text = re.sub(r"const CACHE = '[^']+';", "const CACHE = 'reading-mmo-v5.10.24-cache-wiring-repair';", text, count=1)
