@@ -1,0 +1,122 @@
+name: Apply Reading MMO v5.10.22 Reading Desk Polish
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51022-desk-polish.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make v5.10.22 the visible app owner and load desk polish
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+
+          text=text.replace("<span id=\"headerVersionText\" class=\"app-version-badge\">v5.10.12</span>",
+                            "<span id=\"headerVersionText\" class=\"app-version-badge\">v5.10.22</span>",1)
+          text=text.replace('<div class="health-row"><b>Version</b><span>v5.10.12</span></div>',
+                            '<div class="health-row"><b>Version</b><span>v5.10.22</span></div>',1)
+
+          text=text.replace("<script>window.__readingMmoVersionOwner='v5.10.21';</script>",
+                            "<script>window.__readingMmoVersionOwner='v5.10.22';window.__dedicatedShelfRuntime=true;</script>",1)
+
+          for name in ['archive-v51011.js','archive-v51013.js','archive-v51014.js','archive-v51016.js','archive-v51018.js','reading-shelf-v51021.js']:
+              text=text.replace(f'./{name}?v=51021',f'./{name}?v=51022')
+
+          old='<script src="./reading-shelf-v51021.js?v=51022"></script>'
+          new=old+'\n<script src="./reading-desk-v51022.js?v=51022"></script>'
+          if './reading-desk-v51022.js?v=51022' not in text:
+              if old not in text:
+                  raise SystemExit('Could not find Shelved Volumes loader in index.html')
+              text=text.replace(old,new,1)
+
+          text=text.replace('./service-worker.js?v=51021','./service-worker.js?v=51022')
+          p.write_text(text,encoding='utf-8')
+
+      - name: Let the dedicated Shelved Volumes runtime own shelf UI
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('archive-v51016.js')
+          text=p.read_text(encoding='utf-8')
+          needle='  function injectShelfUi(){\n'
+          replacement='  function injectShelfUi(){\n    if(window.__dedicatedShelfRuntime)return;\n'
+          if replacement not in text:
+              if needle not in text:
+                  raise SystemExit('Could not find legacy injectShelfUi()')
+              text=text.replace(needle,replacement,1)
+          p.write_text(text,encoding='utf-8')
+
+      - name: Advance dedicated shelf runtime to v5.10.22
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('reading-shelf-v51021.js')
+          text=p.read_text(encoding='utf-8')
+          text=text.replace('Reading MMO v5.10.21 — dedicated Shelved Volumes loader.',
+                            'Reading MMO v5.10.22 — dedicated Shelved Volumes loader.',1)
+          text=text.replace("const BUILD='v5.10.21';","const BUILD='v5.10.22';",1)
+          p.write_text(text,encoding='utf-8')
+
+      - name: Bump service worker and cache the new Reading Desk runtime
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('service-worker.js')
+          text=p.read_text(encoding='utf-8')
+          text=text.replace("const CACHE = 'reading-mmo-v5.10.21-version-cache-repair';",
+                            "const CACHE = 'reading-mmo-v5.10.22-reading-desk-polish';",1)
+          text=text.replace("const FORCE_VERSION = '51021';","const FORCE_VERSION = '51022';",1)
+          if "'./reading-desk-v51022.js'" not in text:
+              needle="  './reading-shelf-v51021.js',\n"
+              if needle not in text:
+                  raise SystemExit('Could not find reading-shelf entry in service worker CORE')
+              text=text.replace(needle,needle+"  './reading-desk-v51022.js',\n",1)
+          p.write_text(text,encoding='utf-8')
+
+      - name: Verify v5.10.22 Reading Desk polish
+        shell: python
+        run: |
+          from pathlib import Path
+          html=Path('index.html').read_text(encoding='utf-8')
+          sw=Path('service-worker.js').read_text(encoding='utf-8')
+          shelf=Path('reading-shelf-v51021.js').read_text(encoding='utf-8')
+          legacy=Path('archive-v51016.js').read_text(encoding='utf-8')
+          desk=Path('reading-desk-v51022.js').read_text(encoding='utf-8')
+
+          assert "window.__readingMmoVersionOwner='v5.10.22'" in html
+          assert 'window.__dedicatedShelfRuntime=true' in html
+          assert './reading-desk-v51022.js?v=51022' in html
+          assert './reading-shelf-v51021.js?v=51022' in html
+          assert './service-worker.js?v=51022' in html
+          assert "const BUILD='v5.10.22'" in shelf
+          assert 'if(window.__dedicatedShelfRuntime)return;' in legacy
+          assert "FORCE_VERSION = '51022'" in sw
+          assert "'./reading-desk-v51022.js'" in sw
+          assert "const BUILD='v5.10.22'" in desk
+          assert 'MMO READING TOTAL' in desk
+          assert 'PAUSE & SWITCH' in desk
+          assert 'PAUSED VOLUMES' in desk
+          print('v5.10.22 Reading Desk polish verification passed.')
+
+      - name: Commit v5.10.22
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html archive-v51016.js reading-shelf-v51021.js service-worker.js reading-desk-v51022.js
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Reading MMO v5.10.22 polish Reading Desk and paused volumes"
+          git push
