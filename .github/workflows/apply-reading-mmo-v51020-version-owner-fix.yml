@@ -1,0 +1,98 @@
+name: Apply Reading MMO v5.10.20 Version Owner Fix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51020-version-owner-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make newest runtime own the visible app version
+        shell: python
+        run: |
+          from pathlib import Path
+
+          # Older Archive feature scripts are still needed, but they must stop
+          # rewriting the global app version after the newest runtime takes ownership.
+          for name in ['archive-v51016.js', 'archive-v51018.js']:
+              p = Path(name)
+              text = p.read_text(encoding='utf-8')
+              old = 'function stamp(){\n'
+              new = "function stamp(){\n    if(window.__readingMmoVersionOwner)return;\n"
+              if new not in text:
+                  if old not in text:
+                      raise SystemExit(f'Could not find stamp() in {name}')
+                  text = text.replace(old, new, 1)
+                  p.write_text(text, encoding='utf-8')
+
+          p = Path('reading-shelf-v51019.js')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace("const BUILD='v5.10.19';", "const BUILD='v5.10.20';\n  window.__readingMmoVersionOwner=BUILD;", 1)
+          if "window.__readingMmoVersionOwner=BUILD;" not in text:
+              raise SystemExit('Latest runtime did not gain version ownership')
+          p.write_text(text, encoding='utf-8')
+
+      - name: Force v5.10.20 asset URLs
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          replacements = {
+              './archive-v51016.js?v=51016': './archive-v51016.js?v=51020',
+              './archive-v51018.js?v=51018': './archive-v51018.js?v=51020',
+              './reading-shelf-v51019.js?v=51019': './reading-shelf-v51019.js?v=51020',
+              './service-worker.js?v=51019': './service-worker.js?v=51020',
+          }
+          for old,new in replacements.items():
+              text = text.replace(old,new)
+          p.write_text(text, encoding='utf-8')
+
+      - name: Bump service worker
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('service-worker.js')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace("const CACHE = 'reading-mmo-v5.10.19-shelved-volumes-hotfix';", "const CACHE = 'reading-mmo-v5.10.20-single-version-owner';", 1)
+          text = text.replace("const FORCE_VERSION = '51019';", "const FORCE_VERSION = '51020';", 1)
+          p.write_text(text, encoding='utf-8')
+
+      - name: Verify v5.10.20
+        shell: python
+        run: |
+          from pathlib import Path
+          html = Path('index.html').read_text(encoding='utf-8')
+          sw = Path('service-worker.js').read_text(encoding='utf-8')
+          shelf = Path('reading-shelf-v51019.js').read_text(encoding='utf-8')
+          a16 = Path('archive-v51016.js').read_text(encoding='utf-8')
+          a18 = Path('archive-v51018.js').read_text(encoding='utf-8')
+          assert "const BUILD='v5.10.20'" in shelf
+          assert 'window.__readingMmoVersionOwner=BUILD;' in shelf
+          assert './reading-shelf-v51019.js?v=51020' in html
+          assert './archive-v51018.js?v=51020' in html
+          assert './service-worker.js?v=51020' in html
+          assert "FORCE_VERSION = '51020'" in sw
+          assert 'if(window.__readingMmoVersionOwner)return;' in a16
+          assert 'if(window.__readingMmoVersionOwner)return;' in a18
+          print('v5.10.20 single-version-owner verification passed.')
+
+      - name: Commit hotfix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add archive-v51016.js archive-v51018.js reading-shelf-v51019.js index.html service-worker.js
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Reading MMO v5.10.20 single version owner hotfix"
+          git push
