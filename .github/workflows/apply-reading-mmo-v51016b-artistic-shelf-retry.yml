@@ -1,0 +1,56 @@
+name: Retry Reading MMO v5.10.16b Artistic Shelf
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51016b-artistic-shelf-retry.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run the validated v5.10.16b build script
+        shell: python
+        run: |
+          from pathlib import Path
+          import textwrap
+
+          source = Path('.github/workflows/apply-reading-mmo-v51016b-artistic-shelf.yml').read_text(encoding='utf-8')
+          marker = '      - name: Build v5.10.16b artistic shelf refinement\n'
+          pos = source.index(marker)
+          start = source.index('        run: |\n', pos) + len('        run: |\n')
+          end = source.index('\n      - name: Verify artistic shelf wiring', start)
+          script = textwrap.dedent(source[start:end])
+          exec(compile(script, '<v51016b-build>', 'exec'), {'__name__':'__main__'})
+
+          required = [
+              'archive-v51016b.js','archive-v51016b.css',
+              'archive-proto-legion-b.svg','archive-proto-angels-b.svg','archive-proto-stage-b.svg',
+              'BUILD-NOTES-v5.10.16b.txt'
+          ]
+          for item in required:
+              p = Path(item)
+              if not p.exists() or p.stat().st_size == 0:
+                  raise SystemExit(f'Missing generated file: {item}')
+          index = Path('index.html').read_text(encoding='utf-8')
+          sw = Path('service-worker.js').read_text(encoding='utf-8')
+          assert 'archive-v51016b.js?v=51016b' in index
+          assert 'service-worker.js?v=51016b' in index
+          assert 'reading-mmo-v5.10.16b-artistic-shelf-refinement' in sw
+          assert 'archive-proto-legion-b.svg' in sw
+          print('v5.10.16b files and cache wiring verified.')
+
+      - name: Commit v5.10.16b artistic shelf refinement
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html service-worker.js archive-v51016b.js archive-v51016b.css archive-proto-legion-b.svg archive-proto-angels-b.svg archive-proto-stage-b.svg BUILD-NOTES-v5.10.16b.txt
+          git commit -m 'Reading MMO v5.10.16b artistic shelf refinement'
+          git push
