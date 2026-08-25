@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.18-artistic-shelf-refinement';
-const FORCE_VERSION = '51018';
+const CACHE = 'reading-mmo-v5.10.19-shelved-volumes-hotfix';
+const FORCE_VERSION = '51019';
 const CORE = [
   './',
   './asset-book.png',
@@ -70,6 +70,7 @@ const CORE = [
   './archive-proto-stage.svg',
   './archive-v51018.css',
   './archive-v51018.js',
+  './reading-shelf-v51019.js',
   './archive-proto-legion-art.svg',
   './archive-proto-angels-art.svg',
   './archive-proto-stage-art.svg',
