@@ -1,0 +1,28 @@
+Reading MMO v5.10.17 — Shelved Volumes
+
+PURPOSE
+- Let the reader pause a current book, start another, and return later without losing the paused book's reading state.
+
+NEW READING DESK FLOW
+- Adds SHELVE VOLUME beside the existing Reading Desk actions.
+- Adds SHELVED count/button and a parchment-style Shelved Volumes modal.
+- Shelved books preserve title, reading mode, book total, current page, percent, session start page, session logged pages, chapter count, paused timer duration, and last-session state.
+- Shelving an actively running timer safely pauses it before storing the book.
+- Last Finished remains global and is not overwritten by shelving/resuming.
+- MMO page totals and already-earned quest progress remain untouched.
+
+RESUME BEHAVIOR
+- Resume restores the stored book exactly to the Reading Desk.
+- A paused timer remains paused until the reader explicitly starts it again.
+- If another book is currently active, RESUME becomes SHELVE CURRENT & RESUME so the active book is safely stored before the selected one is restored.
+- Multiple books may be shelved at once.
+
+PERSISTENCE
+- Shelved books are stored in the existing Reading MMO save object as `shelvedBooks` and therefore travel with normal local save/export/import behavior.
+- Existing saves without `shelvedBooks` migrate non-destructively at runtime by initializing an empty shelf.
+
+VISUAL / SCOPE GUARANTEES
+- The approved Archive top is unchanged.
+- The approved open-book Archive detail is unchanged.
+- The v5.10.16 three-spine asset prototype remains intact.
+- Service-worker cache is bumped to 5.10.17 so installed Android copies refresh to this build.
