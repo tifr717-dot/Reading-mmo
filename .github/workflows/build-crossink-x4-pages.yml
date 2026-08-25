@@ -25,6 +25,7 @@ env:
   OFFICIAL_RECOVERY_SHA256: b5debe8b6b3f26f1af53410f388a2eb8def78b19b0c04aa94e46e942684dce2f
   PAGES1_PATCH_B64_PATH: firmware/crossink-x4-pages/CrossInk-v1.5.0-pages-x4.patch.gz.b64
   PAGES2_EDIT_SCRIPT: firmware/crossink-x4-pages/apply-pages2-direct.py
+  PAGES3_STATUSBAR_SCRIPT: firmware/crossink-x4-pages/apply-pages3-statusbar.py
 
 jobs:
   build-and-validate:
@@ -118,9 +119,10 @@ jobs:
         run: |
           set -euo pipefail
           python "$GITHUB_WORKSPACE/$PAGES2_EDIT_SCRIPT" "$GITHUB_WORKSPACE/crossink"
+          python "$GITHUB_WORKSPACE/$PAGES3_STATUSBAR_SCRIPT" "$GITHUB_WORKSPACE/crossink"
           cd crossink
           git diff --check
-          allowed='^(CHANGELOG\.md|lib/I18n/translations/english\.yaml|src/activities/boot_sleep/SleepActivity\.cpp|src/activities/home/HomeActivity\.cpp|src/activities/home/RecentBookProgress\.(cpp|h)|src/activities/reader/BookStatsActivity\.(cpp|h)|src/activities/reader/BookStatsView\.(cpp|h)|src/activities/reader/EpubReaderActivity\.(cpp|h)|src/activities/reader/XtcReaderActivity\.cpp)$'
+          allowed='^(CHANGELOG\.md|lib/I18n/translations/english\.yaml|src/activities/boot_sleep/SleepActivity\.cpp|src/activities/home/HomeActivity\.cpp|src/activities/home/RecentBookProgress\.(cpp|h)|src/activities/reader/BookStatsActivity\.(cpp|h)|src/activities/reader/BookStatsView\.(cpp|h)|src/activities/reader/EpubReaderActivity\.(cpp|h)|src/activities/reader/XtcReaderActivity\.cpp|src/activities/settings/StatusBarSettingsActivity\.cpp)$'
           unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
             echo "Unexpected source files changed:"
@@ -128,10 +130,12 @@ jobs:
             exit 1
           fi
           changed_count="$(git diff --name-only | wc -l | tr -d ' ')"
-          test "$changed_count" -eq 13
+          test "$changed_count" -eq 14
           grep -q 'drawCurrentBookPageBadge' src/activities/home/HomeActivity.cpp
           grep -q 'RecentBookProgress::loadPageNumber(recentBooks\[highlightedBookIndex\])' src/activities/home/HomeActivity.cpp
           grep -q 'drawStatCell(renderer, x, thirdW, y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_PAGES_LBL))' src/activities/reader/BookStatsView.cpp
+          grep -q 'Whole Book Page Count' src/activities/settings/StatusBarSettingsActivity.cpp
+          grep -q 'visibleItemCount = ITEM_COUNT;' src/activities/settings/StatusBarSettingsActivity.cpp
           git diff --name-only | tee "$GITHUB_WORKSPACE/changed-files.txt"
           git diff --stat | tee "$GITHUB_WORKSPACE/patch-stat.txt"
 
@@ -223,6 +227,9 @@ jobs:
             echo "Pages2 behavior:"
             echo "  - Current-book Reading Stats always shows Pages in row 2, column 1."
             echo "  - Home recent-book tile shows a Page N badge from saved stable book position."
+            echo "  - Sleep Reading Stats receives the same current-book page number."
+            echo "  - Customize Status Bar exposes Whole Book Page Count as a selectable option."
+            echo "  - Whole-book page count falls back to CrossInk's custom estimated book pagination when publisher reference pages are unavailable."
             echo ""
             echo "Changed source files:"
             sed 's/^/  - /' "$GITHUB_WORKSPACE/changed-files.txt"
@@ -237,7 +244,8 @@ jobs:
           Keep the untouched official CrossInk 1.5.0 firmware available as a recovery image.
           Official recovery SHA-256: ${OFFICIAL_RECOVERY_SHA256}
 
-          Pages2 restores the current-book Pages stat and adds current page position to the Home recent-book tile.
+          Pages2 restores the current-book Pages stat, adds current page position to Home and sleep Reading Stats,
+          and exposes a selectable Whole Book Page Count option in Customize Status Bar.
           Protected hardware, partition, SDK/display-driver, OTA, bootloader, and recovery inputs are unchanged.
           EOF2
           sed -i 's/^          //' "$GITHUB_WORKSPACE/out/README-FLASH.txt"
