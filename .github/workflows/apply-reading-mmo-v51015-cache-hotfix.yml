@@ -1,0 +1,68 @@
+name: Apply Reading MMO v5.10.15 Cache Hotfix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51015-cache-hotfix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Force v5.10.15 asset URLs
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+
+          replacements = {
+              './archive-v51014.js?v=51014': './archive-v51014.js?v=51015',
+              './service-worker.js?v=51014': './service-worker.js?v=51015',
+          }
+
+          changed = False
+          for old, new in replacements.items():
+              if old in text:
+                  text = text.replace(old, new)
+                  changed = True
+
+          if not changed:
+              print('No old v5.10.14 asset URLs found; nothing to change.')
+          else:
+              p.write_text(text, encoding='utf-8')
+              print('Updated index.html to request the v5.10.15 Archive runtime and service worker explicitly.')
+
+      - name: Verify v5.10.15 runtime files
+        shell: python
+        run: |
+          from pathlib import Path
+
+          js = Path('archive-v51014.js').read_text(encoding='utf-8')
+          sw = Path('service-worker.js').read_text(encoding='utf-8')
+          html = Path('index.html').read_text(encoding='utf-8')
+
+          assert "const BUILD='v5.10.15'" in js, 'archive-v51014.js is not stamped v5.10.15'
+          assert "FORCE_VERSION = '51015'" in sw, 'service-worker.js is not forcing 51015'
+          assert './archive-v51014.js?v=51015' in html, 'index.html is not loading the 51015 archive runtime'
+          assert './service-worker.js?v=51015' in html, 'index.html is not registering the 51015 service worker'
+          print('v5.10.15 cache-bust verification passed.')
+
+      - name: Commit hotfix
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No index change needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Force Reading MMO v5.10.15 cache refresh"
+          git push
