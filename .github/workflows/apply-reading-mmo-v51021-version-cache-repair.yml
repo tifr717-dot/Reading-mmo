@@ -1,0 +1,154 @@
+name: Apply Reading MMO v5.10.21 Version + Cache Repair
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51021-version-cache-repair.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make legacy runtimes obey one app version
+        shell: python
+        run: |
+          from pathlib import Path
+
+          targets = {
+              'archive-v51011.js': ("const BUILD='v5.10.12';", "const BUILD=window.__readingMmoVersionOwner||'v5.10.12';"),
+              'archive-v51013.js': ("const BUILD='v5.10.13';", "const BUILD=window.__readingMmoVersionOwner||'v5.10.13';"),
+              'archive-v51014.js': ("const BUILD='v5.10.15';", "const BUILD=window.__readingMmoVersionOwner||'v5.10.15';"),
+              'archive-v51016.js': ("const BUILD='v5.10.17';", "const BUILD=window.__readingMmoVersionOwner||'v5.10.17';"),
+              'archive-v51018.js': ("const BUILD='v5.10.18';", "const BUILD=window.__readingMmoVersionOwner||'v5.10.18';"),
+          }
+          for name,(old,new) in targets.items():
+              p=Path(name)
+              text=p.read_text(encoding='utf-8')
+              if new not in text:
+                  if old not in text:
+                      raise SystemExit(f'Expected BUILD declaration not found in {name}')
+                  text=text.replace(old,new,1)
+                  p.write_text(text,encoding='utf-8')
+
+          # Give the shelf feature a genuinely new runtime path so Android cannot
+          # reuse a previously cached 5.10.19/20 copy.
+          src=Path('reading-shelf-v51019.js').read_text(encoding='utf-8')
+          src=src.replace('/* Reading MMO v5.10.19 — dedicated Shelved Volumes loader.', '/* Reading MMO v5.10.21 — dedicated Shelved Volumes loader.', 1)
+          src=src.replace("const BUILD='v5.10.20';", "const BUILD='v5.10.21';", 1)
+          if "const BUILD='v5.10.21';" not in src or 'window.__readingMmoVersionOwner=BUILD;' not in src:
+              raise SystemExit('Could not prepare v5.10.21 shelf runtime')
+          Path('reading-shelf-v51021.js').write_text(src,encoding='utf-8')
+
+      - name: Make index start on v5.10.21 before any legacy runtime
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('index.html')
+          text=p.read_text(encoding='utf-8')
+
+          text=text.replace(
+              '<span id="headerVersionText" class="app-version-badge">v5.10.12</span>',
+              '<span id="headerVersionText" class="app-version-badge">v5.10.21</span>',1)
+          text=text.replace(
+              '<div class="health-row"><b>Version</b><span>v5.10.12</span></div>',
+              '<div class="health-row"><b>Version</b><span>v5.10.21</span></div>',1)
+
+          marker='<script src="./archive-v51011.js?v=51012"></script>'
+          owner="<script>window.__readingMmoVersionOwner='v5.10.21';</script>\n"
+          if owner not in text:
+              if marker not in text:
+                  raise SystemExit('Could not find first Archive runtime marker')
+              text=text.replace(marker,owner+marker,1)
+
+          replacements={
+              './archive-v51011.js?v=51012':'./archive-v51011.js?v=51021',
+              './archive-v51013.js?v=51013':'./archive-v51013.js?v=51021',
+              './archive-v51014.js?v=51015':'./archive-v51014.js?v=51021',
+              './archive-v51016.js?v=51020':'./archive-v51016.js?v=51021',
+              './archive-v51018.js?v=51020':'./archive-v51018.js?v=51021',
+              './reading-shelf-v51019.js?v=51020':'./reading-shelf-v51021.js?v=51021',
+              './service-worker.js?v=51020':'./service-worker.js?v=51021',
+          }
+          for old,new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Expected index asset URL missing: {old}')
+              text=text.replace(old,new,1)
+
+          text=text.replace(
+              'navigator.serviceWorker.register("./service-worker.js?v=51021").catch(() => {});',
+              'navigator.serviceWorker.register("./service-worker.js?v=51021",{updateViaCache:"none"}).catch(() => {});',1)
+
+          old_reload='setTimeout(()=>location.reload(),700);'
+          new_reload="setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51021');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);"
+          if old_reload in text:
+              text=text.replace(old_reload,new_reload,1)
+
+          p.write_text(text,encoding='utf-8')
+
+      - name: Make service worker prefer fresh versioned assets
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('service-worker.js')
+          text=p.read_text(encoding='utf-8')
+          text=text.replace("const CACHE = 'reading-mmo-v5.10.20-single-version-owner';", "const CACHE = 'reading-mmo-v5.10.21-version-cache-repair';",1)
+          text=text.replace("const FORCE_VERSION = '51020';", "const FORCE_VERSION = '51021';",1)
+
+          if "'./reading-shelf-v51021.js'," not in text:
+              text=text.replace("  './reading-shelf-v51019.js',", "  './reading-shelf-v51019.js',\n  './reading-shelf-v51021.js',",1)
+
+          needle="""  event.respondWith(\n    caches.match(req).then(cached => cached || fetch(req).then(res => {\n      const copy = res.clone();\n      caches.open(CACHE).then(c => c.put(req, copy));\n      return res;\n    }))\n  );\n"""
+          replacement="""  const assetUrl = new URL(req.url);\n  const preferNetwork = req.destination === 'script' || req.destination === 'style' || assetUrl.searchParams.has('v');\n  if (preferNetwork) {\n    event.respondWith(\n      fetch(req, {cache:'no-store'}).then(res => {\n        const copy = res.clone();\n        caches.open(CACHE).then(c => c.put(req, copy));\n        return res;\n      }).catch(() => caches.match(req))\n    );\n    return;\n  }\n\n  event.respondWith(\n    caches.match(req).then(cached => cached || fetch(req).then(res => {\n      const copy = res.clone();\n      caches.open(CACHE).then(c => c.put(req, copy));\n      return res;\n    }))\n  );\n"""
+          if 'const preferNetwork =' not in text:
+              if needle not in text:
+                  raise SystemExit('Could not find service-worker static fetch block')
+              text=text.replace(needle,replacement,1)
+          p.write_text(text,encoding='utf-8')
+
+      - name: Verify v5.10.21 repair
+        shell: python
+        run: |
+          from pathlib import Path
+          html=Path('index.html').read_text(encoding='utf-8')
+          sw=Path('service-worker.js').read_text(encoding='utf-8')
+          shelf=Path('reading-shelf-v51021.js').read_text(encoding='utf-8')
+          a11=Path('archive-v51011.js').read_text(encoding='utf-8')
+          a13=Path('archive-v51013.js').read_text(encoding='utf-8')
+          a14=Path('archive-v51014.js').read_text(encoding='utf-8')
+          a16=Path('archive-v51016.js').read_text(encoding='utf-8')
+          a18=Path('archive-v51018.js').read_text(encoding='utf-8')
+
+          assert "window.__readingMmoVersionOwner='v5.10.21'" in html
+          assert 'v5.10.21</span>' in html
+          assert './archive-v51011.js?v=51021' in html
+          assert './archive-v51013.js?v=51021' in html
+          assert './archive-v51014.js?v=51021' in html
+          assert './archive-v51016.js?v=51021' in html
+          assert './archive-v51018.js?v=51021' in html
+          assert './reading-shelf-v51021.js?v=51021' in html
+          assert './service-worker.js?v=51021' in html
+          assert 'updateViaCache:"none"' in html
+          assert "const BUILD='v5.10.21';" in shelf
+          assert "FORCE_VERSION = '51021'" in sw
+          assert 'const preferNetwork =' in sw
+          for data in (a11,a13,a14,a16,a18):
+              assert 'window.__readingMmoVersionOwner||' in data
+          print('v5.10.21 version/cache repair verification passed.')
+
+      - name: Commit repair
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add archive-v51011.js archive-v51013.js archive-v51014.js archive-v51016.js archive-v51018.js reading-shelf-v51021.js index.html service-worker.js
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Reading MMO v5.10.21 repair version rollback and asset cache"
+          git push
