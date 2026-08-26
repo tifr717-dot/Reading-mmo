@@ -1,30 +1,42 @@
-/* Reading MMO v5.10.25 — matching live Archive shelves for books 8+. */
+/* Reading MMO v5.10.26 — seamless expanding Archive shelves for books 8+.
+   Shelf 1 remains untouched. Later shelves reuse its exact outer artwork while
+   replacing only the book-filled center with a natural empty wood bay. */
 #library .v51025-expanding-shelf{
   position:relative!important;width:100%!important;aspect-ratio:975/625!important;
   margin:11px 0 18px!important;overflow:hidden!important;background:#160b07!important;
   box-shadow:0 12px 28px rgba(0,0,0,.38)!important;isolation:isolate!important;
 }
-#library .v51025-expand-bg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:fill!important;z-index:1!important;image-rendering:pixelated!important;}
-#library .v51025-blank-panel{
-  position:absolute!important;left:9.5%!important;right:9.7%!important;top:15.2%!important;bottom:10.5%!important;z-index:2!important;
-  background:
-    linear-gradient(90deg,rgba(11,5,3,.76),transparent 7%,transparent 93%,rgba(9,4,2,.78)),
-    linear-gradient(180deg,rgba(7,3,2,.48),transparent 15%,transparent 78%,rgba(5,2,1,.58)),
-    repeating-linear-gradient(0deg,#28140d 0 8px,#301910 8px 16px,#26130c 16px 23px)!important;
-  border:3px solid #5b321d!important;box-shadow:inset 0 0 0 2px #1a0b07,inset 0 18px 22px rgba(0,0,0,.48),inset 0 -12px 18px rgba(0,0,0,.48)!important;
+#library .v51025-expand-bg{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  object-fit:fill!important;z-index:1!important;image-rendering:pixelated!important;
 }
-#library .v51025-top-shadow{position:absolute!important;left:10.2%!important;right:10.4%!important;top:17.2%!important;height:4.2%!important;z-index:3!important;background:linear-gradient(#120704,transparent)!important;opacity:.92!important;}
+/* Cover only the original seven books. No inset border: this should read as the
+   inside of the same cabinet, not as a second panel sitting inside it. */
+#library .v51025-blank-panel{
+  position:absolute!important;left:8.8%!important;right:8.8%!important;top:10.6%!important;bottom:9.4%!important;z-index:2!important;
+  background:
+    linear-gradient(90deg,rgba(10,4,2,.72),transparent 7%,transparent 93%,rgba(8,3,2,.72)),
+    linear-gradient(180deg,rgba(7,3,2,.42),transparent 16%,transparent 78%,rgba(5,2,1,.48)),
+    repeating-linear-gradient(0deg,#28140d 0 7px,#2e170f 7px 14px,#26120c 14px 21px)!important;
+  border:0!important;
+  box-shadow:inset 0 16px 24px rgba(0,0,0,.42),inset 0 -12px 20px rgba(0,0,0,.42)!important;
+}
+#library .v51025-top-shadow{
+  position:absolute!important;left:9.2%!important;right:9.2%!important;top:10.6%!important;height:8%!important;z-index:3!important;
+  background:linear-gradient(#100603 0%,rgba(16,6,3,.65) 32%,transparent 100%)!important;opacity:.9!important;
+}
 #library .v51025-shelf-plank{
-  position:absolute!important;left:8.8%!important;right:8.8%!important;bottom:9.6%!important;height:5.5%!important;z-index:5!important;
-  background:linear-gradient(#9b5f2c 0 12%,#5a2e17 13% 42%,#3d1d10 43% 74%,#1e0d07 75% 100%)!important;
-  border-top:2px solid #d08a3e!important;border-bottom:3px solid #120603!important;box-shadow:0 5px 0 rgba(0,0,0,.42)!important;
+  position:absolute!important;left:8.8%!important;right:8.8%!important;bottom:8.8%!important;height:5.8%!important;z-index:5!important;
+  background:linear-gradient(#b06b30 0 10%,#74401f 11% 36%,#4d2714 37% 70%,#241008 71% 100%)!important;
+  border-top:2px solid #cf8640!important;border-bottom:3px solid #120603!important;
+  box-shadow:0 5px 0 rgba(0,0,0,.42),inset 0 2px rgba(244,182,90,.12)!important;
 }
 #library .v51025-live-books{
-  position:absolute!important;left:11.4%!important;right:11.5%!important;top:20.2%!important;bottom:13.7%!important;z-index:6!important;
-  display:grid!important;grid-template-columns:repeat(7,1fr)!important;gap:.5%!important;align-items:end!important;pointer-events:none!important;
+  position:absolute!important;left:11.7%!important;right:11.7%!important;top:17.2%!important;bottom:13.3%!important;z-index:6!important;
+  display:grid!important;grid-template-columns:repeat(7,1fr)!important;gap:.45%!important;align-items:end!important;pointer-events:none!important;
 }
 #library .v51025-live-spine{
-  pointer-events:auto!important;position:relative!important;align-self:end!important;justify-self:center!important;width:94%!important;height:var(--book-h)!important;
+  pointer-events:auto!important;position:relative!important;align-self:end!important;justify-self:center!important;width:91%!important;height:var(--book-h)!important;
   margin:0!important;padding:0!important;overflow:hidden!important;border:2px solid #2a1209!important;border-radius:2px 2px 1px 1px!important;
   transform:rotate(var(--book-tilt))!important;transform-origin:50% 100%!important;
   box-shadow:inset 3px 0 rgba(255,220,136,.12),inset -3px 0 rgba(0,0,0,.34),inset 0 -4px rgba(0,0,0,.3),4px 5px 0 rgba(8,3,2,.5)!important;
@@ -55,7 +67,7 @@
 #library .v51025-spine-fav{position:absolute!important;right:9%!important;top:4.5%!important;z-index:5!important;color:#ffe6a0!important;font-size:clamp(8px,2vw,12px)!important;text-shadow:0 0 3px #5a2d10!important;pointer-events:none!important;}
 #library .v51025-spine-shadow{position:absolute!important;inset:0!important;z-index:1!important;pointer-events:none!important;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 16%,transparent 78%,rgba(0,0,0,.23)),linear-gradient(180deg,rgba(255,224,145,.06),transparent 18%,transparent 80%,rgba(0,0,0,.18))!important;}
 @media(max-width:390px){
-  #library .v51025-live-books{left:11%!important;right:11.1%!important;gap:.25%!important}
-  #library .v51025-live-spine{width:96%!important;border-width:1px!important;box-shadow:inset 2px 0 rgba(255,220,136,.1),inset -2px 0 rgba(0,0,0,.35),3px 4px 0 rgba(8,3,2,.48)!important}
+  #library .v51025-live-books{left:11.4%!important;right:11.4%!important;gap:.2%!important}
+  #library .v51025-live-spine{width:93%!important;border-width:1px!important;box-shadow:inset 2px 0 rgba(255,220,136,.1),inset -2px 0 rgba(0,0,0,.35),3px 4px 0 rgba(8,3,2,.48)!important}
   #library .v51025-spine-series{font-size:5px!important}
 }

@@ -2,7 +2,7 @@
    Shelf 1 remains the exact approved concept artwork.
    Books 8+ grow into matching live shelves in groups of seven. */
 (function(){
-  const BUILD='v5.10.25';
+  const BUILD='v5.10.26';
   window.__readingMmoVersionOwner=BUILD;
 
   const priorShelfRows=window.libraryShelfRowsMarkup;
@@ -20,7 +20,7 @@
   function ensureCss(){
     let l=document.getElementById('archive-v51025-css');
     if(!l){l=document.createElement('link');l.id='archive-v51025-css';l.rel='stylesheet';document.head.appendChild(l);}
-    l.href='./archive-v51025.css?v=51025';
+    l.href='./archive-v51025.css?v=51026';
   }
   function stamp(){
     window.__readingMmoVersionOwner=BUILD;
@@ -57,7 +57,7 @@
     const id=jsq(b.id),short=seriesShort(b),palette=paletteIndex(b,n),art=artKey(b,n);
     const selected=String(window.__archiveSelectedId||'')===String(b.id)?' selected':'';
     const titleSize=String(b.title||'').length>31?7:String(b.title||'').length>23?8:9;
-    return `<button class="v51025-live-spine p${palette}${selected}" style="grid-column:${7-pos};--book-h:${heights[pos]}%;--book-tilt:${tilts[pos]}deg;--title-size:${titleSize}px" onclick="window.__archiveSelectedId='${id}';openLibraryRecord('${id}')" aria-label="Open library record for ${esc(b.title)} by ${esc(b.author||'Unknown author')}"><img class="v51025-spine-ornament" src="./archive-spine-${art}.svg" alt="" aria-hidden="true"><span class="v51025-spine-title">${esc(b.title)}</span><span class="v51025-spine-series">${esc(short)}</span>${b.favorite?'<span class="v51025-spine-fav">★</span>':''}<span class="v51025-spine-shadow" aria-hidden="true"></span></button>`;
+    return `<button class="v51025-live-spine p${palette}${selected}" style="grid-column:${pos+1};--book-h:${heights[pos]}%;--book-tilt:${tilts[pos]}deg;--title-size:${titleSize}px" onclick="window.__archiveSelectedId='${id}';openLibraryRecord('${id}')" aria-label="Open library record for ${esc(b.title)} by ${esc(b.author||'Unknown author')}"><img class="v51025-spine-ornament" src="./archive-spine-${art}.svg" alt="" aria-hidden="true"><span class="v51025-spine-title">${esc(b.title)}</span><span class="v51025-spine-series">${esc(short)}</span>${b.favorite?'<span class="v51025-spine-fav">★</span>':''}<span class="v51025-spine-shadow" aria-hidden="true"></span></button>`;
   }
   function shelfMarkup(group,shelfIndex){
     const books=group.slice().sort((a,b)=>a.n-b.n);
