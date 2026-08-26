@@ -1,0 +1,159 @@
+name: Apply Reading MMO v5.10.26 Shelf Continuation Fix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51026-shelf2-layout-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fix expanding shelf order and art blending
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          js = Path('archive-v51025.js')
+          text = js.read_text(encoding='utf-8')
+          text = text.replace("const BUILD='v5.10.25';", "const BUILD='v5.10.26';", 1)
+          text = text.replace("./archive-v51025.css?v=51025", "./archive-v51025.css?v=51026", 1)
+          text = text.replace("grid-column:${7-pos};", "grid-column:${pos+1};", 1)
+          if "const BUILD='v5.10.26';" not in text:
+              raise SystemExit('Could not bump expanding shelf runtime version')
+          if "grid-column:${pos+1};" not in text:
+              raise SystemExit('Could not change shelf fill direction')
+          js.write_text(text, encoding='utf-8')
+
+          css = r'''/* Reading MMO v5.10.26 — seamless expanding Archive shelves for books 8+.
+             Shelf 1 remains untouched. Later shelves reuse its exact outer artwork while
+             replacing only the book-filled center with a natural empty wood bay. */
+          #library .v51025-expanding-shelf{
+            position:relative!important;width:100%!important;aspect-ratio:975/625!important;
+            margin:11px 0 18px!important;overflow:hidden!important;background:#160b07!important;
+            box-shadow:0 12px 28px rgba(0,0,0,.38)!important;isolation:isolate!important;
+          }
+          #library .v51025-expand-bg{
+            position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+            object-fit:fill!important;z-index:1!important;image-rendering:pixelated!important;
+          }
+          /* Cover only the original seven books. No inset border: this should read as the
+             inside of the same cabinet, not as a second panel sitting inside it. */
+          #library .v51025-blank-panel{
+            position:absolute!important;left:8.8%!important;right:8.8%!important;top:10.6%!important;bottom:9.4%!important;z-index:2!important;
+            background:
+              linear-gradient(90deg,rgba(10,4,2,.72),transparent 7%,transparent 93%,rgba(8,3,2,.72)),
+              linear-gradient(180deg,rgba(7,3,2,.42),transparent 16%,transparent 78%,rgba(5,2,1,.48)),
+              repeating-linear-gradient(0deg,#28140d 0 7px,#2e170f 7px 14px,#26120c 14px 21px)!important;
+            border:0!important;
+            box-shadow:inset 0 16px 24px rgba(0,0,0,.42),inset 0 -12px 20px rgba(0,0,0,.42)!important;
+          }
+          #library .v51025-top-shadow{
+            position:absolute!important;left:9.2%!important;right:9.2%!important;top:10.6%!important;height:8%!important;z-index:3!important;
+            background:linear-gradient(#100603 0%,rgba(16,6,3,.65) 32%,transparent 100%)!important;opacity:.9!important;
+          }
+          #library .v51025-shelf-plank{
+            position:absolute!important;left:8.8%!important;right:8.8%!important;bottom:8.8%!important;height:5.8%!important;z-index:5!important;
+            background:linear-gradient(#b06b30 0 10%,#74401f 11% 36%,#4d2714 37% 70%,#241008 71% 100%)!important;
+            border-top:2px solid #cf8640!important;border-bottom:3px solid #120603!important;
+            box-shadow:0 5px 0 rgba(0,0,0,.42),inset 0 2px rgba(244,182,90,.12)!important;
+          }
+          #library .v51025-live-books{
+            position:absolute!important;left:11.7%!important;right:11.7%!important;top:17.2%!important;bottom:13.3%!important;z-index:6!important;
+            display:grid!important;grid-template-columns:repeat(7,1fr)!important;gap:.45%!important;align-items:end!important;pointer-events:none!important;
+          }
+          #library .v51025-live-spine{
+            pointer-events:auto!important;position:relative!important;align-self:end!important;justify-self:center!important;width:91%!important;height:var(--book-h)!important;
+            margin:0!important;padding:0!important;overflow:hidden!important;border:2px solid #2a1209!important;border-radius:2px 2px 1px 1px!important;
+            transform:rotate(var(--book-tilt))!important;transform-origin:50% 100%!important;
+            box-shadow:inset 3px 0 rgba(255,220,136,.12),inset -3px 0 rgba(0,0,0,.34),inset 0 -4px rgba(0,0,0,.3),4px 5px 0 rgba(8,3,2,.5)!important;
+            transition:transform .14s ease,filter .14s ease!important;
+          }
+          #library .v51025-live-spine:active{transform:translateY(-3px) rotate(var(--book-tilt))!important;}
+          #library .v51025-live-spine.selected{transform:translateY(-7px) rotate(var(--book-tilt))!important;filter:brightness(1.13) drop-shadow(0 0 5px rgba(238,194,90,.72))!important;}
+          #library .v51025-live-spine.p0{background:linear-gradient(90deg,#321543,#6c347f 48%,#2b123a)!important}
+          #library .v51025-live-spine.p1{background:linear-gradient(90deg,#3b1715,#8c3b30 48%,#35120f)!important}
+          #library .v51025-live-spine.p2{background:linear-gradient(90deg,#173327,#3d7658 48%,#12291f)!important}
+          #library .v51025-live-spine.p3{background:linear-gradient(90deg,#4d3210,#a17324 48%,#3c260b)!important}
+          #library .v51025-live-spine.p4{background:linear-gradient(90deg,#173346,#39769a 48%,#11293a)!important}
+          #library .v51025-live-spine.p5{background:linear-gradient(90deg,#3c2028,#79404d 48%,#311921)!important}
+          #library .v51025-live-spine.p6{background:linear-gradient(90deg,#302e29,#6a665a 48%,#282620)!important}
+          #library .v51025-live-spine.p7{background:linear-gradient(90deg,#402417,#8b5430 48%,#321b10)!important}
+          #library .v51025-spine-ornament{position:absolute!important;inset:1.2% 3.5%!important;width:93%!important;height:97.5%!important;object-fit:fill!important;opacity:.94!important;filter:drop-shadow(0 1px 0 #261006)!important;pointer-events:none!important;}
+          #library .v51025-spine-title{
+            position:absolute!important;left:50%!important;top:26%!important;bottom:18%!important;transform:translateX(-50%) rotate(180deg)!important;
+            writing-mode:vertical-rl!important;text-orientation:mixed!important;color:#f0dfb0!important;font-family:Georgia,'Times New Roman',serif!important;
+            font-weight:700!important;font-size:var(--title-size)!important;letter-spacing:.2px!important;line-height:1!important;text-shadow:0 1px #241007,0 0 2px #1a0905!important;
+            overflow:hidden!important;white-space:nowrap!important;z-index:4!important;pointer-events:none!important;
+          }
+          #library .v51025-spine-series{
+            position:absolute!important;left:9%!important;right:9%!important;bottom:3.1%!important;z-index:4!important;
+            min-height:8.5%!important;display:flex!important;align-items:center!important;justify-content:center!important;color:#f1d78e!important;
+            font-family:Georgia,'Times New Roman',serif!important;font-size:clamp(5px,1.45vw,8px)!important;font-weight:700!important;white-space:nowrap!important;text-shadow:0 1px #1d0a05!important;pointer-events:none!important;
+          }
+          #library .v51025-spine-fav{position:absolute!important;right:9%!important;top:4.5%!important;z-index:5!important;color:#ffe6a0!important;font-size:clamp(8px,2vw,12px)!important;text-shadow:0 0 3px #5a2d10!important;pointer-events:none!important;}
+          #library .v51025-spine-shadow{position:absolute!important;inset:0!important;z-index:1!important;pointer-events:none!important;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 16%,transparent 78%,rgba(0,0,0,.23)),linear-gradient(180deg,rgba(255,224,145,.06),transparent 18%,transparent 80%,rgba(0,0,0,.18))!important;}
+          @media(max-width:390px){
+            #library .v51025-live-books{left:11.4%!important;right:11.4%!important;gap:.2%!important}
+            #library .v51025-live-spine{width:93%!important;border-width:1px!important;box-shadow:inset 2px 0 rgba(255,220,136,.1),inset -2px 0 rgba(0,0,0,.35),3px 4px 0 rgba(8,3,2,.48)!important}
+            #library .v51025-spine-series{font-size:5px!important}
+          }
+          '''
+          Path('archive-v51025.css').write_text(css, encoding='utf-8')
+
+      - name: Wire v5.10.26 and force a fresh installed-app worker
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          html=p.read_text(encoding='utf-8')
+          html=re.sub(r"window\.__readingMmoVersionOwner='v5\.10\.\d+';", "window.__readingMmoVersionOwner='v5.10.26';", html, count=1)
+          files=['archive-v51011.js','archive-v51013.js','archive-v51014.js','archive-v51016.js','archive-v51018.js','reading-shelf-v51021.js','archive-v51022.js','archive-v51025.js']
+          for f in files:
+              html,n=re.subn(rf'(src="\./{re.escape(f)}\?v=)\d+("[^>]*>)', rf'\g<1>51026\g<2>', html, count=1)
+              if n!=1: raise SystemExit(f'Could not cache-bust {f}')
+          html,n=re.subn(r'navigator\.serviceWorker\.register\("\./service-worker-v\d+\.js\?v=\d+",\{updateViaCache:"none"\}\)', 'navigator.serviceWorker.register("./service-worker-v51026.js?v=51026",{updateViaCache:"none"})', html, count=1)
+          if n!=1: raise SystemExit('Could not update worker registration')
+          p.write_text(html,encoding='utf-8')
+
+          src=Path('service-worker-v51025.js').read_text(encoding='utf-8')
+          src=re.sub(r"const CACHE = '[^']+';", "const CACHE = 'reading-mmo-v5.10.26-seamless-archive-shelves';", src, count=1)
+          src=re.sub(r"const FORCE_VERSION = '\d+';", "const FORCE_VERSION = '51026';", src, count=1)
+          if "'./archive-v51025.js'" not in src:
+              raise SystemExit('Current worker does not include expanding shelf runtime')
+          Path('service-worker-v51026.js').write_text(src,encoding='utf-8')
+          Path('service-worker.js').write_text(src,encoding='utf-8')
+
+      - name: Verify v5.10.26
+        shell: python
+        run: |
+          from pathlib import Path
+          html=Path('index.html').read_text(encoding='utf-8')
+          js=Path('archive-v51025.js').read_text(encoding='utf-8')
+          css=Path('archive-v51025.css').read_text(encoding='utf-8')
+          sw=Path('service-worker-v51026.js').read_text(encoding='utf-8')
+          assert "window.__readingMmoVersionOwner='v5.10.26';" in html
+          assert './archive-v51025.js?v=51026' in html
+          assert './service-worker-v51026.js?v=51026' in html
+          assert "const BUILD='v5.10.26';" in js
+          assert 'grid-column:${pos+1};' in js
+          assert 'border:0!important' in css
+          assert "FORCE_VERSION = '51026'" in sw
+          print('v5.10.26 shelf continuation verification passed')
+
+      - name: Commit v5.10.26
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html archive-v51025.js archive-v51025.css service-worker.js service-worker-v51026.js
+          git commit -m "Reading MMO v5.10.26 seamless archive shelf continuation"
+          git push
