@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import re
 import sys
 
 root = Path(sys.argv[1] if len(sys.argv) > 1 else "crossink")
 
 platformio = root / "platformio.ini"
 s = platformio.read_text()
-old = """lib_ignore =\n  BLE\n  HalClockSim\n"""
-new = """lib_ignore =\n  HalClockSim\n"""
-if old not in s:
-    raise SystemExit("BLE lib_ignore target not found")
-platformio.write_text(s.replace(old, new, 1))
+# The Pages source patch may indent lib_ignore entries differently across
+# reconstructed source revisions. Remove the BLE ignore entry by content
+# instead of depending on one exact whitespace layout.
+ble_ignore = re.compile(r"(?m)^[ \t]+BLE[ \t]*\r?\n")
+if not ble_ignore.search(s):
+    raise SystemExit("BLE lib_ignore entry not found")
+platformio.write_text(ble_ignore.sub("", s, count=1))
 
 main = root / "src/main.cpp"
 s = main.read_text()
@@ -35,5 +38,5 @@ main.write_text(s)
 
 assert "BLEDevice::startAdvertising()" in main.read_text()
 assert 'READING_MMO_BLE_NAME[] = "Reading MMO"' in main.read_text()
-assert "  BLE\n" not in platformio.read_text()
+assert not any(line.strip() == "BLE" for line in platformio.read_text().splitlines())
 print("Applied BLE feasibility edits: enabled BLE library and Reading MMO advertising test service")
