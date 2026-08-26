@@ -1,0 +1,9 @@
+Reading MMO v5.10.25 — Expanding Archive Shelves
+
+- Locks the approved first seven-book concept shelf exactly as it is.
+- Removes the old plain fallback for newly added Archive books.
+- Books 8–14 automatically render on Shelf 2, books 15–21 on Shelf 3, and so on in fixed groups of seven.
+- New shelves reuse the approved concept shelf artwork as their frame/decor, blank only the center book bay, and layer live ornate book spines on top.
+- New spines keep live title, series/standalone label, favorite state, shelf-mark color, selection state, and tap-to-open behavior.
+- Shelf groups fill from right to left so a completed shelf reads newest-to-oldest like the approved first shelf.
+- Archive top controls, first shelf artwork, open-book detail, and Shelved Volumes are untouched.
