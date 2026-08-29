@@ -174,6 +174,7 @@ jobs:
           required_headroom=50000
           headroom="$((partition_limit - custom_size))"
           delta="$((custom_size - baseline_size))"
+          report="$GITHUB_WORKSPACE/out/BLE-SIZE-REPORT.txt"
 
           echo "BLE firmware size validation:"
           echo "  Baseline bytes:          $baseline_size"
@@ -182,6 +183,17 @@ jobs:
           echo "  App partition limit:     $partition_limit"
           echo "  Remaining headroom:      $headroom"
           echo "  Required safe headroom:  $required_headroom"
+
+          {
+            echo "BLE firmware size validation"
+            echo ""
+            echo "Baseline firmware bytes: $baseline_size"
+            echo "BLE firmware bytes: $custom_size"
+            echo "Size delta bytes: $delta"
+            echo "App partition limit bytes: $partition_limit"
+            echo "Remaining headroom bytes: $headroom"
+            echo "Required safe headroom bytes: $required_headroom"
+          } > "$report"
 
           {
             echo "### BLE firmware size validation"
@@ -198,16 +210,21 @@ jobs:
 
           if (( custom_size >= partition_limit )); then
             over_by="$((custom_size - partition_limit))"
+            echo "Exceeds partition limit by: $over_by bytes" >> "$report"
+            echo "RESULT: FAIL - firmware exceeds app partition" >> "$report"
             echo "::error title=Firmware exceeds app partition::BLE firmware is ${custom_size} bytes; app partition limit is ${partition_limit} bytes; exceeds limit by ${over_by} bytes. Remaining headroom: ${headroom} bytes."
             exit 1
           fi
 
           if (( headroom < required_headroom )); then
             short_by="$((required_headroom - headroom))"
+            echo "Safety headroom shortfall: $short_by bytes" >> "$report"
+            echo "RESULT: FAIL - firmware headroom below safety floor" >> "$report"
             echo "::error title=Firmware headroom below safety floor::BLE firmware is ${custom_size} bytes; app partition limit is ${partition_limit} bytes; remaining headroom is ${headroom} bytes; required headroom is ${required_headroom} bytes; short by ${short_by} bytes."
             exit 1
           fi
 
+          echo "RESULT: PASS" >> "$report"
           echo "::notice title=BLE firmware size validation passed::BLE firmware is ${custom_size} bytes with ${headroom} bytes of partition headroom."
 
           custom_sha="$(sha256sum "$custom" | awk '{print $1}')"
@@ -231,6 +248,19 @@ jobs:
           } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
           sha256sum "$custom" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
           cat "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
+
+      - name: Upload BLE size diagnostic
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: CrossInk-X4-BLE-Size-Diagnostic
+          path: |
+            out/BLE-SIZE-REPORT.txt
+            baseline-size.txt
+            custom-build.log
+            baseline-build.log
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Upload BLE feasibility flash package
         uses: actions/upload-artifact@v7
