@@ -13,7 +13,17 @@ s = platformio.read_text()
 ble_ignore = re.compile(r"(?m)^[ \t]+BLE[ \t]*\r?\n")
 if not ble_ignore.search(s):
     raise SystemExit("BLE lib_ignore entry not found")
-platformio.write_text(ble_ignore.sub("", s, count=1))
+s = ble_ignore.sub("", s, count=1)
+
+# Serial diagnostics are useful during development but are not required by
+# Reading MMO, Pages, sleep, or the BLE service. Removing the build flag from
+# this feasibility build trims debug-only firmware overhead while preserving
+# the real app partition and 50 KB safety-headroom requirements.
+serial_log_flag = re.compile(r"(?m)^[ \t]*-DENABLE_SERIAL_LOG[ \t]*\r?\n")
+if not serial_log_flag.search(s):
+    raise SystemExit("-DENABLE_SERIAL_LOG build flag not found")
+s = serial_log_flag.sub("", s, count=1)
+platformio.write_text(s)
 
 main = root / "src/main.cpp"
 s = main.read_text()
@@ -39,4 +49,5 @@ main.write_text(s)
 assert "BLEDevice::startAdvertising()" in main.read_text()
 assert 'READING_MMO_BLE_NAME[] = "Reading MMO"' in main.read_text()
 assert not any(line.strip() == "BLE" for line in platformio.read_text().splitlines())
-print("Applied BLE feasibility edits: enabled BLE library and Reading MMO advertising test service")
+assert "-DENABLE_SERIAL_LOG" not in platformio.read_text()
+print("Applied BLE feasibility edits: enabled BLE service with serial diagnostics disabled")
