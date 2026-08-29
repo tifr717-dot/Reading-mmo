@@ -5,7 +5,7 @@
   if(window.__v51027ProgressBooted)return;
   window.__v51027ProgressBooted=true;
 
-  const BUILD='v5.10.27';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.27';
   const $=id=>document.getElementById(id);
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   const num=v=>Math.max(0,Number(v)||0);
