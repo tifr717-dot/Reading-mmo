@@ -1,0 +1,91 @@
+name: Apply Reading MMO v5.10.28 Manual Time
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-reading-mmo-v51028-manual-time.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify manual-time runtime
+        run: node --check reading-time-v51028.js
+
+      - name: Integrate v5.10.28 manual session time
+        shell: python
+        run: |
+          from pathlib import Path
+
+          index = Path('index.html')
+          text = index.read_text()
+          if "window.__readingMmoVersionOwner='v5.10.27'" not in text and "window.__readingMmoVersionOwner='v5.10.28'" not in text:
+              raise SystemExit('Expected v5.10.27/28 version owner marker not found; refusing blind rewrite')
+
+          text = text.replace("window.__readingMmoVersionOwner='v5.10.27'", "window.__readingMmoVersionOwner='v5.10.28'")
+          text = text.replace('?v=51027', '?v=51028')
+
+          progress_tag = '<script src="./reading-progress-v51027.js?v=51028"></script>'
+          time_tag = '<script src="./reading-time-v51028.js?v=51028"></script>'
+          if time_tag not in text:
+              if progress_tag not in text:
+                  raise SystemExit('Progress runtime tag not found')
+              text = text.replace(progress_tag, progress_tag + '\n' + time_tag)
+
+          text = text.replace('service-worker-v51027.js?v=51028', 'service-worker-v51028.js?v=51028')
+          index.write_text(text)
+
+      - name: Make progress runtime respect current version owner
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('reading-progress-v51027.js')
+          text = path.read_text()
+          text = text.replace("const BUILD='v5.10.27';", "const BUILD=window.__readingMmoVersionOwner||'v5.10.27';")
+          path.write_text(text)
+
+      - name: Create v5.10.28 service worker
+        shell: python
+        run: |
+          from pathlib import Path
+          src = Path('service-worker-v51027.js').read_text()
+          src = src.replace("const CACHE = 'reading-mmo-v5.10.27-progress-sync';", "const CACHE = 'reading-mmo-v5.10.28-manual-time';")
+          src = src.replace("const FORCE_VERSION = '51027';", "const FORCE_VERSION = '51028';")
+          needle = "  './reading-progress-v51027.js',"
+          addition = needle + "\n  './reading-time-v51028.js',"
+          if "'./reading-time-v51028.js'" not in src:
+              if needle not in src:
+                  raise SystemExit('Progress runtime missing from service-worker core list')
+              src = src.replace(needle, addition)
+          Path('service-worker-v51028.js').write_text(src)
+
+      - name: Verify v5.10.28 before push
+        run: |
+          node --check reading-time-v51028.js
+          node --check reading-progress-v51027.js
+          grep -F "window.__readingMmoVersionOwner='v5.10.28'" index.html
+          grep -F 'reading-time-v51028.js?v=51028' index.html
+          grep -F 'service-worker-v51028.js?v=51028' index.html
+          grep -F "reading-mmo-v5.10.28-manual-time" service-worker-v51028.js
+          grep -F "FORCE_VERSION = '51028'" service-worker-v51028.js
+          grep -F "'./reading-time-v51028.js'" service-worker-v51028.js
+          grep -F "const BUILD=window.__readingMmoVersionOwner||'v5.10.27';" reading-progress-v51027.js
+
+      - name: Commit v5.10.28
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html reading-progress-v51027.js reading-time-v51028.js service-worker-v51028.js
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+          else
+            git commit -m 'Reading MMO v5.10.28 add manual session time correction'
+            git push
+          fi
