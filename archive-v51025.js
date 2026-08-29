@@ -2,7 +2,7 @@
    Shelf 1 remains the exact approved concept artwork.
    Books 8+ grow into matching live shelves in groups of seven. */
 (function(){
-  const BUILD='v5.10.26';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.26';
   window.__readingMmoVersionOwner=BUILD;
 
   const priorShelfRows=window.libraryShelfRowsMarkup;

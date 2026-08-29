@@ -2,7 +2,7 @@
    IMPORTANT: the shelf visual is reconstructed from the exact approved concept-art crop.
    Do not redraw, simplify, vectorize, or reinterpret it. */
 (function(){
-  const BUILD='v5.10.24';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.24';
   window.__readingMmoVersionOwner=BUILD;
 
   const priorShelfRows=window.libraryShelfRowsMarkup;

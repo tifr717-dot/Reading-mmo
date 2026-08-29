@@ -82,9 +82,9 @@
   }
 
   function progressValues(){
-    const total=num($('progressTotalPages')?.value||$('readBookTotal')?.value||window.S?.reading?.bookTotal);
+    const total=num($('progressTotalPages')?.value||$('readBookTotal')?.value||S?.reading?.bookTotal);
     const currentMode=mode();
-    let page=num($('readCurrentPage')?.value||window.S?.reading?.currentPage);
+    let page=num($('readCurrentPage')?.value||S?.reading?.currentPage);
     let pct=clamp(Number($('readPercent')?.value)||0,0,100);
     if(total){
       if(currentMode==='percent')page=clamp(Math.round(total*pct/100),0,total);
@@ -161,7 +161,7 @@
   function sessionPreview(){
     const current=num($('readSessionCurrentPage')?.value);
     if($('readCurrentPage'))$('readCurrentPage').value=current||'';
-    const total=num($('readBookTotal')?.value||window.S?.reading?.bookTotal);
+    const total=num($('readBookTotal')?.value||S?.reading?.bookTotal);
     if(total&&$('readPercent'))$('readPercent').value=clamp(current/total*100,0,100).toFixed(1);
     if(typeof updateReadingLive==='function')updateReadingLive();
     previewProgress();
@@ -169,11 +169,11 @@
 
   function commitSessionCurrent(){
     sessionPreview();
-    if(!window.S?.reading)return;
+    if(!S?.reading)return;
     const current=num($('readSessionCurrentPage')?.value);
-    const total=num($('readBookTotal')?.value||window.S.reading.bookTotal);
-    window.S.reading.currentPage=current;
-    if(total){window.S.reading.bookTotal=total;window.S.reading.percent=Number(clamp(current/total*100,0,100).toFixed(1));}
+    const total=num($('readBookTotal')?.value||S.reading.bookTotal);
+    S.reading.currentPage=current;
+    if(total){S.reading.bookTotal=total;S.reading.percent=Number(clamp(current/total*100,0,100).toFixed(1));}
     if(typeof persistSilent==='function')persistSilent();
     if(typeof renderBookProgress==='function')renderBookProgress();
     updateMmoTotal();
@@ -226,7 +226,7 @@
   }
 
   function updateMmoTotal(){
-    const total=num(window.S?.pages||$('readMmoPages')?.value);
+    const total=num(S?.pages||$('readMmoPages')?.value);
     const el=$('v51027MmoNumber');if(el)el.textContent=total.toLocaleString();
   }
 
@@ -246,7 +246,7 @@
   }
 
   function syncFromState(syncSessionCurrent=true){
-    const r=window.S?.reading||{};
+    const r=S?.reading||{};
     if($('progressTotalPages'))$('progressTotalPages').value=$('readBookTotal')?.value||r.bookTotal||'';
     if($('readCurrentPage'))$('readCurrentPage').value=r.currentPage||$('readCurrentPage').value||'';
     if($('readPercent'))$('readPercent').value=(r.percent||r.percent===0)?r.percent:$('readPercent').value||'';
