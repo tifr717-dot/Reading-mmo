@@ -15,15 +15,29 @@ if not ble_ignore.search(s):
     raise SystemExit("BLE lib_ignore entry not found")
 s = ble_ignore.sub("", s, count=1)
 
-# Serial diagnostics are useful during development but are not required by
-# Reading MMO, Pages, sleep, or the BLE service. Removing the build flag from
-# this feasibility build trims debug-only firmware overhead while preserving
-# the real app partition and 50 KB safety-headroom requirements.
-serial_log_flag = re.compile(r"(?m)^[ \t]*-DENABLE_SERIAL_LOG[ \t]*\r?\n")
-if not serial_log_flag.search(s):
-    raise SystemExit("-DENABLE_SERIAL_LOG build flag not found")
-s = serial_log_flag.sub("", s, count=1)
+# Serial diagnostics are optional and their build-flag spelling/layout may vary
+# across reconstructed Pages sources. Remove active ENABLE_SERIAL_LOG defines
+# when present, but do not fail merely because this source already has logging
+# disabled. This keeps the trim safe without making source formatting a gate.
+serial_log_line = re.compile(
+    r"(?m)^[ \t]*-D[ \t]*ENABLE_SERIAL_LOG(?:=[^\s#;]+)?[ \t]*(?:\r?\n|$)"
+)
+s, serial_log_line_count = serial_log_line.subn("", s)
+serial_log_inline = re.compile(
+    r"(?<!\S)-D[ \t]*ENABLE_SERIAL_LOG(?:=[^\s#;]+)?(?=\s|$)"
+)
+s, serial_log_inline_count = serial_log_inline.subn("", s)
 platformio.write_text(s)
+
+active_serial_log = re.compile(
+    r"(?<!\S)-D[ \t]*ENABLE_SERIAL_LOG(?:=[^\s#;]+)?(?=\s|$)"
+)
+if active_serial_log.search(platformio.read_text()):
+    raise SystemExit("ENABLE_SERIAL_LOG build flag remained after trim")
+if serial_log_line_count + serial_log_inline_count:
+    print("Disabled ENABLE_SERIAL_LOG for BLE feasibility build")
+else:
+    print("ENABLE_SERIAL_LOG already absent in reconstructed source; continuing")
 
 main = root / "src/main.cpp"
 s = main.read_text()
@@ -49,5 +63,5 @@ main.write_text(s)
 assert "BLEDevice::startAdvertising()" in main.read_text()
 assert 'READING_MMO_BLE_NAME[] = "Reading MMO"' in main.read_text()
 assert not any(line.strip() == "BLE" for line in platformio.read_text().splitlines())
-assert "-DENABLE_SERIAL_LOG" not in platformio.read_text()
-print("Applied BLE feasibility edits: enabled BLE service with serial diagnostics disabled")
+assert not active_serial_log.search(platformio.read_text())
+print("Applied BLE feasibility edits: enabled BLE service with serial diagnostics disabled when available")
