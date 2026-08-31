@@ -1,4 +1,4 @@
-name: Build CrossInk X4 BLE Feasibility Firmware
+name: Build CrossInk X4 BLE On-Demand Sync Firmware
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
 env:
   CROSSINK_COMMIT: 0de623ed24acd94ae2301e8e1f4a42e32613110b
   FREEINK_COMMIT: 1ff020263cd2202ea79ce3eb811f5ac8489b8cde
-  CUSTOM_VERSION: 1.5.0-pages2-bletest
+  CUSTOM_VERSION: 1.5.0-pages2-blesync1
   PAGES1_PATCH_B64_PATH: firmware/crossink-x4-pages/CrossInk-v1.5.0-pages-x4.patch.gz.b64
   PAGES2_EDIT_SCRIPT: firmware/crossink-x4-pages/apply-pages2-direct.py
   PAGES3_STATUSBAR_SCRIPT: firmware/crossink-x4-pages/apply-pages3-statusbar.py
@@ -105,15 +105,21 @@ jobs:
           python "$GITHUB_WORKSPACE/$PAGES2_EDIT_SCRIPT" "$GITHUB_WORKSPACE/crossink"
           python "$GITHUB_WORKSPACE/$PAGES3_STATUSBAR_SCRIPT" "$GITHUB_WORKSPACE/crossink"
 
-      - name: Apply BLE feasibility edits
+      - name: Apply Reading MMO BLE Phase 1 edits
         shell: bash
         run: |
           set -euo pipefail
           python "$GITHUB_WORKSPACE/$BLE_EDIT_SCRIPT" "$GITHUB_WORKSPACE/crossink"
           cd crossink
           git diff --check
-          grep -q 'BLEDevice::startAdvertising()' src/main.cpp
-          grep -q 'Reading MMO' src/main.cpp
+          grep -q 'BLEDevice::startAdvertising()' src/activities/network/ReadingMmoBleSyncActivity.cpp
+          grep -q 'READING_MMO_TEST_PAYLOAD' src/activities/network/ReadingMmoBleSyncActivity.cpp
+          grep -q 'NetworkBootTarget::READING_MMO_SYNC' src/main.cpp
+          grep -q 'Reading MMO Sync' src/activities/home/HomeActivity.cpp
+          if grep -q 'BLEDevice::' src/main.cpp; then
+            echo 'BLE must not initialize or advertise from normal main.cpp'
+            exit 1
+          fi
           if grep -A2 '^lib_ignore =' platformio.ini | grep -q '^  BLE$'; then
             echo 'BLE is still ignored in platformio.ini'
             exit 1
@@ -148,10 +154,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "Skipping 'pio check' for this feasibility build because PlatformIO currently cannot resolve platformio/tool-cppcheck @ ^1.2.0."
-          echo "The protected-input checks, formatting checks, full firmware compile, binary-size validation, and artifact checksum remain mandatory."
+          echo "Skipping pio check because PlatformIO cannot currently resolve platformio/tool-cppcheck @ ^1.2.0."
+          echo "Protected-input checks, formatting, full compile, firmware-size validation, and checksum remain mandatory."
 
-      - name: Build BLE feasibility X3/X4 firmware
+      - name: Build on-demand BLE sync X3/X4 firmware
         shell: bash
         env:
           CROSSINK_RELEASE_VERSION: ${{ env.CUSTOM_VERSION }}
@@ -163,7 +169,7 @@ jobs:
           test -s "$custom"
           cp "$custom" "$GITHUB_WORKSPACE/out/firmware-x3-x4-v${CUSTOM_VERSION}.bin"
 
-      - name: Validate BLE feasibility artifact
+      - name: Validate on-demand BLE sync artifact
         shell: bash
         run: |
           set -euo pipefail
@@ -176,16 +182,8 @@ jobs:
           delta="$((custom_size - baseline_size))"
           report="$GITHUB_WORKSPACE/out/BLE-SIZE-REPORT.txt"
 
-          echo "BLE firmware size validation:"
-          echo "  Baseline bytes:          $baseline_size"
-          echo "  Custom bytes:            $custom_size"
-          echo "  Size delta bytes:        $delta"
-          echo "  App partition limit:     $partition_limit"
-          echo "  Remaining headroom:      $headroom"
-          echo "  Required safe headroom:  $required_headroom"
-
           {
-            echo "BLE firmware size validation"
+            echo "Reading MMO on-demand BLE sync firmware validation"
             echo ""
             echo "Baseline firmware bytes: $baseline_size"
             echo "BLE firmware bytes: $custom_size"
@@ -196,7 +194,7 @@ jobs:
           } > "$report"
 
           {
-            echo "### BLE firmware size validation"
+            echo "### Reading MMO BLE Phase 1 size validation"
             echo ""
             echo "| Measurement | Bytes |"
             echo "| --- | ---: |"
@@ -212,7 +210,7 @@ jobs:
             over_by="$((custom_size - partition_limit))"
             echo "Exceeds partition limit by: $over_by bytes" >> "$report"
             echo "RESULT: FAIL - firmware exceeds app partition" >> "$report"
-            echo "::error title=Firmware exceeds app partition::BLE firmware is ${custom_size} bytes; app partition limit is ${partition_limit} bytes; exceeds limit by ${over_by} bytes. Remaining headroom: ${headroom} bytes."
+            echo "::error title=Firmware exceeds app partition::Firmware is ${custom_size} bytes; partition limit is ${partition_limit}; over by ${over_by}."
             exit 1
           fi
 
@@ -220,16 +218,16 @@ jobs:
             short_by="$((required_headroom - headroom))"
             echo "Safety headroom shortfall: $short_by bytes" >> "$report"
             echo "RESULT: FAIL - firmware headroom below safety floor" >> "$report"
-            echo "::error title=Firmware headroom below safety floor::BLE firmware is ${custom_size} bytes; app partition limit is ${partition_limit} bytes; remaining headroom is ${headroom} bytes; required headroom is ${required_headroom} bytes; short by ${short_by} bytes."
+            echo "::error title=Firmware headroom below safety floor::Firmware is ${custom_size} bytes; headroom is ${headroom}; required is ${required_headroom}; short by ${short_by}."
             exit 1
           fi
 
           echo "RESULT: PASS" >> "$report"
-          echo "::notice title=BLE firmware size validation passed::BLE firmware is ${custom_size} bytes with ${headroom} bytes of partition headroom."
+          echo "::notice title=BLE Phase 1 size validation passed::Firmware is ${custom_size} bytes with ${headroom} bytes of partition headroom."
 
           custom_sha="$(sha256sum "$custom" | awk '{print $1}')"
           {
-            echo "CrossInk Reading MMO BLE feasibility build"
+            echo "CrossInk Reading MMO BLE Sync Phase 1"
             echo "Base CrossInk commit: $CROSSINK_COMMIT"
             echo "FreeInk SDK commit: $FREEINK_COMMIT"
             echo "Custom version: $CUSTOM_VERSION"
@@ -239,21 +237,25 @@ jobs:
             echo "Partition headroom bytes: $headroom"
             echo "Custom SHA-256: $custom_sha"
             echo ""
-            echo "BLE feasibility behavior:"
-            echo "  - BLE library is enabled for the ESP32-C3 build."
-            echo "  - Device advertises as Reading MMO after normal boot."
+            echo "Phase 1 behavior:"
+            echo "  - BLE does not initialize during normal reading boot."
+            echo "  - Home includes Reading MMO Sync."
+            echo "  - Selecting it silently reboots into a minimal BLE-only sync activity."
+            echo "  - Device advertises as Reading MMO Reader only during the sync window."
             echo "  - Service UUID: 7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e"
-            echo "  - Read/notify characteristic returns protocol 1 feasibility JSON."
+            echo "  - Read characteristic UUID: 7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e"
+            echo "  - Phase 1 test payload: {\"p\":1,\"sid\":1}"
+            echo "  - Sync mode auto-returns to a clean Home boot after 2 minutes or Back."
             echo "  - Existing Pages/Home/Sleep/Whole Book Page Count changes are retained."
           } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
           sha256sum "$custom" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
           cat "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
 
-      - name: Upload BLE size diagnostic
+      - name: Upload BLE Phase 1 diagnostic
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: CrossInk-X4-BLE-Size-Diagnostic
+          name: CrossInk-X4-BLE-Sync-Phase1-Diagnostic
           path: |
             out/BLE-SIZE-REPORT.txt
             baseline-size.txt
@@ -262,10 +264,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Upload BLE feasibility flash package
+      - name: Upload BLE Phase 1 flash package
         uses: actions/upload-artifact@v7
         with:
-          name: CrossInk-X4-Reading-MMO-BLE-Feasibility
+          name: CrossInk-X4-Reading-MMO-BLE-Sync-Phase1
           path: |
             out/firmware-x3-x4-v${{ env.CUSTOM_VERSION }}.bin
             out/SHA256SUMS.txt
