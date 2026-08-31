@@ -4696,7 +4696,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.10.27</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.10.29</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -4711,7 +4711,7 @@ async function checkForAppUpdate(){
    if(reg)await reg.update();
   }
   if(el)el.textContent="✅ Check complete. Reloading the latest version…";
-  setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51021');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);
+  setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51029');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);
  }catch(e){
   if(el)el.textContent="Could not check right now. Your current app and save are still safe.";
  }
@@ -7051,22 +7051,23 @@ function restoreHomeTab(){ const b=$('homeTabReading'); if(b)setHomeTab('reading
 setTimeout(restoreHomeTab,0);
 </script>
 
-<script>window.__readingMmoVersionOwner='v5.10.28';</script>
-<script src="./archive-v51011.js?v=51028"></script>
-<script src="./archive-v51013.js?v=51028"></script>
-<script src="./archive-v51014.js?v=51028"></script>
-<script src="./archive-v51016.js?v=51028"></script>
-<script src="./archive-v51018.js?v=51028"></script>
-<script src="./reading-shelf-v51021.js?v=51028"></script>
-<script src="./archive-v51022.js?v=51028"></script>
-<script src="./archive-v51025.js?v=51028"></script>
-<script src="./reading-progress-v51027.js?v=51028"></script>
-<script src="./reading-time-v51028.js?v=51028"></script>
+<script>window.__readingMmoVersionOwner='v5.10.29';</script>
+<script src="./archive-v51011.js?v=51029"></script>
+<script src="./archive-v51013.js?v=51029"></script>
+<script src="./archive-v51014.js?v=51029"></script>
+<script src="./archive-v51016.js?v=51029"></script>
+<script src="./archive-v51018.js?v=51029"></script>
+<script src="./reading-shelf-v51021.js?v=51029"></script>
+<script src="./archive-v51022.js?v=51029"></script>
+<script src="./archive-v51025.js?v=51029"></script>
+<script src="./reading-progress-v51027.js?v=51029"></script>
+<script src="./reading-time-v51028.js?v=51029"></script>
+<script src="./reading-flow-v51029.js?v=51029"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker-v51028.js?v=51028",{updateViaCache:"none"}).catch(() => {});
+    navigator.serviceWorker.register("./service-worker-v51029.js?v=51029",{updateViaCache:"none"}).catch(() => {});
   });
 }
 </script>

@@ -6,7 +6,7 @@
   if(window.__v51028TimeBooted)return;
   window.__v51028TimeBooted=true;
 
-  const BUILD='v5.10.28';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.28';
   const $=id=>document.getElementById(id);
   const num=v=>Math.max(0,Number(v)||0);
 
