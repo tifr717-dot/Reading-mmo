@@ -1,0 +1,150 @@
+name: Apply Reading MMO v5.10.30 Reader BLE Sync
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'reading-ble-v51030.js'
+      - '.github/workflows/apply-reading-mmo-v51030-reader-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Verify reader sync runtime syntax
+        run: node --check reading-ble-v51030.js
+
+      - name: Integrate v5.10.30 reader sync runtime
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text()
+
+          old_owner = "window.__readingMmoVersionOwner='v5.10.29';"
+          new_owner = "window.__readingMmoVersionOwner='v5.10.30';"
+          if old_owner not in s and new_owner not in s:
+              raise SystemExit('v5.10.29 version owner anchor not found')
+          s = s.replace(old_owner, new_owner)
+
+          # Force all runtime assets through a fresh app cache generation.
+          s = s.replace('?v=51029', '?v=51030')
+
+          flow = '<script src="./reading-flow-v51029.js?v=51030"></script>'
+          ble = '<script src="./reading-ble-v51030.js?v=51030"></script>'
+          if ble not in s:
+              if flow not in s:
+                  raise SystemExit('v5.10.29 flow script anchor not found')
+              s = s.replace(flow, flow + '\n' + ble, 1)
+
+          s = s.replace('service-worker-v51029.js?v=51030', 'service-worker-v51030.js?v=51030')
+          s = s.replace("u.searchParams.set('appv','51029')", "u.searchParams.set('appv','51030')")
+          s = s.replace('u.searchParams.set("appv","51029")', 'u.searchParams.set("appv","51030")')
+
+          # Health and header badges have historically had separate version owners.
+          s = s.replace('<div class="health-row"><b>Version</b><span>v5.10.29</span></div>',
+                        '<div class="health-row"><b>Version</b><span>v5.10.30</span></div>')
+          s = re.sub(r'(<span id="headerVersionText" class="app-version-badge">)v[^<]+(</span>)',
+                     r'\1v5.10.30\2', s)
+
+          p.write_text(s)
+          PY
+
+      - name: Create v5.10.30 service worker
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          src = Path('service-worker-v51029.js').read_text()
+          src = src.replace('reading-mmo-v5.10.29-session-quest-flow', 'reading-mmo-v5.10.30-reader-sync')
+          src = src.replace("const FORCE_VERSION = '51029';", "const FORCE_VERSION = '51030';")
+
+          flow = "  './reading-flow-v51029.js',"
+          ble = "  './reading-ble-v51030.js',"
+          if ble not in src:
+              if flow not in src:
+                  raise SystemExit('service worker flow CORE anchor not found')
+              src = src.replace(flow, flow + '\n' + ble, 1)
+
+          Path('service-worker-v51030.js').write_text(src)
+          PY
+          node --check service-worker-v51030.js
+
+      - name: Write v5.10.30 build notes
+        run: |
+          cat > BUILD-NOTES-v5.10.30.txt <<'EOF'
+          Reading MMO v5.10.30 — Reader BLE Sync Phase 1
+
+          - Adds a SYNC READER control to the Home Reading panel.
+          - Uses Android/Chrome Web Bluetooth to discover the Reading MMO Reader service.
+          - Connects to service 7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e.
+          - Reads characteristic 7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e.
+          - Phase 1 requires and verifies the test payload {"p":1,"sid":1}.
+          - Displays a clear success/error result inside Reading MMO.
+          - Does NOT import, overwrite, or modify real reading history yet.
+          - Disconnects after the test read completes.
+          EOF
+
+      - name: Verify v5.10.30 wiring
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          s = Path('index.html').read_text()
+          checks = [
+              "window.__readingMmoVersionOwner='v5.10.30'",
+              'reading-flow-v51029.js?v=51030',
+              'reading-ble-v51030.js?v=51030',
+              'service-worker-v51030.js?v=51030',
+              "u.searchParams.set('appv','51030')",
+              'id="headerVersionText" class="app-version-badge">v5.10.30</span>',
+          ]
+          for check in checks:
+              if check not in s:
+                  raise SystemExit(f'missing expected v5.10.30 wiring: {check}')
+
+          ble = Path('reading-ble-v51030.js').read_text()
+          for check in [
+              "7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e",
+              "7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e",
+              "EXPECTED_SESSION_ID=1",
+              "navigator.bluetooth.requestDevice",
+              "characteristic.readValue()",
+          ]:
+              if check not in ble:
+                  raise SystemExit(f'missing BLE runtime check: {check}')
+
+          # Phase 1 must remain transport-only. Do not let this runtime write
+          # into the app's saved reading model until the protocol is validated.
+          forbidden = ['saveState(', 'localStorage.setItem(', 'finishSession(', 'startReadingSession(']
+          for token in forbidden:
+              if token in ble:
+                  raise SystemExit(f'Phase 1 BLE runtime unexpectedly mutates app state: {token}')
+
+          sw = Path('service-worker-v51030.js').read_text()
+          for check in ["FORCE_VERSION = '51030'", "'./reading-ble-v51030.js'"]:
+              if check not in sw:
+                  raise SystemExit(f'missing v5.10.30 service worker check: {check}')
+          PY
+
+      - name: Commit v5.10.30
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html reading-ble-v51030.js service-worker-v51030.js BUILD-NOTES-v5.10.30.txt
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Reading MMO v5.10.30 add reader BLE sync test"
+            git push origin main
+          fi
