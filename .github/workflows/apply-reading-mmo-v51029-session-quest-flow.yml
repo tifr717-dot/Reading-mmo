@@ -1,0 +1,120 @@
+name: Apply Reading MMO v5.10.29 Session Quest Flow
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'reading-flow-v51029.js'
+      - '.github/workflows/apply-reading-mmo-v51029-session-quest-flow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Verify new flow runtime syntax
+        run: node --check reading-flow-v51029.js
+
+      - name: Integrate v5.10.29 flow and version owner
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p=Path('index.html')
+          s=p.read_text()
+
+          # Keep all visible/base version labels aligned with the runtime owner.
+          s=s.replace("v5.10.28", "v5.10.29")
+          s=s.replace("<div class=\"health-row\"><b>Version</b><span>v5.10.27</span></div>",
+                      "<div class=\"health-row\"><b>Version</b><span>v5.10.29</span></div>")
+
+          # Fresh cache keys for all runtime assets already loaded at the bottom.
+          s=s.replace('?v=51028', '?v=51029')
+
+          # Add the new flow runtime once, after the manual-time runtime.
+          anchor='<script src="./reading-time-v51028.js?v=51029"></script>'
+          flow='<script src="./reading-flow-v51029.js?v=51029"></script>'
+          if flow not in s:
+              if anchor not in s:
+                  raise SystemExit('manual-time script anchor not found')
+              s=s.replace(anchor, anchor+'\n'+flow)
+
+          # Move registration to the new worker.
+          s=s.replace('service-worker-v51028.js?v=51029', 'service-worker-v51029.js?v=51029')
+
+          # The in-app update button once carried an older fixed appv. Make the
+          # forced navigation match the actual current build.
+          s=s.replace("u.searchParams.set('appv','51021')", "u.searchParams.set('appv','51029')")
+          s=s.replace('u.searchParams.set("appv","51021")', 'u.searchParams.set("appv","51029")')
+
+          p.write_text(s)
+          PY
+
+      - name: Make manual-time runtime respect current version owner
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('reading-time-v51028.js')
+          s=p.read_text()
+          s=s.replace("const BUILD='v5.10.28';", "const BUILD=window.__readingMmoVersionOwner||'v5.10.28';")
+          p.write_text(s)
+          PY
+          node --check reading-time-v51028.js
+
+      - name: Create v5.10.29 service worker
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          src=Path('service-worker-v51028.js').read_text()
+          src=src.replace("reading-mmo-v5.10.28-manual-time", "reading-mmo-v5.10.29-session-quest-flow")
+          src=src.replace("const FORCE_VERSION = '51028';", "const FORCE_VERSION = '51029';")
+          anchor="  './reading-time-v51028.js',"
+          flow="  './reading-flow-v51029.js',"
+          if flow not in src:
+              if anchor not in src:
+                  raise SystemExit('service worker manual-time CORE anchor not found')
+              src=src.replace(anchor, anchor+'\n'+flow)
+          Path('service-worker-v51029.js').write_text(src)
+          PY
+          node --check service-worker-v51029.js
+
+      - name: Verify v5.10.29 wiring
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text()
+          checks=[
+            "window.__readingMmoVersionOwner='v5.10.29'",
+            'reading-flow-v51029.js?v=51029',
+            'reading-time-v51028.js?v=51029',
+            'service-worker-v51029.js?v=51029',
+            "u.searchParams.set('appv','51029')",
+          ]
+          for c in checks:
+              if c not in s:
+                  raise SystemExit(f'missing expected v5.10.29 wiring: {c}')
+          if "const BUILD=window.__readingMmoVersionOwner||'v5.10.28';" not in Path('reading-time-v51028.js').read_text():
+              raise SystemExit('manual-time version owner repair missing')
+          sw=Path('service-worker-v51029.js').read_text()
+          for c in ["FORCE_VERSION = '51029'", "'./reading-flow-v51029.js'"]:
+              if c not in sw: raise SystemExit(f'missing SW check: {c}')
+          PY
+
+      - name: Commit v5.10.29
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html reading-time-v51028.js reading-flow-v51029.js service-worker-v51029.js
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Reading MMO v5.10.29 streamline session quest reward loop"
+            git push origin main
+          fi
