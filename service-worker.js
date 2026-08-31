@@ -1,6 +1,6 @@
-const CACHE = 'reading-mmo-v5.10.27-crossink-ble-sync';
-const FORCE_VERSION = '51027';
-const READER_SYNC_SCRIPT = '<script src="./reader-sync.js?v=51027"></script>';
+const CACHE = 'reading-mmo-v5.10.28-crossink-session-preview';
+const FORCE_VERSION = '51028';
+const READER_SYNC_SCRIPT = '<script src="./reader-sync.js?v=51028"></script>';
 const CORE = [
   './',
   './asset-book.png',
@@ -194,8 +194,8 @@ self.addEventListener('fetch', event => {
 
   event.respondWith(
     caches.match(req).then(cached => cached || fetch(req).then(res => {
-      const copy = res.clone();
-      caches.open(CACHE).then(c => c.put(req, copy));
+      const copy=res.clone();
+      caches.open(CACHE).then(c=>c.put(req,copy));
       return res;
     }))
   );
