@@ -1,5 +1,6 @@
-const CACHE = 'reading-mmo-v5.10.26-seamless-archive-shelves';
-const FORCE_VERSION = '51026';
+const CACHE = 'reading-mmo-v5.10.27-crossink-ble-sync';
+const FORCE_VERSION = '51027';
+const READER_SYNC_SCRIPT = '<script src="./reader-sync.js?v=51027"></script>';
 const CORE = [
   './',
   './asset-book.png',
@@ -16,6 +17,7 @@ const CORE = [
   './icon-192.png',
   './icon-512.png',
   './index.html',
+  './reader-sync.js',
   './manifest.webmanifest',
   './nav-home.png',
   './nav-me.png',
@@ -105,6 +107,25 @@ const CORE = [
   './v5810-quiet-panel-footer.png'
 ];
 
+async function withReaderSyncScript(response) {
+  if (!response) return response;
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('text/html')) return response;
+
+  const text = await response.text();
+  const html = text.includes('reader-sync.js')
+    ? text
+    : text.replace('</body>', `${READER_SYNC_SCRIPT}\n</body>`);
+  const headers = new Headers(response.headers);
+  headers.delete('content-length');
+  headers.delete('content-encoding');
+  return new Response(html, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
+}
+
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE)
@@ -142,13 +163,19 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
 
   if (req.mode === 'navigate') {
-    event.respondWith(
-      fetch(req, {cache:'no-store'}).then(res => {
-        const copy = res.clone();
+    event.respondWith((async () => {
+      try {
+        const live = await fetch(req, {cache:'no-store'});
+        const page = await withReaderSyncScript(live);
+        if (!page) throw new Error('No navigation response');
+        const copy = page.clone();
         caches.open(CACHE).then(c => c.put('./index.html', copy));
-        return res;
-      }).catch(() => caches.match('./index.html'))
-    );
+        return page;
+      } catch (_) {
+        const cached = await caches.match('./index.html');
+        return withReaderSyncScript(cached);
+      }
+    })());
     return;
   }
 
