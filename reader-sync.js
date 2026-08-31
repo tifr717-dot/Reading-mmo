@@ -4,7 +4,7 @@
   const SERVICE_UUID = '7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e';
   const CHARACTERISTIC_UUID = '7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e';
   const EXPECTED_DEVICE_NAME = 'Reading MMO Reader';
-  const LAST_TEST_KEY = 'readingMmoReaderBlePhase1LastPayload';
+  const LAST_PREVIEW_KEY = 'readingMmoReaderBlePhase2LastPayload';
   const UI_ID = 'crossInkReaderSyncBlock';
 
   function addStyles() {
@@ -18,6 +18,7 @@
       #${UI_ID} .reader-sync-payload.show{display:block}
       #${UI_ID} .reader-sync-last{margin-top:6px}
       #${UI_ID} .reader-sync-help{display:block;margin-top:7px}
+      #${UI_ID} .reader-sync-preview-note{margin-top:8px;padding:8px;border:1px dashed #9b6d00;background:#fff2c9;font-weight:900;font-size:10px}
       #readerSyncButton{width:100%;min-height:46px}
     `;
     document.head.appendChild(style);
@@ -29,15 +30,25 @@
     return setup.querySelector('.v593-ledger-card') || setup;
   }
 
-  function formatLastTest() {
+  function formatDuration(seconds) {
+    const sec = Math.max(0, Number(seconds) || 0);
+    const hours = Math.floor(sec / 3600);
+    const minutes = Math.floor((sec % 3600) / 60);
+    const remainder = sec % 60;
+    if (hours) return `${hours}h ${minutes}m ${remainder}s`;
+    if (minutes) return `${minutes}m ${remainder}s`;
+    return `${remainder}s`;
+  }
+
+  function formatLastPreview() {
     try {
-      const saved = JSON.parse(localStorage.getItem(LAST_TEST_KEY) || 'null');
-      if (!saved || !saved.receivedAt || !saved.text) return 'No CrossInk test received yet.';
+      const saved = JSON.parse(localStorage.getItem(LAST_PREVIEW_KEY) || 'null');
+      if (!saved || !saved.receivedAt || !saved.payload) return 'No real CrossInk session preview received yet.';
       const when = new Date(saved.receivedAt);
       const timeText = Number.isNaN(when.getTime()) ? '' : ` • ${when.toLocaleString()}`;
-      return `Last reader test: ${saved.text}${timeText}`;
+      return `Last preview: Session ${saved.payload.sid} • ${saved.payload.pg} pages • ${formatDuration(saved.payload.sec)}${timeText}`;
     } catch (_) {
-      return 'No CrossInk test received yet.';
+      return 'No real CrossInk session preview received yet.';
     }
   }
 
@@ -52,11 +63,12 @@
     block.className = 'v593-setup-block';
     block.innerHTML = `
       <div class="v593-mini-title">📖 CROSSINK READER</div>
-      <div id="readerSyncStatus" class="simple-status reader-sync-status">Ready to connect to your reader.</div>
+      <div id="readerSyncStatus" class="simple-status reader-sync-status">Ready to preview your latest completed reader session.</div>
       <button id="readerSyncButton" class="btn-green v593-full" type="button">🔵 Sync Reader</button>
       <div id="readerSyncPayload" class="result reader-sync-payload" aria-live="polite"></div>
+      <div class="reader-sync-preview-note">🧪 PHASE 2 PREVIEW ONLY — received reader sessions are not added to your Reading MMO stats, XP, quests, or history yet.</div>
       <div id="readerSyncLast" class="muted reader-sync-last"></div>
-      <small class="reader-sync-help">On your CrossInk first choose <b>Home → Reading MMO Sync</b>. Then tap Sync Reader here. Android may ask for Nearby Devices/Bluetooth permission.</small>
+      <small class="reader-sync-help">On your CrossInk first choose <b>Home → Reading MMO Sync</b>. Then tap Sync Reader here. Phase 2 reads the latest completed CrossInk session.</small>
     `;
 
     const firstSetupBlock = host.querySelector('.v593-setup-block');
@@ -64,7 +76,7 @@
     else host.appendChild(block);
 
     const last = document.getElementById('readerSyncLast');
-    if (last) last.textContent = formatLastTest();
+    if (last) last.textContent = formatLastPreview();
     document.getElementById('readerSyncButton')?.addEventListener('click', syncReader);
   }
 
@@ -97,6 +109,21 @@
     return error.message ? `Bluetooth sync failed: ${error.message}` : 'Bluetooth sync did not complete.';
   }
 
+  function isFiniteNonNegative(value) {
+    return Number.isFinite(Number(value)) && Number(value) >= 0;
+  }
+
+  function validatePhase2Payload(payload, text) {
+    if (payload.p !== 2) throw new Error(`Unexpected reader protocol: ${text}`);
+    if (payload.none === 1) return { none: true };
+
+    for (const key of ['sid', 'sp', 'ep', 'pg', 'sec']) {
+      if (!isFiniteNonNegative(payload[key])) throw new Error(`Phase 2 payload is missing ${key}: ${text}`);
+    }
+    if (Number(payload.sid) < 1) throw new Error(`Invalid session id: ${text}`);
+    return { none: false };
+  }
+
   async function syncReader() {
     const button = document.getElementById('readerSyncButton');
     if (button) button.disabled = true;
@@ -122,7 +149,7 @@
       }
 
       device.addEventListener('gattserverdisconnected', () => {
-        if (!finished) setStatus('Reader disconnected before the test finished.', 'error');
+        if (!finished) setStatus('Reader disconnected before the preview finished.', 'error');
       });
 
       setStatus(`Found ${device.name || EXPECTED_DEVICE_NAME}. Connecting…`);
@@ -132,7 +159,7 @@
       const service = await server.getPrimaryService(SERVICE_UUID);
       const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
 
-      setStatus('Reading Phase 1 session payload…');
+      setStatus('Reading latest completed CrossInk session…');
       const value = await characteristic.readValue();
       const text = new TextDecoder('utf-8').decode(value.buffer).replace(/\0+$/g, '').trim();
       let payload;
@@ -142,19 +169,52 @@
         throw new Error(`Reader returned data that was not valid JSON: ${text || '(empty)'}`);
       }
 
-      if (payload.p !== 1 || payload.sid !== 1) {
-        throw new Error(`Unexpected Phase 1 payload: ${text}`);
+      // Keep the already-proven Phase 1 firmware friendly while Phase 2 rolls out.
+      if (payload.p === 1 && payload.sid === 1) {
+        finished = true;
+        setStatus('✓ Reader connected — Phase 1 test payload received', 'success');
+        showPayload(`CrossInk → Reading MMO\n${text}\n\nPhase 1 connection still works. Flash Phase 2 firmware to preview a real session.`);
+        return;
       }
 
+      const result = validatePhase2Payload(payload, text);
       finished = true;
-      localStorage.setItem(LAST_TEST_KEY, JSON.stringify({ text, payload, receivedAt: Date.now() }));
-      setStatus('✓ Reader connected — received Session 1', 'success');
-      showPayload(`CrossInk → Reading MMO\n${text}\n\nPhase 1 app-side BLE test: PASS`);
+
+      if (result.none) {
+        setStatus('✓ Reader connected — no completed Phase 2 session is stored yet', 'success');
+        showPayload('CrossInk → Reading MMO\nNo completed session is ready yet.\n\nRead normally for at least 60 seconds, leave the book so CrossInk commits the session, then open Reading MMO Sync again.');
+        return;
+      }
+
+      const normalized = {
+        p: 2,
+        sid: Number(payload.sid),
+        sp: Number(payload.sp),
+        ep: Number(payload.ep),
+        pg: Number(payload.pg),
+        sec: Number(payload.sec)
+      };
+      localStorage.setItem(LAST_PREVIEW_KEY, JSON.stringify({ text, payload: normalized, receivedAt: Date.now() }));
+
+      const pageRange = normalized.sp > 0 && normalized.ep > 0
+        ? `${normalized.sp} → ${normalized.ep}`
+        : normalized.ep > 0 ? `ending on page ${normalized.ep}` : 'page range unavailable';
+
+      setStatus(`✓ Reader connected — Session ${normalized.sid} received`, 'success');
+      showPayload(
+        `REAL CROSSINK SESSION — PREVIEW ONLY\n\n` +
+        `Session ID: ${normalized.sid}\n` +
+        `Page range: ${pageRange}\n` +
+        `Pages read: ${normalized.pg}\n` +
+        `Reading time: ${formatDuration(normalized.sec)}\n\n` +
+        `Raw: ${text}\n\n` +
+        `Nothing was added to Reading MMO stats, XP, quests, or history.`
+      );
       const last = document.getElementById('readerSyncLast');
-      if (last) last.textContent = formatLastTest();
+      if (last) last.textContent = formatLastPreview();
     } catch (error) {
       finished = true;
-      console.error('Reading MMO CrossInk BLE sync test failed', error);
+      console.error('Reading MMO CrossInk BLE session preview failed', error);
       setStatus(friendlyBleError(error), 'error');
     } finally {
       try {
@@ -166,8 +226,6 @@
 
   function init() {
     installUi();
-    // The app can re-render sections; re-check briefly so the connection block
-    // survives startup timing without modifying the main app's render code.
     let attempts = 0;
     const timer = setInterval(() => {
       installUi();
