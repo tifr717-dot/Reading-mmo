@@ -1,0 +1,10 @@
+Reading MMO v5.10.30 — Reader BLE Sync Phase 1
+
+- Adds a SYNC READER control to the Home Reading panel.
+- Uses Android/Chrome Web Bluetooth to discover the Reading MMO Reader service.
+- Connects to service 7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e.
+- Reads characteristic 7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e.
+- Phase 1 requires and verifies the test payload {"p":1,"sid":1}.
+- Displays a clear success/error result inside Reading MMO.
+- Does NOT import, overwrite, or modify real reading history yet.
+- Disconnects after the test read completes.
