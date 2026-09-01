@@ -3,7 +3,7 @@
   if(window.__v51032ReadingJournalBooted)return;
   window.__v51032ReadingJournalBooted=true;
 
-  const BUILD='v5.10.32';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.32';
   const $=id=>document.getElementById(id);
   let selectedBook='all';
 

@@ -37,7 +37,7 @@ normalizer_replacement = """  function normalizeReaderPayload(parsed,raw){
   }
 
   function formatDuration"""
-src, count = normalizer_pattern.subn(normalizer_replacement, src, count=1)
+src, count = normalizer_pattern.subn(lambda _match: normalizer_replacement, src, count=1)
 if count != 1:
     raise SystemExit('failed to replace Phase 2 payload normalizer')
 

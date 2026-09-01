@@ -1,0 +1,11 @@
+Reading MMO v5.10.33 — Book-Aware CrossInk Sync
+
+- Accepts both existing Phase 2 reader packets and new Phase 3 titled packets.
+- Phase 3 uses the real EPUB metadata title sent by CrossInk.
+- Titled sessions are filed automatically under the X4 book in Reading Journal.
+- If the reader title matches Current Book, page progress updates normally.
+- If the reader title differs from Current Book, session totals/quests/journal still update but Current Book page progress is left unchanged.
+- If no Current Book is set, a titled reader session can establish it automatically.
+- Duplicate protection remains based on session id/page/time fingerprint, so old sessions cannot be counted twice merely because a title becomes available later.
+- The standalone Reading Journal remains available from the Reading Desk and Library.
+- Uses fresh cache generation 51033.

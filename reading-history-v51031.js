@@ -3,7 +3,7 @@
   if(window.__v51031ReadingHistoryBooted)return;
   window.__v51031ReadingHistoryBooted=true;
 
-  const BUILD='v5.10.31';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.31';
   const $=id=>document.getElementById(id);
   let activeBookId=null;
   let activeTab='overview';
