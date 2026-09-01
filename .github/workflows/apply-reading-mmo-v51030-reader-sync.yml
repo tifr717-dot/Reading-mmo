@@ -28,6 +28,7 @@ jobs:
           from pathlib import Path
           import re
 
+          CACHE_GEN = '51030p2'
           p = Path('index.html')
           s = p.read_text()
 
@@ -37,19 +38,24 @@ jobs:
               raise SystemExit('v5.10.29 version owner anchor not found')
           s = s.replace(old_owner, new_owner)
 
-          # Force all runtime assets through the current app cache generation.
-          s = s.replace('?v=51029', '?v=51030')
+          # The original v5.10.30 release and the Phase 2 receiver used the same
+          # asset URLs, so an installed PWA could retain the Phase 1 JS while the
+          # shell already displayed v5.10.30. Give every runtime asset a fresh,
+          # idempotent cache generation without changing the visible app version.
+          s = re.sub(r'\?v=51029(?![A-Za-z0-9])', f'?v={CACHE_GEN}', s)
+          s = re.sub(r'\?v=51030(?![A-Za-z0-9])', f'?v={CACHE_GEN}', s)
 
-          flow = '<script src="./reading-flow-v51029.js?v=51030"></script>'
-          ble = '<script src="./reading-ble-v51030.js?v=51030"></script>'
+          flow = f'<script src="./reading-flow-v51029.js?v={CACHE_GEN}"></script>'
+          ble = f'<script src="./reading-ble-v51030.js?v={CACHE_GEN}"></script>'
           if ble not in s:
               if flow not in s:
                   raise SystemExit('v5.10.29 flow script anchor not found')
               s = s.replace(flow, flow + '\n' + ble, 1)
 
-          s = s.replace('service-worker-v51029.js?v=51030', 'service-worker-v51030.js?v=51030')
-          s = s.replace("u.searchParams.set('appv','51029')", "u.searchParams.set('appv','51030')")
-          s = s.replace('u.searchParams.set("appv","51029")', 'u.searchParams.set("appv","51030")')
+          s = s.replace("u.searchParams.set('appv','51029')", f"u.searchParams.set('appv','{CACHE_GEN}')")
+          s = s.replace('u.searchParams.set("appv","51029")', f'u.searchParams.set("appv","{CACHE_GEN}")')
+          s = s.replace("u.searchParams.set('appv','51030')", f"u.searchParams.set('appv','{CACHE_GEN}')")
+          s = s.replace('u.searchParams.set("appv","51030")', f'u.searchParams.set("appv","{CACHE_GEN}")')
 
           # Health and header badges have historically had separate version owners.
           s = s.replace('<div class="health-row"><b>Version</b><span>v5.10.29</span></div>',
@@ -57,11 +63,16 @@ jobs:
           s = re.sub(r'(<span id="headerVersionText" class="app-version-badge">)v[^<]+(</span>)',
                      r'\1v5.10.30\2', s)
 
+          # Force the service-worker registration URL itself onto the new cache
+          # generation. This makes Android install/update the Phase 2 worker even
+          # when an older v5.10.30 worker is currently controlling the PWA.
+          s = re.sub(r'service-worker-v51030\.js\?v=[^"\']+',
+                     f'service-worker-v51030.js?v={CACHE_GEN}', s)
+
           p.write_text(s)
 
           # v5.10.29's session-flow module is intentionally still reused by 5.10.30,
-          # but it must not take ownership of the visible app version. Let the current
-          # app owner win instead of repeatedly stamping the badge back to 5.10.29.
+          # but it must not take ownership of the visible app version.
           fp = Path('reading-flow-v51029.js')
           flow_src = fp.read_text()
           old_build = "const BUILD='v5.10.29';"
@@ -78,9 +89,10 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
+          CACHE_GEN = '51030p2'
           src = Path('service-worker-v51029.js').read_text()
-          src = src.replace('reading-mmo-v5.10.29-session-quest-flow', 'reading-mmo-v5.10.30-reader-sync-phase2-import')
-          src = src.replace("const FORCE_VERSION = '51029';", "const FORCE_VERSION = '51030';")
+          src = src.replace('reading-mmo-v5.10.29-session-quest-flow', 'reading-mmo-v5.10.30-reader-sync-phase2-import-p2')
+          src = src.replace("const FORCE_VERSION = '51029';", f"const FORCE_VERSION = '{CACHE_GEN}';")
 
           flow = "  './reading-flow-v51029.js',"
           ble = "  './reading-ble-v51030.js',"
@@ -111,6 +123,7 @@ jobs:
           - Stores a session fingerprint so the same CrossInk session cannot be counted twice.
           - Keeps Phase 1 test payload compatibility for older firmware during rollout.
           - Keeps the visible app version locked to v5.10.30 while the v5.10.29 session-flow module is reused underneath.
+          - Uses internal cache generation 51030p2 so installed PWAs cannot reuse the older Phase 1 v5.10.30 BLE script.
           EOF
 
       - name: Verify v5.10.30 wiring
@@ -118,13 +131,14 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
+          CACHE_GEN = '51030p2'
           s = Path('index.html').read_text()
           checks = [
               "window.__readingMmoVersionOwner='v5.10.30'",
-              'reading-flow-v51029.js?v=51030',
-              'reading-ble-v51030.js?v=51030',
-              'service-worker-v51030.js?v=51030',
-              "u.searchParams.set('appv','51030')",
+              f'reading-flow-v51029.js?v={CACHE_GEN}',
+              f'reading-ble-v51030.js?v={CACHE_GEN}',
+              f'service-worker-v51030.js?v={CACHE_GEN}',
+              f"u.searchParams.set('appv','{CACHE_GEN}')",
               'id="headerVersionText" class="app-version-badge">v5.10.30</span>',
           ]
           for check in checks:
@@ -159,8 +173,8 @@ jobs:
 
           sw = Path('service-worker-v51030.js').read_text()
           for check in [
-              "reading-mmo-v5.10.30-reader-sync-phase2-import",
-              "FORCE_VERSION = '51030'",
+              "reading-mmo-v5.10.30-reader-sync-phase2-import-p2",
+              f"FORCE_VERSION = '{CACHE_GEN}'",
               "'./reading-ble-v51030.js'",
           ]:
               if check not in sw:
@@ -175,6 +189,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Reading MMO v5.10.30 lock version badge owner"
+            git commit -m "Reading MMO v5.10.30 force Phase 2 cache refresh"
             git push origin main
           fi
