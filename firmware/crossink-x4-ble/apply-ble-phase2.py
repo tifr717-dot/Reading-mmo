@@ -39,11 +39,16 @@ replace_once(
     "Reading MMO Phase 2 session baseline",
 )
 
+# Capture the session start page at the same moment CrossInk decides the first
+# forward page turn actually qualifies as reading. The earlier implementation
+# captured during the first status-bar render, which can occur while the EPUB
+# position/reference-page mapping is still settling after restore and produced
+# impossible ranges such as 366 -> 350 during normal forward reading.
 replace_once(
     reader_cpp,
-    '''void EpubReaderActivity::renderStatusBar() const {\n  const int estimatedPageCount = section->estimatedTotalPages();\n''',
-    '''void EpubReaderActivity::renderStatusBar() const {\n  if (readingMmoSessionStartPage == 0 && !activeFootnotePreview) {\n    const uint32_t currentBookPage = getCurrentBookPageForStats();\n    if (currentBookPage > 0) {\n      readingMmoSessionStartPage = currentBookPage;\n    }\n  }\n\n  const int estimatedPageCount = section->estimatedTotalPages();\n''',
-    "Reading MMO Phase 2 first rendered page capture",
+    '''  if (isForwardTurn) {\n    uint32_t forwardReadSeconds = 0;\n    const bool shouldRecordForwardRead = forwardPageReadElapsed(forwardReadSeconds, source);\n    recordCurrentPageReadingTime(source);\n''',
+    '''  if (isForwardTurn) {\n    uint32_t forwardReadSeconds = 0;\n    const bool shouldRecordForwardRead = forwardPageReadElapsed(forwardReadSeconds, source);\n    if (shouldRecordForwardRead && readingMmoSessionStartPage == 0) {\n      const uint32_t currentBookPage = getCurrentBookPageForStats();\n      if (currentBookPage > 0) {\n        readingMmoSessionStartPage = currentBookPage;\n      }\n    }\n    recordCurrentPageReadingTime(source);\n''',
+    "Reading MMO Phase 2 first counted forward-page capture",
 )
 
 replace_once(
@@ -101,10 +106,12 @@ replace_once(
 
 assert "readingMmoSessionStartPagesTurned" in reader_h.read_text()
 assert "saveReadingMmoPendingSession" in reader_cpp.read_text()
+assert "shouldRecordForwardRead && readingMmoSessionStartPage == 0" in reader_cpp.read_text()
+assert "first status-bar render" not in reader_cpp.read_text()
 assert '"p\\\":2' in reader_cpp.read_text()
 assert "READING_MMO_PENDING_SESSION_PATH" in activity_cpp.read_text()
 assert "READING_MMO_TEST_PAYLOAD" not in activity_cpp.read_text()
 assert "BLEDevice::startAdvertising()" in activity_cpp.read_text()
 assert "int count = 5;  // File Browser, Recents, File transfer, Reading MMO Sync, Settings" in home.read_text()
 
-print("Applied Reading MMO BLE Phase 2: real CrossInk session snapshot, isolated BLE preview payload, X4 Settings navigation fix")
+print("Applied Reading MMO BLE Phase 2: real session snapshot, counted-turn start page, isolated BLE preview, X4 Settings fix")
