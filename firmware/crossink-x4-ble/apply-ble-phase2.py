@@ -88,11 +88,23 @@ replace_once(
     "Reading MMO Phase 2 sync screen copy",
 )
 
+# Phase 1 adds Reading MMO Sync as a fifth fixed Home-menu entry. CrossInk also
+# keeps a separate fixed-item count for front-button navigation; if that remains
+# at four, the final Settings entry is rendered but cannot be selected on X4.
+home = root / "src/activities/home/HomeActivity.cpp"
+replace_once(
+    home,
+    '''int HomeActivity::getMenuItemCount() const {\n  const auto& metrics = UITheme::getInstance().getMetrics();\n  int count = 4;  // File Browser, Recents, File transfer, Settings\n''',
+    '''int HomeActivity::getMenuItemCount() const {\n  const auto& metrics = UITheme::getInstance().getMetrics();\n  int count = 5;  // File Browser, Recents, File transfer, Reading MMO Sync, Settings\n''',
+    "Reading MMO X4 Home menu navigation count",
+)
+
 assert "readingMmoSessionStartPagesTurned" in reader_h.read_text()
 assert "saveReadingMmoPendingSession" in reader_cpp.read_text()
 assert '"p\\\":2' in reader_cpp.read_text()
 assert "READING_MMO_PENDING_SESSION_PATH" in activity_cpp.read_text()
 assert "READING_MMO_TEST_PAYLOAD" not in activity_cpp.read_text()
 assert "BLEDevice::startAdvertising()" in activity_cpp.read_text()
+assert "int count = 5;  // File Browser, Recents, File transfer, Reading MMO Sync, Settings" in home.read_text()
 
-print("Applied Reading MMO BLE Phase 2: real CrossInk session snapshot, isolated BLE preview payload")
+print("Applied Reading MMO BLE Phase 2: real CrossInk session snapshot, isolated BLE preview payload, X4 Settings navigation fix")
