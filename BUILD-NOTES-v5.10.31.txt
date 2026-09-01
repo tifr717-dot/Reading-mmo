@@ -1,0 +1,11 @@
+Reading MMO v5.10.31 — Per-Book Reading History Journal
+
+- Adds the agreed Library → Book → Overview / Reading History layout.
+- Stores permanent individual reading-session records instead of only the latest session.
+- Each history entry keeps date/time, start/end page, pages read, duration, source, and CrossInk session ID when applicable.
+- Shows per-book totals for sessions, pages read, reading time, average session, and last read.
+- Records both normal Reading MMO sessions and imported CrossInk sessions through the same history store.
+- Backfills the current lastSession on first load so the already-imported CrossInk test session can appear in history.
+- Links sessions to Library books by stable book ID when possible and falls back to normalized title matching.
+- Keeps the existing CrossInk duplicate-import protection intact.
+- Uses fresh app/service-worker cache generation 51031.

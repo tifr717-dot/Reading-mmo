@@ -222,7 +222,20 @@
 
       // Page progress was already credited exactly from the reader's pg field.
       // Prevent commitSessionPageDelta() from deriving a second page delta.
-      window.endReadingSession();
+      window.__readingMmoHistoryImportContext={
+        source:'crossink',
+        readerSessionId:payload.sid,
+        startPage:payload.sp,
+        endPage:payload.ep,
+        pages,
+        durationMs:seconds*1000,
+        bookTitle:String(r.bookName||'')
+      };
+      try{
+        window.endReadingSession();
+      }finally{
+        window.__readingMmoHistoryImportContext=null;
+      }
 
       const after=s.reading?.lastSession;
       if(!after||Number(after.endedAt||0)===beforeEnded){
