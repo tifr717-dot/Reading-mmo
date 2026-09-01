@@ -37,7 +37,7 @@ jobs:
               raise SystemExit('v5.10.29 version owner anchor not found')
           s = s.replace(old_owner, new_owner)
 
-          # Force all runtime assets through a fresh app cache generation.
+          # Force all runtime assets through the current app cache generation.
           s = s.replace('?v=51029', '?v=51030')
 
           flow = '<script src="./reading-flow-v51029.js?v=51030"></script>'
@@ -66,7 +66,7 @@ jobs:
           from pathlib import Path
 
           src = Path('service-worker-v51029.js').read_text()
-          src = src.replace('reading-mmo-v5.10.29-session-quest-flow', 'reading-mmo-v5.10.30-reader-sync')
+          src = src.replace('reading-mmo-v5.10.29-session-quest-flow', 'reading-mmo-v5.10.30-reader-sync-phase2-import')
           src = src.replace("const FORCE_VERSION = '51029';", "const FORCE_VERSION = '51030';")
 
           flow = "  './reading-flow-v51029.js',"
@@ -83,16 +83,20 @@ jobs:
       - name: Write v5.10.30 build notes
         run: |
           cat > BUILD-NOTES-v5.10.30.txt <<'EOF'
-          Reading MMO v5.10.30 — Reader BLE Sync Phase 1
+          Reading MMO v5.10.30 — CrossInk BLE Phase 2 Session Import
 
-          - Adds a SYNC READER control to the Home Reading panel.
-          - Uses Android/Chrome Web Bluetooth to discover the Reading MMO Reader service.
+          - Keeps the SYNC READER control on the Home Reading panel.
+          - Uses Android/Chrome Web Bluetooth to discover Reading MMO Reader.
           - Connects to service 7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e.
           - Reads characteristic 7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e.
-          - Phase 1 requires and verifies the test payload {"p":1,"sid":1}.
-          - Displays a clear success/error result inside Reading MMO.
-          - Does NOT import, overwrite, or modify real reading history yet.
-          - Disconnects after the test read completes.
+          - Accepts Phase 2 payloads with sid, start page, end page, pages read, and reading seconds.
+          - Handles the Phase 2 no-session payload without changing app state.
+          - Previews a real reader session before the user chooses IMPORT SESSION.
+          - Imports exact reader pages and reading time through the existing Reading MMO session/quest accounting path.
+          - Updates current-book page/percent when the reader reports an end page.
+          - Refuses to merge into an already-active in-app reading session.
+          - Stores a session fingerprint so the same CrossInk session cannot be counted twice.
+          - Keeps Phase 1 test payload compatibility for older firmware during rollout.
           EOF
 
       - name: Verify v5.10.30 wiring
@@ -117,22 +121,28 @@ jobs:
           for check in [
               "7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e",
               "7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e",
-              "EXPECTED_SESSION_ID=1",
+              "normalizePhase2",
+              "['sid','sp','ep','pg','sec']",
+              "recordQuestPageProgress",
+              "recordQuestSessionProgress",
+              "window.endReadingSession",
+              "readingMmoReaderBlePhase2Imported",
+              "IMPORT SESSION",
               "navigator.bluetooth.requestDevice",
               "characteristic.readValue()",
           ]:
               if check not in ble:
-                  raise SystemExit(f'missing BLE runtime check: {check}')
+                  raise SystemExit(f'missing Phase 2 BLE import check: {check}')
 
-          # Phase 1 must remain transport-only. Do not let this runtime write
-          # into the app's saved reading model until the protocol is validated.
-          forbidden = ['saveState(', 'localStorage.setItem(', 'finishSession(', 'startReadingSession(']
-          for token in forbidden:
-              if token in ble:
-                  raise SystemExit(f'Phase 1 BLE runtime unexpectedly mutates app state: {token}')
+          if "EXPECTED_SESSION_ID=1" in ble:
+              raise SystemExit('old Phase 1-only payload gate is still active')
 
           sw = Path('service-worker-v51030.js').read_text()
-          for check in ["FORCE_VERSION = '51030'", "'./reading-ble-v51030.js'"]:
+          for check in [
+              "reading-mmo-v5.10.30-reader-sync-phase2-import",
+              "FORCE_VERSION = '51030'",
+              "'./reading-ble-v51030.js'",
+          ]:
               if check not in sw:
                   raise SystemExit(f'missing v5.10.30 service worker check: {check}')
           PY
@@ -145,6 +155,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Reading MMO v5.10.30 add reader BLE sync test"
+            git commit -m "Reading MMO v5.10.30 enable Phase 2 reader session import"
             git push origin main
           fi
