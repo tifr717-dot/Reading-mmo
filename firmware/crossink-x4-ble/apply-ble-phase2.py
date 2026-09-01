@@ -71,7 +71,7 @@ replace_once(
 )
 replace_once(
     activity_cpp,
-    '''constexpr char READING_MMO_TEST_PAYLOAD[] = R"({\\"p\\":1,\\"sid\\":1})";\nconstexpr uint32_t SYNC_WINDOW_MS = 120000;\n}  // namespace\n''',
+    '''constexpr char READING_MMO_TEST_PAYLOAD[] = R"({"p":1,"sid":1})";\nconstexpr uint32_t SYNC_WINDOW_MS = 120000;\n}  // namespace\n''',
     '''constexpr char READING_MMO_PENDING_SESSION_PATH[] = "/.crosspoint/reading_mmo_pending.json";\nconstexpr char READING_MMO_EMPTY_PAYLOAD[] = R"({\\"p\\":2,\\"none\\":1})";\nconstexpr uint32_t SYNC_WINDOW_MS = 120000;\n\nbool loadReadingMmoSessionPayload(char* out, const size_t outSize) {\n  if (!out || outSize < 2) {\n    return false;\n  }\n  FsFile file;\n  if (!Storage.openFileForRead("RMMO", READING_MMO_PENDING_SESSION_PATH, file)) {\n    return false;\n  }\n  const int n = file.read(reinterpret_cast<uint8_t*>(out), outSize - 1);\n  file.close();\n  if (n <= 0) {\n    return false;\n  }\n  out[n] = '\\0';\n  return true;\n}\n}  // namespace\n''',
     "Reading MMO Phase 2 BLE payload loader",
 )
