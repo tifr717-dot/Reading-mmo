@@ -1,10 +1,14 @@
-Reading MMO v5.10.30 — Reader BLE Sync Phase 1
+Reading MMO v5.10.30 — CrossInk BLE Phase 2 Session Import
 
-- Adds a SYNC READER control to the Home Reading panel.
-- Uses Android/Chrome Web Bluetooth to discover the Reading MMO Reader service.
+- Keeps the SYNC READER control on the Home Reading panel.
+- Uses Android/Chrome Web Bluetooth to discover Reading MMO Reader.
 - Connects to service 7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e.
 - Reads characteristic 7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e.
-- Phase 1 requires and verifies the test payload {"p":1,"sid":1}.
-- Displays a clear success/error result inside Reading MMO.
-- Does NOT import, overwrite, or modify real reading history yet.
-- Disconnects after the test read completes.
+- Accepts Phase 2 payloads with sid, start page, end page, pages read, and reading seconds.
+- Handles the Phase 2 no-session payload without changing app state.
+- Previews a real reader session before the user chooses IMPORT SESSION.
+- Imports exact reader pages and reading time through the existing Reading MMO session/quest accounting path.
+- Updates current-book page/percent when the reader reports an end page.
+- Refuses to merge into an already-active in-app reading session.
+- Stores a session fingerprint so the same CrossInk session cannot be counted twice.
+- Keeps Phase 1 test payload compatibility for older firmware during rollout.

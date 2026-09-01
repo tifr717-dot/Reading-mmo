@@ -1,4 +1,4 @@
-const CACHE = 'reading-mmo-v5.10.30-reader-sync';
+const CACHE = 'reading-mmo-v5.10.30-reader-sync-phase2-import';
 const FORCE_VERSION = '51030';
 const CORE = [
   './',
