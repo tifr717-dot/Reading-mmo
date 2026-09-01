@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/apply-reading-mmo-v51033-book-aware-sync.yml'
+      - 'tools/apply-v51033-book-aware.py'
   workflow_dispatch:
 
 permissions:
@@ -18,173 +19,15 @@ jobs:
         with:
           ref: main
 
-      - name: Build Phase 3-capable reader sync runtime
+      - name: Apply v5.10.33 book-aware sync
+        run: python3 tools/apply-v51033-book-aware.py
+
+      - name: Validate generated JavaScript
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          src = Path('reading-ble-v51030.js').read_text()
-
-          src = re.sub(
-              r"  function normalizePhase2\(parsed,raw\)\{.*?\n  \}\n\n  function formatDuration",
-              r'''  function normalizeReaderPayload(parsed,raw){
-    const protocol=Number(parsed?.p);
-    if(protocol!==2&&protocol!==3) throw new Error(`Unexpected reader protocol. Expected Phase 2 or 3, received: ${raw}`);
-    if(Number(parsed?.none)===1) return {none:true,p:protocol};
-    for(const key of ['sid','sp','ep','pg','sec']){
-      if(!finiteNonNegative(parsed?.[key])) throw new Error(`Reader payload is missing ${key}: ${raw}`);
-    }
-    const payload={
-      p:protocol,
-      sid:Number(parsed.sid),
-      sp:Number(parsed.sp),
-      ep:Number(parsed.ep),
-      pg:Number(parsed.pg),
-      sec:Number(parsed.sec),
-      title:protocol>=3?String(parsed?.title||'').trim():''
-    };
-    if(payload.sid<1) throw new Error(`Invalid reader session id: ${raw}`);
-    return payload;
-  }
-
-  function normalizeBookName(value){
-    return String(value||'').trim().toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ');
-  }
-
-  function formatDuration''',
-              src,
-              count=1,
-              flags=re.S,
-          )
-          if 'function normalizeReaderPayload' not in src:
-              raise SystemExit('failed to replace Phase 2 payload normalizer')
-
-          src = src.replace('const payload=normalizePhase2(parsed,raw);','const payload=normalizeReaderPayload(parsed,raw);')
-
-          old = '''    const r=s.reading;\n    const snapshot={\n'''
-          new = '''    const r=s.reading;\n    const readerBookTitle=String(payload.title||'').trim();\n    const currentBookTitle=String(r.bookName||$('readBookName')?.value||'').trim();\n    const appHadCurrentBook=Boolean(currentBookTitle);\n    const readerMatchesCurrent=!readerBookTitle||normalizeBookName(readerBookTitle)===normalizeBookName(currentBookTitle);\n    const applyReaderPosition=readerMatchesCurrent||!appHadCurrentBook;\n    if(readerBookTitle&&!appHadCurrentBook){\n      r.bookName=readerBookTitle;\n      if($('readBookName')) $('readBookName').value=readerBookTitle;\n    }\n\n    const snapshot={\n'''
-          if old not in src:
-              raise SystemExit('reader-state anchor not found')
-          src = src.replace(old,new,1)
-
-          old = '''      r.sessionLoggedPages=pages;\n      if(endPage>0) r.currentPage=endPage;\n      r.sessionStartPage=endPage>0?endPage:Math.max(0,Number(r.currentPage)||0);\n\n      if(r.bookTotal>0&&r.currentPage>=0){\n        r.percent=Number(Math.min(100,Math.max(0,r.currentPage/r.bookTotal*100)).toFixed(1));\n      }\n\n      if($('readCurrentPage')) $('readCurrentPage').value=r.currentPage||'';\n      if($('readSessionCurrentPage')) $('readSessionCurrentPage').value=r.currentPage||'';\n      if($('readSessionStartPage')) $('readSessionStartPage').value=r.sessionStartPage||'';\n      if($('readPercent')&&r.bookTotal>0) $('readPercent').value=r.percent;\n'''
-          new = '''      r.sessionLoggedPages=pages;\n      if(applyReaderPosition&&endPage>0) r.currentPage=endPage;\n      r.sessionStartPage=Math.max(0,Number(r.currentPage)||0);\n\n      if(applyReaderPosition&&r.bookTotal>0&&r.currentPage>=0){\n        r.percent=Number(Math.min(100,Math.max(0,r.currentPage/r.bookTotal*100)).toFixed(1));\n      }\n\n      if(applyReaderPosition){\n        if($('readCurrentPage')) $('readCurrentPage').value=r.currentPage||'';\n        if($('readSessionCurrentPage')) $('readSessionCurrentPage').value=r.currentPage||'';\n        if($('readPercent')&&r.bookTotal>0) $('readPercent').value=r.percent;\n      }\n      if($('readSessionStartPage')) $('readSessionStartPage').value=r.sessionStartPage||'';\n'''
-          if old not in src:
-              raise SystemExit('reader-position anchor not found')
-          src = src.replace(old,new,1)
-
-          src = src.replace("        bookTitle:String(r.bookName||'')\n", "        bookTitle:readerBookTitle||String(r.bookName||'')\n", 1)
-
-          old = '''      Object.assign(after,{\n        source:'crossink',\n        readerSessionId:payload.sid,\n        readerStartPage:payload.sp,\n        readerEndPage:payload.ep\n      });\n'''
-          new = '''      Object.assign(after,{\n        source:'crossink',\n        readerSessionId:payload.sid,\n        readerStartPage:payload.sp,\n        readerEndPage:payload.ep,\n        readerBookTitle:readerBookTitle||String(r.bookName||'')\n      });\n'''
-          if old not in src:
-              raise SystemExit('lastSession metadata anchor not found')
-          src = src.replace(old,new,1)
-
-          old = '''      setPayload(\n        `IMPORTED FROM CROSSINK\\n`+\n        `Page range: ${payload.sp} → ${payload.ep}\\n`+\n        `Pages read: ${payload.pg}\\n`+\n        `Reading time: ${formatDuration(payload.sec)}\\n\\n`+\n        `Pages and reading time were applied to your Reading MMO totals/active quests.`\n      );\n'''
-          new = '''      const filedBook=readerBookTitle||String(r.bookName||'your Reading MMO book');\n      const positionNote=applyReaderPosition\n        ? `Book progress was updated to reader page ${payload.ep}.`\n        : `The session was filed under ${filedBook}; your current Reading MMO book progress was left unchanged.`;\n      setPayload(\n        `IMPORTED FROM CROSSINK\\n`+\n        `Book: ${filedBook}\\n`+\n        `Page range: ${payload.sp} → ${payload.ep}\\n`+\n        `Pages read: ${payload.pg}\\n`+\n        `Reading time: ${formatDuration(payload.sec)}\\n\\n`+\n        `Pages and reading time were applied to your Reading MMO totals/active quests.\\n${positionNote}`\n      );\n'''
-          if old not in src:
-              raise SystemExit('import summary anchor not found')
-          src = src.replace(old,new,1)
-
-          old = '''        setPayload(\n          `CROSSINK SESSION ${payload.sid}\\n`+\n          `Page range: ${payload.sp} → ${payload.ep}\\n`+\n          `Pages read: ${payload.pg}\\n`+\n          `Reading time: ${formatDuration(payload.sec)}`\n        );\n'''
-          new = '''        setPayload(\n          `CROSSINK SESSION ${payload.sid}\\n`+\n          `${payload.title?`Book: ${payload.title}\\n`:''}`+\n          `Page range: ${payload.sp} → ${payload.ep}\\n`+\n          `Pages read: ${payload.pg}\\n`+\n          `Reading time: ${formatDuration(payload.sec)}`\n        );\n'''
-          if old not in src:
-              raise SystemExit('duplicate preview anchor not found')
-          src = src.replace(old,new,1)
-
-          old = '''      const book=appState()?.reading?.bookName||$('readBookName')?.value?.trim()||'your current Reading MMO book';\n      setState(`✓ Reader connected — Session ${payload.sid} is ready to import.`,'ok');\n      setPayload(\n        `CROSSINK SESSION ${payload.sid}\\n`+\n        `Target: ${book}\\n`+\n        `Page range: ${payload.sp} → ${payload.ep}\\n`+\n        `Pages read: ${payload.pg}\\n`+\n        `Reading time: ${formatDuration(payload.sec)}\\n\\n`+\n        `Tap IMPORT SESSION to apply it to Reading MMO.`\n      );\n'''
-          new = '''      const book=appState()?.reading?.bookName||$('readBookName')?.value?.trim()||'';\n      const readerBook=payload.title||book||'your current Reading MMO book';\n      const differentBook=Boolean(payload.title&&book&&normalizeBookName(payload.title)!==normalizeBookName(book));\n      setState(`✓ Reader connected — Session ${payload.sid} is ready to import${payload.title?` for ${payload.title}`:''}.`,'ok');\n      setPayload(\n        `CROSSINK SESSION ${payload.sid}\\n`+\n        `Book: ${readerBook}\\n`+\n        `Page range: ${payload.sp} → ${payload.ep}\\n`+\n        `Pages read: ${payload.pg}\\n`+\n        `Reading time: ${formatDuration(payload.sec)}\\n\\n`+\n        `${differentBook?`Reader book differs from Current Book (${book}). This session will be filed under ${readerBook} without changing ${book}'s page progress.\\n\\n`:''}`+\n        `Tap IMPORT SESSION to apply it to Reading MMO.`\n      );\n'''
-          if old not in src:
-              raise SystemExit('new-session preview anchor not found')
-          src = src.replace(old,new,1)
-
-          Path('reading-ble-v51033.js').write_text(src)
-          PY
           node --check reading-ble-v51033.js
-
-      - name: Make history and journal inherit the active app version
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          for name, fallback in [('reading-history-v51031.js','v5.10.31'),('reading-journal-v51032.js','v5.10.32')]:
-              p=Path(name);s=p.read_text()
-              s=s.replace(f"const BUILD='{fallback}';",f"const BUILD=window.__readingMmoVersionOwner||'{fallback}';")
-              p.write_text(s)
-          PY
           node --check reading-history-v51031.js
           node --check reading-journal-v51032.js
-
-      - name: Wire v5.10.33 app runtime
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          p=Path('index.html');s=p.read_text()
-          s=s.replace("window.__readingMmoVersionOwner='v5.10.32';","window.__readingMmoVersionOwner='v5.10.33';")
-          s=s.replace('v5.10.32</span>','v5.10.33</span>')
-          s=s.replace('?v=51032','?v=51033')
-          s=s.replace("u.searchParams.set('appv','51032')","u.searchParams.set('appv','51033')")
-          s=s.replace('reading-ble-v51030.js?v=51033','reading-ble-v51033.js?v=51033')
-          s=s.replace('service-worker-v51032.js?v=51033','service-worker-v51033.js?v=51033')
-          p.write_text(s)
-          PY
-
-      - name: Create v5.10.33 service worker
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          src=Path('service-worker-v51032.js').read_text()
-          src=src.replace('reading-mmo-v5.10.32-standalone-reading-journal','reading-mmo-v5.10.33-book-aware-reader-sync')
-          src=src.replace("const FORCE_VERSION = '51032';","const FORCE_VERSION = '51033';")
-          src=src.replace("'./reading-ble-v51030.js',","'./reading-ble-v51033.js',")
-          Path('service-worker-v51033.js').write_text(src)
-          PY
           node --check service-worker-v51033.js
-
-      - name: Write v5.10.33 build notes
-        run: |
-          cat > BUILD-NOTES-v5.10.33.txt <<'EOF'
-          Reading MMO v5.10.33 — Book-Aware CrossInk Sync
-
-          - Accepts both existing Phase 2 reader packets and new Phase 3 titled packets.
-          - Phase 3 uses the real EPUB metadata title sent by CrossInk.
-          - Titled sessions are filed automatically under the X4 book in Reading Journal.
-          - If the reader title matches Current Book, page progress updates normally.
-          - If the reader title differs from Current Book, session totals/quests/journal still update but Current Book page progress is left unchanged.
-          - If no Current Book is set, a titled reader session can establish it automatically.
-          - Duplicate protection remains based on session id/page/time fingerprint, so old sessions cannot be counted twice merely because a title becomes available later.
-          - The standalone Reading Journal remains available from the Reading Desk and Library.
-          - Uses fresh cache generation 51033.
-          EOF
-
-      - name: Verify v5.10.33 book-aware wiring
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          idx=Path('index.html').read_text();ble=Path('reading-ble-v51033.js').read_text();sw=Path('service-worker-v51033.js').read_text()
-          checks=[
-            (idx,"window.__readingMmoVersionOwner='v5.10.33'"),
-            (idx,'reading-ble-v51033.js?v=51033'),
-            (idx,'reading-history-v51031.js?v=51033'),
-            (idx,'reading-journal-v51032.js?v=51033'),
-            (idx,'service-worker-v51033.js?v=51033'),
-            (ble,'function normalizeReaderPayload'),
-            (ble,'protocol!==2&&protocol!==3'),
-            (ble,"title:protocol>=3?String(parsed?.title||'').trim():''"),
-            (ble,'readerMatchesCurrent'),
-            (ble,'applyReaderPosition'),
-            (ble,'bookTitle:readerBookTitle'),
-            (ble,'Reader book differs from Current Book'),
-            (sw,"reading-mmo-v5.10.33-book-aware-reader-sync"),
-            (sw,"FORCE_VERSION = '51033'"),
-            (sw,"'./reading-ble-v51033.js'"),
-          ]
-          for text,needle in checks:
-            if needle not in text: raise SystemExit(f'missing v5.10.33 wiring: {needle}')
-          PY
 
       - name: Commit v5.10.33
         run: |
