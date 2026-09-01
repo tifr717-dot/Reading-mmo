@@ -1,0 +1,178 @@
+name: Apply Reading MMO v5.10.31 Reading History
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'reading-history-v51031.js'
+      - '.github/workflows/apply-reading-mmo-v51031-reading-history.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Verify reading history runtime syntax
+        run: node --check reading-history-v51031.js
+
+      - name: Add CrossInk history import context
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('reading-ble-v51030.js')
+          s = p.read_text()
+          if '__readingMmoHistoryImportContext' not in s:
+              old = """      window.endReadingSession();\n\n      const after=s.reading?.lastSession;\n"""
+              new = """      window.__readingMmoHistoryImportContext={\n        source:'crossink',\n        readerSessionId:payload.sid,\n        startPage:payload.sp,\n        endPage:payload.ep,\n        pages,\n        durationMs:seconds*1000,\n        bookTitle:String(r.bookName||'')\n      };\n      try{\n        window.endReadingSession();\n      }finally{\n        window.__readingMmoHistoryImportContext=null;\n      }\n\n      const after=s.reading?.lastSession;\n"""
+              if old not in s:
+                  raise SystemExit('BLE end-session import anchor not found')
+              s = s.replace(old, new, 1)
+              p.write_text(s)
+          PY
+          node --check reading-ble-v51030.js
+
+      - name: Wire v5.10.31 app runtime
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text()
+
+          s = s.replace("window.__readingMmoVersionOwner='v5.10.30';", "window.__readingMmoVersionOwner='v5.10.31';")
+          s = s.replace('?v=51030p2', '?v=51031')
+
+          ble = '<script src="./reading-ble-v51030.js?v=51031"></script>'
+          history = '<script src="./reading-history-v51031.js?v=51031"></script>'
+          if history not in s:
+              if ble not in s:
+                  raise SystemExit('v5.10.30 BLE runtime anchor not found')
+              s = s.replace(ble, ble + '\n' + history, 1)
+
+          s = s.replace('service-worker-v51030.js?v=51031', 'service-worker-v51031.js?v=51031')
+          s = s.replace("u.searchParams.set('appv','51030p2')", "u.searchParams.set('appv','51031')")
+          s = s.replace('u.searchParams.set("appv","51030p2")', 'u.searchParams.set("appv","51031")')
+          s = s.replace("u.searchParams.set('appv','51030')", "u.searchParams.set('appv','51031')")
+          s = s.replace('u.searchParams.set("appv","51030")', 'u.searchParams.set("appv","51031")')
+
+          s = s.replace('<div class="health-row"><b>Version</b><span>v5.10.30</span></div>',
+                        '<div class="health-row"><b>Version</b><span>v5.10.31</span></div>')
+          s = re.sub(r'(<span id="headerVersionText" class="app-version-badge">)v[^<]+(</span>)',
+                     r'\1v5.10.31\2', s)
+
+          p.write_text(s)
+          PY
+
+      - name: Create v5.10.31 service worker
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          src = Path('service-worker-v51030.js').read_text()
+          src = src.replace('reading-mmo-v5.10.30-reader-sync-phase2-import-p2', 'reading-mmo-v5.10.31-reading-history')
+          src = src.replace("const FORCE_VERSION = '51030p2';", "const FORCE_VERSION = '51031';")
+          src = src.replace("const FORCE_VERSION = '51030';", "const FORCE_VERSION = '51031';")
+
+          ble = "  './reading-ble-v51030.js',"
+          history = "  './reading-history-v51031.js',"
+          if history not in src:
+              if ble not in src:
+                  raise SystemExit('service worker BLE CORE anchor not found')
+              src = src.replace(ble, ble + '\n' + history, 1)
+
+          Path('service-worker-v51031.js').write_text(src)
+          PY
+          node --check service-worker-v51031.js
+
+      - name: Write v5.10.31 build notes
+        run: |
+          cat > BUILD-NOTES-v5.10.31.txt <<'EOF'
+          Reading MMO v5.10.31 — Per-Book Reading History Journal
+
+          - Adds the agreed Library → Book → Overview / Reading History layout.
+          - Stores permanent individual reading-session records instead of only the latest session.
+          - Each history entry keeps date/time, start/end page, pages read, duration, source, and CrossInk session ID when applicable.
+          - Shows per-book totals for sessions, pages read, reading time, average session, and last read.
+          - Records both normal Reading MMO sessions and imported CrossInk sessions through the same history store.
+          - Backfills the current lastSession on first load so the already-imported CrossInk test session can appear in history.
+          - Links sessions to Library books by stable book ID when possible and falls back to normalized title matching.
+          - Keeps the existing CrossInk duplicate-import protection intact.
+          - Uses fresh app/service-worker cache generation 51031.
+          EOF
+
+      - name: Verify v5.10.31 history wiring
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          idx = Path('index.html').read_text()
+          for check in [
+              "window.__readingMmoVersionOwner='v5.10.31'",
+              'reading-ble-v51030.js?v=51031',
+              'reading-history-v51031.js?v=51031',
+              'service-worker-v51031.js?v=51031',
+              "u.searchParams.set('appv','51031')",
+              'id="headerVersionText" class="app-version-badge">v5.10.31</span>',
+          ]:
+              if check not in idx:
+                  raise SystemExit(f'missing v5.10.31 index wiring: {check}')
+
+          hist = Path('reading-history-v51031.js').read_text()
+          for check in [
+              'readingSessions',
+              'READING HISTORY',
+              'PAGES READ',
+              'READING TIME',
+              'AVG SESSION',
+              'LAST READ',
+              'readerSessionId',
+              'backfillLastSession',
+              'wrapEndSession',
+              'window.readingMmoRecordSessionHistory',
+          ]:
+              if check not in hist:
+                  raise SystemExit(f'missing reading-history behavior: {check}')
+
+          ble = Path('reading-ble-v51030.js').read_text()
+          for check in [
+              '__readingMmoHistoryImportContext',
+              "source:'crossink'",
+              'readerSessionId:payload.sid',
+              'startPage:payload.sp',
+              'endPage:payload.ep',
+              'durationMs:seconds*1000',
+          ]:
+              if check not in ble:
+                  raise SystemExit(f'missing CrossInk history handoff: {check}')
+
+          sw = Path('service-worker-v51031.js').read_text()
+          for check in [
+              "reading-mmo-v5.10.31-reading-history",
+              "FORCE_VERSION = '51031'",
+              "'./reading-history-v51031.js'",
+              "'./reading-ble-v51030.js'",
+          ]:
+              if check not in sw:
+                  raise SystemExit(f'missing v5.10.31 service-worker wiring: {check}')
+          PY
+
+      - name: Commit v5.10.31
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html reading-ble-v51030.js reading-history-v51031.js service-worker-v51031.js BUILD-NOTES-v5.10.31.txt
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Reading MMO v5.10.31 add per-book reading history"
+            git push origin main
+          fi
