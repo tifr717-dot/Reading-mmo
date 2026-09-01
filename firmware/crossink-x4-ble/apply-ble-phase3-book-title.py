@@ -47,7 +47,7 @@ old_writer = r'''bool saveReadingMmoPendingSession(const uint32_t sessionId, con
 
 new_writer = r'''size_t appendReadingMmoJsonString(char* out, const size_t outSize, size_t pos, const std::string& value,
                                   const size_t reserveBytes) {
-  static constexpr char HEX[] = "0123456789abcdef";
+  static constexpr char HEX_DIGITS[] = "0123456789abcdef";
   for (size_t i = 0; i < value.size();) {
     const auto c = static_cast<uint8_t>(value[i]);
     size_t cpBytes = 1;
@@ -75,8 +75,8 @@ new_writer = r'''size_t appendReadingMmoJsonString(char* out, const size_t outSi
       out[pos++] = 'u';
       out[pos++] = '0';
       out[pos++] = '0';
-      out[pos++] = HEX[(c >> 4U) & 0x0FU];
-      out[pos++] = HEX[c & 0x0FU];
+      out[pos++] = HEX_DIGITS[(c >> 4U) & 0x0FU];
+      out[pos++] = HEX_DIGITS[c & 0x0FU];
     } else {
       for (size_t n = 0; n < cpBytes; ++n) out[pos++] = value[i + n];
     }
