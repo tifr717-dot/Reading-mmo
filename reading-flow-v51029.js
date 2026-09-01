@@ -6,7 +6,7 @@
   if(window.__v51029FlowBooted)return;
   window.__v51029FlowBooted=true;
 
-  const BUILD='v5.10.29';
+  const BUILD=window.__readingMmoVersionOwner||'v5.10.29';
   const $=id=>document.getElementById(id);
   const escHtml=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
   const roleMeta=[
