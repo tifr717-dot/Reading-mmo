@@ -3,9 +3,11 @@
 
   const SERVICE_UUID='7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e';
   const STATS_UUID='7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e';
-  const EXPECTED_PROTOCOL=1;
-  const EXPECTED_SESSION_ID=1;
+  const EXPECTED_DEVICE_NAME='Reading MMO Reader';
+  const IMPORTED_KEY='readingMmoReaderBlePhase2Imported';
   let activeDevice=null;
+  let pendingPayload=null;
+  let pendingRaw='';
 
   function addStyles(){
     if(document.getElementById('readingMmoBleStyles')) return;
@@ -27,18 +29,21 @@
       #readerSyncModal .reader-sync-state{background:#0f0c0a;border:1px solid #c79a3b;padding:11px;min-height:76px;font-size:11px;line-height:1.5;white-space:pre-wrap}
       #readerSyncModal .reader-sync-state.ok{border-color:#6f914d}
       #readerSyncModal .reader-sync-state.bad{border-color:#9e4b3c}
-      #readerSyncModal .reader-sync-payload{margin-top:8px;padding:8px;background:#2b211c;border:1px dashed #a98e68;color:#f3e6c9;font-size:10px;word-break:break-all}
+      #readerSyncModal .reader-sync-payload{margin-top:8px;padding:8px;background:#2b211c;border:1px dashed #a98e68;color:#f3e6c9;font-size:10px;white-space:pre-wrap;word-break:break-word}
       #readerSyncModal .reader-sync-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
       #readerSyncModal .reader-sync-actions button{margin-top:0}
+      #readerSyncImport[hidden]{display:none!important}
       @media(max-width:390px){#readerSyncModal .reader-sync-actions{grid-template-columns:1fr}}
     `;
     document.head.appendChild(style);
   }
 
-  function modal(){return document.getElementById('readerSyncModal')}
-  function stateEl(){return document.getElementById('readerSyncState')}
-  function payloadEl(){return document.getElementById('readerSyncPayload')}
-  function syncBtn(){return document.getElementById('readerSyncStart')}
+  const $=id=>document.getElementById(id);
+  function modal(){return $('readerSyncModal')}
+  function stateEl(){return $('readerSyncState')}
+  function payloadEl(){return $('readerSyncPayload')}
+  function syncBtn(){return $('readerSyncStart')}
+  function importBtn(){return $('readerSyncImport')}
 
   function setState(message,kind=''){
     const el=stateEl();
@@ -51,38 +56,220 @@
   function setPayload(text){
     const el=payloadEl();
     if(!el) return;
-    if(text){el.hidden=false;el.textContent='Received: '+text}
+    if(text){el.hidden=false;el.textContent=text}
     else{el.hidden=true;el.textContent=''}
   }
 
-  function openModal(){
-    const el=modal();
-    if(el) el.classList.add('show');
+  function setImportVisible(show){
+    const button=importBtn();
+    if(button) button.hidden=!show;
   }
 
-  function closeModal(){
-    const el=modal();
-    if(el) el.classList.remove('show');
-  }
+  function openModal(){modal()?.classList.add('show')}
+  function closeModal(){modal()?.classList.remove('show')}
 
   function disconnect(){
-    try{
-      if(activeDevice?.gatt?.connected) activeDevice.gatt.disconnect();
-    }catch(_){ }
+    try{if(activeDevice?.gatt?.connected) activeDevice.gatt.disconnect()}catch(_){}
     activeDevice=null;
   }
 
   function describeError(error){
     if(!error) return 'Unknown Bluetooth error.';
     if(error.name==='NotFoundError') return 'No reader was selected. Put the e-reader on Reading MMO Sync, then try again.';
-    if(error.name==='SecurityError') return 'Bluetooth access was blocked. Make sure the app is opened from its secure installed/web version.';
+    if(error.name==='SecurityError') return 'Bluetooth access was blocked. Allow Nearby Devices/Bluetooth and open Reading MMO from its secure installed/Chrome version.';
     if(error.name==='NetworkError') return 'The reader was found, but the Bluetooth connection dropped. Keep the reader on its sync screen and try again.';
-    return `${error.name||'Bluetooth error'}: ${error.message||String(error)}`;
+    return error.message ? `${error.name||'Bluetooth error'}: ${error.message}` : String(error);
+  }
+
+  function finiteNonNegative(value){
+    return Number.isFinite(Number(value)) && Number(value)>=0;
+  }
+
+  function normalizePhase2(parsed,raw){
+    if(Number(parsed?.p)!==2) throw new Error(`Unexpected reader protocol. Expected Phase 2, received: ${raw}`);
+    if(Number(parsed?.none)===1) return {none:true};
+    for(const key of ['sid','sp','ep','pg','sec']){
+      if(!finiteNonNegative(parsed?.[key])) throw new Error(`Reader payload is missing ${key}: ${raw}`);
+    }
+    const payload={
+      p:2,
+      sid:Number(parsed.sid),
+      sp:Number(parsed.sp),
+      ep:Number(parsed.ep),
+      pg:Number(parsed.pg),
+      sec:Number(parsed.sec)
+    };
+    if(payload.sid<1) throw new Error(`Invalid reader session id: ${raw}`);
+    return payload;
+  }
+
+  function formatDuration(seconds){
+    const sec=Math.max(0,Math.floor(Number(seconds)||0));
+    const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;
+    if(h) return `${h}h ${m}m ${s}s`;
+    if(m) return `${m}m ${s}s`;
+    return `${s}s`;
+  }
+
+  function fingerprint(payload){
+    return [payload.sid,payload.sp,payload.ep,payload.pg,payload.sec].join(':');
+  }
+
+  function importedFingerprints(){
+    try{
+      const value=JSON.parse(localStorage.getItem(IMPORTED_KEY)||'[]');
+      return Array.isArray(value)?value:[];
+    }catch(_){return []}
+  }
+
+  function wasImported(payload){
+    return importedFingerprints().includes(fingerprint(payload));
+  }
+
+  function rememberImported(payload){
+    const list=importedFingerprints().filter(x=>x!==fingerprint(payload));
+    list.push(fingerprint(payload));
+    try{localStorage.setItem(IMPORTED_KEY,JSON.stringify(list.slice(-100)))}catch(_){}
+  }
+
+  function appState(){
+    try{return typeof S!=='undefined'&&S&&S.reading?S:null}catch(_){return null}
+  }
+
+  function currentAppSessionActive(s){
+    const r=s?.reading;
+    if(!r) return false;
+    let ms=Math.max(0,Number(r.timerElapsedMs)||0);
+    if(r.timerRunning&&r.timerStartedAt) ms+=Math.max(0,Date.now()-Number(r.timerStartedAt));
+    const logged=Math.max(0,Number(r.sessionLoggedPages)||0);
+    const chapters=Math.max(0,Number(r.chapters)||0);
+    let liveDelta=0;
+    try{
+      const current=Math.max(0,Number($('readCurrentPage')?.value)||Number(r.currentPage)||0);
+      const start=Math.max(0,Number($('readSessionStartPage')?.value)||Number(r.sessionStartPage)||0);
+      liveDelta=Math.max(0,current-start);
+    }catch(_){}
+    return ms>0||logged>0||chapters>0||liveDelta>0;
+  }
+
+  function renderAfterImport(){
+    try{if(typeof renderReading==='function')renderReading()}catch(_){}
+    try{if(typeof renderHome==='function')renderHome()}catch(_){}
+    try{if(typeof renderProfile==='function')renderProfile()}catch(_){}
+    try{if(typeof renderQuestCards==='function')renderQuestCards()}catch(_){}
+    try{if(typeof renderBookProgress==='function')renderBookProgress()}catch(_){}
+  }
+
+  function importPendingSession(){
+    const payload=pendingPayload;
+    if(!payload||payload.none) return;
+    const s=appState();
+    if(!s){
+      setState('Reader session received, but the Reading MMO save is not ready yet. Close and reopen the app, then sync again.','bad');
+      return;
+    }
+    if(wasImported(payload)){
+      setState(`✓ Session ${payload.sid} was already imported. Nothing was counted twice.`,'ok');
+      setImportVisible(false);
+      return;
+    }
+    if(currentAppSessionActive(s)){
+      setState('Reader session is ready, but an in-app reading session is already active. End that session first, then tap Sync Reader again so the two sessions cannot be mixed.','bad');
+      return;
+    }
+    if(typeof recordQuestPageProgress!=='function' ||
+       typeof recordQuestSessionProgress!=='function' ||
+       typeof persistSilent!=='function' ||
+       typeof window.endReadingSession!=='function'){
+      setState('Reader session is valid, but this app build is missing the session-import hooks. Refresh Reading MMO and try again.','bad');
+      return;
+    }
+
+    const r=s.reading;
+    const snapshot={
+      pages:Number(s.pages)||0,
+      reading:JSON.parse(JSON.stringify(r)),
+      quests:JSON.parse(JSON.stringify(s.quests||[]))
+    };
+    const beforeEnded=Number(r.lastSession?.endedAt||0);
+
+    try{
+      const pages=Math.max(0,Math.floor(payload.pg));
+      const endPage=Math.max(0,Math.floor(payload.ep));
+      const seconds=Math.max(0,Math.floor(payload.sec));
+
+      s.pages=Math.max(0,Number(s.pages)||0)+pages;
+      recordQuestPageProgress(pages);
+
+      // Stage an exact external session, then let the app's normal End Session
+      // path handle time-based quests, save/render, and the existing wrap-up UI.
+      r.timerElapsedMs=seconds*1000;
+      r.timerStartedAt=null;
+      r.timerRunning=false;
+      r.chapters=0;
+      r.sessionLoggedPages=pages;
+      if(endPage>0) r.currentPage=endPage;
+      r.sessionStartPage=endPage>0?endPage:Math.max(0,Number(r.currentPage)||0);
+
+      if(r.bookTotal>0&&r.currentPage>=0){
+        r.percent=Number(Math.min(100,Math.max(0,r.currentPage/r.bookTotal*100)).toFixed(1));
+      }
+
+      if($('readCurrentPage')) $('readCurrentPage').value=r.currentPage||'';
+      if($('readSessionCurrentPage')) $('readSessionCurrentPage').value=r.currentPage||'';
+      if($('readSessionStartPage')) $('readSessionStartPage').value=r.sessionStartPage||'';
+      if($('readPercent')&&r.bookTotal>0) $('readPercent').value=r.percent;
+
+      // Page progress was already credited exactly from the reader's pg field.
+      // Prevent commitSessionPageDelta() from deriving a second page delta.
+      window.endReadingSession();
+
+      const after=s.reading?.lastSession;
+      if(!after||Number(after.endedAt||0)===beforeEnded){
+        throw new Error('Reading MMO did not commit the imported session.');
+      }
+
+      Object.assign(after,{
+        source:'crossink',
+        readerSessionId:payload.sid,
+        readerStartPage:payload.sp,
+        readerEndPage:payload.ep
+      });
+      persistSilent();
+      rememberImported(payload);
+      renderAfterImport();
+
+      pendingPayload=null;
+      pendingRaw='';
+      setImportVisible(false);
+      setState(`✓ CrossInk Session ${payload.sid} imported into Reading MMO.`,'ok');
+      setPayload(
+        `IMPORTED FROM CROSSINK\n`+
+        `Page range: ${payload.sp} → ${payload.ep}\n`+
+        `Pages read: ${payload.pg}\n`+
+        `Reading time: ${formatDuration(payload.sec)}\n\n`+
+        `Pages and reading time were applied to your Reading MMO totals/active quests.`
+      );
+      if(typeof window.toast==='function') window.toast(`✓ CrossInk Session ${payload.sid} imported`);
+      else if(typeof toast==='function') toast(`✓ CrossInk Session ${payload.sid} imported`);
+    }catch(error){
+      try{
+        s.pages=snapshot.pages;
+        s.reading=snapshot.reading;
+        s.quests=snapshot.quests;
+        persistSilent();
+        renderAfterImport();
+      }catch(_){}
+      setState(`Import failed safely — nothing was kept.\n${error.message||String(error)}`,'bad');
+    }
   }
 
   async function syncReader(){
     openModal();
+    pendingPayload=null;
+    pendingRaw='';
     setPayload('');
+    setImportVisible(false);
     const button=syncBtn();
     if(button) button.disabled=true;
 
@@ -97,35 +284,73 @@
       setState('Looking for Reading MMO Reader…\nChoose your reader in the Bluetooth picker.');
 
       const device=await navigator.bluetooth.requestDevice({
-        filters:[{services:[SERVICE_UUID]}]
+        filters:[{services:[SERVICE_UUID]}],
+        optionalServices:[SERVICE_UUID]
       });
       activeDevice=device;
 
-      setState(`Found ${device.name||'Reading MMO Reader'}.\nConnecting…`);
+      if(device.name&&device.name!==EXPECTED_DEVICE_NAME){
+        throw new Error(`Found ${device.name}, not ${EXPECTED_DEVICE_NAME}.`);
+      }
+
+      setState(`Found ${device.name||EXPECTED_DEVICE_NAME}.\nConnecting…`);
       const server=await device.gatt.connect();
-      setState('Connected. Reading the Phase 1 sync payload…');
+      setState('Connected. Reading latest completed CrossInk session…');
 
       const service=await server.getPrimaryService(SERVICE_UUID);
       const characteristic=await service.getCharacteristic(STATS_UUID);
       const value=await characteristic.readValue();
-      const raw=new TextDecoder('utf-8').decode(value);
-      setPayload(raw);
+      const raw=new TextDecoder('utf-8').decode(value.buffer).replace(/\0+$/g,'').trim();
+      pendingRaw=raw;
 
       let parsed;
       try{parsed=JSON.parse(raw)}catch(_){
-        throw new Error('Reader returned data, but it was not valid JSON.');
+        throw new Error(`Reader returned data, but it was not valid JSON: ${raw||'(empty)'}`);
       }
 
-      if(Number(parsed?.p)!==EXPECTED_PROTOCOL || Number(parsed?.sid)!==EXPECTED_SESSION_ID){
-        throw new Error(`Unexpected test payload. Expected protocol ${EXPECTED_PROTOCOL}, session ${EXPECTED_SESSION_ID}.`);
+      // Keep Phase 1 devices friendly while the new firmware rolls out.
+      if(Number(parsed?.p)===1&&Number(parsed?.sid)===1){
+        setState('✓ Reader connected — Phase 1 test payload received.','ok');
+        setPayload(`CrossInk → Reading MMO\n${raw}\n\nBluetooth transport works. Flash the Phase 2 firmware to sync a real reading session.`);
+        return;
       }
 
-      setState('✓ Reader sync test passed!\nSession 1 was received directly from the e-reader.','ok');
-      if(typeof window.toast==='function') window.toast('✓ Reader connected — Session 1 received');
-      else if(typeof toast==='function') toast('✓ Reader connected — Session 1 received');
+      const payload=normalizePhase2(parsed,raw);
+      if(payload.none){
+        setState('✓ Reader connected — no completed reader session is stored yet.','ok');
+        setPayload('Read normally on CrossInk for at least 60 seconds, leave the book so the session commits, then open Reading MMO Sync and try again.');
+        return;
+      }
+
+      pendingPayload=payload;
+      if(wasImported(payload)){
+        setState(`✓ Reader connected — Session ${payload.sid} was already imported. Nothing will be counted twice.`,'ok');
+        setPayload(
+          `CROSSINK SESSION ${payload.sid}\n`+
+          `Page range: ${payload.sp} → ${payload.ep}\n`+
+          `Pages read: ${payload.pg}\n`+
+          `Reading time: ${formatDuration(payload.sec)}`
+        );
+        return;
+      }
+
+      const book=appState()?.reading?.bookName||$('readBookName')?.value?.trim()||'your current Reading MMO book';
+      setState(`✓ Reader connected — Session ${payload.sid} is ready to import.`,'ok');
+      setPayload(
+        `CROSSINK SESSION ${payload.sid}\n`+
+        `Target: ${book}\n`+
+        `Page range: ${payload.sp} → ${payload.ep}\n`+
+        `Pages read: ${payload.pg}\n`+
+        `Reading time: ${formatDuration(payload.sec)}\n\n`+
+        `Tap IMPORT SESSION to apply it to Reading MMO.`
+      );
+      setImportVisible(true);
     }catch(error){
+      pendingPayload=null;
+      pendingRaw='';
+      setImportVisible(false);
       setState(describeError(error),'bad');
-      if(typeof window.toast==='function') window.toast('Reader sync test did not complete');
+      if(typeof window.toast==='function') window.toast('Reader sync did not complete');
     }finally{
       disconnect();
       if(button) button.disabled=false;
@@ -136,7 +361,7 @@
     addStyles();
 
     const canvas=document.querySelector('#homePanelReading .v58-reading-canvas');
-    if(canvas && !document.getElementById('readerSyncHomeButton')){
+    if(canvas&&!$('readerSyncHomeButton')){
       const button=document.createElement('button');
       button.id='readerSyncHomeButton';
       button.type='button';
@@ -157,23 +382,26 @@
       wrap.innerHTML=`
         <div class="modal-card">
           <h2 id="readerSyncTitle">READING MMO READER SYNC</h2>
-          <p class="reader-sync-help">On the e-reader, open <b>Reading MMO Sync</b> and leave the “Bluetooth is ready” screen showing. This first app test only reads the harmless Phase 1 test session; it does not change your reading history.</p>
-          <div id="readerSyncState" class="reader-sync-state">Ready to test the reader connection.</div>
+          <p class="reader-sync-help">On the e-reader, open <b>Reading MMO Sync</b> and leave the Bluetooth-ready screen showing. Reading MMO will preview the completed session before anything is imported.</p>
+          <div id="readerSyncState" class="reader-sync-state">Ready to sync your CrossInk reader.</div>
           <div id="readerSyncPayload" class="reader-sync-payload" hidden></div>
           <div class="reader-sync-actions">
             <button id="readerSyncStart" type="button" class="btn-green">FIND READER</button>
+            <button id="readerSyncImport" type="button" class="btn-gold" hidden>IMPORT SESSION</button>
             <button id="readerSyncClose" type="button" class="btn-plain">CLOSE</button>
           </div>
         </div>`;
       document.body.appendChild(wrap);
-      wrap.querySelector('#readerSyncStart').addEventListener('click',syncReader);
-      wrap.querySelector('#readerSyncClose').addEventListener('click',closeModal);
+      $('readerSyncStart')?.addEventListener('click',syncReader);
+      $('readerSyncImport')?.addEventListener('click',importPendingSession);
+      $('readerSyncClose')?.addEventListener('click',closeModal);
       wrap.addEventListener('click',event=>{if(event.target===wrap) closeModal()});
     }
   }
 
   window.ReadingMmoReaderSync={
     sync:syncReader,
+    importPending:importPendingSession,
     disconnect,
     serviceUuid:SERVICE_UUID,
     characteristicUuid:STATS_UUID
