@@ -19,6 +19,16 @@ jobs:
         with:
           ref: main
 
+      - name: Repair patcher replacement escaping
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('tools/apply-v51033-book-aware.py')
+          s=p.read_text()
+          s=s.replace('normalizer_pattern.subn(normalizer_replacement, src, count=1)', 'normalizer_pattern.subn(lambda _match: normalizer_replacement, src, count=1)')
+          p.write_text(s)
+          PY
+
       - name: Apply v5.10.33 book-aware sync
         run: python3 tools/apply-v51033-book-aware.py
 
@@ -33,7 +43,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html reading-ble-v51033.js reading-history-v51031.js reading-journal-v51032.js service-worker-v51033.js BUILD-NOTES-v5.10.33.txt
+          git add index.html reading-ble-v51033.js reading-history-v51031.js reading-journal-v51032.js service-worker-v51033.js BUILD-NOTES-v5.10.33.txt tools/apply-v51033-book-aware.py
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
