@@ -84,7 +84,7 @@ jobs:
         run: |
           set -euo pipefail
           cd crossink
-          pio run -j1 -e default | tee "$GITHUB_WORKSPACE/baseline-build.log"
+          pio run -j1 -e default 2>&1 | tee "$GITHUB_WORKSPACE/baseline-build.log"
           mkdir -p "$GITHUB_WORKSPACE/out"
           baseline=.pio/build/default/firmware-x3-x4-v1.5.0.bin
           test -s "$baseline"
@@ -166,7 +166,7 @@ jobs:
         run: |
           set -euo pipefail
           cd crossink
-          pio run -j1 -e default | tee "$GITHUB_WORKSPACE/custom-build.log"
+          pio run -j1 -e default 2>&1 | tee "$GITHUB_WORKSPACE/custom-build.log"
           custom=".pio/build/default/firmware-x3-x4-v${CUSTOM_VERSION}.bin"
           test -s "$custom"
           cp "$custom" "$GITHUB_WORKSPACE/out/firmware-x3-x4-v${CUSTOM_VERSION}.bin"
