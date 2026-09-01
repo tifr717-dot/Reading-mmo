@@ -13,3 +13,4 @@ Reading MMO v5.10.30 — CrossInk BLE Phase 2 Session Import
 - Stores a session fingerprint so the same CrossInk session cannot be counted twice.
 - Keeps Phase 1 test payload compatibility for older firmware during rollout.
 - Keeps the visible app version locked to v5.10.30 while the v5.10.29 session-flow module is reused underneath.
+- Uses internal cache generation 51030p2 so installed PWAs cannot reuse the older Phase 1 v5.10.30 BLE script.

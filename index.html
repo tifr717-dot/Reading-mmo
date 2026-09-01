@@ -4711,7 +4711,7 @@ async function checkForAppUpdate(){
    if(reg)await reg.update();
   }
   if(el)el.textContent="✅ Check complete. Reloading the latest version…";
-  setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51030');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);
+  setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51030p2');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);
  }catch(e){
   if(el)el.textContent="Could not check right now. Your current app and save are still safe.";
  }
@@ -7052,23 +7052,23 @@ setTimeout(restoreHomeTab,0);
 </script>
 
 <script>window.__readingMmoVersionOwner='v5.10.30';</script>
-<script src="./archive-v51011.js?v=51030"></script>
-<script src="./archive-v51013.js?v=51030"></script>
-<script src="./archive-v51014.js?v=51030"></script>
-<script src="./archive-v51016.js?v=51030"></script>
-<script src="./archive-v51018.js?v=51030"></script>
-<script src="./reading-shelf-v51021.js?v=51030"></script>
-<script src="./archive-v51022.js?v=51030"></script>
-<script src="./archive-v51025.js?v=51030"></script>
-<script src="./reading-progress-v51027.js?v=51030"></script>
-<script src="./reading-time-v51028.js?v=51030"></script>
-<script src="./reading-flow-v51029.js?v=51030"></script>
-<script src="./reading-ble-v51030.js?v=51030"></script>
+<script src="./archive-v51011.js?v=51030p2"></script>
+<script src="./archive-v51013.js?v=51030p2"></script>
+<script src="./archive-v51014.js?v=51030p2"></script>
+<script src="./archive-v51016.js?v=51030p2"></script>
+<script src="./archive-v51018.js?v=51030p2"></script>
+<script src="./reading-shelf-v51021.js?v=51030p2"></script>
+<script src="./archive-v51022.js?v=51030p2"></script>
+<script src="./archive-v51025.js?v=51030p2"></script>
+<script src="./reading-progress-v51027.js?v=51030p2"></script>
+<script src="./reading-time-v51028.js?v=51030p2"></script>
+<script src="./reading-flow-v51029.js?v=51030p2"></script>
+<script src="./reading-ble-v51030.js?v=51030p2"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker-v51030.js?v=51030",{updateViaCache:"none"}).catch(() => {});
+    navigator.serviceWorker.register("./service-worker-v51030.js?v=51030p2",{updateViaCache:"none"}).catch(() => {});
   });
 }
 </script>
