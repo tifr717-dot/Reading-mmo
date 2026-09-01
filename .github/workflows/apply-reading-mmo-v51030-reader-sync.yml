@@ -58,6 +58,19 @@ jobs:
                      r'\1v5.10.30\2', s)
 
           p.write_text(s)
+
+          # v5.10.29's session-flow module is intentionally still reused by 5.10.30,
+          # but it must not take ownership of the visible app version. Let the current
+          # app owner win instead of repeatedly stamping the badge back to 5.10.29.
+          fp = Path('reading-flow-v51029.js')
+          flow_src = fp.read_text()
+          old_build = "const BUILD='v5.10.29';"
+          new_build = "const BUILD=window.__readingMmoVersionOwner||'v5.10.29';"
+          if old_build in flow_src:
+              flow_src = flow_src.replace(old_build, new_build, 1)
+          elif new_build not in flow_src:
+              raise SystemExit('v5.10.29 flow version-owner anchor not found')
+          fp.write_text(flow_src)
           PY
 
       - name: Create v5.10.30 service worker
@@ -97,6 +110,7 @@ jobs:
           - Refuses to merge into an already-active in-app reading session.
           - Stores a session fingerprint so the same CrossInk session cannot be counted twice.
           - Keeps Phase 1 test payload compatibility for older firmware during rollout.
+          - Keeps the visible app version locked to v5.10.30 while the v5.10.29 session-flow module is reused underneath.
           EOF
 
       - name: Verify v5.10.30 wiring
@@ -116,6 +130,12 @@ jobs:
           for check in checks:
               if check not in s:
                   raise SystemExit(f'missing expected v5.10.30 wiring: {check}')
+
+          flow_src = Path('reading-flow-v51029.js').read_text()
+          if "const BUILD='v5.10.29';" in flow_src:
+              raise SystemExit('v5.10.29 flow still hard-stamps the visible app version')
+          if "const BUILD=window.__readingMmoVersionOwner||'v5.10.29';" not in flow_src:
+              raise SystemExit('v5.10.29 flow is not inheriting the current app version owner')
 
           ble = Path('reading-ble-v51030.js').read_text()
           for check in [
@@ -151,10 +171,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html reading-ble-v51030.js service-worker-v51030.js BUILD-NOTES-v5.10.30.txt
+          git add index.html reading-flow-v51029.js reading-ble-v51030.js service-worker-v51030.js BUILD-NOTES-v5.10.30.txt
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Reading MMO v5.10.30 enable Phase 2 reader session import"
+            git commit -m "Reading MMO v5.10.30 lock version badge owner"
             git push origin main
           fi
