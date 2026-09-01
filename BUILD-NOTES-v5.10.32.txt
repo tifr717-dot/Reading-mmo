@@ -1,0 +1,13 @@
+Reading MMO v5.10.32 — Standalone Reading Journal
+
+- Adds a direct Reading Desk → Open Reading Journal button.
+- Adds a second direct Reading Journal shortcut at the top of the Library.
+- Journal access no longer depends on tapping a bookshelf spine/book.
+- Opens a dedicated full-screen journal overlay while keeping the five-button bottom navigation unchanged.
+- Shows All Books by default with a per-book filter.
+- Shows session totals: sessions, pages read, reading time, average session, and last read.
+- Each session shows book title, date/time, pages read, start/end page range, duration, and source.
+- CrossInk sessions show their reader session ID (for example CrossInk #382).
+- Reuses the permanent readingSessions store introduced in v5.10.31, including manual Reading MMO and CrossInk sessions.
+- Keeps the optional per-book Overview / Reading History view in the Library, but the standalone journal does not depend on it.
+- Uses fresh app/service-worker cache generation 51032.
