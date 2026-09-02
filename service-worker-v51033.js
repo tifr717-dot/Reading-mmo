@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.34-reading-journal-v2';
-const FORCE_VERSION = '51034';
+const CACHE = 'reading-mmo-v5.10.35-readable-journal-mobile';
+const FORCE_VERSION = '51035';
 const CORE = [
   './',
   './asset-book.png',
@@ -90,6 +90,7 @@ const CORE = [
   './reading-ble-v51033.js',
   './reading-history-v51031.js',
   './reading-journal-v51032.js',
+  './reading-journal-mobile-v51035.js',
   './archive-proto-legion-art.svg',
   './archive-proto-angels-art.svg',
   './archive-proto-stage-art.svg',
