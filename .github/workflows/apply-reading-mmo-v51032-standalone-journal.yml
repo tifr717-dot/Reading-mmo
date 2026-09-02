@@ -1,10 +1,11 @@
-name: Validate Reading Journal v5.10.34
+name: Validate Reading Journal v5.10.35
 
 on:
   push:
     branches: [ main ]
     paths:
       - 'reading-journal-v51032.js'
+      - 'reading-journal-mobile-v51035.js'
       - 'service-worker-v51033.js'
       - '.github/workflows/apply-reading-mmo-v51032-standalone-journal.yml'
   workflow_dispatch:
@@ -19,36 +20,80 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Promote v5.10.34 runtime cache-busters
+      - name: Promote v5.10.35 readable mobile journal
         id: promote
         run: |
           python3 - <<'PY'
           from pathlib import Path
 
-          path = Path('index.html')
-          text = path.read_text()
-          updated = text.replace(
+          changed = []
+
+          # Live app runtime references.
+          idx_path = Path('index.html')
+          idx = idx_path.read_text()
+          updated = idx
+          for old in [
               './reading-journal-v51032.js?v=51033',
               './reading-journal-v51032.js?v=51034',
-          ).replace(
+          ]:
+              updated = updated.replace(old, './reading-journal-v51032.js?v=51035')
+          for old in [
               './service-worker-v51033.js?v=51033',
               './service-worker-v51033.js?v=51034',
-          )
-          changed = updated != text
-          if changed:
-              path.write_text(updated)
-          with open('/tmp/cache_buster_changed', 'w') as f:
-              f.write('true' if changed else 'false')
-          PY
-          echo "changed=$(cat /tmp/cache_buster_changed)" >> "$GITHUB_OUTPUT"
+          ]:
+              updated = updated.replace(old, './service-worker-v51033.js?v=51035')
 
-      - name: Commit cache-buster repair
+          mobile_tag = '<script src="./reading-journal-mobile-v51035.js?v=51035"></script>'
+          journal_tag = '<script src="./reading-journal-v51032.js?v=51035"></script>'
+          if mobile_tag not in updated:
+              if journal_tag not in updated:
+                  raise SystemExit('could not find Reading Journal script tag to attach mobile readability layer')
+              updated = updated.replace(journal_tag, journal_tag + '\n' + mobile_tag, 1)
+
+          if updated != idx:
+              idx_path.write_text(updated)
+              changed.append('index.html')
+
+          # Promote the Journal build label without rewriting the established renderer.
+          journal_path = Path('reading-journal-v51032.js')
+          journal = journal_path.read_text()
+          updated = journal.replace("const BUILD='v5.10.34'", "const BUILD='v5.10.35'")
+          if updated != journal:
+              journal_path.write_text(updated)
+              changed.append('reading-journal-v51032.js')
+
+          # Force installed Android/PWA clients to accept the readability build.
+          sw_path = Path('service-worker-v51033.js')
+          sw = sw_path.read_text()
+          updated = sw.replace(
+              "const CACHE = 'reading-mmo-v5.10.34-reading-journal-v2';",
+              "const CACHE = 'reading-mmo-v5.10.35-readable-journal-mobile';",
+          ).replace(
+              "const FORCE_VERSION = '51034';",
+              "const FORCE_VERSION = '51035';",
+          )
+          mobile_core = "  './reading-journal-mobile-v51035.js',\n"
+          if "'./reading-journal-mobile-v51035.js'" not in updated:
+              needle = "  './reading-journal-v51032.js',\n"
+              if needle not in updated:
+                  raise SystemExit('could not add mobile journal file to service-worker core')
+              updated = updated.replace(needle, needle + mobile_core, 1)
+          if updated != sw:
+              sw_path.write_text(updated)
+              changed.append('service-worker-v51033.js')
+
+          Path('/tmp/readability_changed').write_text('true' if changed else 'false')
+          print('changed:', ', '.join(changed) if changed else 'none')
+          PY
+          echo "changed=$(cat /tmp/readability_changed)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit readable mobile runtime
         if: steps.promote.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "Fix v5.10.34 runtime cache-busters"
+          git add index.html reading-journal-v51032.js service-worker-v51033.js
+          git commit -m "Activate readable Reading Journal v5.10.35"
           git push origin HEAD:main
 
       - name: Request fresh Pages build
@@ -58,29 +103,32 @@ jobs:
         run: |
           gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
 
-      - name: Verify journal and service worker syntax
+      - name: Verify journal scripts and service worker syntax
         run: |
           node --check reading-journal-v51032.js
+          node --check reading-journal-mobile-v51035.js
           node --check service-worker-v51033.js
 
-      - name: Verify v5.10.34 journal runtime
+      - name: Verify v5.10.35 readable mobile runtime
         run: |
           python3 - <<'PY'
           from pathlib import Path
 
           idx = Path('index.html').read_text()
           journal = Path('reading-journal-v51032.js').read_text()
+          mobile = Path('reading-journal-mobile-v51035.js').read_text()
           sw = Path('service-worker-v51033.js').read_text()
 
           for check in [
-              'reading-journal-v51032.js?v=51034',
-              'service-worker-v51033.js?v=51034',
+              'reading-journal-v51032.js?v=51035',
+              'reading-journal-mobile-v51035.js?v=51035',
+              'service-worker-v51033.js?v=51035',
           ]:
               if check not in idx:
                   raise SystemExit(f'missing live app runtime reference: {check}')
 
           for check in [
-              "const BUILD='v5.10.34'",
+              "const BUILD='v5.10.35'",
               'readingSessions',
               'appState()?.library',
               'READING TIMELINE',
@@ -90,14 +138,24 @@ jobs:
               'window.openReadingJournal',
           ]:
               if check not in journal:
-                  raise SystemExit(f'missing v5.10.34 journal behavior: {check}')
+                  raise SystemExit(f'missing journal behavior: {check}')
 
           for check in [
-              "reading-mmo-v5.10.34-reading-journal-v2",
-              "FORCE_VERSION = '51034'",
+              '@media (max-width: 700px)',
+              'grid-template-columns:repeat(2,minmax(0,1fr))',
+              'font-size:15.5px',
+              'font:900 12px/1.15 ui-monospace,monospace!important',
+          ]:
+              if check not in mobile:
+                  raise SystemExit(f'missing mobile readability behavior: {check}')
+
+          for check in [
+              "reading-mmo-v5.10.35-readable-journal-mobile",
+              "FORCE_VERSION = '51035'",
               "'./reading-journal-v51032.js'",
+              "'./reading-journal-mobile-v51035.js'",
               "'./reading-ble-v51033.js'",
           ]:
               if check not in sw:
-                  raise SystemExit(f'missing v5.10.34 cache wiring: {check}')
+                  raise SystemExit(f'missing v5.10.35 cache wiring: {check}')
           PY
