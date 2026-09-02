@@ -1,0 +1,122 @@
+name: Promote Reading Journal v5.10.39
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'reading-journal-polish-v51039.js'
+      - '.github/workflows/promote-reading-journal-v51039.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Promote scrollable polished Journal to v5.10.39
+        id: promote
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          changed=[]
+
+          idxp=Path('index.html')
+          idx=idxp.read_text()
+          out=idx
+          out=out.replace('app-version-badge">v5.10.38','app-version-badge">v5.10.39')
+          out=out.replace('<b>Version</b><span>v5.10.38</span>','<b>Version</b><span>v5.10.39</span>')
+          out=out.replace("window.__readingMmoVersionOwner='v5.10.38'","window.__readingMmoVersionOwner='v5.10.39'")
+          out=out.replace('./reading-journal-v51032.js?v=51038','./reading-journal-v51032.js?v=51039')
+          out=out.replace('./reading-journal-mobile-v51035.js?v=51038','./reading-journal-mobile-v51035.js?v=51039')
+          out=out.replace('./reading-journal-cascade-v51038.js?v=51038','./reading-journal-cascade-v51038.js?v=51039')
+          out=out.replace('./service-worker-v51038.js?v=51038','./service-worker-v51039.js?v=51039')
+
+          cascade='<script src="./reading-journal-cascade-v51038.js?v=51039"></script>'
+          polish='<script src="./reading-journal-polish-v51039.js?v=51039"></script>'
+          if polish not in out:
+              if cascade not in out:
+                  raise SystemExit('could not find Journal cascade script')
+              out=out.replace(cascade,cascade+'\n'+polish,1)
+          if out!=idx:
+              idxp.write_text(out);changed.append('index.html')
+
+          jp=Path('reading-journal-v51032.js')
+          j=jp.read_text();j2=j.replace("const BUILD='v5.10.38'","const BUILD='v5.10.39'")
+          if j2!=j:
+              jp.write_text(j2);changed.append(str(jp))
+
+          swp=Path('service-worker-v51038.js')
+          sw=swp.read_text()
+          sw2=sw.replace("const CACHE = 'reading-mmo-v5.10.38-journal-cascade-repair';","const CACHE = 'reading-mmo-v5.10.39-journal-scroll-polish';")
+          sw2=sw2.replace("const FORCE_VERSION = '51038';","const FORCE_VERSION = '51039';")
+          polish_core="  './reading-journal-polish-v51039.js',\n"
+          if "'./reading-journal-polish-v51039.js'" not in sw2:
+              needle="  './reading-journal-cascade-v51038.js',\n"
+              if needle not in sw2: raise SystemExit('could not add Journal polish to worker core')
+              sw2=sw2.replace(needle,needle+polish_core,1)
+          if sw2!=sw:
+              swp.write_text(sw2);changed.append(str(swp))
+
+          fresh=Path('service-worker-v51039.js')
+          if not fresh.exists() or fresh.read_text()!=sw2:
+              fresh.write_text(sw2);changed.append(str(fresh))
+
+          mp=Path('manifest.webmanifest')
+          m=mp.read_text();m2=m.replace('"start_url": "./?appv=51038"','"start_url": "./?appv=51039"')
+          if m2!=m:
+              mp.write_text(m2);changed.append(str(mp))
+
+          Path('/tmp/changed').write_text('true' if changed else 'false')
+          print('changed:', ', '.join(changed) if changed else 'none')
+          PY
+          echo "changed=$(cat /tmp/changed)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit v5.10.39 runtime
+        if: steps.promote.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html reading-journal-v51032.js reading-journal-polish-v51039.js service-worker-v51038.js service-worker-v51039.js manifest.webmanifest
+          git commit -m "Activate Reading MMO v5.10.39 Journal scrolling polish"
+          git push origin HEAD:main
+
+      - name: Request fresh Pages build
+        if: steps.promote.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
+
+      - name: Verify JavaScript syntax
+        run: |
+          node --check reading-journal-v51032.js
+          node --check reading-journal-polish-v51039.js
+          node --check service-worker-v51038.js
+          node --check service-worker-v51039.js
+
+      - name: Verify v5.10.39 scroll runtime
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          idx=Path('index.html').read_text()
+          polish=Path('reading-journal-polish-v51039.js').read_text()
+          sw=Path('service-worker-v51039.js').read_text()
+          manifest=Path('manifest.webmanifest').read_text()
+          checks=[
+            ('index version','app-version-badge">v5.10.39' in idx),
+            ('polish script','reading-journal-polish-v51039.js?v=51039' in idx),
+            ('worker registration','service-worker-v51039.js?v=51039' in idx),
+            ('internal scroll','#v51034JournalBody' in polish and 'overflow-y:auto!important' in polish and 'touch-action:pan-y!important' in polish),
+            ('fixed shell','height:100%!important' in polish and 'overflow:hidden!important' in polish),
+            ('worker cache',"reading-mmo-v5.10.39-journal-scroll-polish" in sw and "FORCE_VERSION = '51039'" in sw),
+            ('polish cached',"'./reading-journal-polish-v51039.js'" in sw),
+            ('manifest','"start_url": "./?appv=51039"' in manifest),
+          ]
+          bad=[name for name,ok in checks if not ok]
+          if bad: raise SystemExit('missing: '+', '.join(bad))
+          PY
