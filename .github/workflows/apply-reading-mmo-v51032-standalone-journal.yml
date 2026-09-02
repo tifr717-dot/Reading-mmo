@@ -1,148 +1,63 @@
-name: Apply Reading MMO v5.10.32 Standalone Journal
+name: Validate Reading Journal v5.10.34
 
 on:
   push:
     branches: [ main ]
     paths:
       - 'reading-journal-v51032.js'
+      - 'service-worker-v51033.js'
       - '.github/workflows/apply-reading-mmo-v51032-standalone-journal.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  apply:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
 
-      - name: Verify standalone journal runtime syntax
-        run: node --check reading-journal-v51032.js
-
-      - name: Wire v5.10.32 app runtime
+      - name: Verify journal and service worker syntax
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
+          node --check reading-journal-v51032.js
+          node --check service-worker-v51033.js
 
-          p = Path('index.html')
-          s = p.read_text()
-
-          s = s.replace("window.__readingMmoVersionOwner='v5.10.31';", "window.__readingMmoVersionOwner='v5.10.32';")
-          s = s.replace('?v=51031', '?v=51032')
-
-          history = '<script src="./reading-history-v51031.js?v=51032"></script>'
-          journal = '<script src="./reading-journal-v51032.js?v=51032"></script>'
-          if journal not in s:
-              if history not in s:
-                  raise SystemExit('v5.10.31 reading-history runtime anchor not found')
-              s = s.replace(history, history + '\n' + journal, 1)
-
-          s = s.replace('service-worker-v51031.js?v=51032', 'service-worker-v51032.js?v=51032')
-          s = s.replace("u.searchParams.set('appv','51031')", "u.searchParams.set('appv','51032')")
-          s = s.replace('u.searchParams.set("appv","51031")', 'u.searchParams.set("appv","51032")')
-          s = s.replace('<div class="health-row"><b>Version</b><span>v5.10.31</span></div>',
-                        '<div class="health-row"><b>Version</b><span>v5.10.32</span></div>')
-          s = re.sub(r'(<span id="headerVersionText" class="app-version-badge">)v[^<]+(</span>)',
-                     r'\1v5.10.32\2', s)
-
-          p.write_text(s)
-          PY
-
-      - name: Create v5.10.32 service worker
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-
-          src = Path('service-worker-v51031.js').read_text()
-          src = src.replace('reading-mmo-v5.10.31-reading-history', 'reading-mmo-v5.10.32-standalone-reading-journal')
-          src = src.replace("const FORCE_VERSION = '51031';", "const FORCE_VERSION = '51032';")
-
-          history = "  './reading-history-v51031.js',"
-          journal = "  './reading-journal-v51032.js',"
-          if journal not in src:
-              if history not in src:
-                  raise SystemExit('service worker history CORE anchor not found')
-              src = src.replace(history, history + '\n' + journal, 1)
-
-          Path('service-worker-v51032.js').write_text(src)
-          PY
-          node --check service-worker-v51032.js
-
-      - name: Write v5.10.32 build notes
-        run: |
-          cat > BUILD-NOTES-v5.10.32.txt <<'EOF'
-          Reading MMO v5.10.32 — Standalone Reading Journal
-
-          - Adds a direct Reading Desk → Open Reading Journal button.
-          - Adds a second direct Reading Journal shortcut at the top of the Library.
-          - Journal access no longer depends on tapping a bookshelf spine/book.
-          - Opens a dedicated full-screen journal overlay while keeping the five-button bottom navigation unchanged.
-          - Shows All Books by default with a per-book filter.
-          - Shows session totals: sessions, pages read, reading time, average session, and last read.
-          - Each session shows book title, date/time, pages read, start/end page range, duration, and source.
-          - CrossInk sessions show their reader session ID (for example CrossInk #382).
-          - Reuses the permanent readingSessions store introduced in v5.10.31, including manual Reading MMO and CrossInk sessions.
-          - Keeps the optional per-book Overview / Reading History view in the Library, but the standalone journal does not depend on it.
-          - Uses fresh app/service-worker cache generation 51032.
-          EOF
-
-      - name: Verify v5.10.32 journal wiring
+      - name: Verify v5.10.34 journal runtime
         run: |
           python3 - <<'PY'
           from pathlib import Path
 
           idx = Path('index.html').read_text()
+          journal = Path('reading-journal-v51032.js').read_text()
+          sw = Path('service-worker-v51033.js').read_text()
+
           for check in [
-              "window.__readingMmoVersionOwner='v5.10.32'",
-              'reading-history-v51031.js?v=51032',
-              'reading-journal-v51032.js?v=51032',
-              'service-worker-v51032.js?v=51032',
-              "u.searchParams.set('appv','51032')",
-              'id="headerVersionText" class="app-version-badge">v5.10.32</span>',
+              'reading-journal-v51032.js',
+              'service-worker-v51033.js',
           ]:
               if check not in idx:
-                  raise SystemExit(f'missing v5.10.32 index wiring: {check}')
+                  raise SystemExit(f'missing live app runtime reference: {check}')
 
-          journal = Path('reading-journal-v51032.js').read_text()
           for check in [
-              'OPEN READING JOURNAL',
-              'READING JOURNAL',
-              'All Books',
-              'SESSION LOG',
-              'PAGES READ',
-              'READING TIME',
-              'AVG SESSION',
-              'PAGE RANGE',
-              'CrossInk',
+              "const BUILD='v5.10.34'",
               'readingSessions',
+              'S.library',
+              'READING TIMELINE',
+              'THE COMPLETE LEDGER',
+              'MOST-READ BOOK',
+              'CrossInk',
               'window.openReadingJournal',
           ]:
               if check not in journal:
-                  raise SystemExit(f'missing standalone journal behavior: {check}')
+                  raise SystemExit(f'missing v5.10.34 journal behavior: {check}')
 
-          sw = Path('service-worker-v51032.js').read_text()
           for check in [
-              "reading-mmo-v5.10.32-standalone-reading-journal",
-              "FORCE_VERSION = '51032'",
-              "'./reading-history-v51031.js'",
+              "reading-mmo-v5.10.34-reading-journal-v2",
+              "FORCE_VERSION = '51034'",
               "'./reading-journal-v51032.js'",
+              "'./reading-ble-v51033.js'",
           ]:
               if check not in sw:
-                  raise SystemExit(f'missing v5.10.32 service-worker wiring: {check}')
+                  raise SystemExit(f'missing v5.10.34 cache wiring: {check}')
           PY
-
-      - name: Commit v5.10.32
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html reading-journal-v51032.js service-worker-v51032.js BUILD-NOTES-v5.10.32.txt
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Reading MMO v5.10.32 add standalone reading journal"
-            git push origin main
-          fi
