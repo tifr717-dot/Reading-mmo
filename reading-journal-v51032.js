@@ -3,7 +3,7 @@
   if(window.__v51034ReadingJournalBooted)return;
   window.__v51034ReadingJournalBooted=true;
 
-  const BUILD='v5.10.35';
+  const BUILD='v5.10.36';
   const $=id=>document.getElementById(id);
   let selectedBook='all';
 
