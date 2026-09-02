@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.36-shell-mobile-journal';
-const FORCE_VERSION = '51036';
+const CACHE = 'reading-mmo-v5.10.37-readable-journal-force';
+const FORCE_VERSION = '51037';
 const CORE = [
   './',
   './asset-book.png',

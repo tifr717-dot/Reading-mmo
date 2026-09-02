@@ -1,15 +1,15 @@
 (()=>{
   'use strict';
-  if(window.__v51035ReadableJournalMobile)return;
-  window.__v51035ReadableJournalMobile=true;
+  if(window.__v51037ReadableJournalMobile)return;
+  window.__v51037ReadableJournalMobile=true;
 
   const style=document.createElement('style');
-  style.id='v51035-readable-journal-mobile';
+  style.id='v51037-readable-journal-mobile';
   style.textContent=`
-    /* v5.10.35 — Reading Journal phone readability pass.
+    /* v5.10.37 — Reading Journal phone readability pass.
        Keep the parchment ledger art direction, but stop shrinking desktop-density
        typography into a mobile viewport. */
-    @media (max-width: 700px){
+    @media (max-width: 2000px){
       .v51034-backdrop{
         padding:6px 4px 84px;
       }

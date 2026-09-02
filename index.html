@@ -3784,7 +3784,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
     <span>•</span>
     <span id="headerSaveText">Saved locally</span>
     <span>•</span>
-    <span id="headerVersionText" class="app-version-badge">v5.10.36</span>
+    <span id="headerVersionText" class="app-version-badge">v5.10.37</span>
   </div>
 </header>
 
@@ -4696,7 +4696,7 @@ function renderSaveHealth(){
   <div class="health-row"><b>Last exported backup</b><span>${S.meta?.lastBackupAt?esc(timeAgo(S.meta.lastBackupAt)):"Not yet"}</span></div>
   <div class="health-row"><b>App mode</b><span>${isInstalledApp()?"✅ Installed":"Browser"}</span></div>
   <div class="health-row"><b>Connection</b><span>${navigator.onLine?"✅ Online":"📴 Offline"}</span></div>
-  <div class="health-row"><b>Version</b><span>v5.10.36</span></div>`;
+  <div class="health-row"><b>Version</b><span>v5.10.37</span></div>`;
 }
 async function checkForAppUpdate(){
  const el=$("updateStatus");
@@ -7051,7 +7051,7 @@ function restoreHomeTab(){ const b=$('homeTabReading'); if(b)setHomeTab('reading
 setTimeout(restoreHomeTab,0);
 </script>
 
-<script>window.__readingMmoVersionOwner='v5.10.36';</script>
+<script>window.__readingMmoVersionOwner='v5.10.37';</script>
 <script src="./archive-v51011.js?v=51033"></script>
 <script src="./archive-v51013.js?v=51033"></script>
 <script src="./archive-v51014.js?v=51033"></script>
@@ -7065,13 +7065,13 @@ setTimeout(restoreHomeTab,0);
 <script src="./reading-flow-v51029.js?v=51033"></script>
 <script src="./reading-ble-v51033.js?v=51033"></script>
 <script src="./reading-history-v51031.js?v=51033"></script>
-<script src="./reading-journal-v51032.js?v=51036"></script>
-<script src="./reading-journal-mobile-v51035.js?v=51036"></script>
+<script src="./reading-journal-v51032.js?v=51037"></script>
+<script src="./reading-journal-mobile-v51035.js?v=51037"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker-v51036.js?v=51036",{updateViaCache:"none"}).catch(() => {});
+    navigator.serviceWorker.register("./service-worker-v51037.js?v=51037",{updateViaCache:"none"}).catch(() => {});
   });
 }
 </script>
