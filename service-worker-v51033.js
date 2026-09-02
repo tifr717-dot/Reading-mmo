@@ -1,5 +1,5 @@
-const CACHE = 'reading-mmo-v5.10.33-book-aware-reader-sync';
-const FORCE_VERSION = '51033';
+const CACHE = 'reading-mmo-v5.10.34-reading-journal-v2';
+const FORCE_VERSION = '51034';
 const CORE = [
   './',
   './asset-book.png',
@@ -125,9 +125,6 @@ self.addEventListener('activate', event => {
     await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
     await self.clients.claim();
 
-    // Force every open installed-app window onto the current Reading MMO build.
-    // This avoids Android continuing to display an older cached document after
-    // the worker itself has already updated successfully.
     const windows = await self.clients.matchAll({type:'window', includeUncontrolled:true});
     await Promise.all(windows.map(client => {
       try {
