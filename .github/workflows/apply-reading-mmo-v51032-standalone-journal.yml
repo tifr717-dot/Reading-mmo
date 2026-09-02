@@ -1,4 +1,4 @@
-name: Promote Reading MMO v5.10.37
+name: Promote Reading MMO v5.10.38
 
 on:
   push:
@@ -6,9 +6,11 @@ on:
     paths:
       - 'reading-journal-v51032.js'
       - 'reading-journal-mobile-v51035.js'
+      - 'reading-journal-cascade-v51038.js'
       - 'service-worker-v51033.js'
       - 'service-worker-v51036.js'
       - 'service-worker-v51037.js'
+      - 'service-worker-v51038.js'
       - 'manifest.webmanifest'
       - '.github/workflows/apply-reading-mmo-v51032-standalone-journal.yml'
   workflow_dispatch:
@@ -23,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Promote full app shell and readable journal to v5.10.37
+      - name: Promote Journal cascade repair to v5.10.38
         id: promote
         run: |
           python3 - <<'PY'
@@ -31,38 +33,46 @@ jobs:
 
           changed = []
 
-          # 1) Promote the app shell and all live Journal/runtime references.
+          # 1) Promote app-shell labels and live runtime references together.
           idx_path = Path('index.html')
           idx = idx_path.read_text()
           updated = idx
 
-          for old in ['v5.10.33','v5.10.34','v5.10.35','v5.10.36']:
+          for old in ['v5.10.33','v5.10.34','v5.10.35','v5.10.36','v5.10.37']:
               updated = updated.replace(
                   f'<span id="headerVersionText" class="app-version-badge">{old}</span>',
-                  '<span id="headerVersionText" class="app-version-badge">v5.10.37</span>',
+                  '<span id="headerVersionText" class="app-version-badge">v5.10.38</span>',
               )
               updated = updated.replace(
                   f'<div class="health-row"><b>Version</b><span>{old}</span></div>',
-                  '<div class="health-row"><b>Version</b><span>v5.10.37</span></div>',
+                  '<div class="health-row"><b>Version</b><span>v5.10.38</span></div>',
               )
               updated = updated.replace(
                   f"window.__readingMmoVersionOwner='{old}';",
-                  "window.__readingMmoVersionOwner='v5.10.37';",
+                  "window.__readingMmoVersionOwner='v5.10.38';",
               )
 
-          for v in ['51033','51034','51035','51036']:
-              updated = updated.replace(f'./reading-journal-v51032.js?v={v}', './reading-journal-v51032.js?v=51037')
-              updated = updated.replace(f'./reading-journal-mobile-v51035.js?v={v}', './reading-journal-mobile-v51035.js?v=51037')
-              updated = updated.replace(f'./service-worker-v51033.js?v={v}', './service-worker-v51037.js?v=51037')
-              updated = updated.replace(f'./service-worker-v51036.js?v={v}', './service-worker-v51037.js?v=51037')
-              updated = updated.replace(f'./service-worker-v51037.js?v={v}', './service-worker-v51037.js?v=51037')
+          for v in ['51033','51034','51035','51036','51037']:
+              updated = updated.replace(f'./reading-journal-v51032.js?v={v}', './reading-journal-v51032.js?v=51038')
+              updated = updated.replace(f'./reading-journal-mobile-v51035.js?v={v}', './reading-journal-mobile-v51035.js?v=51038')
+              updated = updated.replace(f'./reading-journal-cascade-v51038.js?v={v}', './reading-journal-cascade-v51038.js?v=51038')
+              updated = updated.replace(f'./service-worker-v51033.js?v={v}', './service-worker-v51038.js?v=51038')
+              updated = updated.replace(f'./service-worker-v51036.js?v={v}', './service-worker-v51038.js?v=51038')
+              updated = updated.replace(f'./service-worker-v51037.js?v={v}', './service-worker-v51038.js?v=51038')
+              updated = updated.replace(f'./service-worker-v51038.js?v={v}', './service-worker-v51038.js?v=51038')
 
-          mobile_tag = '<script src="./reading-journal-mobile-v51035.js?v=51037"></script>'
-          journal_tag = '<script src="./reading-journal-v51032.js?v=51037"></script>'
+          journal_tag = '<script src="./reading-journal-v51032.js?v=51038"></script>'
+          mobile_tag = '<script src="./reading-journal-mobile-v51035.js?v=51038"></script>'
+          cascade_tag = '<script src="./reading-journal-cascade-v51038.js?v=51038"></script>'
+
           if mobile_tag not in updated:
               if journal_tag not in updated:
-                  raise SystemExit('could not find v5.10.37 Journal script tag')
+                  raise SystemExit('could not find v5.10.38 Journal script tag')
               updated = updated.replace(journal_tag, journal_tag + '\n' + mobile_tag, 1)
+          if cascade_tag not in updated:
+              if mobile_tag not in updated:
+                  raise SystemExit('could not find readable Journal layer to attach cascade repair')
+              updated = updated.replace(mobile_tag, mobile_tag + '\n' + cascade_tag, 1)
 
           if updated != idx:
               idx_path.write_text(updated)
@@ -72,28 +82,23 @@ jobs:
           journal_path = Path('reading-journal-v51032.js')
           journal = journal_path.read_text()
           j2 = journal
-          for old in ["const BUILD='v5.10.34'","const BUILD='v5.10.35'","const BUILD='v5.10.36'"]:
-              j2 = j2.replace(old, "const BUILD='v5.10.37'")
+          for old in [
+              "const BUILD='v5.10.34'",
+              "const BUILD='v5.10.35'",
+              "const BUILD='v5.10.36'",
+              "const BUILD='v5.10.37'",
+          ]:
+              j2 = j2.replace(old, "const BUILD='v5.10.38'")
           if j2 != journal:
               journal_path.write_text(j2)
               changed.append('reading-journal-v51032.js')
 
-          # 3) Make the phone-readability layer reliably active in the installed PWA.
-          mobile_path = Path('reading-journal-mobile-v51035.js')
-          mobile = mobile_path.read_text()
-          m = mobile
-          m = m.replace('window.__v51035ReadableJournalMobile', 'window.__v51037ReadableJournalMobile')
-          m = m.replace("style.id='v51035-readable-journal-mobile'", "style.id='v51037-readable-journal-mobile'")
-          m = m.replace('/* v5.10.35 — Reading Journal phone readability pass.', '/* v5.10.37 — Reading Journal phone readability pass.')
-          # Some standalone Android PWAs report a CSS viewport wider than their visible app shell.
-          # The app itself is capped at 600px, so make this rule effectively unconditional for the app.
-          m = m.replace('@media (max-width: 700px){', '@media (max-width: 2000px){')
-          if m != mobile:
-              mobile_path.write_text(m)
-              changed.append('reading-journal-mobile-v51035.js')
-
-          # 4) Upgrade every worker a stale installed copy might still be using.
-          worker_paths = [Path('service-worker-v51033.js'), Path('service-worker-v51036.js')]
+          # 3) Keep every stale worker capable of pulling the new cascade repair.
+          worker_paths = [
+              Path('service-worker-v51033.js'),
+              Path('service-worker-v51036.js'),
+              Path('service-worker-v51037.js'),
+          ]
           source_sw = None
           for worker_path in worker_paths:
               if not worker_path.exists():
@@ -105,15 +110,27 @@ jobs:
                   "const CACHE = 'reading-mmo-v5.10.34-reading-journal-v2';",
                   "const CACHE = 'reading-mmo-v5.10.35-readable-journal-mobile';",
                   "const CACHE = 'reading-mmo-v5.10.36-shell-mobile-journal';",
+                  "const CACHE = 'reading-mmo-v5.10.37-readable-journal-force';",
               ]:
-                  sw = sw.replace(old_cache, "const CACHE = 'reading-mmo-v5.10.37-readable-journal-force';")
-              for old_force in ['51033','51034','51035','51036']:
-                  sw = sw.replace(f"const FORCE_VERSION = '{old_force}';", "const FORCE_VERSION = '51037';")
+                  sw = sw.replace(old_cache, "const CACHE = 'reading-mmo-v5.10.38-journal-cascade-repair';")
+              for old_force in ['51033','51034','51035','51036','51037']:
+                  sw = sw.replace(f"const FORCE_VERSION = '{old_force}';", "const FORCE_VERSION = '51038';")
+
+              journal_core = "  './reading-journal-v51032.js',\n"
+              mobile_core = "  './reading-journal-mobile-v51035.js',\n"
+              cascade_core = "  './reading-journal-cascade-v51038.js',\n"
               if "'./reading-journal-mobile-v51035.js'" not in sw:
-                  needle = "  './reading-journal-v51032.js',\n"
-                  if needle not in sw:
+                  if journal_core not in sw:
                       raise SystemExit(f'could not add mobile Journal to {worker_path}')
-                  sw = sw.replace(needle, needle + "  './reading-journal-mobile-v51035.js',\n", 1)
+                  sw = sw.replace(journal_core, journal_core + mobile_core, 1)
+              if "'./reading-journal-cascade-v51038.js'" not in sw:
+                  if mobile_core in sw:
+                      sw = sw.replace(mobile_core, mobile_core + cascade_core, 1)
+                  elif journal_core in sw:
+                      sw = sw.replace(journal_core, journal_core + cascade_core, 1)
+                  else:
+                      raise SystemExit(f'could not add cascade repair to {worker_path}')
+
               if sw != original:
                   worker_path.write_text(sw)
                   changed.append(str(worker_path))
@@ -122,19 +139,19 @@ jobs:
           if source_sw is None:
               raise SystemExit('no service worker source available')
 
-          fresh_sw_path = Path('service-worker-v51037.js')
+          fresh_sw_path = Path('service-worker-v51038.js')
           existing_fresh = fresh_sw_path.read_text() if fresh_sw_path.exists() else None
           if existing_fresh != source_sw:
               fresh_sw_path.write_text(source_sw)
-              changed.append('service-worker-v51037.js')
+              changed.append('service-worker-v51038.js')
 
-          # 5) Future installed launches request the current shell directly.
+          # 4) Installed launches request the current shell directly.
           manifest_path = Path('manifest.webmanifest')
           manifest = manifest_path.read_text()
           m2 = manifest
-          for v in ['51035','51036']:
-              m2 = m2.replace(f'"start_url": "./?appv={v}",', '"start_url": "./?appv=51037",')
-          m2 = m2.replace('"start_url": "./",', '"start_url": "./?appv=51037",')
+          for v in ['51035','51036','51037']:
+              m2 = m2.replace(f'"start_url": "./?appv={v}",', '"start_url": "./?appv=51038",')
+          m2 = m2.replace('"start_url": "./",', '"start_url": "./?appv=51038",')
           if m2 != manifest:
               manifest_path.write_text(m2)
               changed.append('manifest.webmanifest')
@@ -144,13 +161,13 @@ jobs:
           PY
           echo "changed=$(cat /tmp/promote_changed)" >> "$GITHUB_OUTPUT"
 
-      - name: Commit v5.10.37 readability promotion
+      - name: Commit v5.10.38 cascade promotion
         if: steps.promote.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html reading-journal-v51032.js reading-journal-mobile-v51035.js service-worker-v51033.js service-worker-v51036.js service-worker-v51037.js manifest.webmanifest
-          git commit -m "Activate Reading MMO v5.10.37 readable Journal"
+          git add index.html reading-journal-v51032.js reading-journal-mobile-v51035.js reading-journal-cascade-v51038.js service-worker-v51033.js service-worker-v51036.js service-worker-v51037.js service-worker-v51038.js manifest.webmanifest
+          git commit -m "Activate Reading MMO v5.10.38 Journal cascade repair"
           git push origin HEAD:main
 
       - name: Request fresh Pages build
@@ -164,11 +181,13 @@ jobs:
         run: |
           node --check reading-journal-v51032.js
           node --check reading-journal-mobile-v51035.js
+          node --check reading-journal-cascade-v51038.js
           node --check service-worker-v51033.js
           node --check service-worker-v51036.js
           node --check service-worker-v51037.js
+          node --check service-worker-v51038.js
 
-      - name: Verify v5.10.37 readable runtime
+      - name: Verify v5.10.38 cascade runtime
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -176,48 +195,58 @@ jobs:
           idx = Path('index.html').read_text()
           journal = Path('reading-journal-v51032.js').read_text()
           mobile = Path('reading-journal-mobile-v51035.js').read_text()
+          cascade = Path('reading-journal-cascade-v51038.js').read_text()
           workers = [
               Path('service-worker-v51033.js').read_text(),
               Path('service-worker-v51036.js').read_text(),
               Path('service-worker-v51037.js').read_text(),
+              Path('service-worker-v51038.js').read_text(),
           ]
           manifest = Path('manifest.webmanifest').read_text()
 
           for check in [
-              'app-version-badge">v5.10.37',
-              '<b>Version</b><span>v5.10.37</span>',
-              "window.__readingMmoVersionOwner='v5.10.37'",
-              'reading-journal-v51032.js?v=51037',
-              'reading-journal-mobile-v51035.js?v=51037',
-              'service-worker-v51037.js?v=51037',
+              'app-version-badge">v5.10.38',
+              '<b>Version</b><span>v5.10.38</span>',
+              "window.__readingMmoVersionOwner='v5.10.38'",
+              'reading-journal-v51032.js?v=51038',
+              'reading-journal-mobile-v51035.js?v=51038',
+              'reading-journal-cascade-v51038.js?v=51038',
+              'service-worker-v51038.js?v=51038',
           ]:
               if check not in idx:
-                  raise SystemExit(f'missing v5.10.37 shell wiring: {check}')
+                  raise SystemExit(f'missing v5.10.38 shell wiring: {check}')
 
-          if "const BUILD='v5.10.37'" not in journal:
+          if "const BUILD='v5.10.38'" not in journal:
               raise SystemExit('Journal build owner was not promoted')
 
           for check in [
               '@media (max-width: 2000px)',
-              'window.__v51037ReadableJournalMobile',
-              "style.id='v51037-readable-journal-mobile'",
               'grid-template-columns:repeat(2,minmax(0,1fr))',
               'font-size:15.5px',
-              'font:900 12px/1.15 ui-monospace,monospace!important',
           ]:
               if check not in mobile:
-                  raise SystemExit(f'missing forced readability CSS: {check}')
+                  raise SystemExit(f'missing readable Journal CSS: {check}')
+
+          for check in [
+              'v51038-readable-journal-live',
+              "document.getElementById('v51034-journal-css')",
+              'document.head.appendChild(live)',
+              'MutationObserver',
+          ]:
+              if check not in cascade:
+                  raise SystemExit(f'missing cascade-order repair behavior: {check}')
 
           for sw in workers:
               for check in [
-                  "reading-mmo-v5.10.37-readable-journal-force",
-                  "FORCE_VERSION = '51037'",
+                  "reading-mmo-v5.10.38-journal-cascade-repair",
+                  "FORCE_VERSION = '51038'",
                   "'./reading-journal-v51032.js'",
                   "'./reading-journal-mobile-v51035.js'",
+                  "'./reading-journal-cascade-v51038.js'",
               ]:
                   if check not in sw:
-                      raise SystemExit(f'missing v5.10.37 worker wiring: {check}')
+                      raise SystemExit(f'missing v5.10.38 worker wiring: {check}')
 
-          if '"start_url": "./?appv=51037"' not in manifest:
-              raise SystemExit('manifest does not launch v5.10.37')
+          if '"start_url": "./?appv=51038"' not in manifest:
+              raise SystemExit('manifest does not launch v5.10.38')
           PY
