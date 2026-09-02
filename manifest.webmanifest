@@ -2,7 +2,7 @@
   "name": "Reading MMO",
   "short_name": "Reading MMO",
   "description": "A cozy enchanted reading MMO with quests, reading tools, loot, and KWGT sync.",
-  "start_url": "./?appv=51037",
+  "start_url": "./?appv=51038",
   "scope": "./",
   "display": "standalone",
   "background_color": "#17100d",
