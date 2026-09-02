@@ -42,7 +42,7 @@ jobs:
           for check in [
               "const BUILD='v5.10.34'",
               'readingSessions',
-              'S.library',
+              'appState()?.library',
               'READING TIMELINE',
               'THE COMPLETE LEDGER',
               'MOST-READ BOOK',
