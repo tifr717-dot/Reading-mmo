@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 190">
+<defs>
+ <linearGradient id="p" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f7ead0"/><stop offset="1" stop-color="#e9cf9d"/></linearGradient>
+ <linearGradient id="p2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1dcb6"/><stop offset="1" stop-color="#d9b978"/></linearGradient>
+ <filter id="s" x="-20%" y="-30%" width="140%" height="170%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#4b2b18" flood-opacity=".35"/></filter>
+ <filter id="s2" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#4b2b18" flood-opacity=".28"/></filter>
+</defs>
+<g filter="url(#s)">
+ <path d="M23 29 L66 18 L154 23 L227 15 L310 20 L402 15 L487 21 L566 17 L653 26 L692 22 L700 57 L694 96 L701 136 L676 166 L602 160 L525 168 L445 161 L361 170 L284 162 L199 169 L117 160 L45 166 L18 141 L25 102 L17 60Z" fill="#d8b77b" opacity=".64"/>
+ <path d="M30 23 L82 13 L161 18 L239 10 L325 16 L406 11 L487 17 L564 12 L653 20 L692 17 L699 54 L694 92 L700 132 L673 158 L604 154 L526 162 L444 156 L360 164 L280 157 L201 164 L120 155 L48 161 L23 136 L29 98 L22 57Z" fill="url(#p)" stroke="#9d7444" stroke-width="2.5"/>
+ <path d="M39 35 L85 27 L161 31 L240 24 L325 29 L408 25 L485 31 L561 26 L644 33 L682 30 L687 59 L683 92 L688 125 L666 146 L605 143 L526 150 L444 145 L361 153 L282 146 L202 152 L122 143 L55 148 L36 130 L42 97 L34 62Z" fill="none" stroke="#c99c55" stroke-width="2" opacity=".72"/>
+</g>
+<!-- botanical oval cameo -->
+<g transform="translate(91 94)" filter="url(#s2)">
+ <ellipse rx="52" ry="68" fill="#e8d3a9" stroke="#a77a3d" stroke-width="4"/>
+ <ellipse rx="42" ry="58" fill="#f4e5c3" stroke="#c8a05b" stroke-width="2"/>
+ <path d="M-2 42 C-10 17 -7 -5 5 -31" fill="none" stroke="#66765b" stroke-width="2.8"/>
+ <path d="M1 18 q-22-15-28 1 q14 10 28 5 M0 4 q20-16 28 0 q-11 13-27 8 M6-14 q-18-13-23 2 q11 9 22 5 M7-27 q17-14 24 0 q-10 10-23 8" fill="none" stroke="#66765b" stroke-width="2.2"/>
+ <g fill="#8c6d8f" opacity=".92"><circle cx="6" cy="-35" r="5"/><circle cx="-12" cy="-12" r="4"/><circle cx="24" cy="-4" r="4"/><circle cx="-24" cy="17" r="4"/></g>
+ <g fill="#d4a9ad" opacity=".92"><circle cx="-2" cy="-24" r="4"/><circle cx="15" cy="13" r="4"/></g>
+</g>
+<!-- center flourish line -->
+<g stroke="#9b7a48" fill="none" stroke-width="2" opacity=".9"><path d="M231 135 H520"/><path d="M356 135 q12-16 24 0 q12 16 24 0"/><circle cx="215" cy="135" r="2.5" fill="#9b7a48"/><circle cx="536" cy="135" r="2.5" fill="#9b7a48"/></g>
+<!-- dropdown chevron -->
+<path d="M647 84 l14 14 14-14" fill="none" stroke="#4a2c1b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- tiny deckled corner marks -->
+<path d="M28 56 q12 8 0 19 M694 55 q-12 8 0 19 M37 134 q11-8 22 3 M681 132 q-11-8-22 3" fill="none" stroke="#b48d53" stroke-width="2" opacity=".6"/>
+</svg>
