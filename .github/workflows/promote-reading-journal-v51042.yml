@@ -1,0 +1,116 @@
+name: Promote Reading Journal v5.10.42
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'reading-journal-fix-v51042.js'
+      - '.github/workflows/promote-reading-journal-v51042.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Promote illustrated Journal cleanup to v5.10.42
+        id: promote
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          changed=[]
+
+          idxp=Path('index.html')
+          idx=idxp.read_text(); out=idx
+          out=out.replace('app-version-badge">v5.10.41','app-version-badge">v5.10.42')
+          out=out.replace('<b>Version</b><span>v5.10.41</span>','<b>Version</b><span>v5.10.42</span>')
+          out=out.replace("window.__readingMmoVersionOwner='v5.10.41'","window.__readingMmoVersionOwner='v5.10.42'")
+          for name in ['reading-journal-v51032.js','reading-journal-mobile-v51035.js','reading-journal-cascade-v51038.js','reading-journal-polish-v51039.js','reading-journal-visual-v51040.js','reading-journal-art-v51041.js']:
+              out=out.replace(f'./{name}?v=51041',f'./{name}?v=51042')
+          out=out.replace('./service-worker-v51041.js?v=51041','./service-worker-v51042.js?v=51042')
+
+          art='<script src="./reading-journal-art-v51041.js?v=51042"></script>'
+          fix='<script src="./reading-journal-fix-v51042.js?v=51042"></script>'
+          if fix not in out:
+              if art not in out: raise SystemExit('could not find v5.10.41 art script')
+              out=out.replace(art,art+'\n'+fix,1)
+          if out!=idx:
+              idxp.write_text(out);changed.append('index.html')
+
+          jp=Path('reading-journal-v51032.js')
+          j=jp.read_text(); j2=j.replace("const BUILD='v5.10.41'","const BUILD='v5.10.42'")
+          if j2!=j:
+              jp.write_text(j2);changed.append(str(jp))
+
+          swp=Path('service-worker-v51041.js')
+          sw=swp.read_text(); sw2=sw
+          sw2=sw2.replace("const CACHE = 'reading-mmo-v5.10.41-illustrated-archivist-journal';","const CACHE = 'reading-mmo-v5.10.42-illustrated-journal-cleanup';")
+          sw2=sw2.replace("const FORCE_VERSION = '51041';","const FORCE_VERSION = '51042';")
+          if "'./reading-journal-fix-v51042.js'" not in sw2:
+              needle="  './reading-journal-art-v51041.js',\n"
+              if needle not in sw2: raise SystemExit('could not find art cache entry')
+              sw2=sw2.replace(needle,needle+"  './reading-journal-fix-v51042.js',\n",1)
+
+          fresh=Path('service-worker-v51042.js')
+          if not fresh.exists() or fresh.read_text()!=sw2:
+              fresh.write_text(sw2);changed.append(str(fresh))
+
+          mp=Path('manifest.webmanifest')
+          m=mp.read_text(); m2=m.replace('"start_url": "./?appv=51041"','"start_url": "./?appv=51042"')
+          if m2!=m:
+              mp.write_text(m2);changed.append(str(mp))
+
+          Path('/tmp/changed').write_text('true' if changed else 'false')
+          print('changed:', ', '.join(changed) if changed else 'none')
+          PY
+          echo "changed=$(cat /tmp/changed)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit v5.10.42 runtime
+        if: steps.promote.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html reading-journal-v51032.js reading-journal-fix-v51042.js service-worker-v51042.js manifest.webmanifest
+          git commit -m "Activate Reading MMO v5.10.42 illustrated Journal cleanup"
+          git push origin HEAD:main
+
+      - name: Request fresh Pages build
+        if: steps.promote.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"
+
+      - name: Verify syntax
+        run: |
+          node --check reading-journal-v51032.js
+          node --check reading-journal-art-v51041.js
+          node --check reading-journal-fix-v51042.js
+          node --check service-worker-v51042.js
+
+      - name: Verify v5.10.42 cleanup runtime
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          idx=Path('index.html').read_text()
+          fix=Path('reading-journal-fix-v51042.js').read_text()
+          sw=Path('service-worker-v51042.js').read_text()
+          manifest=Path('manifest.webmanifest').read_text()
+          checks=[
+            ('index version','app-version-badge">v5.10.42' in idx),
+            ('fix script','reading-journal-fix-v51042.js?v=51042' in idx),
+            ('worker registration','service-worker-v51042.js?v=51042' in idx),
+            ('absolute close','position:absolute!important' in fix and 'right:14px!important' in fix),
+            ('mode icons','data-journal-mode="all"' in fix and 'data-journal-mode="book"' in fix),
+            ('robust scroll reset','queueReset' in fix and 'body.scrollTop=0' in fix),
+            ('worker cache',"reading-mmo-v5.10.42-illustrated-journal-cleanup" in sw and "FORCE_VERSION = '51042'" in sw),
+            ('fix cached',"'./reading-journal-fix-v51042.js'" in sw),
+            ('manifest','"start_url": "./?appv=51042"' in manifest),
+          ]
+          bad=[name for name,ok in checks if not ok]
+          if bad: raise SystemExit('missing: '+', '.join(bad))
+          PY
