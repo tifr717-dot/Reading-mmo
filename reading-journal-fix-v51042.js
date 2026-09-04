@@ -49,12 +49,20 @@
   }
 
   function loadMockupRebuild(){
-    if(window.__v51043JournalMockup||document.getElementById('v51043-journal-mockup-loader'))return;
-    const script=document.createElement('script');
-    script.id='v51043-journal-mockup-loader';
-    script.src='./reading-journal-mockup-v51043.js?v=mockup-top-exact-1';
-    script.async=false;
-    document.head.appendChild(script);
+    if(!window.__v51043JournalMockup&&!document.getElementById('v51043-journal-mockup-loader')){
+      const script=document.createElement('script');
+      script.id='v51043-journal-mockup-loader';
+      script.src='./reading-journal-mockup-v51043.js?v=mockup-top-exact-2';
+      script.async=false;
+      document.head.appendChild(script);
+    }
+    if(!window.__v51043JournalMockupStats&&!document.getElementById('v51043-journal-mockup-stats-loader')){
+      const script=document.createElement('script');
+      script.id='v51043-journal-mockup-stats-loader';
+      script.src='./reading-journal-mockup-stats-v51043.js?v=mockup-stats-exact-1';
+      script.async=false;
+      document.head.appendChild(script);
+    }
   }
 
   function syncMode(){
