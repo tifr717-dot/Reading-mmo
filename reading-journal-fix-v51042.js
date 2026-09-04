@@ -63,6 +63,13 @@
       script.async=false;
       document.head.appendChild(script);
     }
+    if(!window.__v51043JournalMockupLower&&!document.getElementById('v51043-journal-mockup-lower-loader')){
+      const script=document.createElement('script');
+      script.id='v51043-journal-mockup-lower-loader';
+      script.src='./reading-journal-mockup-lower-v51043.js?v=mockup-lower-exact-1';
+      script.async=false;
+      document.head.appendChild(script);
+    }
   }
 
   function syncMode(){
@@ -88,7 +95,6 @@
     },ms));
   }
 
-  // Document-bubble change fires after the Journal's own select handler has rebuilt its body.
   document.addEventListener('change',e=>{
     if(e.target?.id==='v51034BookFilter')queueReset();
   },false);
