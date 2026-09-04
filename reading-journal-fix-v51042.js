@@ -48,6 +48,15 @@
     stamp();
   }
 
+  function loadMockupRebuild(){
+    if(window.__v51043JournalMockup||document.getElementById('v51043-journal-mockup-loader'))return;
+    const script=document.createElement('script');
+    script.id='v51043-journal-mockup-loader';
+    script.src='./reading-journal-mockup-v51043.js?v=mockup-top-exact-1';
+    script.async=false;
+    document.head.appendChild(script);
+  }
+
   function syncMode(){
     const shell=document.querySelector('.v51034-shell');
     const select=document.getElementById('v51034BookFilter');
@@ -67,6 +76,7 @@
       install();
       syncMode();
       resetJournalScroll();
+      loadMockupRebuild();
     },ms));
   }
 
@@ -79,7 +89,7 @@
     if(e.target.closest?.('[data-journal-book],#v51034JournalLaunch,#v51034LibraryJournalLaunch'))queueReset();
   },false);
 
-  const apply=()=>{install();syncMode();};
+  const apply=()=>{install();syncMode();loadMockupRebuild();};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
   else apply();
   window.addEventListener('pageshow',apply);
