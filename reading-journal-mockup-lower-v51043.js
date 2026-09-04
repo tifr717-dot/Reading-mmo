@@ -3,7 +3,7 @@
   if(window.__v51043JournalMockupLower)return;
   window.__v51043JournalMockupLower=true;
 
-  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-part-${String(i+1).padStart(2,'0')}.txt?v=lower-exact-1`);
+  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043`);
   let assets=null;
   let loading=null;
   const data=k=>assets?.[k]?`data:image/webp;base64,${assets[k]}`:'';
@@ -12,7 +12,7 @@
     if(assets)return assets;
     if(loading)return loading;
     loading=Promise.all(PARTS.map(p=>fetch(p,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`Journal art ${r.status}`);return r.text()})))
-      .then(parts=>JSON.parse(parts.join('')))
+      .then(parts=>JSON.parse(parts.map(p=>atob(p.trim())).join('')))
       .then(pack=>{assets=pack; installStyle(); decorate(); return pack;})
       .catch(err=>{console.warn('[Journal mockup lower art]',err); loading=null; return null;});
     return loading;
@@ -73,7 +73,7 @@
       @media(max-width:360px){.v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-entry{grid-template-columns:52px minmax(0,1fr)!important}.v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-day:before{left:33px}.v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-day-head{padding-left:49px!important}.v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-day-head:before{left:25px}.v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-source{width:51px!important;height:51px!important;font-size:6.4px!important}.v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-entry-numbers{gap:5px!important}}
     `;
     document.head.appendChild(s);
-    document.documentElement.dataset.readingJournalMockupLower='51043-exact-v1';
+    document.documentElement.dataset.readingJournalMockupLower='51043-exact-v2';
   }
 
   function decorate(){
