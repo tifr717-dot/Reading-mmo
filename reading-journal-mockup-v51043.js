@@ -150,19 +150,19 @@
       z-index:7!important;
       left:38.8%!important;
       top:38%!important;
-      width:34.8%!important;
+      width:33.1%!important;
       max-width:none!important;
       height:40%!important;
       min-height:0!important;
       margin:0!important;
-      padding:0 22px 0 0!important;
+      padding:0!important;
       border:0!important;
       outline:0!important;
       border-radius:0!important;
       background:transparent!important;
       box-shadow:none!important;
       color:#352317!important;
-      font:500 clamp(17px,4.8vw,29px)/1 Georgia,'Times New Roman',serif!important;
+      font:500 clamp(15.5px,4.1vw,24px)/1 Georgia,'Times New Roman',serif!important;
       letter-spacing:-.4px!important;
       text-align:left!important;
       text-overflow:ellipsis!important;
@@ -211,9 +211,9 @@
     @media(max-width:360px){
       .v51034-shell.v51043-mockup .v51034-toolbar-label{font-size:7px!important}
       .v51034-shell.v51043-mockup .v51034-book-select{
-        font-size:16px!important;
+        font-size:15px!important;
         left:38.5%!important;
-        width:35.5%!important;
+        width:33.5%!important;
       }
       .v51034-shell.v51043-mockup .v51034-toolbar:after{
         width:9px;height:9px;
