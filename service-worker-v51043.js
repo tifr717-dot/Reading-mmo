@@ -17,7 +17,7 @@ const CORE=[
  './reading-journal-mockup-v51043.js','./reading-journal-mockup-stats-v51043.js','./reading-journal-mockup-lower-v51043.js','./reading-journal-mockup-final-v51043.js',
  './journal-botanical-corner-v51041.svg','./journal-flourish-v51041.svg','./journal-icon-sessions-v51041.svg','./journal-icon-pages-v51041.svg','./journal-icon-time-v51041.svg','./journal-icon-longest-v51041.svg',
  './journal-mockup-top-exact-v1.webp','./journal-mockup-selector-strip-blank-v1.webp','./journal-mockup-stats-blank-v1.webp',
- './journal-mockup-lower-pack-part-01.txt','./journal-mockup-lower-pack-part-02.txt','./journal-mockup-lower-pack-part-03.txt','./journal-mockup-lower-pack-part-04.txt','./journal-mockup-lower-pack-part-05.txt','./journal-mockup-lower-pack-part-06.txt','./journal-mockup-lower-pack-part-07.txt'
+ './journal-mockup-lower-pack-tiny-01.b64','./journal-mockup-lower-pack-tiny-02.b64','./journal-mockup-lower-pack-tiny-03.b64','./journal-mockup-lower-pack-tiny-04.b64','./journal-mockup-lower-pack-tiny-05.b64','./journal-mockup-lower-pack-tiny-06.b64','./journal-mockup-lower-pack-tiny-07.b64'
 ];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{
