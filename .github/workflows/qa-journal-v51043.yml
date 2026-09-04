@@ -25,26 +25,27 @@ jobs:
           node --check reading-journal-mockup-lower-v51043.js
           node --check reading-journal-mockup-final-v51043.js
           node --check service-worker-v51043.js
-      - name: Validate lower-art pack
+      - name: Validate repaired lower-art pack
         run: |
           python3 - <<'PY'
-          import json, pathlib
+          import json, pathlib, base64
           parts=[]
           for i in range(1,8):
-              p=pathlib.Path(f'journal-mockup-lower-pack-part-{i:02d}.txt')
+              p=pathlib.Path(f'journal-mockup-lower-pack-tiny-{i:02d}.b64')
               assert p.exists() and p.stat().st_size>0, p
-              parts.append(p.read_text())
+              parts.append(base64.b64decode(p.read_text().strip()).decode())
           pack=json.loads(''.join(parts))
           for key in ('ledger','ribbon','lav','blue','footer'):
               assert key in pack and len(pack[key])>100, key
-          print('lower-art pack OK:', ', '.join(sorted(pack)))
+          print('repaired lower-art pack OK:', ', '.join(sorted(pack)))
           PY
-      - name: Validate exact Journal assets
+      - name: Validate exact Journal assets and wiring
         run: |
           test -s journal-mockup-top-exact-v1.webp
           test -s journal-mockup-selector-strip-blank-v1.webp
           test -s journal-mockup-stats-blank-v1.webp
           grep -q "v5.10.43" reading-journal-fix-v51042.js
           grep -q "service-worker-v51043.js" reading-journal-mockup-final-v51043.js
-          grep -q "journal-mockup-lower-pack-part-07.txt" service-worker-v51043.js
+          grep -q "journal-mockup-lower-pack-tiny-07.b64" service-worker-v51043.js
+          grep -q "atob(p.trim())" reading-journal-mockup-lower-v51043.js
           echo "v5.10.43 Journal wiring OK"
