@@ -129,5 +129,8 @@ Any adaptation must preserve the visual composition and should not convert an il
 11. Mobile density/readability tuning.
 12. Final side-by-side polish against the approved mockup before promotion.
 
+## Exact-art integration note
+The approved mockup itself may be used as a source for production-safe cropped art layers when doing so produces a more faithful result than redrawing the same composition. Interactive data must remain real DOM/UI layered over those art crops.
+
 ## Promotion rule
 The rebuild stays on `journal-mockup-rebuild` until it is visually close enough to the approved mockup that the remaining differences are implementation necessities, not shortcuts.
