@@ -117,12 +117,12 @@
     if(old)old.remove();
     document.head.appendChild(style);
     document.documentElement.dataset.readingJournalVisual='51040';
-    window.__readingMmoVersionOwner='v5.10.40';
+    window.__readingMmoVersionOwner='v5.10.43';
     const badge=document.getElementById('headerVersionText');
-    if(badge)badge.textContent='v5.10.40';
+    if(badge)badge.textContent='v5.10.43';
     document.querySelectorAll('.health-row').forEach(row=>{
       if(row.querySelector('b')?.textContent.trim()==='Version'){
-        const value=row.querySelector('span');if(value)value.textContent='v5.10.40';
+        const value=row.querySelector('span');if(value)value.textContent='v5.10.43';
       }
     });
   }
