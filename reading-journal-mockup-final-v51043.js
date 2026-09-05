@@ -102,6 +102,97 @@
       .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-stat-pill:before{left:8px!important;width:28px!important;height:28px!important;background-size:19px 19px!important}
       .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature{min-height:80px!important;padding:11px 9px!important}
     }
+    /* v5.10.43e — All Books now uses the same literal approved art language
+       as single-book mode. These rules intentionally win over the older
+       constructed-card fallbacks above. */
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-ribbon{
+      position:relative!important;
+      display:grid!important;
+      grid-template-columns:1fr 1fr!important;
+      grid-template-rows:1fr 1fr!important;
+      gap:0!important;
+      width:100%!important;
+      aspect-ratio:802/304!important;
+      min-height:0!important;
+      margin:0 0 5px!important;
+      padding:0!important;
+      overflow:hidden!important;
+      border:0!important;
+      outline:0!important;
+      border-radius:0!important;
+      background:url('./journal-mockup-stats-blank-v1.webp?v=51043e') center/100% 100% no-repeat!important;
+      box-shadow:none!important;
+      clip-path:none!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-stat-pill{
+      position:relative!important;
+      display:flex!important;
+      flex-direction:column!important;
+      justify-content:center!important;
+      align-items:flex-start!important;
+      min-width:0!important;
+      min-height:0!important;
+      margin:0!important;
+      border:0!important;
+      background:transparent!important;
+      box-shadow:none!important;
+      text-align:left!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-stat-pill:nth-child(odd){
+      padding:2.5% 2% 2% 46%!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-stat-pill:nth-child(even){
+      padding:2.5% 3% 2% 35%!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-stat-pill:before{
+      content:none!important;display:none!important;background:none!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-stat-pill span{
+      display:block!important;margin:0!important;color:#352317!important;
+      font:700 clamp(7px,2vw,10px)/1.05 Georgia,'Times New Roman',serif!important;
+      font-style:normal!important;letter-spacing:.25px!important;text-transform:uppercase!important;white-space:nowrap!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-stat-pill b{
+      display:block!important;margin:3px 0 0!important;color:#352317!important;
+      font:500 clamp(15px,4.5vw,25px)/.95 Georgia,'Times New Roman',serif!important;
+      letter-spacing:-.35px!important;white-space:nowrap!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-stat-pill i{
+      display:block!important;margin:4px 0 0!important;color:#4c3726!important;
+      font:400 clamp(6.5px,1.85vw,9.5px)/1.05 Georgia,'Times New Roman',serif!important;
+      font-style:normal!important;white-space:nowrap!important;
+    }
+
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature-row{
+      position:relative!important;
+      margin:1px 0 7px!important;
+      padding:11px 12px 13px!important;
+      border:0!important;
+      outline:0!important;
+      border-radius:0!important;
+      background:
+        radial-gradient(circle at 50% 0,rgba(255,248,220,.48),transparent 42%),
+        linear-gradient(104deg,#eed9ae 0%,#e3c48c 49%,#f0dcb2 100%)!important;
+      box-shadow:0 4px 10px rgba(65,39,20,.18),inset 0 0 18px rgba(111,74,32,.08)!important;
+      clip-path:polygon(1% 4%,12% 1%,25% 3%,38% 1%,52% 3%,66% 1%,79% 3%,91% 1%,99% 4%,98% 95%,87% 98%,74% 96%,61% 99%,47% 96%,34% 99%,20% 96%,8% 99%,1% 95%)!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature-row:before{
+      content:''!important;position:absolute!important;left:50%!important;top:0!important;bottom:0!important;width:1px!important;
+      background:rgba(103,72,36,.22)!important;pointer-events:none!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature-row:after{
+      content:'✦'!important;position:absolute!important;left:50%!important;right:auto!important;top:-3px!important;
+      transform:translateX(-50%)!important;width:31px!important;height:50px!important;padding-top:12px!important;
+      background:linear-gradient(#5b3e76,#3c2b58)!important;color:#dfbd58!important;text-align:center!important;
+      font:700 13px/1 Georgia!important;clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%)!important;
+      box-shadow:0 3px 6px rgba(55,34,25,.22)!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature{
+      min-height:88px!important;padding:13px 12px!important;border:0!important;
+      border-right:0!important;border-bottom:1px solid rgba(105,74,38,.2)!important;background:transparent!important;box-shadow:none!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature:nth-child(n+3){border-bottom:0!important}
+
   `;
 
   function stamp(){
@@ -133,7 +224,7 @@
 
   function registerWorker(){
     if(!('serviceWorker' in navigator))return;
-    navigator.serviceWorker.register('./service-worker-v51043.js?v=51043',{updateViaCache:'none'}).catch(()=>{});
+    navigator.serviceWorker.register('./service-worker-v51043.js?v=51043e',{updateViaCache:'none'}).catch(()=>{});
   }
 
   function queue(){[0,40,100,220,420].forEach(ms=>setTimeout(apply,ms));}
