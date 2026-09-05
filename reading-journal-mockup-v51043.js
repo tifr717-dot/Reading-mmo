@@ -49,10 +49,12 @@
       position:relative;
       z-index:2;
       flex:0 0 auto;
+      display:block;
       width:calc(100% + 12px);
+      height:auto;
       aspect-ratio:920/390;
       margin:0 -6px;
-      background:url('./journal-mockup-header-v1.svg') center top/100% 100% no-repeat;
+      object-fit:fill;
       pointer-events:none;
       user-select:none;
     }
@@ -167,9 +169,20 @@
       border:0!important;
       outline:0!important;
       border-radius:0!important;
-      background:url('./journal-mockup-bookplate-v1.svg') center/100% 100% no-repeat!important;
+      background:transparent!important;
       box-shadow:none!important;
       overflow:visible!important;
+    }
+    .v51034-shell.v51043-mockup .v51043-selector-art{
+      position:absolute!important;
+      inset:0!important;
+      z-index:1!important;
+      display:block!important;
+      width:100%!important;
+      height:100%!important;
+      object-fit:fill!important;
+      pointer-events:none!important;
+      user-select:none!important;
     }
 
     .v51034-shell.v51043-mockup .v51034-toolbar-label{
@@ -285,10 +298,22 @@
     shell.dataset.mockupPhase='top-exact-v1';
 
     if(!shell.querySelector('.v51043-top-art')){
-      const art=document.createElement('div');
+      const art=document.createElement('img');
       art.className='v51043-top-art';
+      art.src='./journal-mockup-header-v1.svg?v=51043b';
+      art.alt='';
       art.setAttribute('aria-hidden','true');
       shell.insertBefore(art,shell.firstChild);
+    }
+
+    const toolbar=shell.querySelector('.v51034-toolbar');
+    if(toolbar&&!toolbar.querySelector('.v51043-selector-art')){
+      const plate=document.createElement('img');
+      plate.className='v51043-selector-art';
+      plate.src='./journal-mockup-bookplate-v1.svg?v=51043b';
+      plate.alt='';
+      plate.setAttribute('aria-hidden','true');
+      toolbar.insertBefore(plate,toolbar.firstChild);
     }
 
     const label=shell.querySelector('.v51034-toolbar-label');
