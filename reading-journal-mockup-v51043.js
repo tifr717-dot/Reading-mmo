@@ -50,34 +50,83 @@
       z-index:2;
       flex:0 0 auto;
       width:calc(100% + 12px);
-      aspect-ratio:941/365;
+      aspect-ratio:920/390;
       margin:0 -6px;
-      background:url('./journal-mockup-top-exact-v1.webp') center top/100% 100% no-repeat;
+      background:url('./journal-mockup-header-v1.svg') center top/100% 100% no-repeat;
       pointer-events:none;
       user-select:none;
     }
 
-    /* Keep semantic heading text but don't draw a duplicate over the approved art. */
-    .v51034-shell.v51043-mockup .v51034-head,
-    .v51034-shell.v51043-mockup .v51034-rule{
+    /* Overlay the real Journal title copy on the illustrated header art. */
+    .v51034-shell.v51043-mockup .v51034-head{
       position:absolute!important;
-      width:1px!important;
-      height:1px!important;
-      margin:-1px!important;
+      z-index:8!important;
+      top:8.5%!important;
+      left:18%!important;
+      width:64%!important;
+      height:auto!important;
+      margin:0!important;
       padding:0!important;
       border:0!important;
-      overflow:hidden!important;
-      clip:rect(0 0 0 0)!important;
-      clip-path:inset(50%)!important;
-      white-space:nowrap!important;
+      overflow:visible!important;
+      clip:auto!important;
+      clip-path:none!important;
+      white-space:normal!important;
+      text-align:center!important;
+      pointer-events:none!important;
+    }
+    .v51034-shell.v51043-mockup .v51034-kicker{
+      display:block!important;
+      color:#4d3422!important;
+      font:italic 700 clamp(8px,2.2vw,12px)/1.05 Georgia,'Times New Roman',serif!important;
+      letter-spacing:.1px!important;
+      text-transform:none!important;
+    }
+    .v51034-shell.v51043-mockup .v51034-title{
+      display:block!important;
+      margin:5px 0 0!important;
+      color:#352217!important;
+      font:500 clamp(28px,8vw,46px)/.94 Georgia,'Times New Roman',serif!important;
+      letter-spacing:-1.4px!important;
+      text-shadow:0 1px rgba(255,245,215,.55)!important;
+    }
+    .v51034-shell.v51043-mockup .v51034-sub{
+      display:block!important;
+      margin:12px auto 0!important;
+      max-width:78%!important;
+      color:#5d432d!important;
+      font:400 clamp(8px,2.1vw,12px)/1.35 Georgia,'Times New Roman',serif!important;
+      letter-spacing:.35px!important;
+    }
+    .v51034-shell.v51043-mockup .v51034-rule{
+      position:absolute!important;
+      z-index:8!important;
+      top:24.2%!important;
+      left:35%!important;
+      width:30%!important;
+      height:16px!important;
+      margin:0!important;
+      padding:0!important;
+      border:0!important;
+      overflow:visible!important;
+      clip:auto!important;
+      clip-path:none!important;
+      pointer-events:none!important;
+    }
+    .v51034-shell.v51043-mockup .v51034-rule:before{
+      content:''!important;position:absolute!important;left:0!important;right:0!important;top:7px!important;border-top:1px solid #9c7841!important;
+    }
+    .v51034-shell.v51043-mockup .v51034-rule:after{
+      content:'✦'!important;position:absolute!important;left:50%!important;top:0!important;transform:translateX(-50%)!important;
+      padding:0 7px!important;background:#efddb7!important;color:#8c6238!important;font:700 9px/1 Georgia,serif!important;
     }
 
     /* The purple star medallion in the artwork is the actual close hit target. */
     .v51034-shell.v51043-mockup .v51034-close{
       position:absolute!important;
       z-index:30!important;
-      top:15px!important;
-      right:4.2%!important;
+      top:3.5%!important;
+      right:4.6%!important;
       left:auto!important;
       width:clamp(46px,12vw,62px)!important;
       min-width:46px!important;
@@ -109,16 +158,16 @@
       z-index:4!important;
       display:block!important;
       flex:0 0 auto!important;
-      width:calc(100% + 12px)!important;
-      aspect-ratio:941/185!important;
+      width:86%!important;
+      aspect-ratio:720/190!important;
       min-height:0!important;
       height:auto!important;
-      margin:-1.55% -6px 0!important;
+      margin:-3.2% auto 1px!important;
       padding:0!important;
       border:0!important;
       outline:0!important;
       border-radius:0!important;
-      background:url('./journal-mockup-selector-strip-blank-v1.webp') center/100% 100% no-repeat!important;
+      background:url('./journal-mockup-bookplate-v1.svg') center/100% 100% no-repeat!important;
       box-shadow:none!important;
       overflow:visible!important;
     }
@@ -127,9 +176,9 @@
       display:block!important;
       position:absolute!important;
       z-index:6!important;
-      left:38.8%!important;
-      top:25.5%!important;
-      width:34%!important;
+      left:29%!important;
+      top:30%!important;
+      width:46%!important;
       margin:0!important;
       padding:0!important;
       color:#3c2a1b!important;
@@ -148,9 +197,9 @@
       appearance:none!important;
       position:absolute!important;
       z-index:7!important;
-      left:38.8%!important;
-      top:38%!important;
-      width:33.1%!important;
+      left:29%!important;
+      top:39%!important;
+      width:58%!important;
       max-width:none!important;
       height:40%!important;
       min-height:0!important;
@@ -179,8 +228,8 @@
       content:'';
       position:absolute;
       z-index:6;
-      left:72.1%;
-      top:47%;
+      left:91%;
+      top:49%;
       width:11px;
       height:11px;
       border-right:2px solid #352317;
