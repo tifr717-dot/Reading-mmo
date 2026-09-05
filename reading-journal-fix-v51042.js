@@ -52,28 +52,28 @@
     if(!window.__v51043JournalMockup&&!document.getElementById('v51043-journal-mockup-loader')){
       const script=document.createElement('script');
       script.id='v51043-journal-mockup-loader';
-      script.src='./reading-journal-mockup-v51043.js?v=51043';
+      script.src='./reading-journal-mockup-v51043.js?v=51043c';
       script.async=false;
       document.head.appendChild(script);
     }
     if(!window.__v51043JournalMockupStats&&!document.getElementById('v51043-journal-mockup-stats-loader')){
       const script=document.createElement('script');
       script.id='v51043-journal-mockup-stats-loader';
-      script.src='./reading-journal-mockup-stats-v51043.js?v=51043';
+      script.src='./reading-journal-mockup-stats-v51043.js?v=51043c';
       script.async=false;
       document.head.appendChild(script);
     }
     if(!window.__v51043JournalMockupLower&&!document.getElementById('v51043-journal-mockup-lower-loader')){
       const script=document.createElement('script');
       script.id='v51043-journal-mockup-lower-loader';
-      script.src='./reading-journal-mockup-lower-v51043.js?v=51043';
+      script.src='./reading-journal-mockup-lower-v51043.js?v=51043c';
       script.async=false;
       document.head.appendChild(script);
     }
     if(!window.__v51043JournalMockupFinal&&!document.getElementById('v51043-journal-mockup-final-loader')){
       const script=document.createElement('script');
       script.id='v51043-journal-mockup-final-loader';
-      script.src='./reading-journal-mockup-final-v51043.js?v=51043';
+      script.src='./reading-journal-mockup-final-v51043.js?v=51043c';
       script.async=false;
       document.head.appendChild(script);
     }
