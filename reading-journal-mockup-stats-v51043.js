@@ -7,7 +7,7 @@
   style.id='v51043-journal-mockup-stats';
   style.textContent=`
     /* Phase 2 — exact approved mockup parchment art with real Journal values. */
-    .v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-ribbon{
+    .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-ribbon{
       position:relative!important;
       display:grid!important;
       grid-template-columns:1fr 1fr!important;
@@ -21,11 +21,11 @@
       overflow:hidden!important;
       border:0!important;
       outline:0!important;
-      background:url('./journal-mockup-stats-blank-v1.webp') center/100% 100% no-repeat!important;
+      background:url('./journal-mockup-stats-blank-v1.webp?v=51043e') center/100% 100% no-repeat!important;
       box-shadow:none!important;
     }
 
-    .v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-stat-pill{
+    .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-stat-pill{
       position:relative!important;
       display:flex!important;
       flex-direction:column!important;
@@ -40,18 +40,18 @@
       box-shadow:none!important;
       text-align:left!important;
     }
-    .v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-stat-pill:nth-child(odd){
+    .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-stat-pill:nth-child(odd){
       padding:2.5% 2% 2% 46%!important;
     }
-    .v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-stat-pill:nth-child(even){
+    .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-stat-pill:nth-child(even){
       padding:2.5% 3% 2% 35%!important;
     }
-    .v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-stat-pill:before{
+    .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-stat-pill:before{
       content:none!important;
       display:none!important;
       background:none!important;
     }
-    .v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-stat-pill span{
+    .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-stat-pill span{
       display:block!important;
       margin:0!important;
       color:#352317!important;
@@ -61,7 +61,7 @@
       text-transform:uppercase!important;
       white-space:nowrap!important;
     }
-    .v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-stat-pill b{
+    .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-stat-pill b{
       display:block!important;
       margin:3px 0 0!important;
       color:#352317!important;
@@ -69,7 +69,7 @@
       letter-spacing:-.35px!important;
       white-space:nowrap!important;
     }
-    .v51034-shell.v51043-mockup[data-journal-mode="book"] .v51034-stat-pill i{
+    .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-stat-pill i{
       display:block!important;
       margin:4px 0 0!important;
       color:#4c3726!important;
