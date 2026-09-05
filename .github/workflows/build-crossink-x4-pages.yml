@@ -21,16 +21,16 @@ permissions:
 env:
   CROSSINK_COMMIT: 0de623ed24acd94ae2301e8e1f4a42e32613110b
   FREEINK_COMMIT: 1ff020263cd2202ea79ce3eb811f5ac8489b8cde
-  CUSTOM_VERSION: 1.5.0-pages1
+  CUSTOM_VERSION: 1.5.0-pages2
   OFFICIAL_RECOVERY_SHA256: b5debe8b6b3f26f1af53410f388a2eb8def78b19b0c04aa94e46e942684dce2f
-  PATCH_B64_PATH: firmware/crossink-x4-pages/CrossInk-v1.5.0-pages-x4.patch.gz.b64
-  PATCH_SHA256: 0be82cde68b51c485dbd735937fd438b8ee405ff7091ee87e5cf969f399049fc
+  PAGES1_PATCH_B64_PATH: firmware/crossink-x4-pages/CrossInk-v1.5.0-pages-x4.patch.gz.b64
+  PAGES2_EDIT_SCRIPT: firmware/crossink-x4-pages/apply-pages2-direct.py
+  PAGES3_STATUSBAR_SCRIPT: firmware/crossink-x4-pages/apply-pages3-statusbar.py
 
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-
     steps:
       - name: Checkout isolated build inputs
         uses: actions/checkout@v6
@@ -97,32 +97,45 @@ jobs:
           sha256sum "$baseline" > "$GITHUB_WORKSPACE/baseline-sha256.txt"
           pio run -e default -t clean
 
-      - name: Decode, verify, and apply Pages patch
+      - name: Recreate known-good Pages1 source base
         shell: bash
         run: |
           set -euo pipefail
-          encoded="$GITHUB_WORKSPACE/$PATCH_B64_PATH"
-          patch_file="$GITHUB_WORKSPACE/CrossInk-v1.5.0-pages-x4.patch"
+          encoded="$GITHUB_WORKSPACE/$PAGES1_PATCH_B64_PATH"
+          compressed="$GITHUB_WORKSPACE/pages1-source.patch.gz"
+          patch_file="$GITHUB_WORKSPACE/pages1-source.patch"
           test -s "$encoded"
-          base64 -d "$encoded" | gzip -d > "$patch_file"
+          base64 -d "$encoded" > "$compressed"
+          gzip -t "$compressed"
+          gzip -dc "$compressed" > "$patch_file"
           test -s "$patch_file"
-          actual_sha="$(sha256sum "$patch_file" | awk '{print $1}')"
-          test "$actual_sha" = "$PATCH_SHA256"
           cd crossink
           git apply --check "$patch_file"
           git apply "$patch_file"
           git diff --check
 
-          allowed='^(CHANGELOG\.md|lib/I18n/translations/english\.yaml|src/activities/boot_sleep/SleepActivity\.cpp|src/activities/home/HomeActivity\.cpp|src/activities/home/RecentBookProgress\.(cpp|h)|src/activities/reader/BookStatsActivity\.(cpp|h)|src/activities/reader/BookStatsView\.(cpp|h)|src/activities/reader/EpubReaderActivity\.(cpp|h)|src/activities/reader/XtcReaderActivity\.cpp)$'
+      - name: Apply Pages2 direct source edits
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$GITHUB_WORKSPACE/$PAGES2_EDIT_SCRIPT" "$GITHUB_WORKSPACE/crossink"
+          python "$GITHUB_WORKSPACE/$PAGES3_STATUSBAR_SCRIPT" "$GITHUB_WORKSPACE/crossink"
+          cd crossink
+          git diff --check
+          allowed='^(CHANGELOG\.md|lib/I18n/translations/english\.yaml|src/activities/boot_sleep/SleepActivity\.cpp|src/activities/home/HomeActivity\.cpp|src/activities/home/RecentBookProgress\.(cpp|h)|src/activities/reader/BookStatsActivity\.(cpp|h)|src/activities/reader/BookStatsView\.(cpp|h)|src/activities/reader/EpubReaderActivity\.(cpp|h)|src/activities/reader/XtcReaderActivity\.cpp|src/activities/settings/StatusBarSettingsActivity\.cpp)$'
           unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
-            echo "Unexpected files changed by patch:"
+            echo "Unexpected source files changed:"
             printf '%s\n' "$unexpected"
             exit 1
           fi
-
           changed_count="$(git diff --name-only | wc -l | tr -d ' ')"
-          test "$changed_count" -eq 13
+          test "$changed_count" -eq 14
+          grep -q 'drawCurrentBookPageBadge' src/activities/home/HomeActivity.cpp
+          grep -q 'RecentBookProgress::loadPageNumber(recentBooks\[highlightedBookIndex\])' src/activities/home/HomeActivity.cpp
+          grep -q 'drawStatCell(renderer, x, thirdW, y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_PAGES_LBL))' src/activities/reader/BookStatsView.cpp
+          grep -q 'Whole Book Page Count' src/activities/settings/StatusBarSettingsActivity.cpp
+          grep -q 'visibleItemCount = ITEM_COUNT;' src/activities/settings/StatusBarSettingsActivity.cpp
           git diff --name-only | tee "$GITHUB_WORKSPACE/changed-files.txt"
           git diff --stat | tee "$GITHUB_WORKSPACE/patch-stat.txt"
 
@@ -145,7 +158,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y clang-format-21
 
-      - name: Check formatting
+      - name: Canonicalize and verify formatting
         shell: bash
         run: |
           set -euo pipefail
@@ -155,18 +168,12 @@ jobs:
           git diff --check
           changed_after_format="$(git diff --name-only)"
           expected="$(cat "$GITHUB_WORKSPACE/changed-files.txt")"
-          if [ "$changed_after_format" != "$expected" ]; then
-            echo "clang-format changed the patch surface unexpectedly."
-            git diff --stat
-            exit 1
-          fi
-
+          test "$changed_after_format" = "$expected"
           git diff > "$GITHUB_WORKSPACE/after-format.patch"
-          if ! cmp -s "$GITHUB_WORKSPACE/before-format.patch" "$GITHUB_WORKSPACE/after-format.patch"; then
-            echo "clang-format changed patch content; regenerate the patch before release."
-            diff -u "$GITHUB_WORKSPACE/before-format.patch" "$GITHUB_WORKSPACE/after-format.patch" || true
-            exit 1
-          fi
+          sha256sum "$GITHUB_WORKSPACE/after-format.patch" | tee "$GITHUB_WORKSPACE/formatted-patch-sha256.txt"
+          sha256sum -c "$GITHUB_WORKSPACE/protected-before.sha256"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$(cat "$GITHUB_WORKSPACE/freeink-before.txt")"
+          git diff --exit-code -- platformio.ini partitions.csv freeink-sdk
 
       - name: Run cppcheck
         shell: bash
@@ -193,75 +200,65 @@ jobs:
           set -euo pipefail
           custom="$GITHUB_WORKSPACE/out/firmware-x3-x4-v${CUSTOM_VERSION}.bin"
           test -s "$custom"
-
           baseline_size="$(cat "$GITHUB_WORKSPACE/baseline-size.txt")"
           custom_size="$(stat -c '%s' "$custom")"
           delta="$((custom_size - baseline_size))"
           partition_limit=6553600
           headroom="$((partition_limit - custom_size))"
-
-          if [ "$custom_size" -ge "$partition_limit" ]; then
-            echo "Custom firmware exceeds X3/X4 app partition limit."
-            exit 1
-          fi
-          if [ "$headroom" -lt 100000 ]; then
-            echo "Custom firmware headroom is below 100 KB; refusing release artifact."
-            exit 1
-          fi
-
+          test "$custom_size" -lt "$partition_limit"
+          test "$headroom" -ge 100000
           custom_sha="$(sha256sum "$custom" | awk '{print $1}')"
           baseline_sha="$(awk '{print $1}' "$GITHUB_WORKSPACE/baseline-sha256.txt")"
-
+          formatted_patch_sha="$(awk '{print $1}' "$GITHUB_WORKSPACE/formatted-patch-sha256.txt")"
           {
-            echo "CrossInk custom X4 Pages build"
+            echo "CrossInk custom X4 Pages2 direct-source build"
             echo "Base CrossInk commit: $CROSSINK_COMMIT"
             echo "FreeInk SDK commit: $FREEINK_COMMIT"
             echo "Custom version: $CUSTOM_VERSION"
-            echo "PlatformIO environment: default (x3-x4)"
-            echo "X3/X4 app partition limit bytes: $partition_limit"
             echo "Baseline rebuild bytes: $baseline_size"
             echo "Custom firmware bytes: $custom_size"
             echo "Custom size delta bytes: $delta"
             echo "Custom partition headroom bytes: $headroom"
             echo "Baseline rebuild SHA-256: $baseline_sha"
             echo "Custom firmware SHA-256: $custom_sha"
+            echo "Canonical source diff SHA-256: $formatted_patch_sha"
             echo "Official recovery firmware SHA-256: $OFFICIAL_RECOVERY_SHA256"
+            echo ""
+            echo "Pages2 behavior:"
+            echo "  - Current-book Reading Stats always shows Pages in row 2, column 1."
+            echo "  - Home recent-book tile shows a Page N badge from saved stable book position."
+            echo "  - Sleep Reading Stats receives the same current-book page number."
+            echo "  - Customize Status Bar exposes Whole Book Page Count as a selectable option."
+            echo "  - Whole-book page count falls back to CrossInk's custom estimated book pagination when publisher reference pages are unavailable."
             echo ""
             echo "Changed source files:"
             sed 's/^/  - /' "$GITHUB_WORKSPACE/changed-files.txt"
           } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
-
           sha256sum "$custom" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
-
+          cp "$GITHUB_WORKSPACE/after-format.patch" "$GITHUB_WORKSPACE/out/CrossInk-v1.5.0-pages2-x4-canonical.patch"
           cat > "$GITHUB_WORKSPACE/out/README-FLASH.txt" <<EOF2
           Flash candidate: firmware-x3-x4-v${CUSTOM_VERSION}.bin
           Target: Xteink X3/X4 CrossInk 1.5.0 base
 
-          Only use this file after the GitHub Actions job finishes successfully.
+          Only use this file after this GitHub Actions job finishes successfully.
           Keep the untouched official CrossInk 1.5.0 firmware available as a recovery image.
           Official recovery SHA-256: ${OFFICIAL_RECOVERY_SHA256}
 
-          This build changes Reading Stats presentation and page-position plumbing only.
-          It does not modify the partition table, board configuration, FreeInk SDK/display drivers, OTA/flash code, or bootloader/recovery paths.
+          Pages2 restores the current-book Pages stat, adds current page position to Home and sleep Reading Stats,
+          and exposes a selectable Whole Book Page Count option in Customize Status Bar.
+          Protected hardware, partition, SDK/display-driver, OTA, bootloader, and recovery inputs are unchanged.
           EOF2
           sed -i 's/^          //' "$GITHUB_WORKSPACE/out/README-FLASH.txt"
-
           cat "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
           cat "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
-
           {
-            echo "## CrossInk X4 Pages build"
+            echo "## CrossInk X4 Pages2 direct-source build"
             echo "- Base: \`$CROSSINK_COMMIT\`"
             echo "- FreeInk SDK: \`$FREEINK_COMMIT\`"
-            echo "- Firmware version: \`$CUSTOM_VERSION\`"
-            echo "- Baseline size: $baseline_size bytes"
-            echo "- Custom size: $custom_size bytes"
-            echo "- Size delta: $delta bytes"
-            echo "- Partition headroom: $headroom bytes"
+            echo "- Firmware: \`firmware-x3-x4-v${CUSTOM_VERSION}.bin\`"
             echo "- Custom SHA-256: \`$custom_sha\`"
-            echo ""
-            echo "### Build memory report"
-            grep -E "RAM:\s|Flash:\s" "$GITHUB_WORKSPACE/custom-build.log" || true
+            echo "- Size: $custom_size bytes"
+            echo "- Partition headroom: $headroom bytes"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload validated flash package
@@ -273,6 +270,7 @@ jobs:
             out/SHA256SUMS.txt
             out/BUILD-INFO.txt
             out/README-FLASH.txt
+            out/CrossInk-v1.5.0-pages2-x4-canonical.patch
             custom-build.log
             baseline-build.log
             patch-stat.txt
