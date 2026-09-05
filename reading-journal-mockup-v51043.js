@@ -252,7 +252,7 @@
     if(!shell.querySelector('.v51043-top-art')){
       const art=document.createElement('img');
       art.className='v51043-top-art';
-      art.src='./journal-mockup-top-exact-v1.webp?v=51043c';
+      art.src='./journal-mockup-top-exact-v1.webp?v=51043d';
       art.alt='';
       art.setAttribute('aria-hidden','true');
       shell.insertBefore(art,shell.firstChild);
@@ -262,7 +262,7 @@
     if(toolbar&&!toolbar.querySelector('.v51043-selector-art')){
       const plate=document.createElement('img');
       plate.className='v51043-selector-art';
-      plate.src='./journal-mockup-selector-strip-blank-v1.webp?v=51043c';
+      plate.src='./journal-mockup-selector-strip-blank-v1.webp?v=51043d';
       plate.alt='';
       plate.setAttribute('aria-hidden','true');
       toolbar.insertBefore(plate,toolbar.firstChild);
