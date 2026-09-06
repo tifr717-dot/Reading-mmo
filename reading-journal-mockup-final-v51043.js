@@ -111,16 +111,16 @@
       grid-template-columns:1fr 1fr!important;
       grid-template-rows:1fr 1fr!important;
       gap:0!important;
-      width:100%!important;
+      width:calc(100% + 28px)!important;
       aspect-ratio:802/304!important;
       min-height:0!important;
-      margin:0 0 5px!important;
+      margin:0 -14px 6px!important;
       padding:0!important;
       overflow:hidden!important;
       border:0!important;
       outline:0!important;
       border-radius:0!important;
-      background:url('./journal-mockup-stats-blank-v1.webp?v=51043f') center/100% 100% no-repeat!important;
+      background:url('./journal-mockup-stats-blank-v1.webp?v=51043h') center/100% 100% no-repeat!important;
       box-shadow:none!important;
       clip-path:none!important;
     }
@@ -217,9 +217,9 @@
       grid-template-columns:1fr 1fr!important;
       grid-template-rows:1fr 1fr!important;
       gap:0!important;
-      width:96%!important;
+      width:calc(100% + 20px)!important;
       min-height:245px!important;
-      margin:1px auto 10px!important;
+      margin:1px -10px 10px!important;
       padding:15px 17px!important;
       overflow:visible!important;
       border:1px solid rgba(117,79,37,.52)!important;
@@ -360,7 +360,7 @@
 
   function registerWorker(){
     if(!('serviceWorker' in navigator))return;
-    navigator.serviceWorker.register('./service-worker-v51043.js?v=51043f',{updateViaCache:'none'}).catch(()=>{});
+    navigator.serviceWorker.register('./service-worker-v51043.js?v=51043h',{updateViaCache:'none'}).catch(()=>{});
   }
 
   function queue(){[0,40,100,220,420].forEach(ms=>setTimeout(apply,ms));}
