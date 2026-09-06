@@ -3,7 +3,7 @@
   if(window.__v51043JournalMockupLowerClean)return;
   window.__v51043JournalMockupLowerClean=true;
 
-  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043i`);
+  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043j`);
   let assets=null,loading=null;
   const data=k=>assets?.[k]?`data:image/webp;base64,${assets[k]}`:'';
 
@@ -37,6 +37,114 @@
         padding-bottom:0!important;
       }
 
+
+      /* MASTER LOWER PAGE — this file owns everything below the selector. */
+      .v51034-shell.v51043-mockup .v51034-overall-hero{
+        display:none!important;
+      }
+
+      /* STATS PARCHMENT */
+      .v51034-shell.v51043-mockup .v51034-ribbon{
+        position:relative!important;
+        display:grid!important;
+        grid-template-columns:1fr 1fr!important;
+        grid-template-rows:1fr 1fr!important;
+        gap:0!important;
+        width:calc(100% + 12px)!important;
+        aspect-ratio:802/304!important;
+        min-height:0!important;
+        height:auto!important;
+        margin:0 -6px 8px!important;
+        padding:0!important;
+        overflow:hidden!important;
+        border:0!important;
+        outline:0!important;
+        background:url('./journal-mockup-stats-blank-v1.webp?v=51043j') center/100% 100% no-repeat!important;
+        box-shadow:none!important;
+      }
+      .v51034-shell.v51043-mockup .v51034-stat-pill{
+        position:relative!important;
+        display:flex!important;
+        flex-direction:column!important;
+        justify-content:center!important;
+        align-items:flex-start!important;
+        min-width:0!important;
+        min-height:0!important;
+        margin:0!important;
+        padding:0!important;
+        border:0!important;
+        background:transparent!important;
+        box-shadow:none!important;
+        text-align:left!important;
+      }
+      .v51034-shell.v51043-mockup .v51034-stat-pill:nth-child(odd){padding:2.5% 2% 2% 45%!important}
+      .v51034-shell.v51043-mockup .v51034-stat-pill:nth-child(even){padding:2.5% 3% 2% 34%!important}
+      .v51034-shell.v51043-mockup .v51034-stat-pill:before{content:none!important;display:none!important}
+      .v51034-shell.v51043-mockup .v51034-stat-pill span{
+        margin:0!important;color:#352317!important;
+        font:700 clamp(7px,2vw,10px)/1.05 Georgia,'Times New Roman',serif!important;
+        letter-spacing:.25px!important;text-transform:uppercase!important;white-space:nowrap!important
+      }
+      .v51034-shell.v51043-mockup .v51034-stat-pill b{
+        margin:3px 0 0!important;color:#352317!important;
+        font:500 clamp(15px,4.5vw,25px)/.95 Georgia,'Times New Roman',serif!important;
+        letter-spacing:-.35px!important;white-space:nowrap!important
+      }
+      .v51034-shell.v51043-mockup .v51034-stat-pill i{
+        margin:4px 0 0!important;color:#4c3726!important;
+        font:400 clamp(6.5px,1.85vw,9.5px)/1.05 Georgia,'Times New Roman',serif!important;
+        font-style:normal!important;white-space:nowrap!important
+      }
+
+      /* ALL BOOKS SECOND LEDGER */
+      .v51034-shell.v51043-mockup .v51034-feature-row{
+        position:relative!important;
+        display:grid!important;
+        grid-template-columns:1fr 1fr!important;
+        grid-template-rows:1fr 1fr!important;
+        gap:0!important;
+        width:calc(100% + 12px)!important;
+        aspect-ratio:805/250!important;
+        min-height:0!important;
+        margin:2px -6px 10px!important;
+        padding:0!important;
+        border:0!important;
+        background:url('${data('ledger')}') center/100% 100% no-repeat!important;
+        box-shadow:none!important;
+        overflow:hidden!important;
+      }
+      .v51034-shell.v51043-mockup .v51034-feature-row:before,
+      .v51034-shell.v51043-mockup .v51034-feature-row:after{content:none!important}
+      .v51034-shell.v51043-mockup .v51034-feature{
+        position:relative!important;
+        min-width:0!important;min-height:0!important;
+        margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important
+      }
+      .v51034-shell.v51043-mockup .v51034-feature span{
+        position:absolute!important;
+        left:18%!important;top:25%!important;right:7%!important;
+        margin:0!important;color:#5d4227!important;
+        font:700 clamp(6.5px,1.75vw,9px)/1 Georgia,'Times New Roman',serif!important;
+        letter-spacing:.35px!important;text-transform:uppercase!important
+      }
+      .v51034-shell.v51043-mockup .v51034-feature b{
+        position:absolute!important;
+        left:18%!important;top:43%!important;right:7%!important;
+        margin:0!important;color:#352317!important;
+        font:500 clamp(13px,3.45vw,20px)/1.02 Georgia,'Times New Roman',serif!important;
+        white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important
+      }
+      .v51034-shell.v51043-mockup .v51034-feature i{
+        position:absolute!important;
+        left:18%!important;top:67%!important;right:7%!important;
+        margin:0!important;color:#59402c!important;
+        font:400 clamp(6px,1.55vw,8px)/1.05 Georgia,'Times New Roman',serif!important;
+        font-style:normal!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important
+      }
+      .v51034-shell.v51043-mockup .v51034-feature:nth-child(even) span,
+      .v51034-shell.v51043-mockup .v51034-feature:nth-child(even) b,
+      .v51034-shell.v51043-mockup .v51034-feature:nth-child(even) i{left:10%!important;right:16%!important}
+
       /* SECOND LEDGER — one full-width illustrated sheet */
       .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-ledger-note{
         position:relative!important;
@@ -44,10 +152,10 @@
         grid-template-columns:1fr 1fr!important;
         grid-template-rows:1fr 1fr!important;
         gap:0!important;
-        width:calc(100% + 28px)!important;
+        width:calc(100% + 12px)!important;
         aspect-ratio:805/250!important;
         min-height:0!important;
-        margin:4px -14px 10px!important;
+        margin:4px -6px 10px!important;
         padding:0!important;
         border:0!important;
         background:url('${data('ledger')}') center/100% 100% no-repeat!important;
@@ -92,7 +200,7 @@
       .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-section-head{
         position:relative!important;
         display:block!important;
-        width:min(72%,430px)!important;
+        width:min(66%,390px)!important;
         aspect-ratio:465/87!important;
         height:auto!important;
         min-height:0!important;
@@ -192,8 +300,9 @@
       .v51034-shell.v51043-mockup .v51034-entry-main{
         position:relative!important;
         width:100%!important;
-        height:112px!important;
-        min-height:112px!important;
+        height:auto!important;
+        min-height:0!important;
+        aspect-ratio:620/108!important;
         margin:0!important;
         padding:0!important;
         border:0!important;
@@ -210,11 +319,11 @@
       .v51034-shell.v51043-mockup .v51034-entry-main:before{
         content:''!important;
         position:absolute!important;
-        left:8.5%!important;
-        top:21%!important;
-        width:57%!important;
-        height:62%!important;
-        background:linear-gradient(90deg,rgba(235,218,183,.96),rgba(235,218,183,.86) 78%,rgba(235,218,183,0))!important;
+        left:7%!important;
+        top:18%!important;
+        width:63%!important;
+        height:69%!important;
+        background:linear-gradient(90deg,rgba(236,219,184,.985),rgba(236,219,184,.96) 82%,rgba(236,219,184,.10))!important;
         filter:blur(.2px)!important;
         z-index:1!important;
         pointer-events:none!important;
@@ -224,7 +333,7 @@
         position:absolute!important;
         left:12%!important;
         right:21%!important;
-        top:36%!important;
+        top:34%!important;
         display:block!important;
         margin:0!important;
         padding:0!important;
@@ -243,7 +352,7 @@
         position:absolute!important;
         left:12%!important;
         right:22%!important;
-        top:57%!important;
+        top:56%!important;
         display:flex!important;
         align-items:baseline!important;
         justify-content:flex-start!important;
@@ -265,7 +374,7 @@
       .v51034-shell.v51043-mockup .v51034-book-link{
         position:absolute!important;
         left:12%!important;
-        top:73%!important;
+        top:72%!important;
         margin:0!important;
         padding:3px 7px!important;
         border:1px solid rgba(121,86,43,.48)!important;
@@ -275,6 +384,7 @@
         font:700 clamp(5.8px,1.5vw,7.5px)/1 Georgia,'Times New Roman',serif!important;
         text-decoration:none!important;
         z-index:3!important;
+        display:none!important;
       }
       .v51034-shell.v51043-mockup .v51034-source{
         position:absolute!important;
@@ -302,10 +412,10 @@
 
       /* BOTTOM VIGNETTE — edge-to-edge, then page ends */
       .v51034-shell.v51043-mockup .v51034-footer-art{
-        width:calc(100% + 28px)!important;
-        aspect-ratio:590/104!important;
-        margin:7px -14px 0!important;
-        background:url('${data('footer')}') center/100% 100% no-repeat!important;
+        width:calc(100% + 12px)!important;
+        aspect-ratio:590/88!important;
+        margin:7px -6px 0!important;
+        background:url('${data('footer')}') center bottom/100% auto no-repeat!important;
         pointer-events:none!important;
         user-select:none!important;
       }
@@ -316,11 +426,11 @@
         .v51034-shell.v51043-mockup .v51034-day-head{padding-left:55px!important}
         .v51034-shell.v51043-mockup .v51034-day-head:before{left:28px!important}
         .v51034-shell.v51043-mockup .v51034-source{width:52px!important;height:52px!important;font-size:6.4px!important}
-        .v51034-shell.v51043-mockup .v51034-entry-main{height:106px!important;min-height:106px!important}
+        .v51034-shell.v51043-mockup .v51034-entry-main{height:auto!important;min-height:0!important;aspect-ratio:620/108!important}
       }
     `;
     document.head.appendChild(s);
-    document.documentElement.dataset.readingJournalMockupLower='51043-clean-i';
+    document.documentElement.dataset.readingJournalMockupLower='51043-clean-j';
   }
 
   function decorate(){
