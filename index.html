@@ -4711,7 +4711,7 @@ async function checkForAppUpdate(){
    if(reg)await reg.update();
   }
   if(el)el.textContent="✅ Check complete. Reloading the latest version…";
-  setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51043l');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);
+  setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51043m');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);
  }catch(e){
   if(el)el.textContent="Could not check right now. Your current app and save are still safe.";
  }
@@ -7065,22 +7065,14 @@ setTimeout(restoreHomeTab,0);
 <script src="./reading-flow-v51029.js?v=51033"></script>
 <script src="./reading-ble-v51033.js?v=51033"></script>
 <script src="./reading-history-v51031.js?v=51033"></script>
-<script src="./reading-journal-v51032.js?v=51043"></script>
-<script src="./reading-journal-mobile-v51035.js?v=51043"></script>
-<script src="./reading-journal-cascade-v51038.js?v=51043"></script>
-<script src="./reading-journal-polish-v51039.js?v=51043"></script>
-<script src="./reading-journal-visual-v51040.js?v=51043"></script>
-<script src="./reading-journal-art-v51041.js?v=51043"></script>
-<script src="./reading-journal-fix-v51042.js?v=51043"></script>
-<script src="./reading-journal-mockup-v51043.js?v=51043l"></script>
-<script src="./reading-journal-mockup-stats-v51043.js?v=51043l"></script>
-<script src="./reading-journal-mockup-lower-v51043.js?v=51043l"></script>
-<script src="./reading-journal-mockup-final-v51043.js?v=51043l"></script>
+<script src="./reading-journal-v51032.js?v=51043m"></script>
+<script src="./reading-journal-mockup-v51043.js?v=51043m"></script>
+<script src="./reading-journal-unified-v51043.js?v=51043m"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker-v51043.js?v=51043l",{updateViaCache:"none"}).catch(() => {});
+    navigator.serviceWorker.register("./service-worker-v51043.js?v=51043m",{updateViaCache:"none"}).catch(() => {});
   });
 }
 </script>
