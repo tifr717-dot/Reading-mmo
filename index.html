@@ -4711,7 +4711,7 @@ async function checkForAppUpdate(){
    if(reg)await reg.update();
   }
   if(el)el.textContent="✅ Check complete. Reloading the latest version…";
-  setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51043h');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);
+  setTimeout(()=>{const u=new URL(location.href);u.searchParams.set('appv','51043i');u.searchParams.set('refresh',Date.now().toString());location.replace(u.href);},700);
  }catch(e){
   if(el)el.textContent="Could not check right now. Your current app and save are still safe.";
  }
@@ -7073,14 +7073,14 @@ setTimeout(restoreHomeTab,0);
 <script src="./reading-journal-art-v51041.js?v=51043"></script>
 <script src="./reading-journal-fix-v51042.js?v=51043"></script>
 <script src="./reading-journal-mockup-v51043.js?v=51043d"></script>
-<script src="./reading-journal-mockup-stats-v51043.js?v=51043h"></script>
-<script src="./reading-journal-mockup-lower-v51043.js?v=51043h"></script>
-<script src="./reading-journal-mockup-final-v51043.js?v=51043h"></script>
+<script src="./reading-journal-mockup-stats-v51043.js?v=51043i"></script>
+<script src="./reading-journal-mockup-lower-v51043.js?v=51043i"></script>
+<script src="./reading-journal-mockup-final-v51043.js?v=51043i"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker-v51043.js?v=51043h",{updateViaCache:"none"}).catch(() => {});
+    navigator.serviceWorker.register("./service-worker-v51043.js?v=51043i",{updateViaCache:"none"}).catch(() => {});
   });
 }
 </script>
