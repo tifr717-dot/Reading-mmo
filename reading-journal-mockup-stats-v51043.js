@@ -13,15 +13,15 @@
       grid-template-columns:1fr 1fr!important;
       grid-template-rows:1fr 1fr!important;
       gap:0!important;
-      width:100%!important;
+      width:calc(100% + 28px)!important;
       aspect-ratio:802/304!important;
       min-height:0!important;
-      margin:0 0 5px!important;
+      margin:0 -14px 5px!important;
       padding:0!important;
       overflow:hidden!important;
       border:0!important;
       outline:0!important;
-      background:url('./journal-mockup-stats-blank-v1.webp?v=51043e') center/100% 100% no-repeat!important;
+      background:url('./journal-mockup-stats-blank-v1.webp?v=51043h') center/100% 100% no-repeat!important;
       box-shadow:none!important;
     }
 
