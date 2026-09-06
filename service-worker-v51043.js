@@ -1,5 +1,5 @@
-const CACHE='reading-mmo-v5.10.43-storybook-journal-k';
-const FORCE_VERSION='51043k';
+const CACHE='reading-mmo-v5.10.43-storybook-journal-l';
+const FORCE_VERSION='51043l';
 const CORE=[
  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
  './nav-home.png','./nav-me.png','./nav-play.png','./nav-quests.png','./nav-read.png',
