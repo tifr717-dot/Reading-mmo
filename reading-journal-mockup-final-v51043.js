@@ -120,7 +120,7 @@
       border:0!important;
       outline:0!important;
       border-radius:0!important;
-      background:url('./journal-mockup-stats-blank-v1.webp?v=51043e') center/100% 100% no-repeat!important;
+      background:url('./journal-mockup-stats-blank-v1.webp?v=51043f') center/100% 100% no-repeat!important;
       box-shadow:none!important;
       clip-path:none!important;
     }
@@ -193,6 +193,142 @@
     }
     .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature:nth-child(n+3){border-bottom:0!important}
 
+
+    /* v5.10.43f — match the approved lower-page composition.
+       The approved mockup goes directly from the selector into the stat parchment,
+       then a layered ledger slip, then the illustrated Reading Timeline. */
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-overall-hero{
+      display:none!important;
+    }
+
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] #v51034JournalBody{
+      padding-top:0!important;
+    }
+
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-ribbon{
+      margin-top:0!important;
+      margin-bottom:7px!important;
+      filter:drop-shadow(0 4px 5px rgba(56,34,18,.18))!important;
+    }
+
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature-row{
+      position:relative!important;
+      display:grid!important;
+      grid-template-columns:1fr 1fr!important;
+      grid-template-rows:1fr 1fr!important;
+      gap:0!important;
+      width:96%!important;
+      min-height:245px!important;
+      margin:1px auto 10px!important;
+      padding:15px 17px!important;
+      overflow:visible!important;
+      border:1px solid rgba(117,79,37,.52)!important;
+      border-radius:2px!important;
+      background:
+        radial-gradient(circle at 18% 18%,rgba(255,249,224,.36),transparent 27%),
+        radial-gradient(circle at 82% 82%,rgba(158,120,69,.08),transparent 29%),
+        repeating-linear-gradient(0deg,rgba(93,63,34,.025) 0 1px,transparent 1px 5px),
+        linear-gradient(104deg,#ead4aa 0%,#f1dfb9 48%,#dfbf85 100%)!important;
+      box-shadow:
+        0 5px 0 rgba(105,73,37,.16),
+        0 9px 18px rgba(69,42,21,.18),
+        inset 0 0 24px rgba(102,68,29,.08)!important;
+      clip-path:polygon(2% 4%,8% 1%,18% 3%,30% 1%,42% 3%,54% 1%,66% 3%,78% 1%,90% 3%,98% 2%,99% 95%,91% 98%,80% 96%,68% 99%,55% 96%,43% 99%,31% 96%,19% 99%,8% 96%,1% 98%)!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature-row:before{
+      content:''!important;
+      position:absolute!important;
+      inset:7px!important;
+      width:auto!important;
+      height:auto!important;
+      top:7px!important;
+      bottom:7px!important;
+      left:7px!important;
+      transform:none!important;
+      border:1px solid rgba(121,84,43,.30)!important;
+      background:
+        linear-gradient(90deg,transparent calc(50% - .5px),rgba(111,76,36,.22) 50%,transparent calc(50% + .5px)),
+        linear-gradient(0deg,transparent calc(50% - .5px),rgba(111,76,36,.22) 50%,transparent calc(50% + .5px))!important;
+      pointer-events:none!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature-row:after{
+      content:'✦'!important;
+      position:absolute!important;
+      left:auto!important;
+      right:7.5%!important;
+      top:-3px!important;
+      width:34px!important;
+      height:56px!important;
+      padding-top:13px!important;
+      transform:none!important;
+      background:linear-gradient(#5d437b,#3d2b58)!important;
+      color:#e1bd54!important;
+      text-align:center!important;
+      font:700 13px/1 Georgia,'Times New Roman',serif!important;
+      clip-path:polygon(0 0,100% 0,100% 100%,50% 79%,0 100%)!important;
+      box-shadow:0 3px 7px rgba(52,31,19,.24)!important;
+      z-index:4!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature{
+      position:relative!important;
+      display:flex!important;
+      flex-direction:column!important;
+      justify-content:center!important;
+      min-width:0!important;
+      min-height:0!important;
+      margin:0!important;
+      padding:18px 18px!important;
+      border:0!important;
+      background:transparent!important;
+      box-shadow:none!important;
+      z-index:2!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature:nth-child(odd){
+      padding-left:27px!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature:nth-child(even){
+      padding-right:27px!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature span{
+      display:block!important;
+      margin:0 0 7px!important;
+      color:#664722!important;
+      font:700 clamp(7px,1.85vw,10px)/1 Georgia,'Times New Roman',serif!important;
+      letter-spacing:.45px!important;
+      text-transform:uppercase!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature b{
+      display:block!important;
+      margin:0!important;
+      max-width:100%!important;
+      color:#332116!important;
+      font:500 clamp(15px,4.1vw,23px)/1.03 Georgia,'Times New Roman',serif!important;
+      letter-spacing:-.35px!important;
+      white-space:normal!important;
+      overflow:hidden!important;
+      text-overflow:ellipsis!important;
+    }
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature i{
+      display:block!important;
+      margin:6px 0 0!important;
+      color:#5c4330!important;
+      font:400 clamp(7px,1.8vw,9.5px)/1.18 Georgia,'Times New Roman',serif!important;
+      font-style:normal!important;
+    }
+
+    .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-section-head{
+      margin-top:2px!important;
+    }
+
+    @media(max-width:360px){
+      .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature-row{
+        min-height:218px!important;
+        padding:13px!important;
+      }
+      .v51034-shell.v51043-mockup[data-journal-mode="all"] .v51034-feature{
+        padding:14px 13px!important;
+      }
+    }
   `;
 
   function stamp(){
@@ -224,7 +360,7 @@
 
   function registerWorker(){
     if(!('serviceWorker' in navigator))return;
-    navigator.serviceWorker.register('./service-worker-v51043.js?v=51043e',{updateViaCache:'none'}).catch(()=>{});
+    navigator.serviceWorker.register('./service-worker-v51043.js?v=51043f',{updateViaCache:'none'}).catch(()=>{});
   }
 
   function queue(){[0,40,100,220,420].forEach(ms=>setTimeout(apply,ms));}
