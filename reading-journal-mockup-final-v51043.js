@@ -14,7 +14,15 @@
       }
     });
   }
-  const run=()=>{stamp();document.documentElement.dataset.readingJournalMockupFinal='51043-clean-i';};
+  let guard=null;
+  function run(){
+    stamp();
+    document.documentElement.dataset.readingJournalMockupFinal='51043-final-k';
+    if(!guard){
+      guard=new MutationObserver(()=>stamp());
+      guard.observe(document.documentElement,{subtree:true,childList:true,characterData:true});
+    }
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
   window.addEventListener('pageshow',run);
 })();
