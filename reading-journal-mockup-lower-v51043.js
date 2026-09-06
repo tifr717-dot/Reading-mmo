@@ -3,7 +3,7 @@
   if(window.__v51043JournalMockupLowerClean)return;
   window.__v51043JournalMockupLowerClean=true;
 
-  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043j`);
+  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043k`);
   let assets=null,loading=null;
   const data=k=>assets?.[k]?`data:image/webp;base64,${assets[k]}`:'';
 
@@ -20,7 +20,6 @@
   }
 
   function installStyle(){
-    if(!assets)return;
     document.getElementById('v51043-journal-mockup-lower')?.remove();
     document.getElementById('v51043-journal-mockup-lower-clean')?.remove();
     const s=document.createElement('style');
@@ -59,8 +58,9 @@
         overflow:hidden!important;
         border:0!important;
         outline:0!important;
-        background:url('./journal-mockup-stats-blank-v1.webp?v=51043j') center/100% 100% no-repeat!important;
-        box-shadow:none!important;
+        background:linear-gradient(rgba(128,91,49,.22),rgba(128,91,49,.22)) 50% 0/1px 100% no-repeat,linear-gradient(rgba(128,91,49,.22),rgba(128,91,49,.22)) 0 50%/100% 1px no-repeat,linear-gradient(180deg,rgba(246,226,180,.98),rgba(226,196,139,.96))!important;
+        border:1px solid rgba(125,86,43,.34)!important;
+        box-shadow:inset 0 0 20px rgba(112,72,34,.08)!important;
       }
       .v51034-shell.v51043-mockup .v51034-stat-pill{
         position:relative!important;
@@ -109,8 +109,9 @@
         margin:2px -6px 10px!important;
         padding:0!important;
         border:0!important;
-        background:url('${data('ledger')}') center/100% 100% no-repeat!important;
-        box-shadow:none!important;
+        background:linear-gradient(rgba(129,91,48,.24),rgba(129,91,48,.24)) 50% 0/1px 100% no-repeat,linear-gradient(rgba(129,91,48,.20),rgba(129,91,48,.20)) 0 50%/100% 1px no-repeat,linear-gradient(180deg,rgba(246,226,182,.98),rgba(228,198,143,.96))!important;
+        border:1px solid rgba(125,86,43,.34)!important;
+        box-shadow:inset 0 0 18px rgba(112,72,34,.08)!important;
         overflow:hidden!important;
       }
       .v51034-shell.v51043-mockup .v51034-feature-row:before,
@@ -158,8 +159,9 @@
         margin:4px -6px 10px!important;
         padding:0!important;
         border:0!important;
-        background:url('${data('ledger')}') center/100% 100% no-repeat!important;
-        box-shadow:none!important;
+        background:linear-gradient(rgba(129,91,48,.24),rgba(129,91,48,.24)) 50% 0/1px 100% no-repeat,linear-gradient(rgba(129,91,48,.20),rgba(129,91,48,.20)) 0 50%/100% 1px no-repeat,linear-gradient(180deg,rgba(246,226,182,.98),rgba(228,198,143,.96))!important;
+        border:1px solid rgba(125,86,43,.34)!important;
+        box-shadow:inset 0 0 18px rgba(112,72,34,.08)!important;
         overflow:hidden!important;
       }
       .v51034-shell.v51043-mockup .v51034-ledger-note:after{content:none!important}
@@ -420,7 +422,8 @@
         user-select:none!important;
       }
 
-      @media(max-width:360px){
+      @media(max-width:370px){
+        .v51034-shell.v51043-mockup .v51034-feature-row{grid-template-columns:1fr 1fr!important;grid-template-rows:1fr 1fr!important}
         .v51034-shell.v51043-mockup .v51034-entry{grid-template-columns:60px minmax(0,1fr)!important}
         .v51034-shell.v51043-mockup .v51034-day:before{left:37px!important}
         .v51034-shell.v51043-mockup .v51034-day-head{padding-left:55px!important}
@@ -430,7 +433,7 @@
       }
     `;
     document.head.appendChild(s);
-    document.documentElement.dataset.readingJournalMockupLower='51043-clean-j';
+    document.documentElement.dataset.readingJournalMockupLower='51043-clean-k';
   }
 
   function decorate(){
@@ -456,7 +459,10 @@
     new MutationObserver(()=>{if(assets)decorate();}).observe(body,{childList:true});
   }
 
-  function queue(){[0,60,160,320].forEach(ms=>setTimeout(()=>{loadAssets();observe();decorate();},ms));}
+  function queue(){
+    installStyle();observe();decorate();
+    [0,60,160,320].forEach(ms=>setTimeout(()=>{installStyle();loadAssets();observe();decorate();},ms));
+  }
   document.addEventListener('change',e=>{if(e.target?.id==='v51034BookFilter')queue();},false);
   document.addEventListener('click',e=>{if(e.target.closest?.('[data-journal-book],#v51034JournalLaunch,#v51034LibraryJournalLaunch'))queue();},false);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',queue,{once:true});else queue();
