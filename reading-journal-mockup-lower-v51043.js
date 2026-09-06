@@ -3,7 +3,7 @@
   if(window.__v51043JournalMockupLower)return;
   window.__v51043JournalMockupLower=true;
 
-  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043g`);
+  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043h`);
   let assets=null;
   let loading=null;
   const data=k=>assets?.[k]?`data:image/webp;base64,${assets[k]}`:'';
@@ -112,6 +112,78 @@
       .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) #v51034JournalBody{
         padding-bottom:8px!important;min-height:0!important;
       }
+      /* v5.10.43h — unify lower-page width and remove old modal geometry. */
+      .v51034-shell.v51043-mockup{
+        min-height:0!important;
+        height:auto!important;
+      }
+      .v51034-shell.v51043-mockup #v51034JournalBody{
+        min-height:0!important;
+        height:auto!important;
+        overflow:visible!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-ledger-note{
+        width:calc(100% + 28px)!important;
+        margin:4px -14px 8px!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-section-head{
+        width:min(82%,465px)!important;
+        margin:5px auto 2px!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-section-head b{
+        position:absolute!important;
+        width:auto!important;
+        height:auto!important;
+        left:50%!important;
+        top:30%!important;
+        transform:translateX(-50%)!important;
+        overflow:visible!important;
+        clip:auto!important;
+        clip-path:none!important;
+        color:#49315d!important;
+        font:italic 700 clamp(12px,3.5vw,19px)/1 Georgia,'Times New Roman',serif!important;
+        white-space:nowrap!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-section-head small{
+        bottom:7%!important;
+        font-size:clamp(6px,1.55vw,8px)!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-entry-main,
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-entry:nth-of-type(even) .v51034-entry-main{
+        height:108px!important;
+        min-height:108px!important;
+        padding:0!important;
+        overflow:visible!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-entry-top{
+        position:absolute!important;
+        left:43px!important;
+        right:82px!important;
+        top:40px!important;
+        display:block!important;
+        margin:0!important;
+        padding:0!important;
+        z-index:3!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-entry-book{
+        font-size:clamp(11px,3vw,17px)!important;
+        line-height:1.02!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-entry-numbers{
+        margin-top:5px!important;
+        gap:5px!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-source{
+        right:11px!important;
+        top:19px!important;
+        width:55px!important;
+        height:55px!important;
+      }
+      .v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-footer-art{
+        width:calc(100% + 28px)!important;
+        margin:5px -14px 0!important;
+        aspect-ratio:590/104!important;
+      }
       @media(max-width:360px){.v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-entry{grid-template-columns:52px minmax(0,1fr)!important}.v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-day:before{left:33px}.v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-day-head{padding-left:49px!important}.v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-day-head:before{left:25px}.v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-source{width:51px!important;height:51px!important;font-size:6.4px!important}.v51034-shell.v51043-mockup:is([data-journal-mode="book"],[data-journal-mode="all"]) .v51034-entry-numbers{gap:5px!important}}
     `;
     document.head.appendChild(s);
@@ -123,6 +195,9 @@
     const body=document.getElementById('v51034JournalBody');
     if(!shell||!body)return;
     if(shell.dataset.journalMode==='book'||shell.dataset.journalMode==='all'){
+      const head=body.querySelector('.v51034-section-head');
+      const title=head?.querySelector('b');
+      if(title)title.textContent='Reading Timeline';
       if(!body.querySelector('.v51034-footer-art')){const f=document.createElement('div');f.className='v51034-footer-art';f.setAttribute('aria-hidden','true');body.appendChild(f);}
     }else body.querySelector('.v51034-footer-art')?.remove();
   }
