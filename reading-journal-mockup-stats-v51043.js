@@ -1,7 +1,10 @@
 (()=>{
   'use strict';
-  if(window.__v51043JournalMockupStats)return;
+  /* Retired in v5.10.43k. The lower mockup controller owns stats + ledger + timeline. */
   window.__v51043JournalMockupStats=true;
+  document.getElementById('v51043-journal-mockup-stats')?.remove();
+  document.documentElement.dataset.readingJournalMockupStats='51043-retired-k';
+  return;
 
   const style=document.createElement('style');
   style.id='v51043-journal-mockup-stats';
