@@ -4,7 +4,7 @@
   window.__v51043JournalUnified=true;
 
   const BUILD='v5.10.43';
-  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043m`);
+  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043n`);
   let assets=null,loading=null;
   const data=k=>assets?.[k]?`data:image/webp;base64,${assets[k]}`:'';
 
@@ -26,9 +26,14 @@
     const s=document.createElement('style');
     s.id='v51043-journal-unified';
     s.textContent=`
+      .v51034-backdrop{
+        align-items:flex-start!important;
+      }
       .v51034-shell.v51043-mockup{
         min-height:0!important;
         height:auto!important;
+        align-self:flex-start!important;
+        padding-bottom:8px!important;
       }
       .v51034-shell.v51043-mockup #v51034JournalBody{
         min-height:0!important;
@@ -51,10 +56,10 @@
         grid-template-rows:1fr 1fr!important;
         gap:0!important;
         width:calc(100% + 12px)!important;
-        aspect-ratio:802/304!important;
+        aspect-ratio:802/250!important;
         min-height:0!important;
         height:auto!important;
-        margin:0 -6px 8px!important;
+        margin:0 -6px 4px!important;
         padding:0!important;
         overflow:hidden!important;
         border:0!important;
@@ -105,9 +110,9 @@
         grid-template-rows:1fr 1fr!important;
         gap:0!important;
         width:calc(100% + 12px)!important;
-        aspect-ratio:805/250!important;
+        aspect-ratio:805/210!important;
         min-height:0!important;
-        margin:2px -6px 10px!important;
+        margin:1px -6px 5px!important;
         padding:0!important;
         border:0!important;
         background:linear-gradient(rgba(129,91,48,.24),rgba(129,91,48,.24)) 50% 0/1px 100% no-repeat,linear-gradient(rgba(129,91,48,.20),rgba(129,91,48,.20)) 0 50%/100% 1px no-repeat,linear-gradient(180deg,rgba(246,226,182,.98),rgba(228,198,143,.96))!important;
@@ -157,7 +162,7 @@
         width:calc(100% + 12px)!important;
         aspect-ratio:805/250!important;
         min-height:0!important;
-        margin:4px -6px 10px!important;
+        margin:2px -6px 5px!important;
         padding:0!important;
         border:0!important;
         background:linear-gradient(rgba(129,91,48,.24),rgba(129,91,48,.24)) 50% 0/1px 100% no-repeat,linear-gradient(rgba(129,91,48,.20),rgba(129,91,48,.20)) 0 50%/100% 1px no-repeat,linear-gradient(180deg,rgba(246,226,182,.98),rgba(228,198,143,.96))!important;
@@ -207,7 +212,7 @@
         aspect-ratio:465/87!important;
         height:auto!important;
         min-height:0!important;
-        margin:7px auto 4px!important;
+        margin:3px auto 1px!important;
         padding:0!important;
         border:0!important;
         background:url('${data('ribbon')}') center/100% 100% no-repeat!important;
@@ -238,7 +243,7 @@
       /* TIMELINE SPINE */
       .v51034-shell.v51043-mockup .v51034-day{
         position:relative!important;
-        margin:0 0 5px!important;
+        margin:0 0 2px!important;
         padding:0!important;
         border:0!important;
         background:transparent!important;
@@ -255,9 +260,9 @@
       }
       .v51034-shell.v51043-mockup .v51034-day-head{
         position:relative!important;
-        height:29px!important;
+        height:24px!important;
         margin:0!important;
-        padding:6px 0 0 61px!important;
+        padding:4px 0 0 61px!important;
         border:0!important;
         background:transparent!important;
         z-index:3!important;
@@ -265,7 +270,7 @@
       .v51034-shell.v51043-mockup .v51034-day-head:before{
         content:'✦'!important;
         position:absolute!important;
-        left:33px!important;top:3px!important;
+        left:33px!important;top:1px!important;
         width:18px!important;height:18px!important;
         display:grid!important;place-items:center!important;
         border:2px solid #8b642c!important;border-radius:50%!important;
@@ -285,7 +290,7 @@
         grid-template-columns:68px minmax(0,1fr)!important;
         gap:0!important;
         align-items:start!important;
-        margin:0 0 6px!important;
+        margin:0 0 3px!important;
         padding:0!important;
         border:0!important;
         background:transparent!important;
@@ -293,7 +298,7 @@
       }
       .v51034-shell.v51043-mockup .v51034-entry:before{content:none!important}
       .v51034-shell.v51043-mockup .v51034-time{
-        padding:18px 7px 0 0!important;
+        padding:15px 7px 0 0!important;
         color:#432b1b!important;
         font:700 clamp(7.5px,1.95vw,10px)/1 Georgia,'Times New Roman',serif!important;
         text-align:center!important;
@@ -417,7 +422,7 @@
       .v51034-shell.v51043-mockup .v51034-footer-art{
         width:calc(100% + 12px)!important;
         aspect-ratio:590/88!important;
-        margin:7px -6px 0!important;
+        margin:3px -6px 0!important;
         background:url('${data('footer')}') center bottom/100% auto no-repeat!important;
         pointer-events:none!important;
         user-select:none!important;
@@ -434,7 +439,7 @@
       }
     `;
     document.head.appendChild(s);
-    document.documentElement.dataset.readingJournalMockupLower='51043-unified-m';
+    document.documentElement.dataset.readingJournalMockupLower='51043-unified-n';
   }
 
   function decorate(){
