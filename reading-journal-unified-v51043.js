@@ -4,7 +4,7 @@
   window.__v51043JournalUnified=true;
 
   const BUILD='v5.10.43';
-  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043n`);
+  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043p`);
   let assets=null,loading=null;
   const data=k=>assets?.[k]?`data:image/webp;base64,${assets[k]}`:'';
 
@@ -33,7 +33,7 @@
         min-height:0!important;
         height:auto!important;
         align-self:flex-start!important;
-        padding-bottom:8px!important;
+        padding-bottom:0!important;
       }
       .v51034-shell.v51043-mockup #v51034JournalBody{
         min-height:0!important;
@@ -42,6 +42,22 @@
         padding-bottom:0!important;
       }
 
+
+      /* FINAL MOBILE FLOW REPAIR: keep body in normal flow below the fixed artwork header. */
+      .v51034-shell.v51043-mockup #v51034JournalBody{
+        position:relative!important;
+        top:auto!important;
+        bottom:auto!important;
+        left:auto!important;
+        right:auto!important;
+        transform:none!important;
+        margin-top:0!important;
+        flex:none!important;
+        align-self:stretch!important;
+      }
+      .v51034-shell.v51043-mockup .v51034-ribbon{
+        scroll-margin-top:0!important;
+      }
 
       /* MASTER LOWER PAGE — this file owns everything below the selector. */
       .v51034-shell.v51043-mockup .v51034-overall-hero{
@@ -350,7 +366,7 @@
       .v51034-shell.v51043-mockup .v51034-entry-book{
         margin:0!important;
         color:#352317!important;
-        font:500 clamp(11px,3vw,17px)/1.02 Georgia,'Times New Roman',serif!important;
+        font:500 clamp(9px,2.65vw,15px)/1.02 Georgia,'Times New Roman',serif!important;
         letter-spacing:-.25px!important;
         white-space:nowrap!important;
         overflow:hidden!important;
@@ -422,7 +438,7 @@
       .v51034-shell.v51043-mockup .v51034-footer-art{
         width:calc(100% + 12px)!important;
         aspect-ratio:590/88!important;
-        margin:3px -6px 0!important;
+        margin:3px -6px -1px!important;
         background:url('${data('footer')}') center bottom/100% auto no-repeat!important;
         pointer-events:none!important;
         user-select:none!important;
@@ -439,7 +455,7 @@
       }
     `;
     document.head.appendChild(s);
-    document.documentElement.dataset.readingJournalMockupLower='51043-unified-n';
+    document.documentElement.dataset.readingJournalMockupLower='51043-unified-p';
   }
 
   function decorate(){
