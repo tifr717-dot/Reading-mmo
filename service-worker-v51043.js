@@ -1,11 +1,12 @@
-const CACHE='reading-mmo-v5.10.43-approved-real-journal-w';
-const FORCE_VERSION='51043w';
+const CACHE='reading-mmo-v5.10.43-approved-lower-x';
+const FORCE_VERSION='51043x';
 const CORE=[
  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
  './reading-journal-v51032.js','./reading-journal-mockup-v51043.js','./reading-journal-unified-v51043.js',
  './reading-journal-canvas-composite-v51043v.js','./reading-journal-layered-v51043v.js',
  './journal-mockup-top-exact-v1.webp','./journal-mockup-selector-strip-blank-v1.webp',
- './original-lower-crop.png','./archive-parchment-texture.png','./journal-flourish-v51041.svg'
+ './archive-parchment-texture.png','./journal-flourish-v51041.svg',
+ ...Array.from({length:12},(_,i)=>`./journal-approved-lower-v51043q-part${String(i+1).padStart(2,'0')}.b64`)
 ];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{
