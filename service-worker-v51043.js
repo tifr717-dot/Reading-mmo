@@ -1,16 +1,17 @@
-const CACHE='reading-mmo-v5.10.43-storybook-journal-t';
-const FORCE_VERSION='51043t';
+const CACHE='reading-mmo-v5.10.43-storybook-journal-u';
+const FORCE_VERSION='51043u';
 const CORE=[
-  "./reading-journal-layered-v51043t.js",
-  "./journal-layer-book-tab-v51043t.svg",
-  "./journal-layer-footer-v51043t.svg",
-  "./journal-layer-bookmark-v51043t.svg",
-  "./journal-layer-wax-blue-v51043t.svg",
-  "./journal-layer-wax-red-v51043t.svg",
-  "./journal-layer-slip-v51043t.svg",
-  "./journal-layer-timeline-ribbon-v51043t.svg",
-  "./journal-layer-highlights-paper-v51043t.svg",
-  "./journal-layer-stats-paper-v51043t.svg",
+  "./reading-journal-raster-layers-v51043u.js",
+  "./reading-journal-layered-v51043u.js",
+  "./journal-layer-book-tab-v51043u.svg",
+  "./journal-layer-footer-v51043u.svg",
+  "./journal-layer-bookmark-v51043u.svg",
+  "./journal-layer-wax-blue-v51043u.svg",
+  "./journal-layer-wax-red-v51043u.svg",
+  "./journal-layer-slip-v51043u.svg",
+  "./journal-layer-timeline-ribbon-v51043u.svg",
+  "./journal-layer-highlights-paper-v51043u.svg",
+  "./journal-layer-stats-paper-v51043u.svg",
  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
  './nav-home.png','./nav-me.png','./nav-play.png','./nav-quests.png','./nav-read.png',
  './asset-book.png','./asset-books-stack.png','./asset-crystal-lamp.png','./asset-gem.png','./asset-goose.png','./asset-ivy.png','./asset-ledger.png','./asset-potion.png','./asset-scroll.png',
