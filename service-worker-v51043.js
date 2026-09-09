@@ -1,6 +1,16 @@
-const CACHE='reading-mmo-v5.10.43-storybook-journal-s';
-const FORCE_VERSION='51043s';
+const CACHE='reading-mmo-v5.10.43-storybook-journal-t';
+const FORCE_VERSION='51043t';
 const CORE=[
+  "./reading-journal-layered-v51043t.js",
+  "./journal-layer-book-tab-v51043t.svg",
+  "./journal-layer-footer-v51043t.svg",
+  "./journal-layer-bookmark-v51043t.svg",
+  "./journal-layer-wax-blue-v51043t.svg",
+  "./journal-layer-wax-red-v51043t.svg",
+  "./journal-layer-slip-v51043t.svg",
+  "./journal-layer-timeline-ribbon-v51043t.svg",
+  "./journal-layer-highlights-paper-v51043t.svg",
+  "./journal-layer-stats-paper-v51043t.svg",
  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
  './nav-home.png','./nav-me.png','./nav-play.png','./nav-quests.png','./nav-read.png',
  './asset-book.png','./asset-books-stack.png','./asset-crystal-lamp.png','./asset-gem.png','./asset-goose.png','./asset-ivy.png','./asset-ledger.png','./asset-potion.png','./asset-scroll.png',
