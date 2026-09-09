@@ -4,7 +4,7 @@
   window.__v51043JournalUnified=true;
 
   const BUILD='v5.10.43';
-  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043r`);
+  const PARTS=Array.from({length:7},(_,i)=>`./journal-mockup-lower-pack-tiny-${String(i+1).padStart(2,'0')}.b64?v=51043s`);
   let assets=null,loading=null;
   const data=k=>assets?.[k]?`data:image/webp;base64,${assets[k]}`:'';
 
@@ -84,7 +84,10 @@
         overflow:hidden!important;
         border:0!important;
         outline:0!important;
-        background:url('./journal-mockup-stats-blank-v1.webp?v=51043r') center/100% 100% no-repeat!important;
+        background:
+          linear-gradient(rgba(119,83,44,.16),rgba(119,83,44,.16)) 50% 0/1px 100% no-repeat,
+          linear-gradient(rgba(119,83,44,.14),rgba(119,83,44,.14)) 0 50%/100% 1px no-repeat,
+          url('./archive-parchment-texture.png?v=51043s') center/cover no-repeat!important;
         border:0!important;
         box-shadow:none!important;
       }
@@ -105,7 +108,17 @@
       }
       .v51034-shell.v51043-mockup .v51034-stat-pill:nth-child(odd){padding:2.5% 2% 2% 45%!important}
       .v51034-shell.v51043-mockup .v51034-stat-pill:nth-child(even){padding:2.5% 3% 2% 34%!important}
-      .v51034-shell.v51043-mockup .v51034-stat-pill:before{content:none!important;display:none!important}
+      .v51034-shell.v51043-mockup .v51034-stat-pill:before{
+        content:''!important;display:block!important;position:absolute!important;
+        left:8%!important;top:50%!important;transform:translateY(-50%)!important;
+        width:23%!important;aspect-ratio:1!important;border-radius:50%!important;
+        background:rgba(190,155,104,.20) center/62% 62% no-repeat!important;
+        box-shadow:inset 0 0 0 1px rgba(117,81,45,.10)!important;opacity:.95!important
+      }
+      .v51034-shell.v51043-mockup .v51034-stat-pill:nth-child(1):before{background-image:url('./journal-icon-pages-v51041.svg')!important}
+      .v51034-shell.v51043-mockup .v51034-stat-pill:nth-child(2):before{background-image:url('./journal-icon-sessions-v51041.svg')!important}
+      .v51034-shell.v51043-mockup .v51034-stat-pill:nth-child(3):before{background-image:url('./journal-icon-pages-v51041.svg')!important}
+      .v51034-shell.v51043-mockup .v51034-stat-pill:nth-child(4):before{background-image:url('./journal-icon-time-v51041.svg')!important}
       .v51034-shell.v51043-mockup .v51034-stat-pill span{
         margin:0!important;color:#352317!important;
         font:700 clamp(7px,2vw,10px)/1.05 Georgia,'Times New Roman',serif!important;
@@ -135,18 +148,38 @@
         margin:1px -6px 5px!important;
         padding:0!important;
         border:0!important;
-        background:url('${data('ledger')}') center/100% 100% no-repeat!important;
+        background:
+          linear-gradient(rgba(121,83,44,.14),rgba(121,83,44,.14)) 50% 0/1px 100% no-repeat,
+          linear-gradient(rgba(121,83,44,.13),rgba(121,83,44,.13)) 0 50%/100% 1px no-repeat,
+          url('./archive-parchment-texture.png?v=51043s') center/cover no-repeat!important;
         border:0!important;
         box-shadow:none!important;
         overflow:hidden!important;
       }
       .v51034-shell.v51043-mockup .v51034-feature-row:before,
-      .v51034-shell.v51043-mockup .v51034-feature-row:after{content:none!important}
+      .v51034-shell.v51043-mockup .v51034-feature-row:after{
+        content:''!important;position:absolute!important;bottom:-5%!important;
+        width:26%!important;aspect-ratio:1!important;
+        background:url('./journal-botanical-corner-v51041.svg') center/contain no-repeat!important;
+        opacity:.32!important;pointer-events:none!important;z-index:1!important
+      }
+      .v51034-shell.v51043-mockup .v51034-feature-row:before{left:-6%!important}
+      .v51034-shell.v51043-mockup .v51034-feature-row:after{right:-6%!important;transform:scaleX(-1)!important}
       .v51034-shell.v51043-mockup .v51034-feature{
-        position:relative!important;
+        position:relative!important;z-index:2!important;
         min-width:0!important;min-height:0!important;
         margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important
       }
+      .v51034-shell.v51043-mockup .v51034-feature:before{
+        content:''!important;position:absolute!important;left:5%!important;top:50%!important;
+        transform:translateY(-50%)!important;width:12%!important;aspect-ratio:1!important;
+        border-radius:50%!important;background:rgba(189,151,94,.20) center/66% 66% no-repeat!important;
+        opacity:.9!important;z-index:1!important
+      }
+      .v51034-shell.v51043-mockup .v51034-feature:nth-child(1):before{background-image:url('./journal-icon-pages-v51041.svg')!important}
+      .v51034-shell.v51043-mockup .v51034-feature:nth-child(2):before{background-image:url('./journal-icon-longest-v51041.svg')!important}
+      .v51034-shell.v51043-mockup .v51034-feature:nth-child(3):before{background-image:url('./journal-flourish-v51041.svg')!important}
+      .v51034-shell.v51043-mockup .v51034-feature:nth-child(4):before{background-image:url('./journal-icon-pages-v51041.svg')!important}
       .v51034-shell.v51043-mockup .v51034-feature span{
         position:absolute!important;
         left:18%!important;top:25%!important;right:7%!important;
@@ -335,32 +368,38 @@
         padding:0!important;
         border:0!important;
         border-radius:0!important;
-        background:url('${data('lav')}') center/100% 100% no-repeat!important;
+        background:
+          linear-gradient(180deg,rgba(249,235,205,.98),rgba(233,207,160,.98)),
+          url('./archive-parchment-texture.png?v=51043s') center/cover no-repeat!important;
+        clip-path:polygon(1% 7%,7% 2%,17% 4%,29% 1%,42% 4%,57% 2%,72% 4%,86% 2%,98% 7%,99% 28%,97% 48%,99% 68%,97% 92%,86% 96%,71% 94%,58% 98%,43% 95%,29% 98%,15% 95%,2% 92%,1% 70%,3% 49%,1% 28%)!important;
+        box-shadow:inset 0 0 0 1px rgba(121,83,44,.25),0 2px 3px rgba(71,43,22,.13)!important;
         box-shadow:none!important;
         overflow:hidden!important;
       }
       .v51034-shell.v51043-mockup .v51034-entry:nth-of-type(even) .v51034-entry-main{
-        background-image:url('${data('blue')}')!important;
+        background:
+          linear-gradient(180deg,rgba(241,230,207,.98),rgba(218,204,178,.98)),
+          url('./archive-parchment-texture.png?v=51043s') center/cover no-repeat!important;
       }
 
-      /* Cover any text baked into the crop, while leaving the botanical/right-side art visible. */
+      /* Decorative layers are independent from the live session content. */
       .v51034-shell.v51043-mockup .v51034-entry-main:before{
-        content:''!important;
-        position:absolute!important;
-        left:7%!important;
-        top:18%!important;
-        width:63%!important;
-        height:69%!important;
-        background:linear-gradient(90deg,rgba(236,219,184,.985),rgba(236,219,184,.96) 82%,rgba(236,219,184,.10))!important;
-        filter:blur(.2px)!important;
-        z-index:1!important;
-        pointer-events:none!important;
+        content:''!important;position:absolute!important;right:1%!important;bottom:-19%!important;
+        width:30%!important;aspect-ratio:1!important;
+        background:url('./journal-botanical-corner-v51041.svg') center/contain no-repeat!important;
+        opacity:.22!important;transform:scaleX(-1)!important;z-index:1!important;pointer-events:none!important;
+      }
+      .v51034-shell.v51043-mockup .v51034-entry-main:after{
+        content:''!important;position:absolute!important;left:2%!important;top:8%!important;
+        width:3.2%!important;height:84%!important;border-radius:2px!important;
+        background:linear-gradient(180deg,#7c5c45,#aa8361 60%,#73513c)!important;
+        box-shadow:1px 0 rgba(255,255,255,.25)!important;opacity:.72!important;z-index:2!important;
       }
 
       .v51034-shell.v51043-mockup .v51034-entry-top{
         position:absolute!important;
         left:12%!important;
-        right:21%!important;
+        right:24%!important;
         top:34%!important;
         display:block!important;
         margin:0!important;
@@ -379,7 +418,7 @@
       .v51034-shell.v51043-mockup .v51034-entry-numbers{
         position:absolute!important;
         left:12%!important;
-        right:22%!important;
+        right:24%!important;
         top:56%!important;
         display:flex!important;
         align-items:baseline!important;
@@ -438,6 +477,22 @@
         background:radial-gradient(circle,rgba(29,45,63,.9) 0 57%,rgba(29,45,63,.3) 64%,transparent 70%)!important;
       }
 
+      .v51043-bookmark-layer{
+        position:absolute!important;right:7%!important;top:-2%!important;width:8%!important;height:48%!important;
+        background:linear-gradient(180deg,#4e3173,#6f4a99)!important;
+        clip-path:polygon(0 0,100% 0,100% 100%,50% 76%,0 100%)!important;
+        box-shadow:0 2px 3px rgba(52,31,24,.22)!important;z-index:3!important;pointer-events:none!important
+      }
+      .v51043-bookmark-layer:after{
+        content:'✦'!important;position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;
+        color:#d9b45b!important;font:700 12px/1 Georgia!important
+      }
+      .v51043-flower-layer{
+        position:absolute!important;right:8%!important;bottom:2%!important;width:17%!important;aspect-ratio:1!important;
+        background:url('./journal-botanical-corner-v51041.svg') center/contain no-repeat!important;
+        opacity:.16!important;transform:scaleX(-1)!important;z-index:1!important;pointer-events:none!important
+      }
+
       /* BOTTOM VIGNETTE — edge-to-edge, then page ends */
       .v51034-shell.v51043-mockup .v51034-footer-art{
         width:calc(100% + 12px)!important;
@@ -459,7 +514,7 @@
       }
     `;
     document.head.appendChild(s);
-    document.documentElement.dataset.readingJournalMockupLower='51043-unified-r';
+    document.documentElement.dataset.readingJournalMockupLower='51043-unified-s';
   }
 
   function decorate(){
@@ -472,6 +527,22 @@
     shell.dataset.journalMode=all?'all':'book';
     const label=shell.querySelector('.v51034-toolbar-label');
     if(label)label.textContent=all?'ARCHIVE VIEW':'CURRENT BOOK';
+
+    const feature=body.querySelector('.v51034-feature-row');
+    if(feature&&!feature.querySelector('.v51043-bookmark-layer')){
+      const mark=document.createElement('div');
+      mark.className='v51043-bookmark-layer';
+      mark.setAttribute('aria-hidden','true');
+      feature.appendChild(mark);
+    }
+    body.querySelectorAll('.v51034-entry-main').forEach(card=>{
+      if(!card.querySelector('.v51043-flower-layer')){
+        const flower=document.createElement('div');
+        flower.className='v51043-flower-layer';
+        flower.setAttribute('aria-hidden','true');
+        card.appendChild(flower);
+      }
+    });
     if(shell.dataset.journalMode==='book'||shell.dataset.journalMode==='all'){
       if(!body.querySelector('.v51034-footer-art')){
         const f=document.createElement('div');
