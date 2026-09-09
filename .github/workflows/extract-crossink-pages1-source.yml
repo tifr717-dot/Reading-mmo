@@ -1,0 +1,74 @@
+name: Extract CrossInk Pages1 Source
+
+on:
+  push:
+    branches:
+      - crossink-x4-pages-1.5.0
+    paths:
+      - ".github/workflows/extract-crossink-pages1-source.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CROSSINK_COMMIT: 0de623ed24acd94ae2301e8e1f4a42e32613110b
+  FREEINK_COMMIT: 1ff020263cd2202ea79ce3eb811f5ac8489b8cde
+  PATCH_B64_PATH: firmware/crossink-x4-pages/CrossInk-v1.5.0-pages-x4.patch.gz.b64
+
+jobs:
+  extract-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout build inputs
+        uses: actions/checkout@v6
+
+      - name: Fetch exact CrossInk 1.5.0 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone https://github.com/uxjulia/CrossInk.git crossink
+          cd crossink
+          git checkout --detach "$CROSSINK_COMMIT"
+          git submodule update --init --recursive
+          test "$(git rev-parse HEAD)" = "$CROSSINK_COMMIT"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$FREEINK_COMMIT"
+
+      - name: Apply known-good Pages1 patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          encoded="$GITHUB_WORKSPACE/$PATCH_B64_PATH"
+          compressed="$GITHUB_WORKSPACE/CrossInk-v1.5.0-pages1-x4.patch.gz"
+          patch_file="$GITHUB_WORKSPACE/CrossInk-v1.5.0-pages1-x4.patch"
+          base64 -d "$encoded" > "$compressed"
+          gzip -t "$compressed"
+          gzip -dc "$compressed" > "$patch_file"
+          cd crossink
+          git apply --check "$patch_file"
+          git apply "$patch_file"
+          git diff --check
+          git diff --name-only | tee "$GITHUB_WORKSPACE/changed-files.txt"
+          git diff > "$GITHUB_WORKSPACE/pages1-source.patch"
+
+      - name: Export patched source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/source-export"
+          cd crossink
+          while IFS= read -r path; do
+            mkdir -p "$GITHUB_WORKSPACE/source-export/$(dirname "$path")"
+            cp "$path" "$GITHUB_WORKSPACE/source-export/$path"
+          done < "$GITHUB_WORKSPACE/changed-files.txt"
+          cp "$GITHUB_WORKSPACE/changed-files.txt" "$GITHUB_WORKSPACE/source-export/changed-files.txt"
+          cp "$GITHUB_WORKSPACE/pages1-source.patch" "$GITHUB_WORKSPACE/source-export/pages1-source.patch"
+
+      - name: Upload direct-source extraction
+        uses: actions/upload-artifact@v7
+        with:
+          name: CrossInk-1.5.0-Pages1-source
+          path: source-export
+          if-no-files-found: error
+          retention-days: 7
