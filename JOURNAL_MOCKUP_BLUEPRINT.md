@@ -1,6 +1,8 @@
 # Reading Journal — Mockup Recreation Blueprint
 
 ## Source of truth
+The exact mockup reattached on September 10, 2026 is preserved at `design-reference/reading-journal-approved.png`. Its visible All Books labels and composition supersede earlier single-book label descriptions below.
+
 The approved romantic botanical storybook mockup is the visual source of truth for the Reading Journal rebuild.
 
 This is not an inspiration exercise. The goal is to translate the mockup into a functioning mobile app screen as faithfully as practical.

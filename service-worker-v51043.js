@@ -1,9 +1,9 @@
-const CACHE='reading-mmo-v5.10.43-approved-real-za';
-const FORCE_VERSION='51043za';
+const CACHE='reading-mmo-v5.10.43-approved-real-zb';
+const FORCE_VERSION='51043zb';
 const CORE=[
  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
  './reading-journal-v51032.js','./reading-journal-mockup-v51043.js','./reading-journal-unified-v51043.js',
- './reading-journal-canvas-composite-v51043v.js','./reading-journal-layered-v51043v.js',
+ './reading-journal-layered-v51043v.js',
  './journal-mockup-top-exact-v1.webp','./journal-mockup-selector-strip-blank-v1.webp',
  './archive-parchment-texture.png','./journal-flourish-v51041.svg',
  './journal-approved-stats-v51043z.webp','./journal-approved-highlights-v51043z.webp','./journal-approved-timeline-v51043z.webp',

@@ -60,7 +60,7 @@ const css=`
 .v51034-shell[data-real-journal="${REV}"] #v51034JournalBody:after{display:none!important}
 `;
 let busy=false,timer=0;
-function ensureStyle(){['v51043-approved-real-css','v51043-layered-t-css','v51043-approved-z-css','v51043-approved-za-css'].forEach(id=>document.getElementById(id)?.remove());const s=document.createElement('style');s.id='v51043-approved-za-css';s.textContent=css;document.head.appendChild(s)}
+function ensureStyle(){if(document.getElementById('v51043-approved-za-css'))return;['v51043-approved-real-css','v51043-layered-t-css','v51043-approved-z-css','v51043-approved-za-css'].forEach(id=>document.getElementById(id)?.remove());const s=document.createElement('style');s.id='v51043-approved-za-css';s.textContent=css;document.head.appendChild(s)}
 function clearInline(el){if(!el)return;['background','background-image','background-size','background-position','background-repeat','height','min-height','aspect-ratio','box-shadow'].forEach(p=>el.style.removeProperty(p))}
 function apply(){if(busy)return;busy=true;try{
  const shell=document.querySelector('.v51034-shell'),body=document.getElementById('v51034JournalBody');if(!shell||!body)return;
@@ -68,10 +68,17 @@ function apply(){if(busy)return;busy=true;try{
  body.querySelectorAll('.v51043-canvas-layer,.v51043-raster-layer,.v51043-art-layer,.v51043-exact-skin,.v51043-bookmark-layer,.v51043-flower-layer,.v51043-real-footer').forEach(n=>n.remove());
  [body.querySelector('.v51034-ribbon'),body.querySelector('.v51034-feature-row'),...body.querySelectorAll('.v51034-section-head'),...body.querySelectorAll('.v51034-entry-main')].forEach(clearInline);
  body.querySelectorAll('.v51034-entry-main').forEach((e,i)=>e.style.setProperty('--journal-slip',`url("${A.slips[i%3]}")`));
- window.__readingMmoVersionOwner=BUILD;const v=document.getElementById('headerVersionText');if(v)v.textContent=BUILD;document.documentElement.dataset.readingJournalArt='approved-real-za';
+ window.__readingMmoVersionOwner=BUILD;const v=document.getElementById('headerVersionText');if(v&&v.textContent!==BUILD)v.textContent=BUILD;document.documentElement.dataset.readingJournalArt='approved-real-za';
  }finally{busy=false}}
-function queue(){clearTimeout(timer);timer=setTimeout(apply,0);[80,220,500,1000].forEach(ms=>setTimeout(apply,ms))}
-function boot(){apply();new MutationObserver(ms=>{if(ms.some(m=>m.type==='childList'&&m.addedNodes.length))queue()}).observe(document.body,{childList:true,subtree:true})}
+// Observe journal structure only. Updating the version badge creates a text node,
+// so watching every addition in document.body made apply() schedule itself forever.
+function queue(){if(timer)return;timer=setTimeout(()=>{timer=0;apply()},0)}
+function boot(){apply();new MutationObserver(ms=>{
+ const changed=ms.some(m=>m.type==='childList'&&[...m.addedNodes].some(n=>
+  n.nodeType===1&&(n.id==='v51034JournalBackdrop'||n.id==='v51034JournalBody'||
+   n.querySelector?.('#v51034JournalBody')||m.target.closest?.('#v51034JournalBody'))));
+ if(changed)queue();
+}).observe(document.body,{childList:true,subtree:true})}
 document.addEventListener('click',e=>{if(e.target.closest?.('#v51034JournalLaunch,#v51034LibraryJournalLaunch,[data-journal-book]'))queue()},true);
 document.addEventListener('change',e=>{if(e.target.id==='v51034BookFilter')queue()},true);addEventListener('pageshow',queue);addEventListener('resize',queue);
 document.readyState==='loading'?document.addEventListener('DOMContentLoaded',boot,{once:true}):boot();
