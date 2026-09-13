@@ -1,8 +1,13 @@
 (()=>{
   'use strict';
-  if(window.__v51043JournalMockupFinalClean)return;
-  window.__v51043JournalMockupFinalClean=true;
-  const BUILD='v5.10.43';
+  if(window.__v51044StageBootstrap)return;
+  window.__v51044StageBootstrap=true;
+  const BUILD='v5.10.44';
+  const RUNTIME_PARTS=[
+    'reading-journal-v51044-runtime-01.txt',
+    'reading-journal-v51044-runtime-02.txt',
+    'reading-journal-v51044-runtime-03.txt'
+  ];
   function stamp(){
     window.__readingMmoVersionOwner=BUILD;
     const badge=document.getElementById('headerVersionText');
@@ -14,11 +19,24 @@
       }
     });
   }
+  async function loadRuntime(){
+    try{
+      const parts=await Promise.all(RUNTIME_PARTS.map(name=>fetch(`./${name}?v=51044`,{cache:'no-store'}).then(r=>{
+        if(!r.ok)throw new Error(`${name} ${r.status}`);
+        return r.text();
+      })));
+      (0,eval)(parts.join('\n'));
+      stamp();
+      document.documentElement.dataset.readingJournalMockupFinal='51044-v17-stage';
+    }catch(err){
+      console.error('[journal 51044] staging runtime failed',err);
+    }
+  }
   function run(){
     stamp();
-    document.documentElement.dataset.readingJournalMockupFinal='51043-final-l';
+    loadRuntime();
     [100,500,1500,3500].forEach(ms=>setTimeout(stamp,ms));
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
-  window.addEventListener('pageshow',run);
+  window.addEventListener('pageshow',stamp);
 })();
