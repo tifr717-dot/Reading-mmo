@@ -1,13 +1,10 @@
-const CACHE='reading-mmo-v5.10.43-approved-real-za';
-const FORCE_VERSION='51043za';
+const CACHE='reading-mmo-v5.10.44-journal-v17';
+const FORCE_VERSION='51044';
 const CORE=[
  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
  './reading-journal-v51032.js','./reading-journal-mockup-v51043.js','./reading-journal-unified-v51043.js',
  './reading-journal-canvas-composite-v51043v.js','./reading-journal-layered-v51043v.js',
- './journal-mockup-top-exact-v1.webp','./journal-mockup-selector-strip-blank-v1.webp',
- './archive-parchment-texture.png','./journal-flourish-v51041.svg',
- './journal-approved-stats-v51043z.webp','./journal-approved-highlights-v51043z.webp','./journal-approved-timeline-v51043z.webp',
- './journal-approved-slip1-v51043z.webp','./journal-approved-slip2-v51043z.webp','./journal-approved-slip3-v51043z.webp'
+ './journal-v51044-assets-01.txt','./journal-v51044-assets-02.txt','./journal-v51044-assets-03.txt','./journal-v51044-assets-04.txt','./journal-v51044-assets-05.txt','./journal-v51044-assets-06.txt','./journal-v51044-assets-07.txt','./journal-v51044-assets-08.txt','./journal-v51044-assets-09.txt','./journal-v51044-assets-10.txt','./journal-v51044-assets-11.txt','./journal-v51044-assets-12.txt','./journal-v51044-assets-13.txt','./journal-v51044-assets-14.txt','./journal-v51044-assets-15.txt','./journal-v51044-assets-16.txt','./journal-v51044-assets-17.txt','./journal-v51044-assets-18.txt','./journal-v51044-assets-19.txt','./journal-v51044-assets-20.txt','./journal-v51044-assets-21.txt','./reading-journal-v51044-runtime-01.txt','./reading-journal-v51044-runtime-02.txt','./reading-journal-v51044-runtime-03.txt'
 ];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('reading-mmo-')&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim();const cs=await self.clients.matchAll({type:'window',includeUncontrolled:true});await Promise.all(cs.map(c=>{try{const u=new URL(c.url);if(u.origin!==self.location.origin||u.searchParams.get('appv')===FORCE_VERSION)return Promise.resolve();u.searchParams.set('appv',FORCE_VERSION);return c.navigate(u.href).catch(()=>undefined)}catch(_){return Promise.resolve()}}))})())});

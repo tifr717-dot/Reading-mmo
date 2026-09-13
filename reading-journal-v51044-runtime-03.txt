@@ -1,0 +1,30 @@
+   if(!backdrop||!shell||!body)return;
+    shell.dataset.journal51044=REV;
+    if(backdrop.hidden)return;
+    if(!body.querySelector('#v51044Root'))syncSelectedFromBase();
+    const sig=JSON.stringify(sortedSessions().map(x=>[x?.id,x?.endedAt,x?.bookId,x?.bookTitle,x?.pages,x?.durationMs,x?.readerSessionId,x?.source]))+'|'+selectedKey;
+    if(force||!body.querySelector('#v51044Root')||sig!==lastSignature){lastSignature=sig;renderRoot()}
+  }finally{busy=false}
+}
+function queue(force=false){clearTimeout(timer);timer=setTimeout(()=>apply(force),0);[60,160,350,700].forEach(ms=>setTimeout(()=>apply(force),ms))}
+function rebindLaunchers(){
+  const oldOpen=window.openReadingJournal;
+  if(typeof oldOpen==='function'&&!oldOpen.__v51044Wrapped){
+    const wrapped=function(bookKey){const out=oldOpen.apply(this,arguments);setTimeout(()=>{if(bookKey&&sortedSessions().some(x=>keyFor(x)===bookKey))selectedKey=bookKey;queue(true)},0);return out};wrapped.__v51044Wrapped=true;window.openReadingJournal=wrapped;
+  }
+  ['v51034JournalLaunch','v51034LibraryJournalLaunch'].forEach(id=>{const b=$(id);if(b&&!b.dataset.v51044Bound){b.dataset.v51044Bound='1';b.addEventListener('click',()=>queue(true),true)}})
+}
+function boot(){
+  cleanupLegacy();ensureStyle();stampBuild();rebindLaunchers();
+  const headObs=new MutationObserver(()=>cleanupLegacy());headObs.observe(document.head,{childList:true,subtree:false});
+  const bodyObs=new MutationObserver(ms=>{if(ms.some(m=>m.type==='childList'||m.type==='attributes')){rebindLaunchers();queue(false)}});bodyObs.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
+  document.addEventListener('click',e=>{
+    if(!e.target.closest?.('#v51044ArchiveButton,#v51044BookMenu'))$('v51044BookMenu')?.classList.remove('open');
+    if(e.target.closest?.('#v51034JournalLaunch,#v51034LibraryJournalLaunch,[data-journal-book]'))queue(true)
+  },true);
+  window.addEventListener('resize',()=>{fitText();queue(false)});
+  window.addEventListener('pageshow',()=>queue(false));
+  [80,250,700,1500].forEach(ms=>setTimeout(()=>{rebindLaunchers();apply(false)},ms));
+}
+document.readyState==='loading'?document.addEventListener('DOMContentLoaded',boot,{once:true}):boot();
+})();

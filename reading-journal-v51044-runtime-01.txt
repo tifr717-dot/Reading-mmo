@@ -1,0 +1,154 @@
+(async()=>{'use strict';
+if(window.__v51044ApprovedJournal||window.__v51044ApprovedJournalLoading)return;
+window.__v51044ApprovedJournalLoading=1;
+
+const BUILD='v5.10.44';
+const REV='51044';
+const ASSET_PARTS=["journal-v51044-assets-01.txt","journal-v51044-assets-02.txt","journal-v51044-assets-03.txt","journal-v51044-assets-04.txt","journal-v51044-assets-05.txt","journal-v51044-assets-06.txt","journal-v51044-assets-07.txt","journal-v51044-assets-08.txt","journal-v51044-assets-09.txt","journal-v51044-assets-10.txt","journal-v51044-assets-11.txt","journal-v51044-assets-12.txt","journal-v51044-assets-13.txt","journal-v51044-assets-14.txt","journal-v51044-assets-15.txt","journal-v51044-assets-16.txt","journal-v51044-assets-17.txt","journal-v51044-assets-18.txt","journal-v51044-assets-19.txt","journal-v51044-assets-20.txt","journal-v51044-assets-21.txt"];
+let PACK;
+try{
+  const pieces=await Promise.all(ASSET_PARTS.map(n=>fetch(`./${n}?v=${REV}`,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`${n} ${r.status}`);return r.text()})));
+  PACK=JSON.parse(pieces.join(''));
+}catch(err){delete window.__v51044ApprovedJournalLoading;console.error('[journal 51044] asset pack failed',err);return}
+const data=n=>`data:image/webp;base64,${PACK[n]||''}`;
+const A={
+  page:data('page_bg'),header:data('header'),stats:data('stats'),highlights:data('highlights'),ribbon:data('ribbon'),slip:data('slip'),
+  seals:{red:data('seal_red'),blue:data('seal_blue')},
+  tabs:{purple:data('tab_purple'),blue:data('tab_blue'),green:data('tab_green'),red:data('tab_red')}
+};
+window.__v51044ApprovedJournal=1;delete window.__v51044ApprovedJournalLoading;
+let selectedKey='all';
+let busy=false;
+let timer=0;
+let lastSignature='';
+
+const $=id=>document.getElementById(id);
+function state(){try{return typeof S!=='undefined'&&S?S:null}catch(_){return null}}
+function sessions(){const x=state()?.readingSessions;return Array.isArray(x)?x:[]}
+function library(){const x=state()?.library;return Array.isArray(x)?x:[]}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function norm(v){return String(v||'').trim().toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ')}
+function keyFor(x){return x?.bookId?`id:${String(x.bookId)}`:`title:${norm(x?.bookTitle||'Unknown Book')}`}
+function titleForKey(key,list=sessions()){
+  if(key==='all')return 'All Books';
+  return String(list.find(x=>keyFor(x)===key)?.bookTitle||'Unknown Book');
+}
+function sortedSessions(){return sessions().slice().sort((a,b)=>Number(b?.endedAt||0)-Number(a?.endedAt||0))}
+function visibleSessions(){const list=sortedSessions();return selectedKey==='all'?list:list.filter(x=>keyFor(x)===selectedKey)}
+function fmtDuration(ms){
+  const sec=Math.max(0,Math.floor((Number(ms)||0)/1000));
+  const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;
+  if(h)return `${h}h ${m}m`;
+  if(m)return `${m}m ${String(s).padStart(2,'0')}s`;
+  return `${s}s`;
+}
+function fmtTime(ts){
+  const d=new Date(Number(ts)||0);if(Number.isNaN(d.getTime()))return '—';
+  try{return d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}catch(_){return d.toLocaleTimeString()}
+}
+function fmtDay(ts){
+  const d=new Date(Number(ts)||0);if(Number.isNaN(d.getTime()))return 'UNDATED';
+  try{return d.toLocaleDateString([], {month:'short',day:'numeric',year:'numeric'}).toUpperCase()}catch(_){return d.toDateString().toUpperCase()}
+}
+function dayKey(ts){const d=new Date(Number(ts)||0);return Number.isNaN(d.getTime())?'0':`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`}
+function rangeLabel(x){const a=Number(x?.startPage)||0,b=Number(x?.endPage)||0;return (!a&&!b)?'—':`${a||'—'} → ${b||'—'}`}
+function pagesFor(x){
+  const direct=Math.max(0,Number(x?.pages)||0);if(direct)return direct;
+  const a=Number(x?.startPage)||0,b=Number(x?.endPage)||0;
+  return a&&b?Math.max(0,Math.abs(b-a)):0;
+}
+function representedBooks(list){
+  const m=new Map();
+  list.forEach(x=>{const k=keyFor(x);if(!m.has(k))m.set(k,{key:k,title:String(x?.bookTitle||'Unknown Book'),pages:0,sessions:0,ms:0,last:0});const b=m.get(k);b.pages+=pagesFor(x);b.sessions++;b.ms+=Math.max(0,Number(x?.durationMs)||0);b.last=Math.max(b.last,Number(x?.endedAt)||0)});
+  return [...m.values()];
+}
+function statsFor(list){
+  const books=representedBooks(list);
+  const pages=list.reduce((n,x)=>n+pagesFor(x),0);
+  const ms=list.reduce((n,x)=>n+Math.max(0,Number(x?.durationMs)||0),0);
+  const longest=list.reduce((best,x)=>!best||Number(x?.durationMs||0)>Number(best?.durationMs||0)?x:best,null);
+  const biggest=list.reduce((best,x)=>!best||pagesFor(x)>pagesFor(best)?x:best,null);
+  const recent=list[0]||null;
+  const most=books.slice().sort((a,b)=>b.pages-a.pages||b.sessions-a.sessions||b.last-a.last)[0]||null;
+  return {books,pages,ms,longest,biggest,recent,most};
+}
+function stableHash(s){let h=2166136261;for(const ch of String(s||'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function tabFor(x){return ['purple','blue','green','red'][stableHash(x?.bookTitle)%4]}
+function sealFor(x){return stableHash(`${x?.bookTitle}|${x?.readerSessionId||x?.endedAt}`)%2?'blue':'red'}
+function sourceLines(x){
+  if(String(x?.source||'').toLowerCase()==='crossink')return ['CrossInk',Number(x?.readerSessionId)>0?`#${Number(x.readerSessionId)}`:''];
+  return ['Reading','MMO'];
+}
+function groupByDay(list){
+  const out=[];let g=null;
+  list.forEach(x=>{const k=dayKey(x?.endedAt);if(!g||g.key!==k){g={key:k,label:fmtDay(x?.endedAt),items:[]};out.push(g)}g.items.push(x)});
+  return out;
+}
+function bookChoices(){
+  const seen=new Map();sortedSessions().forEach(x=>{const k=keyFor(x);if(!seen.has(k))seen.set(k,String(x?.bookTitle||'Unknown Book'))});return [...seen.entries()].map(([key,title])=>({key,title}));
+}
+function syncSelectedFromBase(){
+  const sel=$('v51034BookFilter');
+  const v=String(sel?.value||'');
+  if(v&&v!=='all'&&sortedSessions().some(x=>keyFor(x)===v))selectedKey=v;
+  if(!sortedSessions().some(x=>keyFor(x)===selectedKey))selectedKey='all';
+}
+function entryMarkup(x){
+  const tab=tabFor(x),seal=sealFor(x),src=sourceLines(x),p=pagesFor(x);
+  return `<div class="v51044-entry-row">
+    <div class="v51044-entry-time">${esc(fmtTime(x?.endedAt))}</div>
+    <div class="v51044-entry-box">
+      <img class="v51044-entry-slip" src="${A.slip}" alt="">
+      <img class="v51044-entry-tab" src="${A.tabs[tab]}" alt="">
+      <div class="v51044-seal-wrap">
+        <img class="v51044-entry-seal" src="${A.seals[seal]}" alt="">
+        <div class="v51044-stamp"><span>${esc(src[0])}</span>${src[1]?`<b>${esc(src[1])}</b>`:''}</div>
+      </div>
+      <div class="v51044-entry-copy">
+        <div class="v51044-entry-title">${esc(x?.bookTitle||'Unknown Book')}</div>
+        <div class="v51044-entry-meta"><span>${esc(rangeLabel(x))}</span><i>•</i><span>+${esc(p)} pages</span><i>•</i><span>${esc(fmtDuration(x?.durationMs))}</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+function dayMarkup(g){
+  return `<section class="v51044-day"><div class="v51044-date-row"><div class="v51044-date-text">${esc(g.label)}</div><div class="v51044-date-rule"><span>✦</span></div></div>${g.items.map(entryMarkup).join('')}</section>`;
+}
+function filterMenuMarkup(){
+  const options=[{key:'all',title:'All Books'},...bookChoices()];
+  return options.map(o=>`<button type="button" class="v51044-book-option${o.key===selectedKey?' selected':''}" data-v51044-book="${esc(o.key)}">${esc(o.title)}</button>`).join('');
+}
+function renderRoot(){
+  const list=visibleSessions();
+  const st=statsFor(list);
+  const totalSessions=list.length;
+  const body=$('v51034JournalBody');if(!body)return;
+  const title=selectedKey==='all'?'All Books':titleForKey(selectedKey,list.length?list:sortedSessions());
+  const mostTitle=st.most?.title||'—';
+  const longest=st.longest?fmtDuration(st.longest.durationMs):'—';
+  const recent=st.recent?.bookTitle||'—';
+  const biggest=st.biggest?`${pagesFor(st.biggest)} pages`:'—';
+  const groups=groupByDay(list);
+  body.innerHTML=`<div class="v51044-root" id="v51044Root">
+    <img class="v51044-layer1" src="${A.page}" alt="">
+    <section class="v51044-hero">
+      <img class="v51044-layer2" src="${A.header}" alt="">
+      <div class="v51044-kicker">The Archivist's Reading Record</div>
+      <div class="v51044-title">Reading Journal</div>
+      <div class="v51044-subtitle">A living ledger of every page,<br>every sitting, every story.</div>
+      <div class="v51044-divider"><span>✦</span></div>
+      <button type="button" class="v51044-archive-hit" id="v51044ArchiveButton" aria-haspopup="true" aria-expanded="false">
+        <small>ARCHIVE VIEW</small><span class="v51044-archive-value" id="v51044ArchiveValue">${esc(title)}</span><span class="v51044-caret">⌄</span>
+      </button>
+    </section>
+    <div class="v51044-book-menu" id="v51044BookMenu">${filterMenuMarkup()}</div>
+    <div class="v51044-scroll" id="v51044Scroll">
+      <main class="v51044-content">
+        <div class="v51044-card v51044-stats-card"><img src="${A.stats}" alt=""><div class="v51044-overlay"><div class="v51044-stat v51044-s1">${esc(st.books.length)}</div><div class="v51044-stat v51044-s2">${esc(totalSessions)}</div><div class="v51044-stat v51044-s3">${esc(st.pages)}</div><div class="v51044-stat v51044-s4">${esc(fmtDuration(st.ms))}</div></div></div>
+        <div class="v51044-card"><img src="${A.highlights}" alt=""><div class="v51044-overlay"><div class="v51044-highlight v51044-h1">${esc(mostTitle)}</div><div class="v51044-highlight v51044-h2">${esc(longest)}</div><div class="v51044-highlight v51044-h3">${esc(recent)}</div><div class="v51044-highlight v51044-h4">${esc(biggest)}</div></div></div>
+        <div class="v51044-ribbon"><img src="${A.ribbon}" alt=""></div>
+        <div class="v51044-timeline">${groups.length?groups.map(dayMarkup).join(''):'<div class="v51044-empty">No reading sessions recorded for this view yet.</div>'}</div>
+      </main>
+    </div>
+  </div>`;
+  b
