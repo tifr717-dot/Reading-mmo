@@ -1,0 +1,1 @@
+d4afecbf839cdf8bf64b4568b247a18da42538da424320d4244a8588e653a122  CrossInk-v1.5.0-pages2-x4.patch
