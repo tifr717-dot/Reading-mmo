@@ -1,0 +1,38 @@
+name: Extract X4 Pro Legacy Pages Reference
+
+on:
+  push:
+    branches:
+      - crossink-x4-pro-pages
+    paths:
+      - ".github/workflows/extract-x4-pro-legacy-pages-reference.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: crossink-x4-pro-pages
+      - name: Decode legacy Pages patch as migration reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p firmware/crossink-x4-pro-pages
+          base64 -d firmware/crossink-x4-pages/CrossInk-v1.5.0-pages-x4.patch.gz.b64 \
+            | gzip -dc \
+            > firmware/crossink-x4-pro-pages/LEGACY_PAGES_1_5_0_REFERENCE.patch
+          test -s firmware/crossink-x4-pro-pages/LEGACY_PAGES_1_5_0_REFERENCE.patch
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add firmware/crossink-x4-pro-pages/LEGACY_PAGES_1_5_0_REFERENCE.patch
+          if git diff --cached --quiet; then
+            echo "Reference patch already present"
+            exit 0
+          fi
+          git commit -m "Add decoded legacy Pages patch reference"
+          git push origin HEAD:crossink-x4-pro-pages
