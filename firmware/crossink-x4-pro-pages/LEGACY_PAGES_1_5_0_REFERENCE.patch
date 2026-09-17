@@ -1,0 +1,555 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 3f1be60..44493f4 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -2,6 +2,7 @@
+ 
+ ### Added
+ 
++- Reading Stats shows the current-book page position and restores total pages on the device statistics card.
+ - EPUB tables now lay out a row at a time in both Incremental and Full Section indexing, keeping regular tables readable without whole-table buffering.
+ - Touch support for Seeed Studio Sticky
+ - Nearby File Transfer can send EPUB, TXT, XTC, XTCH, PNG, and BMP files directly between two CrossInk devices without a Wi-Fi network.
+diff --git a/lib/I18n/translations/english.yaml b/lib/I18n/translations/english.yaml
+index 1b5c1eb..0eff2d0 100644
+--- a/lib/I18n/translations/english.yaml
++++ b/lib/I18n/translations/english.yaml
+@@ -607,7 +607,7 @@ STR_STATS_PAGES_PER_MIN: "Pages/Min"
+ STR_STATS_COMPLETED_LBL: "Books Read"
+ STR_STATS_SESSIONS_LBL: "Sessions"
+ STR_STATS_TIME_LBL: "Reading Time"
+-STR_STATS_PAGES_LBL: "Pages Turned"
++STR_STATS_PAGES_LBL: "Pages"
+ STR_STATS_PROGRESS_LBL: "Progress"
+ STR_STATS_AVG_SESSION_LBL: "Avg Session"
+ STR_STATS_DAILY_AVG_LBL: "Daily Avg"
+diff --git a/src/activities/boot_sleep/SleepActivity.cpp b/src/activities/boot_sleep/SleepActivity.cpp
+index 2b82650..8022592 100644
+--- a/src/activities/boot_sleep/SleepActivity.cpp
++++ b/src/activities/boot_sleep/SleepActivity.cpp
+@@ -725,10 +725,10 @@ void SleepActivity::renderReadingStatsSleepScreen() const {
+     const bool hasSyncedStats = GlobalReadingStats::hasSyncedStats();
+     const GlobalReadingStats allDevicesStats =
+         hasSyncedStats ? GlobalReadingStats::loadAggregated(deviceStats) : GlobalReadingStats{};
+-    renderNoRtcCombinedStatsPage(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0, deviceStats,
++    renderNoRtcCombinedStatsPage(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0, 0, deviceStats,
+                                  hasSyncedStats ? &allDevicesStats : nullptr, false);
+   } else {
+-    renderPerBookStatsPage(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0, false, false, false);
++    renderPerBookStatsPage(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0, 0, false, false, false);
+   }
+   if (!sleepCoverFilterInvertsGeneratedScreen()) {
+     renderer.invertScreen();
+diff --git a/src/activities/home/HomeActivity.cpp b/src/activities/home/HomeActivity.cpp
+index 4e1432d..73c1c62 100644
+--- a/src/activities/home/HomeActivity.cpp
++++ b/src/activities/home/HomeActivity.cpp
+@@ -2126,10 +2126,13 @@ void HomeActivity::onReadingStatsOpen() {
+   const std::string bookPath = getCurrentBookPath();
+   const std::string cachePath =
+       FsHelpers::hasEpubExtension(bookPath) ? Epub::cachePathForFilePath(bookPath, "/.crosspoint") : std::string{};
++  const uint32_t currentBookPage = highlightedBookIdx >= 0
++                                       ? RecentBookProgress::loadPageNumber(recentBooks[highlightedBookIdx])
++                                       : 0;
+   if (showAllDevicesStats) {
+     startActivityForResult(std::make_unique<BookStatsActivity>(renderer, mappedInput, bookTitle, cachePath,
+                                                                currentBookStats, currentBookProgressPercent, false, 0,
+-                                                               globalStats, allDevicesGlobalStats, true),
++                                                               currentBookPage, globalStats, allDevicesGlobalStats, true),
+                            [this](const ActivityResult& result) {
+                              mappedInput.suppressNextConfirmRelease();
+                              const auto* statsResult = std::get_if<ReadingStatsResult>(&result.data);
+@@ -2146,7 +2149,7 @@ void HomeActivity::onReadingStatsOpen() {
+   } else {
+     startActivityForResult(
+         std::make_unique<BookStatsActivity>(renderer, mappedInput, bookTitle, cachePath, currentBookStats,
+-                                            currentBookProgressPercent, false, 0, globalStats, true),
++                                            currentBookProgressPercent, false, 0, currentBookPage, globalStats, true),
+         [this](const ActivityResult& result) {
+           mappedInput.suppressNextConfirmRelease();
+           const auto* statsResult = std::get_if<ReadingStatsResult>(&result.data);
+diff --git a/src/activities/home/RecentBookProgress.cpp b/src/activities/home/RecentBookProgress.cpp
+index 459b1ce..931e2ee 100644
+--- a/src/activities/home/RecentBookProgress.cpp
++++ b/src/activities/home/RecentBookProgress.cpp
+@@ -10,6 +10,7 @@
+ 
+ #include <algorithm>
+ #include <cstdint>
++#include <limits>
+ #include <cstdio>
+ #include <string>
+ 
+@@ -214,6 +215,68 @@ float loadTxtProgressPercent(const RecentBook& book) {
+ 
+   return clampProgressPercent((static_cast<float>(currentPage + 1) / static_cast<float>(totalPages)) * 100.0f);
+ }
++
++uint32_t loadEpubPageNumber(const RecentBook& book) {
++  Epub epub(book.path, "/.crosspoint");
++  if (!epub.load(false, true)) {
++    return 0;
++  }
++
++  EpubReaderUtils::Progress progress;
++  if (!EpubReaderUtils::loadProgress(epub, progress, "RBPR") || !progress.hasPageCount || progress.pageCount <= 0 ||
++      progress.spineIndex < 0 || progress.spineIndex >= epub.getSpineItemsCount()) {
++    return 0;
++  }
++
++  const float sectionProgress =
++      std::clamp(static_cast<float>(progress.pageNumber) / static_cast<float>(progress.pageCount), 0.0f, 1.0f);
++  uint32_t referencePage = 0;
++  uint32_t referencePageCount = 0;
++  if (epub.resolveReferencePage(progress.spineIndex, sectionProgress, referencePage, referencePageCount) &&
++      referencePage > 0) {
++    return referencePage;
++  }
++
++  const size_t completedSpineBytes =
++      progress.spineIndex > 0 ? epub.getCumulativeSpineItemSize(progress.spineIndex - 1) : 0;
++  const size_t currentCumulativeBytes = epub.getCumulativeSpineItemSize(progress.spineIndex);
++  const size_t currentSpineBytes =
++      currentCumulativeBytes > completedSpineBytes ? currentCumulativeBytes - completedSpineBytes : 0;
++  if (currentSpineBytes == 0) {
++    return 0;
++  }
++
++  const uint64_t precedingPages =
++      (static_cast<uint64_t>(completedSpineBytes) * static_cast<uint64_t>(progress.pageCount) +
++       static_cast<uint64_t>(currentSpineBytes) / 2ULL) /
++      static_cast<uint64_t>(currentSpineBytes);
++  const uint64_t currentPage = precedingPages + static_cast<uint64_t>(std::max(progress.pageNumber, 0)) + 1ULL;
++  return static_cast<uint32_t>(std::min<uint64_t>(currentPage, std::numeric_limits<uint32_t>::max()));
++}
++
++uint32_t loadXtcPageNumber(const RecentBook& book) {
++  Xtc xtc(book.path, "/.crosspoint");
++  if (!xtc.load()) {
++    return 0;
++  }
++
++  FsFile file;
++  if (!Storage.openFileForRead("RBPR", xtc.getCachePath() + "/progress.bin", file)) {
++    return 0;
++  }
++
++  uint8_t data[4];
++  const int bytesRead = file.read(data, sizeof(data));
++  file.close();
++  if (bytesRead != 4) {
++    return 0;
++  }
++
++  const uint32_t currentPage = static_cast<uint32_t>(data[0]) | (static_cast<uint32_t>(data[1]) << 8) |
++                               (static_cast<uint32_t>(data[2]) << 16) | (static_cast<uint32_t>(data[3]) << 24);
++  const uint32_t pageCount = xtc.getPageCount();
++  return pageCount > 0 ? std::min<uint32_t>(currentPage + 1U, pageCount) : currentPage + 1U;
++}
+ }  // namespace
+ 
+ float RecentBookProgress::loadPercent(const RecentBook& book) {
+@@ -229,6 +292,16 @@ float RecentBookProgress::loadPercent(const RecentBook& book) {
+   return -1.0f;
+ }
+ 
++uint32_t RecentBookProgress::loadPageNumber(const RecentBook& book) {
++  if (FsHelpers::hasEpubExtension(book.path)) {
++    return loadEpubPageNumber(book);
++  }
++  if (FsHelpers::hasXtcExtension(book.path)) {
++    return loadXtcPageNumber(book);
++  }
++  return 0;
++}
++
+ float RecentBookProgress::loadCachedEpubPercent(const RecentBook& book) {
+   if (!FsHelpers::hasEpubExtension(book.path)) {
+     return -1.0f;
+diff --git a/src/activities/home/RecentBookProgress.h b/src/activities/home/RecentBookProgress.h
+index d133773..0677a4d 100644
+--- a/src/activities/home/RecentBookProgress.h
++++ b/src/activities/home/RecentBookProgress.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ 
++#include <cstdint>
+ #include <string>
+ 
+ class Epub;
+@@ -15,6 +16,9 @@ namespace RecentBookProgress {
+ // Loads the saved reading percentage for a recent EPUB, XTC, TXT, or Markdown book.
+ // Returns -1.0f when progress is unavailable or the cache cannot be read.
+ float loadPercent(const RecentBook& book);
++// Loads the saved whole-book page position when it can be determined.
++// Returns 0 when no reliable position is available.
++uint32_t loadPageNumber(const RecentBook& book);
+ // Loads the cached EPUB reading percentage without opening the EPUB.
+ // Returns -1.0f when progress is unavailable or the cache cannot be read.
+ float loadCachedEpubPercent(const RecentBook& book);
+diff --git a/src/activities/reader/BookStatsActivity.cpp b/src/activities/reader/BookStatsActivity.cpp
+index 6810c04..ef6a62b 100644
+--- a/src/activities/reader/BookStatsActivity.cpp
++++ b/src/activities/reader/BookStatsActivity.cpp
+@@ -9,8 +9,8 @@
+ BookStatsActivity::BookStatsActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, const std::string& title,
+                                      const std::string& bookCachePath, const BookReadingStats& stats,
+                                      const float progressPercent, const bool hasEstimatedTimeLeft,
+-                                     const uint32_t estimatedTimeLeftSeconds, const GlobalReadingStats& globalStats,
+-                                     const bool returnToHomeOnExit)
++                                     const uint32_t estimatedTimeLeftSeconds, const uint32_t currentBookPage,
++                                     const GlobalReadingStats& globalStats, const bool returnToHomeOnExit)
+     : Activity("BookStats", renderer, mappedInput),
+       bookTitle(title),
+       bookCachePath(bookCachePath),
+@@ -19,13 +19,15 @@ BookStatsActivity::BookStatsActivity(GfxRenderer& renderer, MappedInputManager&
+       returnToHomeOnExit(returnToHomeOnExit),
+       progressPercent(progressPercent),
+       hasEstimatedTimeLeft(hasEstimatedTimeLeft),
+-      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds) {}
++      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds),
++      currentBookPage(currentBookPage) {}
+ 
+ BookStatsActivity::BookStatsActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, const std::string& title,
+                                      const std::string& bookCachePath, const BookReadingStats& stats,
+                                      const float progressPercent, const bool hasEstimatedTimeLeft,
+-                                     const uint32_t estimatedTimeLeftSeconds, const GlobalReadingStats& globalStats,
+-                                     const GlobalReadingStats& allDevicesStats, const bool returnToHomeOnExit)
++                                     const uint32_t estimatedTimeLeftSeconds, const uint32_t currentBookPage,
++                                     const GlobalReadingStats& globalStats, const GlobalReadingStats& allDevicesStats,
++                                     const bool returnToHomeOnExit)
+     : Activity("BookStats", renderer, mappedInput),
+       bookTitle(title),
+       bookCachePath(bookCachePath),
+@@ -36,7 +38,8 @@ BookStatsActivity::BookStatsActivity(GfxRenderer& renderer, MappedInputManager&
+       returnToHomeOnExit(returnToHomeOnExit),
+       progressPercent(progressPercent),
+       hasEstimatedTimeLeft(hasEstimatedTimeLeft),
+-      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds) {}
++      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds),
++      currentBookPage(currentBookPage) {}
+ 
+ void BookStatsActivity::refreshAllDevicesStats() {
+   if (showAllDevicesStats) {
+@@ -418,7 +421,7 @@ void BookStatsActivity::loop() {
+ void BookStatsActivity::render(RenderLock&&) {
+   if (usesNoRtcSingleScreenLayout()) {
+     renderNoRtcCombinedStatsPage(renderer, &mappedInput, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
+-                                 estimatedTimeLeftSeconds, globalStats,
++                                 estimatedTimeLeftSeconds, currentBookPage, globalStats,
+                                  showAllDevicesStats ? &allDevicesStats : nullptr, true);
+     renderer.displayBuffer();
+     return;
+@@ -427,7 +430,7 @@ void BookStatsActivity::render(RenderLock&&) {
+   switch (page) {
+     case Page::PerBook:
+       renderPerBookStatsPage(renderer, &mappedInput, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
+-                             estimatedTimeLeftSeconds, true, hasEditableBook(), true);
++                             estimatedTimeLeftSeconds, currentBookPage, true, hasEditableBook(), true);
+       break;
+     case Page::ThisDevice:
+       renderGlobalStatsPage(renderer, &mappedInput, tr(STR_STATS_THIS_DEVICE_SCREEN), globalStats, true,
+diff --git a/src/activities/reader/BookStatsActivity.h b/src/activities/reader/BookStatsActivity.h
+index 941f826..c0dce54 100644
+--- a/src/activities/reader/BookStatsActivity.h
++++ b/src/activities/reader/BookStatsActivity.h
+@@ -21,6 +21,7 @@ class BookStatsActivity final : public Activity {
+   float progressPercent = -1.0f;
+   bool hasEstimatedTimeLeft = false;
+   uint32_t estimatedTimeLeftSeconds = 0;
++  uint32_t currentBookPage = 0;
+   GfxRenderer::Orientation previousOrientation = GfxRenderer::Orientation::Portrait;
+   Page page = Page::PerBook;
+   int selectedEditField = 0;
+@@ -45,12 +46,13 @@ class BookStatsActivity final : public Activity {
+  public:
+   BookStatsActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, const std::string& title,
+                     const std::string& bookCachePath, const BookReadingStats& stats, float progressPercent,
+-                    bool hasEstimatedTimeLeft, uint32_t estimatedTimeLeftSeconds, const GlobalReadingStats& globalStats,
+-                    bool returnToHomeOnExit = false);
++                    bool hasEstimatedTimeLeft, uint32_t estimatedTimeLeftSeconds, uint32_t currentBookPage,
++                    const GlobalReadingStats& globalStats, bool returnToHomeOnExit = false);
+   BookStatsActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, const std::string& title,
+                     const std::string& bookCachePath, const BookReadingStats& stats, float progressPercent,
+-                    bool hasEstimatedTimeLeft, uint32_t estimatedTimeLeftSeconds, const GlobalReadingStats& globalStats,
+-                    const GlobalReadingStats& allDevicesStats, bool returnToHomeOnExit = false);
++                    bool hasEstimatedTimeLeft, uint32_t estimatedTimeLeftSeconds, uint32_t currentBookPage,
++                    const GlobalReadingStats& globalStats, const GlobalReadingStats& allDevicesStats,
++                    bool returnToHomeOnExit = false);
+ 
+   void onEnter() override;
+   void onExit() override;
+diff --git a/src/activities/reader/BookStatsView.cpp b/src/activities/reader/BookStatsView.cpp
+index d97abc5..d810806 100644
+--- a/src/activities/reader/BookStatsView.cpp
++++ b/src/activities/reader/BookStatsView.cpp
+@@ -277,7 +277,7 @@ void drawHorizontalBars(GfxRenderer& renderer, const int x, const int y, const i
+ void drawPerBookStatsCard(GfxRenderer& renderer, const int x, const int y, const int w, const int h,
+                           const std::string& bookTitle, const BookReadingStats& stats, const float progressPercent,
+                           const bool hasEstimatedTimeLeft, const uint32_t estimatedTimeLeftSeconds,
+-                          const StatsLayout& layout) {
++                          const uint32_t currentBookPage, const StatsLayout& layout) {
+   renderer.drawRect(x, y, w, h);
+   renderer.drawLine(x, y + layout.topCardTitleH, x + w, y + layout.topCardTitleH);
+   const std::string visibleTitle =
+@@ -305,9 +305,18 @@ void drawPerBookStatsCard(GfxRenderer& renderer, const int x, const int y, const
+   }
+   drawStatCell(renderer, x + thirdW * 2, thirdW, y + layout.topCardTitleH, rowH, buf, tr(STR_STATS_PROGRESS_LBL));
+ 
+-  const uint32_t avgSecs = stats.sessionCount > 0 ? stats.totalReadingSeconds / stats.sessionCount : 0;
+-  BookReadingStats::formatDuration(avgSecs, buf, sizeof(buf));
+-  drawStatCell(renderer, x, thirdW, y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_AVG_SESSION_LBL));
++  if (showRtcStats) {
++    const uint32_t avgSecs = stats.sessionCount > 0 ? stats.totalReadingSeconds / stats.sessionCount : 0;
++    BookReadingStats::formatDuration(avgSecs, buf, sizeof(buf));
++    drawStatCell(renderer, x, thirdW, y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_AVG_SESSION_LBL));
++  } else {
++    if (currentBookPage > 0) {
++      snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(currentBookPage));
++    } else {
++      snprintf(buf, sizeof(buf), "-");
++    }
++    drawStatCell(renderer, x, thirdW, y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_PAGES_LBL));
++  }
+ 
+   uint32_t fallbackEstimateSeconds = 0;
+   uint32_t cachedEstimateSeconds = 0;
+@@ -375,12 +384,11 @@ void drawGlobalStatsCard(GfxRenderer& renderer, const int x, const int y, const
+                          const GlobalReadingStats& stats, const StatsLayout& layout) {
+   renderer.drawRect(x, y, w, h);
+   renderer.drawLine(x, y + layout.topCardTitleH, x + w, y + layout.topCardTitleH);
+-  const bool showRtcStats = shouldShowRtcBasedStats();
+   drawCenteredLabel(renderer, UI_10_FONT_ID, x, w,
+                     y + (layout.topCardTitleH - renderer.getLineHeight(UI_10_FONT_ID)) / 2, title, true);
+ 
++  const bool showRtcStats = shouldShowRtcBasedStats();
+   const int thirdW = w / 3;
+-  const int halfW = w / 2;
+   const int rowH = (h - layout.topCardTitleH) / 2;
+   char buf[40];
+ 
+@@ -395,11 +403,7 @@ void drawGlobalStatsCard(GfxRenderer& renderer, const int x, const int y, const
+ 
+   const uint32_t avgSecs = stats.totalSessions > 0 ? stats.totalReadingSeconds / stats.totalSessions : 0;
+   BookReadingStats::formatDuration(avgSecs, buf, sizeof(buf));
+-  if (showRtcStats) {
+-    drawStatCell(renderer, x, thirdW, y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_AVG_SESSION_LBL));
+-  } else {
+-    drawStatCell(renderer, x, halfW, y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_AVG_SESSION_LBL));
+-  }
++  drawStatCell(renderer, x, thirdW, y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_AVG_SESSION_LBL));
+ 
+   if (showRtcStats) {
+     ReadingStatsDateTime today;
+@@ -412,6 +416,10 @@ void drawGlobalStatsCard(GfxRenderer& renderer, const int x, const int y, const
+     }
+     drawStatCell(renderer, x + thirdW, thirdW, y + layout.topCardTitleH + rowH, rowH, buf,
+                  tr(STR_STATS_READING_STREAK_LBL));
++  } else {
++    snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(stats.totalPagesTurned));
++    drawStatCell(renderer, x + thirdW, thirdW, y + layout.topCardTitleH + rowH, rowH, buf,
++                 tr(STR_STATS_PAGES_LBL));
+   }
+ 
+   if (stats.completedBooks > 0) {
+@@ -419,8 +427,8 @@ void drawGlobalStatsCard(GfxRenderer& renderer, const int x, const int y, const
+   } else {
+     snprintf(buf, sizeof(buf), "-");
+   }
+-  drawStatCell(renderer, showRtcStats ? x + thirdW * 2 : x + halfW, showRtcStats ? thirdW : halfW,
+-               y + layout.topCardTitleH + rowH, rowH, buf, tr(STR_STATS_COMPLETED_LBL));
++  drawStatCell(renderer, x + thirdW * 2, thirdW, y + layout.topCardTitleH + rowH, rowH, buf,
++               tr(STR_STATS_COMPLETED_LBL));
+ }
+ 
+ void drawDateField(const GfxRenderer& renderer, const int x, const int y, const int w, const char* text,
+@@ -452,8 +460,8 @@ void drawDateAdjustButton(const GfxRenderer& renderer, const int x, const int y,
+ 
+ void renderPerBookStatsPage(GfxRenderer& renderer, const MappedInputManager* mappedInput, const std::string& bookTitle,
+                             const BookReadingStats& stats, const float progressPercent, const bool hasEstimatedTimeLeft,
+-                            const uint32_t estimatedTimeLeftSeconds, const bool showButtonHints,
+-                            const bool showEditButton, const bool showMoreButton) {
++                            const uint32_t estimatedTimeLeftSeconds, const uint32_t currentBookPage,
++                            const bool showButtonHints, const bool showEditButton, const bool showMoreButton) {
+   renderer.clearScreen();
+   const bool showRtcStats = shouldShowRtcBasedStats();
+   const auto& metrics = UITheme::getInstance().getMetrics();
+@@ -486,7 +494,7 @@ void renderPerBookStatsPage(GfxRenderer& renderer, const MappedInputManager* map
+     topCardH += extraTopCardHeight;
+ 
+     drawPerBookStatsCard(renderer, cardX, y, cardW, topCardH, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
+-                         estimatedTimeLeftSeconds, layout);
++                         estimatedTimeLeftSeconds, currentBookPage, layout);
+     y += topCardH + layout.cardGap;
+ 
+     drawSectionCard(renderer, cardX, y, cardW, timeOfDayCardH, tr(STR_STATS_TIME_OF_DAY), layout);
+@@ -512,7 +520,7 @@ void renderPerBookStatsPage(GfxRenderer& renderer, const MappedInputManager* map
+       y += std::min(unusedExtraHeight / 3, kStandaloneNoRtcMaxVerticalOffset);
+     }
+     drawPerBookStatsCard(renderer, cardX, y, cardW, topCardH, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
+-                         estimatedTimeLeftSeconds, layout);
++                         estimatedTimeLeftSeconds, currentBookPage, layout);
+   }
+ 
+   if (showButtonHints && mappedInput) {
+@@ -584,8 +592,9 @@ void renderGlobalStatsPage(GfxRenderer& renderer, const MappedInputManager* mapp
+ void renderNoRtcCombinedStatsPage(GfxRenderer& renderer, const MappedInputManager* mappedInput,
+                                   const std::string& bookTitle, const BookReadingStats& bookStats,
+                                   const float progressPercent, const bool hasEstimatedTimeLeft,
+-                                  const uint32_t estimatedTimeLeftSeconds, const GlobalReadingStats& deviceStats,
+-                                  const GlobalReadingStats* allDevicesStats, const bool showButtonHints) {
++                                  const uint32_t estimatedTimeLeftSeconds, const uint32_t currentBookPage,
++                                  const GlobalReadingStats& deviceStats, const GlobalReadingStats* allDevicesStats,
++                                  const bool showButtonHints) {
+   renderer.clearScreen();
+   const auto& metrics = UITheme::getInstance().getMetrics();
+   const auto& layout = getNoRtcCombinedLayout(renderer, showButtonHints, allDevicesStats != nullptr);
+@@ -613,7 +622,7 @@ void renderNoRtcCombinedStatsPage(GfxRenderer& renderer, const MappedInputManage
+ 
+   int y = metrics.topPadding + std::min(metrics.headerHeight, layout.headerHeight) + layout.topGap;
+   drawPerBookStatsCard(renderer, cardX, y, cardW, perBookCardH, bookTitle, bookStats, progressPercent,
+-                       hasEstimatedTimeLeft, estimatedTimeLeftSeconds, layout);
++                       hasEstimatedTimeLeft, estimatedTimeLeftSeconds, currentBookPage, layout);
+   y += perBookCardH + layout.cardGap;
+ 
+   drawGlobalStatsCard(renderer, cardX, y, cardW, deviceCardH, tr(STR_STATS_THIS_DEVICE_SCREEN), deviceStats, layout);
+diff --git a/src/activities/reader/BookStatsView.h b/src/activities/reader/BookStatsView.h
+index 3fa20c4..472ed84 100644
+--- a/src/activities/reader/BookStatsView.h
++++ b/src/activities/reader/BookStatsView.h
+@@ -20,8 +20,8 @@ constexpr int dateField(const int index) { return DateFieldBase + index; }
+ 
+ void renderPerBookStatsPage(GfxRenderer& renderer, const MappedInputManager* mappedInput, const std::string& bookTitle,
+                             const BookReadingStats& stats, float progressPercent, bool hasEstimatedTimeLeft,
+-                            uint32_t estimatedTimeLeftSeconds, bool showButtonHints, bool showEditButton,
+-                            bool showMoreButton);
++                            uint32_t estimatedTimeLeftSeconds, uint32_t currentBookPage, bool showButtonHints,
++                            bool showEditButton, bool showMoreButton);
+ 
+ void renderGlobalStatsPage(GfxRenderer& renderer, const MappedInputManager* mappedInput, const char* screenTitle,
+                            const GlobalReadingStats& stats, bool showButtonHints, bool showMoreButton);
+@@ -29,8 +29,8 @@ void renderGlobalStatsPage(GfxRenderer& renderer, const MappedInputManager* mapp
+ void renderNoRtcCombinedStatsPage(GfxRenderer& renderer, const MappedInputManager* mappedInput,
+                                   const std::string& bookTitle, const BookReadingStats& bookStats,
+                                   float progressPercent, bool hasEstimatedTimeLeft, uint32_t estimatedTimeLeftSeconds,
+-                                  const GlobalReadingStats& deviceStats, const GlobalReadingStats* allDevicesStats,
+-                                  bool showButtonHints);
++                                  uint32_t currentBookPage, const GlobalReadingStats& deviceStats,
++                                  const GlobalReadingStats* allDevicesStats, bool showButtonHints);
+ 
+ void renderEditBookDatesPage(GfxRenderer& renderer, const MappedInputManager* mappedInput, const std::string& bookTitle,
+                              const BookReadingStats& stats, int selectedField, bool showButtonHints);
+diff --git a/src/activities/reader/EpubReaderActivity.cpp b/src/activities/reader/EpubReaderActivity.cpp
+index a0960b0..3944345 100644
+--- a/src/activities/reader/EpubReaderActivity.cpp
++++ b/src/activities/reader/EpubReaderActivity.cpp
+@@ -1379,6 +1379,45 @@ float EpubReaderActivity::getCurrentBookProgressPercent() const {
+   return epub->calculateProgress(currentSpineIndex, chapterProgress) * 100.0f;
+ }
+ 
++uint32_t EpubReaderActivity::getCurrentBookPageForStats() const {
++  const int sectionPageCount = section ? section->estimatedTotalPages() : 0;
++  if (activeFootnotePreview || !epub || !section || sectionPageCount <= 0 || section->currentPage < 0 ||
++      currentSpineIndex < 0 || currentSpineIndex >= epub->getSpineItemsCount()) {
++    return 0;
++  }
++
++  const float sectionProgress =
++      static_cast<float>(section->currentPage) / static_cast<float>(sectionPageCount);
++
++  // Prefer CrossInk's stable, whole-book reference page when the EPUB contains
++  // reference-page metadata. This remains consistent across font/layout changes.
++  uint32_t referencePage = 0;
++  uint32_t referencePageCount = 0;
++  if (epub->resolveReferencePage(currentSpineIndex, sectionProgress, referencePage, referencePageCount) &&
++      referencePage > 0) {
++    return referencePage;
++  }
++
++  // For ordinary EPUBs without reference metadata, estimate a whole-book page
++  // position from the current section's rendered page density. This is more
++  // useful than a chapter-local page number, which resets at every chapter.
++  const size_t completedSpineBytes =
++      currentSpineIndex > 0 ? epub->getCumulativeSpineItemSize(currentSpineIndex - 1) : 0;
++  const size_t currentCumulativeBytes = epub->getCumulativeSpineItemSize(currentSpineIndex);
++  const size_t currentSpineBytes =
++      currentCumulativeBytes > completedSpineBytes ? currentCumulativeBytes - completedSpineBytes : 0;
++  if (currentSpineBytes > 0) {
++    const uint64_t precedingPages =
++        (static_cast<uint64_t>(completedSpineBytes) * static_cast<uint64_t>(sectionPageCount) +
++         static_cast<uint64_t>(currentSpineBytes) / 2ULL) /
++        static_cast<uint64_t>(currentSpineBytes);
++    const uint64_t estimatedCurrentPage = precedingPages + static_cast<uint64_t>(section->currentPage) + 1ULL;
++    return static_cast<uint32_t>(std::min<uint64_t>(estimatedCurrentPage, std::numeric_limits<uint32_t>::max()));
++  }
++
++  return static_cast<uint32_t>(section->currentPage + 1);
++}
++
+ void EpubReaderActivity::pauseReadingPaceTimer(const char* reason) {
+   if (!activeFootnotePreview) {
+     recordCurrentPageReadingTime(reason);
+@@ -3355,18 +3394,20 @@ void EpubReaderActivity::onReaderMenuConfirm(EpubReaderMenuActivity::MenuAction
+       const bool hasSyncedStats = GlobalReadingStats::hasSyncedStats();
+       const GlobalReadingStats displayAllDevicesStats =
+           hasSyncedStats ? GlobalReadingStats::loadAggregated(globalStats) : GlobalReadingStats{};
++      const uint32_t currentBookPage = getCurrentBookPageForStats();
+       pauseReadingPaceTimer("book_stats");
+       if (hasSyncedStats) {
+         startActivityForResult(
+             std::make_unique<BookStatsActivity>(renderer, mappedInput, epub->getTitle(), epub->getCachePath(),
+                                                 displayStats, getCurrentBookProgressPercent(), hasEstimatedTimeLeft,
+-                                                estimatedTimeLeftSeconds, globalStats, displayAllDevicesStats),
++                                                estimatedTimeLeftSeconds, currentBookPage, globalStats,
++                                                displayAllDevicesStats),
+             [this](const ActivityResult&) { handleBookStatsReturn(); });
+       } else {
+         startActivityForResult(
+             std::make_unique<BookStatsActivity>(renderer, mappedInput, epub->getTitle(), epub->getCachePath(),
+                                                 displayStats, getCurrentBookProgressPercent(), hasEstimatedTimeLeft,
+-                                                estimatedTimeLeftSeconds, globalStats),
++                                                estimatedTimeLeftSeconds, currentBookPage, globalStats),
+             [this](const ActivityResult&) { handleBookStatsReturn(); });
+       }
+       break;
+diff --git a/src/activities/reader/EpubReaderActivity.h b/src/activities/reader/EpubReaderActivity.h
+index 87cc6fc..2e4e628 100644
+--- a/src/activities/reader/EpubReaderActivity.h
++++ b/src/activities/reader/EpubReaderActivity.h
+@@ -401,6 +401,7 @@ class EpubReaderActivity final : public Activity {
+   void applyOrientation(uint8_t orientation);
+   void pageTurn(bool isForwardTurn, const char* source = "unknown");
+   float getCurrentBookProgressPercent() const;
++  uint32_t getCurrentBookPageForStats() const;
+   void initializeCompletionPromptTrigger();
+   bool isAtOrPastCompletionTrigger() const;
+   bool shouldQueueCompletionPromptOnChapterExit() const;
+diff --git a/src/activities/reader/XtcReaderActivity.cpp b/src/activities/reader/XtcReaderActivity.cpp
+index 821efc9..ed82560 100644
+--- a/src/activities/reader/XtcReaderActivity.cpp
++++ b/src/activities/reader/XtcReaderActivity.cpp
+@@ -612,10 +612,14 @@ void XtcReaderActivity::openReadingStats() {
+   const bool hasSyncedStats = GlobalReadingStats::hasSyncedStats();
+   const GlobalReadingStats displayAllDevicesStats =
+       hasSyncedStats ? GlobalReadingStats::loadAggregated(globalStats) : GlobalReadingStats{};
++  const uint32_t pageCount = xtc->getPageCount();
++  const uint32_t currentBookPage =
++      pageCount > 0 ? std::min<uint32_t>(currentPage + 1U, pageCount) : currentPage + 1U;
+   if (hasSyncedStats) {
+     startActivityForResult(std::make_unique<BookStatsActivity>(
+                                renderer, mappedInput, xtc->getTitle(), xtc->getCachePath(), displayStats,
+-                               getCurrentBookProgressPercent(), false, 0, globalStats, displayAllDevicesStats),
++                               getCurrentBookProgressPercent(), false, 0, currentBookPage, globalStats,
++                               displayAllDevicesStats),
+                            [this](const ActivityResult&) {
+                              if (xtc) {
+                                stats = BookReadingStats::load(xtc->getCachePath());
+@@ -627,7 +631,7 @@ void XtcReaderActivity::openReadingStats() {
+   } else {
+     startActivityForResult(
+         std::make_unique<BookStatsActivity>(renderer, mappedInput, xtc->getTitle(), xtc->getCachePath(), displayStats,
+-                                            getCurrentBookProgressPercent(), false, 0, globalStats),
++                                            getCurrentBookProgressPercent(), false, 0, currentBookPage, globalStats),
+         [this](const ActivityResult&) {
+           if (xtc) {
+             stats = BookReadingStats::load(xtc->getCachePath());
