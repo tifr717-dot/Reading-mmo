@@ -1,0 +1,144 @@
+name: Build CrossInk X4 Pro Pages Port
+
+on:
+  push:
+    branches:
+      - crossink-x4-pro-pages
+    paths:
+      - ".github/workflows/build-crossink-x4-pro-pages.yml"
+      - "firmware/crossink-x4-pro-pages/**"
+  pull_request:
+    branches:
+      - crossink-x4-pages-1.5.0
+    paths:
+      - ".github/workflows/build-crossink-x4-pro-pages.yml"
+      - "firmware/crossink-x4-pro-pages/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CROSSINK_COMMIT: 7a092e8822c9c90e8beecacd317acc13d3e24dfb
+  FREEINK_COMMIT: 9f4d3f9ca675e64cc9d616081f39a33cdefce57e
+  BASE_VERSION: 1.5.1
+  BUILD_ENV: x4-pro
+
+jobs:
+  pristine-x4-pro-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout port inputs
+        uses: actions/checkout@v6
+
+      - name: Fetch pinned X4 Pro-capable CrossInk source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone https://github.com/uxjulia/CrossInk.git crossink
+          cd crossink
+          git checkout --detach "$CROSSINK_COMMIT"
+          git submodule update --init --recursive
+          test "$(git rev-parse HEAD)" = "$CROSSINK_COMMIT"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$FREEINK_COMMIT"
+          grep -q '^\[env:x4-pro\]' platformio.ini
+          grep -q 'FREEINK_DEVICE_X4PRO=1' platformio.ini
+          grep -q 'CROSSINK_FIRMWARE_DEVICE_TYPE=\\"x4-pro\\"' platformio.ini
+
+      - name: Verify pristine hardware inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd crossink
+          git diff --exit-code
+          sha256sum platformio.ini partitions.csv > "$GITHUB_WORKSPACE/protected-x4-pro.sha256"
+          git -C freeink-sdk rev-parse HEAD > "$GITHUB_WORKSPACE/freeink-x4-pro.txt"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-crossink-x4-pro-${{ env.CROSSINK_COMMIT }}-${{ hashFiles('crossink/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-crossink-x4-pro-
+
+      - name: Install PlatformIO Core
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv pip install --system -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.1.19.zip
+          pio --version
+
+      - name: Build pristine X4 Pro baseline
+        shell: bash
+        env:
+          CROSSINK_RELEASE_VERSION: ${{ env.BASE_VERSION }}
+        run: |
+          set -euo pipefail
+          cd crossink
+          pio run -j1 -e "$BUILD_ENV" | tee "$GITHUB_WORKSPACE/x4-pro-baseline-build.log"
+
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          mapfile -t bins < <(find ".pio/build/$BUILD_ENV" -maxdepth 1 -type f -name 'firmware*.bin' -print | sort)
+          if [ "${#bins[@]}" -ne 1 ]; then
+            echo "Expected exactly one firmware .bin, found ${#bins[@]}"
+            printf '%s\n' "${bins[@]}"
+            exit 1
+          fi
+
+          firmware="${bins[0]}"
+          cp "$firmware" "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BASE_VERSION}-pristine.bin"
+          sha256sum "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BASE_VERSION}-pristine.bin" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
+          stat -c '%s' "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BASE_VERSION}-pristine.bin" > "$GITHUB_WORKSPACE/out/FIRMWARE-SIZE.txt"
+
+      - name: Re-verify X4 Pro hardware inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd crossink
+          sha256sum -c "$GITHUB_WORKSPACE/protected-x4-pro.sha256"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$(cat "$GITHUB_WORKSPACE/freeink-x4-pro.txt")"
+          git diff --exit-code -- platformio.ini partitions.csv freeink-sdk
+
+      - name: Write baseline build report
+        shell: bash
+        run: |
+          set -euo pipefail
+          firmware="$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BASE_VERSION}-pristine.bin"
+          {
+            echo "CrossInk X4 Pro Pages port - pristine hardware baseline"
+            echo "CrossInk commit: $CROSSINK_COMMIT"
+            echo "FreeInk SDK commit: $FREEINK_COMMIT"
+            echo "CrossInk base version: $BASE_VERSION"
+            echo "PlatformIO environment: $BUILD_ENV"
+            echo "Firmware bytes: $(stat -c '%s' "$firmware")"
+            echo "Firmware SHA-256: $(sha256sum "$firmware" | awk '{print $1}')"
+            echo ""
+            echo "This artifact is an unmodified upstream X4 Pro baseline."
+            echo "Tiff's Pages customizations are intentionally not applied in this stage."
+          } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
+
+      - name: Upload pristine X4 Pro baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: crossink-x4-pro-pristine-baseline
+          path: |
+            out/firmware-x4-pro-v1.5.1-pristine.bin
+            out/SHA256SUMS.txt
+            out/FIRMWARE-SIZE.txt
+            out/BUILD-INFO.txt
+            x4-pro-baseline-build.log
+          if-no-files-found: error
+          retention-days: 14
