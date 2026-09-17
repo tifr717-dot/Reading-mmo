@@ -30,6 +30,8 @@ The X4 Pro profile includes:
 
 Keep the known-good X3/X4 branch `crossink-x4-pages-1.5.0` unchanged. Do not merge the BLE/Reading MMO feasibility experiment into the first X4 Pro firmware.
 
+The temporary `crossink-x4-pro-validation-base` branch exists only so GitHub Actions can validate the Pro port without changing the known-good X3/X4 branch.
+
 ## Validation stages
 
 1. Build the pinned, pristine `x4-pro` upstream target.
