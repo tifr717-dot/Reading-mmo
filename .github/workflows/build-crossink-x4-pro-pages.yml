@@ -7,6 +7,12 @@ on:
     paths:
       - ".github/workflows/build-crossink-x4-pro-pages.yml"
       - "firmware/crossink-x4-pro-pages/**"
+  pull_request:
+    branches:
+      - crossink-x4-pages-1.5.0
+    paths:
+      - ".github/workflows/build-crossink-x4-pro-pages.yml"
+      - "firmware/crossink-x4-pro-pages/**"
   workflow_dispatch:
 
 permissions:
