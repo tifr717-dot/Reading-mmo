@@ -1,0 +1,38 @@
+name: QA v5.10.45 Staging
+
+on:
+  push:
+    branches:
+      - v51045-simplified-redesign
+  workflow_dispatch:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check v5.10.45 JavaScript syntax
+        run: |
+          node --check reading-journal-layered-v51043v.js
+          node --check simplified-redesign-v51045.js
+          node --check home-v51045-runtime.js
+      - name: Validate locked Home artwork package
+        run: |
+          python3 - <<'PY'
+          import base64, pathlib
+          p=pathlib.Path('home-v51045-art-01.b64.txt')
+          assert p.exists() and p.stat().st_size > 1000, 'Home art package missing or too small'
+          raw=base64.b64decode(p.read_text().strip(), validate=True)
+          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'Home art is not WebP'
+          print('locked Home artwork OK:', len(raw), 'bytes')
+          PY
+      - name: Validate staging wiring
+        run: |
+          grep -q "The Reading Journal" manifest.webmanifest
+          grep -q "home-v51045-runtime.js" reading-journal-layered-v51043v.js
+          grep -q "simplified-redesign-v51045.js" reading-journal-layered-v51043v.js
+          grep -q "home-v51045-art-01.b64.txt" home-v51045-runtime.js
+          grep -q "translate(-.30vw,-.10vw)" home-v51045-runtime.js
+          grep -q "translate(-.30vw,-.85vw)" home-v51045-runtime.js
+          grep -q "translate(-.30vw,-1.50vw)" home-v51045-runtime.js
+          echo "v5.10.45 staging wiring OK"
