@@ -1,46 +1,31 @@
-name: Build v5.10.45 Phone Preview
+name: Deploy v5.10.45 Staging
 
 on:
   push:
-    branches:
-      - v51045-simplified-redesign
+    branches: [v51045-simplified-redesign]
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-v51045-staging
+  cancel-in-progress: true
 
 jobs:
-  preview:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate staging preview
-        run: |
-          node --check reading-journal-layered-v51043v.js
-          node --check simplified-redesign-v51045.js
-          node --check home-v51045-runtime.js
-          python3 - <<'PY'
-          import base64, pathlib
-          p=pathlib.Path('home-v51045-art-01.b64.txt')
-          b=p.read_text().strip()
-          raw=base64.b64decode(b, validate=True)
-          assert len(b)==19352, len(b)
-          assert raw[:4]==b'RIFF' and raw[8:12]==b'WEBP'
-          print('Home artwork valid:',len(raw),'bytes')
-          PY
-      - name: Package phone preview
-        run: |
-          mkdir -p preview
-          cp -a . preview/site
-          rm -rf preview/site/.git preview/site/.github
-          cat > preview/OPEN-ME.html <<'HTML'
-          <!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=site/?appv=51045c"><title>The Reading Journal staging preview</title><a href="site/?appv=51045c">Open The Reading Journal staging preview</a>
-          HTML
-      - uses: actions/upload-artifact@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
-          name: reading-journal-v51045-phone-preview
-          path: preview
-          retention-days: 7
+          path: .
+      - name: Deploy staging branch to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
