@@ -5,6 +5,9 @@ on:
     branches:
       - v51045-simplified-redesign
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
