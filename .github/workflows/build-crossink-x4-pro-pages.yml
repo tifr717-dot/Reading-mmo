@@ -91,14 +91,13 @@ jobs:
           pio run -j1 -e "$BUILD_ENV" | tee "$GITHUB_WORKSPACE/x4-pro-baseline-build.log"
 
           mkdir -p "$GITHUB_WORKSPACE/out"
-          mapfile -t bins < <(find ".pio/build/$BUILD_ENV" -maxdepth 1 -type f -name 'firmware*.bin' -print | sort)
-          if [ "${#bins[@]}" -ne 1 ]; then
-            echo "Expected exactly one firmware .bin, found ${#bins[@]}"
-            printf '%s\n' "${bins[@]}"
+          firmware=".pio/build/$BUILD_ENV/firmware-x4-pro-v${BASE_VERSION}.bin"
+          if [ ! -s "$firmware" ]; then
+            echo "Expected versioned X4 Pro firmware not found: $firmware"
+            find ".pio/build/$BUILD_ENV" -maxdepth 1 -type f -name 'firmware*.bin' -print | sort
             exit 1
           fi
 
-          firmware="${bins[0]}"
           cp "$firmware" "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BASE_VERSION}-pristine.bin"
           sha256sum "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BASE_VERSION}-pristine.bin" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
           stat -c '%s' "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BASE_VERSION}-pristine.bin" > "$GITHUB_WORKSPACE/out/FIRMWARE-SIZE.txt"
