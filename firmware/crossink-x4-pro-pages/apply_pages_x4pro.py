@@ -160,14 +160,15 @@ replace_once(
     """                                     const uint32_t estimatedTimeLeftSeconds, const uint32_t currentBookPage,
                                      const GlobalReadingStats& globalStats, const bool returnToHomeOnExit)""",
 )
-replace_once(
-    "src/activities/reader/BookStatsActivity.cpp",
-    """      hasEstimatedTimeLeft(hasEstimatedTimeLeft),
-      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds) {}""",
-    """      hasEstimatedTimeLeft(hasEstimatedTimeLeft),
+text = read("src/activities/reader/BookStatsActivity.cpp")
+old = """      hasEstimatedTimeLeft(hasEstimatedTimeLeft),
+      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds) {}"""
+new = """      hasEstimatedTimeLeft(hasEstimatedTimeLeft),
       estimatedTimeLeftSeconds(estimatedTimeLeftSeconds),
-      currentBookPage(currentBookPage) {}""",
-)
+      currentBookPage(currentBookPage) {}"""
+if text.count(old) != 2:
+    raise RuntimeError(f"BookStatsActivity.cpp: expected 2 constructor initializer tails, found {text.count(old)}")
+write("src/activities/reader/BookStatsActivity.cpp", text.replace(old, new))
 replace_once(
     "src/activities/reader/BookStatsActivity.cpp",
     """                                     const uint32_t estimatedTimeLeftSeconds, const GlobalReadingStats& globalStats,
@@ -176,20 +177,6 @@ replace_once(
                                      const GlobalReadingStats& globalStats, const GlobalReadingStats& allDevicesStats,
                                      const bool returnToHomeOnExit)""",
 )
-# The second constructor has the same tail after showAllDevicesStats.
-replace_once(
-    "src/activities/reader/BookStatsActivity.cpp",
-    """      hasEstimatedTimeLeft(hasEstimatedTimeLeft),
-      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds) {}
-
-void BookStatsActivity::refreshAllDevicesStats()""",
-    """      hasEstimatedTimeLeft(hasEstimatedTimeLeft),
-      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds),
-      currentBookPage(currentBookPage) {}
-
-void BookStatsActivity::refreshAllDevicesStats()""",
-)
-
 replace_once(
     "src/activities/reader/BookStatsActivity.cpp",
     """    renderNoRtcCombinedStatsPage(renderer, &mappedInput, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
