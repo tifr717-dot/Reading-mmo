@@ -29,3 +29,5 @@ jobs:
       - name: Deploy staging branch to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+# redeploy after staging branch authorization
