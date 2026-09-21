@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045Cp43Fidelity)return;window.__v51045Cp43Fidelity=1;
-const BUILD='v5.10.45-cp43-fidelity',ART='home-v51045-cp43-exact.b64.txt';
+const BUILD='v5.10.45-cp43-footerfix',ART='home-v51045-cp43-exact.b64.txt';
 const $=id=>document.getElementById(id);let artPromise;
 function style(){if($('v51045Cp43Style'))return;const s=document.createElement('style');s.id='v51045Cp43Style';s.textContent=`
 body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!important}
@@ -8,11 +8,11 @@ body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!i
 #home.v51045-cp43>*:not(#v51045Cp43Home){display:none!important}
 #v51045Cp43Home{position:relative;width:100%;max-width:600px;margin:0 auto;line-height:0;background:#1b0d09}
 #v51045Cp43Art{display:block;width:100%;height:auto;margin:0;padding:0}
-.v51045-cp43-nav{position:absolute;z-index:5;top:81.15%;height:8.15%;border:0;background:transparent;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.v51045-cp43-nav{position:absolute;z-index:5;top:90.82%;height:9.13%;border:0;background:transparent;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .v51045-cp43-nav.home{left:0;width:19.7%}.v51045-cp43-nav.read{left:19.7%;width:20.1%}.v51045-cp43-nav.quests{left:39.8%;width:20.1%}.v51045-cp43-nav.journal{left:59.9%;width:20.1%}.v51045-cp43-nav.me{left:80%;width:20%}
 .v51045-cp43-error{padding:24px;color:#f4dfbd;background:#2d1711;font:700 12px/1.5 system-ui,sans-serif;line-height:1.5}
 `;document.head.appendChild(s)}
-async function art(){if(artPromise)return artPromise;artPromise=fetch('./'+ART+'?v=51045h',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(ART+': '+r.status);return r.text()}).then(b=>'data:image/jpeg;base64,'+b.trim());return artPromise}
+async function art(){if(artPromise)return artPromise;artPromise=fetch('./'+ART+'?v=51045i',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(ART+': '+r.status);return r.text()}).then(b=>'data:image/jpeg;base64,'+b.trim());return artPromise}
 function goScreen(name){try{if(name==='home')return;if(name==='journal'){if(typeof window.openReadingJournal==='function'){window.openReadingJournal();return}if(typeof window.go==='function'){window.go('profile');return}}if(typeof window.go==='function'){window.go(name);return}const b=document.querySelector('.bottomnav button[data-screen="'+name+'"]');if(b)b.click()}catch(e){console.error('[v51045 cp43 nav]',e)}}
 function activeHome(){const h=$('home');if(!h)return false;const cs=getComputedStyle(h);return cs.display!=='none'&&cs.visibility!=='hidden'&&!h.hidden}
 function chrome(){document.body.classList.toggle('v51045-home-active',activeHome())}
