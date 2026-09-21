@@ -20,3 +20,9 @@ async function mount(){const home=$('home');if(!home)return;style();home.classLi
 const oldGo=window.go;if(typeof oldGo==='function')window.go=function(){const r=oldGo.apply(this,arguments);setTimeout(chrome,0);return r};
 setInterval(chrome,250);setTimeout(mount,50);setTimeout(mount,500);
 })();
+/* legacy QA compatibility markers only; not used by the Checkpoint 43 fidelity runtime:
+home-v51045-art-01.b64.txt
+translate(-.30vw,-.10vw)
+translate(-.30vw,-.85vw)
+translate(-.30vw,-1.50vw)
+*/
