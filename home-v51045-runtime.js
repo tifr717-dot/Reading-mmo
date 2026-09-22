@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-level-no-flash';
+const BUILD='v5.10.45-home-shell-guard';
 const MASTER='home-v51045-master-clean-level.b64.txt';
 const $=id=>document.getElementById(id);
 
@@ -23,7 +23,7 @@ function style(){
 }
 
 async function masterUrl(){
-  const r=await fetch('./'+MASTER+'?v=51045noflash',{cache:'no-store'});
+  const r=await fetch('./'+MASTER+'?v=51045shellguard',{cache:'no-store'});
   if(!r.ok)throw Error(MASTER+' '+r.status);
   const b=(await r.text()).replace(/\s+/g,'');
   if(b.length<100000)throw Error(MASTER+' incomplete');
