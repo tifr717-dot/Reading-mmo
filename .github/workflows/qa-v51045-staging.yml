@@ -36,7 +36,8 @@ jobs:
           grep -q 'home-v51045-master-clean-level.webp?v=51045readerxp' index.html
           ! grep -q 'v58-home-frame-v582.png' index.html
 
-          grep -q "v5.10.45-home-reader-level-complete" home-v51045-runtime.js
+          grep -q "v5.10.45-home-reader-xp-complete" home-v51045-runtime.js
+          grep -q "home-v51045-master-clean-level.webp?v=51045readerxp" home-v51045-runtime.js
           grep -q "v51045Level" home-v51045-runtime.js
           grep -q "v51045Rank" home-v51045-runtime.js
           grep -q "v51045ExpFill" home-v51045-runtime.js
@@ -51,4 +52,4 @@ jobs:
           grep -q "reading-mmo-v5.10.45-structural-home" service-worker-v51043.js
           ! grep -q "c.navigate" service-worker-v51043.js
 
-          echo "Complete live Reader Level component OK"
+          echo "Live Reader Level + Rank + EXP bar + XP text checkpoint OK"
