@@ -1,7 +1,7 @@
 (()=>{'use strict';
 if(window.__v51045HomeBaseOnly)return;window.__v51045HomeBaseOnly=1;
-const BUILD='v5.10.45-home-base-only';
-const MASTER='home-v51045-master-base.b64.txt';
+const BUILD='v5.10.45-home-clean-reader-base';
+const MASTER='home-v51045-master-clean-level.b64.txt';
 const $=id=>document.getElementById(id);
 
 function style(){
@@ -22,7 +22,7 @@ function style(){
 }
 
 async function masterUrl(){
-  const r=await fetch('./'+MASTER+'?v=51045baseonly',{cache:'no-store'});
+  const r=await fetch('./'+MASTER+'?v=51045cleanreaderbase',{cache:'no-store'});
   if(!r.ok)throw Error(MASTER+' '+r.status);
   const b=(await r.text()).replace(/\s+/g,'');
   if(b.length<100000)throw Error(MASTER+' incomplete');
