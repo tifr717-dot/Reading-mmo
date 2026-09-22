@@ -26,10 +26,11 @@ jobs:
           assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'cleaned Home master is not WebP'
           print('Clean Home master',len(raw),'bytes')
           PY
-          grep -q "home-v51045-runtime.js?v=51045levelonly" reading-journal-layered-v51043v.js
-          grep -q "simplified-redesign-v51045.js?v=51045levelonly" reading-journal-layered-v51043v.js
-          grep -q "v5.10.45-home-level-only" home-v51045-runtime.js
+          grep -q "home-v51045-runtime.js?v=51045levelready" reading-journal-layered-v51043v.js
+          grep -q "simplified-redesign-v51045.js?v=51045levelready" reading-journal-layered-v51043v.js
+          grep -q "v5.10.45-home-level-only-ready" home-v51045-runtime.js
           grep -q "v51045Level" home-v51045-runtime.js
+          grep -q "v51045-ready" home-v51045-runtime.js
           grep -q "totalXp" home-v51045-runtime.js
           grep -q "levelFor" home-v51045-runtime.js
           ! grep -q "v51045Rank" home-v51045-runtime.js
