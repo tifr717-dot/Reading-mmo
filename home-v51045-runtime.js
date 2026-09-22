@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-level-only';
+const BUILD='v5.10.45-home-level-only-ready';
 const MASTER='home-v51045-master-clean-level.b64.txt';
 const $=id=>document.getElementById(id);
 
@@ -13,7 +13,7 @@ function style(){
     "body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!important}"+
     "#home.v51045-level-only-home{padding:0!important;margin:0!important;background:#160907!important;overflow:hidden!important;min-height:0!important}"+
     "#home.v51045-level-only-home>*:not(#v51045LevelOnlyHome){display:none!important}"+
-    "#v51045LevelOnlyHome{position:relative;width:100%;height:100dvh;margin:0 auto;background:#160907;overflow:hidden}"+
+    "#v51045LevelOnlyHome{position:relative;width:100%;height:100dvh;margin:0 auto;background:#160907;overflow:hidden;opacity:0;transition:opacity .12s ease}"+"#v51045LevelOnlyHome.v51045-ready{opacity:1}"+
     ".v51045-stage{position:relative;width:100%;height:100%;overflow:hidden;background:#160907}"+
     ".v51045-canvas{position:absolute;top:0;left:50%;width:max(100%,calc(100dvh * 2 / 3));aspect-ratio:2/3;transform:translateX(-50%);transform-origin:top center}"+
     ".v51045-master{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;z-index:1;pointer-events:none}"+
@@ -23,7 +23,7 @@ function style(){
 }
 
 async function masterUrl(){
-  const r=await fetch('./'+MASTER+'?v=51045levelonly',{cache:'no-store'});
+  const r=await fetch('./'+MASTER+'?v=51045levelready',{cache:'no-store'});
   if(!r.ok)throw Error(MASTER+' '+r.status);
   const b=(await r.text()).replace(/\s+/g,'');
   if(b.length<100000)throw Error(MASTER+' incomplete');
@@ -83,7 +83,7 @@ async function mount(){
   home.prepend(root);
 
   try{
-    $('v51045MasterArt').src=await masterUrl();
+    const art=$('v51045MasterArt');art.src=await masterUrl();if(art.decode){try{await art.decode()}catch(_){}}root.classList.add('v51045-ready');
   }catch(e){
     console.error('[v51045 Home Level Only]',e);
     const er=$('v51045LevelOnlyError');
