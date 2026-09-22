@@ -124,8 +124,8 @@ async function mount(){
     '<div class="v51045-canvas">'+
       '<img id="v51045MasterArt" class="v51045-master" alt="">'+
       '<div id="v51045Level" class="v51045-level-number" aria-label="Reader level"></div>'+
+      '<div class="v51045-rank-plaque" aria-hidden="true"></div>'+
       '<div id="v51045Rank" class="v51045-rank-text" aria-label="Reader rank"></div>'+
-      '<div class="v51045-rank-flourish" aria-hidden="true"><i></i></div>'+
       '<div class="v51045-exp-track" aria-label="Reader experience progress"><i id="v51045ExpFill" class="v51045-exp-fill"></i></div>'+
       '<div id="v51045XpLine" class="v51045-xp-line" aria-label="Reader experience"></div>'+
     '</div>'+
