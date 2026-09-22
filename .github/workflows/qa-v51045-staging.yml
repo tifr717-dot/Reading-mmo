@@ -32,12 +32,12 @@ jobs:
 
           grep -q 'id="v51045-early-boot"' index.html
           grep -q '<section id="home" class="screen active" aria-label="Reading MMO Home"></section>' index.html
-          grep -q 'home-v51045-runtime.js?v=51045xpalign2' index.html
-          grep -q 'home-v51045-master-clean-level.webp?v=51045xpalign2' index.html
+          grep -q 'home-v51045-runtime.js?v=51045xpalign3' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045xpalign3' index.html
           ! grep -q 'v58-home-frame-v582.png' index.html
 
-          grep -q "v5.10.45-home-reader-xp-align2" home-v51045-runtime.js
-          grep -q "home-v51045-master-clean-level.webp?v=51045xpalign2" home-v51045-runtime.js
+          grep -q "v5.10.45-home-reader-xp-align3" home-v51045-runtime.js
+          grep -q "home-v51045-master-clean-level.webp?v=51045xpalign3" home-v51045-runtime.js
           grep -q "v51045Level" home-v51045-runtime.js
           grep -q "v51045Rank" home-v51045-runtime.js
           grep -q "v51045ExpFill" home-v51045-runtime.js
