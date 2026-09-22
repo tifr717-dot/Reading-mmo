@@ -1,67 +1,166 @@
 (()=>{'use strict';
-if(window.__v51045CleanHome)return;window.__v51045CleanHome=1;
-const BUILD='v5.10.45-home-clean-live-03';
+if(window.__v51045HomeLayer01)return;window.__v51045HomeLayer01=1;
+const BUILD='v5.10.45-home-layer-01';
 const BASE_PARTS=['home-v51045-clean-base-01.txt','home-v51045-clean-base-02.txt'];
-const FOOTER='home-v51045-footer-navigation.b64.txt';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const fmt=v=>Math.max(0,Math.round(num(v))).toLocaleString();
+
 function state(){
- try{return JSON.parse(localStorage.getItem('readingMMO_save_v2')||localStorage.getItem('readingMMO_save')||'null')||{}}catch(e){return{}}
+  try{return JSON.parse(localStorage.getItem('readingMMO_save_v2')||localStorage.getItem('readingMMO_save')||'null')||{}}
+  catch(e){return{}}
 }
-function style(){if($('v51045CleanHomeStyle'))return;const s=document.createElement('style');s.id='v51045CleanHomeStyle';s.textContent=`
-body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!important}
-#home.v51045-clean-home{padding:0!important;margin:0!important;background:#160907!important;overflow-x:hidden!important;min-height:0!important}
-#home.v51045-clean-home>*:not(#v51045CleanHome){display:none!important}
-#v51045CleanHome{width:100%;max-width:600px;margin:0 auto;background:#160907;color:#3b2117;font-family:Georgia,'Times New Roman',serif;line-height:1}
-.v51045-stage{position:relative;width:100%;aspect-ratio:240/426;overflow:hidden;background:#160907}
-.v51045-layers{position:absolute;inset:0;z-index:1;pointer-events:none}.v51045-layer{position:absolute;display:block;pointer-events:none}.v51045-clean-art{left:0;top:0;width:100%;height:84.507%;object-fit:fill}.v51045-hero{clip-path:inset(0 0 66.67% 0)}.v51045-reading{clip-path:inset(30.56% 0 36.11% 0)}.v51045-stats{clip-path:inset(61.11% 0 19.44% 0)}.v51045-progress{clip-path:inset(77.78% 0 0 0)}.v51045-footer{inset:0;width:100%;height:100%;object-fit:fill}
-.v51045-live{position:absolute;z-index:4;box-sizing:border-box;pointer-events:none;color:#3b2117;text-shadow:0 1px rgba(255,244,216,.55)}
-.v51045-level{left:34.6%;top:27.085%;width:13.2%;transform:translate(-50%,-50%);text-align:center;font-weight:900;font-size:clamp(15px,4.0vw,25px)}
-.v51045-rank{left:53.1%;top:26.662%;width:31%;transform:translate(-50%,-50%);text-align:center;font-size:clamp(8px,1.95vw,12px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.v51045-xp-current{left:46.55%;top:28.056%;transform:translateX(-50%);font-size:clamp(7px,1.65vw,10px);font-weight:800;white-space:nowrap}
-.v51045-xp-target{left:56.85%;top:28.056%;transform:translateX(-50%);font-size:clamp(7px,1.65vw,10px);font-weight:800;white-space:nowrap}
-.v51045-expbar,.v51045-bookbar{position:absolute;z-index:3;overflow:hidden;border-radius:999px;background:rgba(225,207,239,.90);box-shadow:inset 0 0 0 1px rgba(80,44,91,.28)}
-.v51045-expbar{left:36.82%;top:24.211%;width:31.84%;height:1.428%}.v51045-bookbar{left:34.08%;top:47.037%;width:40.43%;height:1.648%}
-.v51045-expbar i,.v51045-bookbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#9a5bb1,#c489d1);border-radius:inherit}
-.v51045-book-title{left:41.8%;top:39.169%;width:29.5%;height:3.0%;font-size:clamp(8px,2.05vw,12.5px);font-weight:900;line-height:1.02;display:flex;align-items:center;overflow:hidden}
-.v51045-book-author{left:41.8%;top:42.718%;width:28%;font-size:clamp(7px,1.75vw,10.5px);font-style:italic;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.v51045-book-series{left:41.8%;top:45.338%;width:28%;font-size:clamp(6px,1.5vw,9px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.v51045-page-current{left:43.15%;top:49.901%;transform:translateX(-50%);font-size:clamp(7px,1.55vw,9.5px);font-weight:800;white-space:nowrap}.v51045-page-total{left:51.45%;top:49.901%;transform:translateX(-50%);font-size:clamp(7px,1.55vw,9.5px);font-weight:800;white-space:nowrap}.v51045-book-percent{left:67.7%;top:50.113%;transform:translateX(-50%);font-size:clamp(7px,1.55vw,9.5px);font-weight:800;white-space:nowrap}
-.v51045-stats-title{left:35.3%;top:55.22%;width:29.5%;text-align:center;color:#ead8b4;font-size:clamp(8px,1.75vw,11px);font-weight:800;text-shadow:0 1px 2px #160907;white-space:nowrap}
-.v51045-stat{top:60.549%;width:16.5%;transform:translateX(-50%);text-align:center;line-height:1.04}.v51045-stat b{display:block;font-size:clamp(9px,2.25vw,14px);font-weight:900;margin-bottom:2px}.v51045-stat span{display:block;font-size:clamp(5.5px,1.2vw,7.4px);font-weight:700;white-space:nowrap}.v51045-stat1{left:18%}.v51045-stat2{left:38.2%}.v51045-stat3{left:59%}.v51045-stat4{left:80.2%}
-.v51045-progress-title{left:14.4%;top:64.75%;width:25%;text-align:center;color:#ead8b4;font-weight:800;white-space:nowrap;font-size:clamp(8px,1.72vw,13px);letter-spacing:.01em;text-shadow:0 1px 2px #160907}
-.v51045-challenge-title{left:56.5%;top:64.75%;width:25%;text-align:center;color:#ead8b4;font-weight:800;white-space:nowrap;font-size:clamp(8px,1.72vw,13px);letter-spacing:.01em;text-shadow:0 1px 2px #160907}
-.v51045-daily-ring{position:absolute;z-index:4;left:11.9%;top:66.45%;width:12.5%;aspect-ratio:1;border-radius:50%;background:conic-gradient(#a96bc0 0 var(--pct),rgba(255,255,255,.16) var(--pct) 100%);-webkit-mask:radial-gradient(circle,transparent 55%,#000 57%);mask:radial-gradient(circle,transparent 55%,#000 57%);opacity:.94;pointer-events:none}
-.v51045-daily-pages{left:27.5%;top:67.35%;width:13.5%;font-size:clamp(9px,2.05vw,15px);font-weight:800;white-space:nowrap}.v51045-daily-percent{left:27.5%;top:69.95%;width:13.5%;font-size:clamp(9px,2.05vw,15px);font-weight:800;white-space:nowrap}
-.v51045-challenges{position:absolute;inset:0;z-index:4;pointer-events:none}.v51045-ch{position:absolute;left:58.9%;width:24%;font-size:clamp(7px,1.42vw,11px);font-weight:650;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v51045-ch:nth-child(1){top:67.15%}.v51045-ch:nth-child(2){top:69.72%}.v51045-ch:nth-child(3){top:72.28%}
-.v51045-nav{position:absolute;z-index:8;top:83.2%;height:8.8%;border:0;background:transparent;padding:0;margin:0;-webkit-tap-highlight-color:transparent;cursor:pointer}.v51045-nav.home{left:0;width:20%}.v51045-nav.read{left:20%;width:20%}.v51045-nav.quests{left:40%;width:20%}.v51045-nav.journal{left:60%;width:20%}.v51045-nav.me{left:80%;width:20%}
-.v51045-error{position:absolute;z-index:12;left:8%;right:8%;top:12%;padding:10px;background:#3c2118;color:#f2d7a0;border:1px solid #b7863d;border-radius:8px;text-align:center;font:700 10px/1.4 ui-monospace,monospace}
-`;document.head.appendChild(s)}
-function rankFallback(l){if(l>=50)return'Master Archivist';if(l>=35)return'Grand Archivist';if(l>=25)return'Senior Archivist';if(l>=15)return'Archivist';return'Apprentice Archivist'}
+
+function style(){
+  if($('v51045Layer01Style'))return;
+  const s=document.createElement('style');
+  s.id='v51045Layer01Style';
+  s.textContent=
+    "body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!important}"+
+    "#home.v51045-layer01-home{padding:0!important;margin:0!important;background:#160907!important;overflow:hidden!important;min-height:0!important}"+
+    "#home.v51045-layer01-home>*:not(#v51045Layer01Home){display:none!important}"+
+    "#v51045Layer01Home{width:100%;max-width:600px;margin:0 auto;background:#160907;color:#3b2117;font-family:Georgia,'Times New Roman',serif;line-height:1}"+
+    ".v51045-stage{position:relative;width:100%;aspect-ratio:240/426;overflow:hidden;background:#160907}"+
+    ".v51045-layers{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}"+
+    ".v51045-hero-art{position:absolute;left:0;top:0;width:100%;height:84.507%;object-fit:fill;display:block;pointer-events:none;clip-path:inset(0 0 61% 0)}"+
+    ".v51045-live{position:absolute;z-index:4;box-sizing:border-box;pointer-events:none;color:#3b2117;text-shadow:0 1px rgba(255,244,216,.55)}"+
+    ".v51045-level{left:34.6%;top:27.085%;width:13.2%;transform:translate(-50%,-50%);text-align:center;font-weight:900;font-size:clamp(15px,4.0vw,25px)}"+
+    ".v51045-rank{left:53.1%;top:26.662%;width:31%;transform:translate(-50%,-50%);text-align:center;font-size:clamp(8px,1.95vw,12px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"+
+    ".v51045-xp-current{left:46.55%;top:28.056%;transform:translateX(-50%);font-size:clamp(7px,1.65vw,10px);font-weight:800;white-space:nowrap}"+
+    ".v51045-xp-target{left:56.85%;top:28.056%;transform:translateX(-50%);font-size:clamp(7px,1.65vw,10px);font-weight:800;white-space:nowrap}"+
+    ".v51045-expbar{position:absolute;z-index:3;left:36.82%;top:24.211%;width:31.84%;height:1.428%;overflow:hidden;border-radius:999px;background:rgba(225,207,239,.90);box-shadow:inset 0 0 0 1px rgba(80,44,91,.28);pointer-events:none}"+
+    ".v51045-expbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#9a5bb1,#c489d1);border-radius:inherit}"+
+    ".v51045-error{position:absolute;z-index:12;left:8%;right:8%;top:12%;padding:10px;background:#3c2118;color:#f2d7a0;border:1px solid #b7863d;border-radius:8px;text-align:center;font:700 10px/1.4 ui-monospace,monospace}";
+  document.head.appendChild(s);
+}
+
+function rankFallback(l){
+  if(l>=50)return'Master Archivist';
+  if(l>=35)return'Grand Archivist';
+  if(l>=25)return'Senior Archivist';
+  if(l>=15)return'Archivist';
+  return'Apprentice Archivist';
+}
+
 function xpValues(){
- try{if(typeof window.totalXp==='function'&&typeof window.levelFor==='function'){const xp=Math.max(0,num(window.totalXp()));const level=Math.max(1,num(window.levelFor(xp),1));const cur=typeof window.lvlXp==='function'?Math.max(0,num(window.lvlXp(xp,level))):xp;const need=typeof window.lvlNeed==='function'?Math.max(1,num(window.lvlNeed(level),1000)):1000;const rank=typeof window.rankFor==='function'?String(window.rankFor(level)||rankFallback(level)):rankFallback(level);return{xp,level,cur,need,rank}}}catch(e){}
- const s=state(),xp=Math.max(0,num(s.readerxp,s.pages));const level=Math.max(1,Math.floor(xp/1000)+1);return{xp,level,cur:xp%1000,need:1000,rank:rankFallback(level)}
+  try{
+    if(typeof window.totalXp==='function'&&typeof window.levelFor==='function'){
+      const xp=Math.max(0,num(window.totalXp()));
+      const level=Math.max(1,num(window.levelFor(xp),1));
+      const cur=typeof window.lvlXp==='function'?Math.max(0,num(window.lvlXp(xp,level))):xp;
+      const need=typeof window.lvlNeed==='function'?Math.max(1,num(window.lvlNeed(level),1000)):1000;
+      const rank=typeof window.rankFor==='function'?String(window.rankFor(level)||rankFallback(level)):rankFallback(level);
+      return{xp,level,cur,need,rank};
+    }
+  }catch(e){}
+  const s=state();
+  const xp=Math.max(0,num(s.readerxp,s.pages));
+  const level=Math.max(1,Math.floor(xp/1000)+1);
+  return{xp,level,cur:xp%1000,need:1000,rank:rankFallback(level)};
 }
-function currentBook(s){const r=s.reading||{},name=String(r.bookName||'').trim();const key=name.toLowerCase();const b=(Array.isArray(s.library)?s.library:[]).find(x=>String(x?.title||x?.name||'').trim().toLowerCase()===key)||{};const page=Math.max(0,num(r.currentPage));const total=Math.max(0,num(r.bookTotal));const pct=clamp(num(r.percent,total?Math.round(page/total*100):0),0,100);return{name:name||'No current book',author:String(r.author||r.bookAuthor||b.author||'—'),series:String(r.series||r.bookSeries||b.series||b.seriesName||'—'),page,total,pct}}
-function explicitStreak(s){for(const k of ['streak','currentStreak','readingStreak']){if(Number.isFinite(Number(s?.[k])))return Math.max(0,Number(s[k]))}return null}
-function sameLocalDay(ts){if(!ts)return false;const d=new Date(Number(ts)),n=new Date();return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate()}
-function todayProgress(s){const r=s.reading||{};let pages=Math.max(0,num(r.sessionLoggedPages))+Math.max(0,num(r.currentPage)-num(r.sessionStartPage));if(r.lastSession&&sameLocalDay(r.lastSession.endedAt))pages+=Math.max(0,num(r.lastSession.pages));const goal=Math.max(1,num(s?.settings?.dailyPageGoal||s?.dailyPageGoal,100));return{pages:Math.round(pages),goal,pct:clamp(Math.round(pages/goal*100),0,100)}}
-function challengeLine(s,q){if(!q)return'Choose a reading challenge';const target=Math.max(0,num(q.target)),done=Math.max(0,num(s.pages)-num(q.startPages));return target?`Read ${fmt(target)} pages · ${fmt(Math.min(done,target))}/${fmt(target)}`:String(q.title||'Reading challenge')}
-function data(){const s=state(),x=xpValues(),b=currentBook(s),st=explicitStreak(s),daily=todayProgress(s),qs=Array.isArray(s.simpleQuests)?s.simpleQuests.slice(0,3):[];return{s,x,b,st,daily,qs}}
+
 function set(id,v){const e=$(id);if(e)e.textContent=v}
-function render(){const root=$('v51045CleanHome');if(!root)return;const d=data(),s=d.s,x=d.x,b=d.b;set('v51045Level',x.level);set('v51045Rank',x.rank);set('v51045XpCurrent',fmt(x.cur));set('v51045XpTarget',fmt(x.need));const expPct=clamp(x.cur/x.need*100,0,100),expFill=$('v51045ExpFill');if(expFill)expFill.style.width=expPct+'%';set('v51045BookTitle',b.name);set('v51045BookAuthor',b.author);set('v51045BookSeries',b.series);set('v51045PageCurrent',fmt(b.page));set('v51045PageTotal',b.total?fmt(b.total):'—');set('v51045BookPercent',b.total?Math.round(b.pct)+'%':'—');const bookFill=$('v51045BookFill');if(bookFill)bookFill.style.width=(b.total?b.pct:0)+'%';set('v51045Books',fmt(s.books));set('v51045Pages',fmt(s.pages));set('v51045Days',fmt(s.days));set('v51045Streak',d.st==null?'—':fmt(d.st));set('v51045DailyPages',fmt(d.daily.pages));set('v51045DailyPercent',d.daily.pct+'%');const ring=$('v51045Ring');if(ring)ring.style.setProperty('--pct',d.daily.pct+'%');for(let i=0;i<3;i++)set('v51045Ch'+(i+1),challengeLine(s,d.qs[i]))}
-async function b64(file,min=1000){const r=await fetch('./'+file+'?v=51045-clean3',{cache:'no-store'});if(!r.ok)throw Error(file+' '+r.status);const b=(await r.text()).trim();if(b.length<min)throw Error(file+' incomplete');return b}
-async function artSources(){const parts=await Promise.all(BASE_PARTS.map(f=>b64(f,5000)));const footer=await b64(FOOTER,1000);return{clean:'data:image/webp;base64,'+parts.join(''),footer:'data:image/webp;base64,'+footer}}
-function image(src,classes,name){return new Promise((resolve,reject)=>{const im=new Image();im.className='v51045-layer '+classes;im.dataset.layer=name;im.alt='';im.onload=()=>resolve(im);im.onerror=()=>reject(Error(name+' decode failed'));im.src=src})}
-function nav(){return'<button class="v51045-nav home" aria-label="Home"></button><button class="v51045-nav read" aria-label="Read"></button><button class="v51045-nav quests" aria-label="Quests"></button><button class="v51045-nav journal" aria-label="Journal"></button><button class="v51045-nav me" aria-label="Me"></button>'}
-function navTo(name){try{if(name==='home')return;if(name==='journal'&&typeof window.openReadingJournal==='function')return window.openReadingJournal();if(typeof window.go==='function')return window.go(name)}catch(e){console.error('[v51045 home nav]',e)}}
-function chrome(){const h=$('home');if(!h)return;const c=getComputedStyle(h),active=c.display!=='none'&&c.visibility!=='hidden'&&!h.hidden;document.body.classList.toggle('v51045-home-active',active)}
-async function mount(){const home=$('home');if(!home)return;style();home.classList.add('v51045-clean-home');let root=$('v51045CleanHome');if(root){render();chrome();return}root=document.createElement('div');root.id='v51045CleanHome';root.innerHTML=`<div class="v51045-stage"><div id="v51045Layers" class="v51045-layers" aria-hidden="true"></div><div id="v51045ExpBar" class="v51045-expbar"><i id="v51045ExpFill"></i></div><div id="v51045BookBar" class="v51045-bookbar"><i id="v51045BookFill"></i></div><div id="v51045Level" class="v51045-live v51045-level"></div><div id="v51045Rank" class="v51045-live v51045-rank"></div><div id="v51045XpCurrent" class="v51045-live v51045-xp-current"></div><div id="v51045XpTarget" class="v51045-live v51045-xp-target"></div><div id="v51045BookTitle" class="v51045-live v51045-book-title"></div><div id="v51045BookAuthor" class="v51045-live v51045-book-author"></div><div id="v51045BookSeries" class="v51045-live v51045-book-series"></div><div id="v51045PageCurrent" class="v51045-live v51045-page-current"></div><div id="v51045PageTotal" class="v51045-live v51045-page-total"></div><div id="v51045BookPercent" class="v51045-live v51045-book-percent"></div><div class="v51045-live v51045-stats-title">My Stats</div><div class="v51045-live v51045-stat v51045-stat1"><b id="v51045Books"></b><span>Books Read</span></div><div class="v51045-live v51045-stat v51045-stat2"><b id="v51045Pages"></b><span>Pages Read</span></div><div class="v51045-live v51045-stat v51045-stat3"><b id="v51045Days"></b><span>Days Read</span></div><div class="v51045-live v51045-stat v51045-stat4"><b id="v51045Streak"></b><span>Current Streak</span></div><div class="v51045-live v51045-progress-title">Today’s Progress</div><div id="v51045Ring" class="v51045-daily-ring"></div><div id="v51045DailyPages" class="v51045-live v51045-daily-pages"></div><div id="v51045DailyPercent" class="v51045-live v51045-daily-percent"></div><div class="v51045-live v51045-challenge-title">Today’s Challenges</div><div class="v51045-live v51045-challenges"><div id="v51045Ch1" class="v51045-ch"></div><div id="v51045Ch2" class="v51045-ch"></div><div id="v51045Ch3" class="v51045-ch"></div></div>${nav()}<div id="v51045Error" class="v51045-error" hidden></div></div>`;home.prepend(root);
- try{const a=await artSources();const imgs=await Promise.all([image(a.clean,'v51045-clean-art v51045-hero','hero-rank'),image(a.clean,'v51045-clean-art v51045-reading','currently-reading'),image(a.clean,'v51045-clean-art v51045-stats','stats'),image(a.clean,'v51045-clean-art v51045-progress','progress-challenges'),image(a.footer,'v51045-footer','footer-navigation')]);$('v51045Layers').replaceChildren(...imgs)}catch(e){console.error('[v51045 clean home]',e);const er=$('v51045Error');if(er){er.textContent='Home artwork package failed to load. Refresh once the staging build finishes.';er.hidden=false}}
- root.querySelector('.read').onclick=()=>navTo('reading');root.querySelector('.quests').onclick=()=>navTo('quests');root.querySelector('.journal').onclick=()=>navTo('journal');root.querySelector('.me').onclick=()=>navTo('profile');render();chrome()}
-const oldGo=window.go;if(typeof oldGo==='function')window.go=function(){const r=oldGo.apply(this,arguments);setTimeout(chrome,0);return r};
-const oldRenderHome=window.renderHome;if(typeof oldRenderHome==='function')window.renderHome=function(){const r=oldRenderHome.apply(this,arguments);setTimeout(render,0);return r};
-setInterval(()=>{try{render();chrome()}catch(e){}},1000);setTimeout(mount,80);setTimeout(mount,600);setTimeout(mount,1600);window.addEventListener('pageshow',()=>{mount();chrome()});
+
+function render(){
+  if(!$('v51045Layer01Home'))return;
+  const x=xpValues();
+  set('v51045Level',x.level);
+  set('v51045Rank',x.rank);
+  set('v51045XpCurrent',fmt(x.cur));
+  set('v51045XpTarget',fmt(x.need));
+  const fill=$('v51045ExpFill');
+  if(fill)fill.style.width=clamp(x.cur/x.need*100,0,100)+'%';
+}
+
+async function b64(file,min=5000){
+  const r=await fetch('./'+file+'?v=51045layer01',{cache:'no-store'});
+  if(!r.ok)throw Error(file+' '+r.status);
+  const b=(await r.text()).trim();
+  if(b.length<min)throw Error(file+' incomplete');
+  return b;
+}
+
+async function artUrl(){
+  const parts=await Promise.all(BASE_PARTS.map(f=>b64(f)));
+  return'data:image/webp;base64,'+parts.join('');
+}
+
+function heroImage(src){
+  return new Promise((resolve,reject)=>{
+    const im=new Image();
+    im.className='v51045-hero-art';
+    im.dataset.layer='hero-rank';
+    im.alt='';
+    im.onload=()=>resolve(im);
+    im.onerror=()=>reject(Error('hero-rank decode failed'));
+    im.src=src;
+  });
+}
+
+function chrome(){
+  const h=$('home');
+  if(!h)return;
+  const c=getComputedStyle(h);
+  const active=c.display!=='none'&&c.visibility!=='hidden'&&!h.hidden;
+  document.body.classList.toggle('v51045-home-active',active);
+}
+
+async function mount(){
+  const home=$('home');
+  if(!home)return;
+  style();
+  home.classList.add('v51045-layer01-home');
+
+  let root=$('v51045Layer01Home');
+  if(root){render();chrome();return}
+
+  root=document.createElement('div');
+  root.id='v51045Layer01Home';
+  root.dataset.build=BUILD;
+  root.innerHTML='<div class="v51045-stage">'+
+    '<div id="v51045Layer01Stack" class="v51045-layers" aria-hidden="true"></div>'+
+    '<div class="v51045-expbar"><i id="v51045ExpFill"></i></div>'+
+    '<div id="v51045Level" class="v51045-live v51045-level"></div>'+
+    '<div id="v51045Rank" class="v51045-live v51045-rank"></div>'+
+    '<div id="v51045XpCurrent" class="v51045-live v51045-xp-current"></div>'+
+    '<div id="v51045XpTarget" class="v51045-live v51045-xp-target"></div>'+
+    '<div id="v51045Layer01Error" class="v51045-error" hidden></div>'+
+    '</div>';
+
+  home.prepend(root);
+
+  try{
+    const src=await artUrl();
+    const hero=await heroImage(src);
+    $('v51045Layer01Stack').replaceChildren(hero);
+  }catch(e){
+    console.error('[v51045 Home Layer 01]',e);
+    const er=$('v51045Layer01Error');
+    if(er){er.textContent='Home Layer 01 artwork failed to load. Refresh once staging finishes.';er.hidden=false}
+  }
+
+  render();
+  chrome();
+}
+
+const oldGo=window.go;
+if(typeof oldGo==='function')window.go=function(){
+  const r=oldGo.apply(this,arguments);
+  setTimeout(chrome,0);
+  return r;
+};
+
+const oldRenderHome=window.renderHome;
+if(typeof oldRenderHome==='function')window.renderHome=function(){
+  const r=oldRenderHome.apply(this,arguments);
+  setTimeout(render,0);
+  return r;
+};
+
+setInterval(()=>{try{render();chrome()}catch(e){}},1000);
+setTimeout(mount,80);
+setTimeout(mount,600);
+setTimeout(mount,1600);
+window.addEventListener('pageshow',()=>{mount();chrome()});
 })();
