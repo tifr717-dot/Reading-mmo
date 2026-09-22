@@ -92,7 +92,8 @@ async function mount(){
   root.innerHTML='<div class="v51045-stage">'+
     '<div class="v51045-canvas">'+
       '<img id="v51045MasterArt" class="v51045-master" alt="">'+
-      '<div id="v51045Level" class="v51045-level-number" aria-label="Reader level"></div>'+\n      '<div id="v51045Rank" class="v51045-rank-text" aria-label="Reader rank"></div>'+
+      '<div id="v51045Level" class="v51045-level-number" aria-label="Reader level"></div>'+
+      '<div id="v51045Rank" class="v51045-rank-text" aria-label="Reader rank"></div>'+
     '</div>'+
     '<div id="v51045LevelOnlyError" class="v51045-error" hidden></div>'+
   '</div>';
