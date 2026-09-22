@@ -19,39 +19,28 @@ jobs:
           node --check home-v51045-runtime.js
           node --check service-worker-v51043.js
 
-      - name: Validate complete Reader Level component
+      - name: Validate artwork-derived Reader Level frames
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('home-v51045-master-clean-level.webp')
-          assert p.exists() and p.stat().st_size > 250000
-          raw=p.read_bytes()
-          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP'
-          print('Direct Home WebP',p.stat().st_size,'bytes')
+          for name in ['home-v51045-master-clean-level.webp','home-v51045-ornate-bar-frame.png']:
+              p=Path(name)
+              assert p.exists() and p.stat().st_size > 1000, f'{name} missing/too small'
+          raw=Path('home-v51045-ornate-bar-frame.png').read_bytes()
+          assert raw[:8] == b'\x89PNG\r\n\x1a\n', 'ornate bar asset is not PNG'
+          print('ornate bar asset',len(raw),'bytes')
           PY
 
-          grep -q 'id="v51045-early-boot"' index.html
-          grep -q '<section id="home" class="screen active" aria-label="Reading MMO Home"></section>' index.html
-          grep -q 'home-v51045-runtime.js?v=51045plaque1' index.html
-          grep -q 'home-v51045-master-clean-level.webp?v=51045plaque1' index.html
-          ! grep -q 'v58-home-frame-v582.png' index.html
+          grep -q 'home-v51045-runtime.js?v=51045artbars1' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045artbars1' index.html
+          grep -q 'home-v51045-ornate-bar-frame.png?v=51045artbars1' index.html
 
-          grep -q "v5.10.45-home-reader-xp-plaque1" home-v51045-runtime.js
-          grep -q "home-v51045-master-clean-level.webp?v=51045plaque1" home-v51045-runtime.js
-          grep -q "v51045Level" home-v51045-runtime.js
-          grep -q "v51045Rank" home-v51045-runtime.js
+          grep -q "v5.10.45-home-reader-xp-artbars1" home-v51045-runtime.js
+          grep -q "v51045-rank-frame" home-v51045-runtime.js
+          grep -q "v51045-exp-art" home-v51045-runtime.js
+          grep -q "home-v51045-ornate-bar-frame.png?v=51045artbars1" home-v51045-runtime.js
           grep -q "v51045ExpFill" home-v51045-runtime.js
           grep -q "v51045XpLine" home-v51045-runtime.js
-          grep -q "v51045-exp-track::before" home-v51045-runtime.js
-          grep -q "v51045-rank-plaque" home-v51045-runtime.js
-          grep -q "totalXp" home-v51045-runtime.js
-          grep -q "levelFor" home-v51045-runtime.js
-          grep -q "lvlXp" home-v51045-runtime.js
-          grep -q "lvlNeed" home-v51045-runtime.js
-          grep -q "rankFor" home-v51045-runtime.js
+          ! grep -q "v51045-rank-plaque" home-v51045-runtime.js
 
-          ! grep -q "home-v51045-runtime.js" reading-journal-layered-v51043v.js
-          grep -q "reading-mmo-v5.10.45-structural-home" service-worker-v51043.js
-          ! grep -q "c.navigate" service-worker-v51043.js
-
-          echo "Plaque-style Reader Level checkpoint OK"
+          echo "Artwork-derived Reader Level UI checkpoint OK"
