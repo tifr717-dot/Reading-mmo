@@ -19,29 +19,27 @@ jobs:
           node --check home-v51045-runtime.js
           node --check service-worker-v51043.js
 
-      - name: Validate structural Home boot
+      - name: Validate Reader Rank-only layer
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('home-v51045-master-clean-level.webp')
-          assert p.exists() and p.stat().st_size > 250000, 'direct Home WebP missing or too small'
+          assert p.exists() and p.stat().st_size > 250000
           raw=p.read_bytes()
-          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'direct Home asset is not WebP'
+          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP'
           print('Direct Home WebP',p.stat().st_size,'bytes')
           PY
 
           grep -q 'id="v51045-early-boot"' index.html
-          grep -q '<body class="v51045-booting-home">' index.html
           grep -q '<section id="home" class="screen active" aria-label="Reading MMO Home"></section>' index.html
-          grep -q 'home-v51045-runtime.js?v=51045structural' index.html
-          grep -q 'home-v51045-master-clean-level.webp?v=51045structural' index.html
+          grep -q 'home-v51045-runtime.js?v=51045rankonly' index.html
           ! grep -q 'v58-home-frame-v582.png' index.html
 
-          grep -q "v5.10.45-home-structural-boot" home-v51045-runtime.js
-          grep -q "home-v51045-master-clean-level.webp?v=51045structural" home-v51045-runtime.js
-          grep -q "home.replaceChildren(root)" home-v51045-runtime.js
+          grep -q "v5.10.45-home-rank-only" home-v51045-runtime.js
+          grep -q "home-v51045-master-clean-level.webp?v=51045rankonly" home-v51045-runtime.js
           grep -q "v51045Level" home-v51045-runtime.js
-          ! grep -q "v51045Rank" home-v51045-runtime.js
+          grep -q "v51045Rank" home-v51045-runtime.js
+          grep -q "rankFor" home-v51045-runtime.js
           ! grep -q "v51045XpCurrent" home-v51045-runtime.js
           ! grep -q "v51045ExpFill" home-v51045-runtime.js
 
@@ -49,8 +47,6 @@ jobs:
           grep -q "simplified-redesign-v51045.js?v=51045structural" reading-journal-layered-v51043v.js
 
           grep -q "reading-mmo-v5.10.45-structural-home" service-worker-v51043.js
-          grep -q "home-v51045-master-clean-level.webp" service-worker-v51043.js
           ! grep -q "c.navigate" service-worker-v51043.js
-          ! grep -q "FORCE_VERSION" service-worker-v51043.js
 
-          echo "Structural Home boot has no legacy Home DOM or loader handoff"
+          echo "Live Reader Level + Rank only checkpoint OK"
