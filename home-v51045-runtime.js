@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-reader-level-complete';
+const BUILD='v5.10.45-home-reader-xp-complete';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045readerxp';
 const $=id=>document.getElementById(id);
 
@@ -20,9 +20,9 @@ function style(){
     ".v51045-master{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;z-index:1;pointer-events:none}"+
     ".v51045-level-number{position:absolute;z-index:4;left:34.25%;top:32.15%;width:9.5%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(20px,5vw,34px);line-height:1;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-rank-text{position:absolute;z-index:4;left:53.2%;top:32.05%;width:28%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(10px,2.3vw,15px);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
-    ".v51045-exp-track{position:absolute;z-index:4;left:52.0%;top:34.45%;width:31.5%;height:1.08%;transform:translateX(-50%);border-radius:999px;background:rgba(242,220,197,.72);border:1px solid rgba(82,48,31,.48);box-shadow:inset 0 1px 2px rgba(80,46,29,.16),0 1px 0 rgba(255,246,226,.45);overflow:hidden;pointer-events:none}"+
-    ".v51045-exp-fill{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#c98bd4 0%,#b871c6 48%,#9b56ae 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.24)}"+
-    ".v51045-xp-line{position:absolute;z-index:4;left:52.0%;top:36.25%;width:34%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(9px,2.05vw,14px);line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
+    ".v51045-exp-track{position:absolute;z-index:4;left:53.2%;top:34.63%;width:31.5%;height:1.22%;transform:translateX(-50%);overflow:hidden;border-radius:999px;background:rgba(242,219,181,.72);border:1px solid rgba(83,50,35,.76);box-shadow:inset 0 1px 2px rgba(64,35,25,.25),0 1px rgba(255,244,216,.35);pointer-events:none}"+
+    ".v51045-exp-fill{display:block;height:100%;width:0%;border-radius:inherit;background:linear-gradient(90deg,#b56bc5 0%,#c884d1 58%,#9f5db3 100%);box-shadow:inset 0 0 1px rgba(255,255,255,.45);transition:width .18s ease}"+
+    ".v51045-xp-line{position:absolute;z-index:4;left:53.2%;top:36.55%;width:36%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(9px,2.0vw,14px);line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-error{position:absolute;z-index:12;left:8%;right:8%;top:12%;padding:10px;background:#3c2118;color:#f2d7a0;border:1px solid #b7863d;border-radius:8px;text-align:center;font:700 10px/1.4 ui-monospace,monospace}";
   document.head.appendChild(s);
 }
@@ -38,7 +38,7 @@ function readerState(){
       const total=Math.max(0,Number(window.totalXp())||0);
       const level=Math.max(1,Number(window.levelFor(total))||1);
       const curXp=Math.max(0,Number(window.lvlXp(total,level))||0);
-      const needXp=Math.max(1,Number(window.lvlNeed(level))||1000);
+      const needXp=Math.max(1,Number(window.lvlNeed(level))||1);
       let rank='';
       try{
         if(typeof window.rankFor==='function')rank=String(window.rankFor(level)||'');
@@ -56,13 +56,13 @@ function readerState(){
 }
 
 function renderReaderLevel(){
-  const s=readerState();
   const levelEl=$('v51045Level');
   const rankEl=$('v51045Rank');
   const fillEl=$('v51045ExpFill');
   const xpEl=$('v51045XpLine');
+  const st=readerState();
 
-  if(!s){
+  if(!st){
     if(levelEl)levelEl.textContent='';
     if(rankEl)rankEl.textContent='';
     if(fillEl)fillEl.style.width='0%';
@@ -70,10 +70,11 @@ function renderReaderLevel(){
     return;
   }
 
-  if(levelEl)levelEl.textContent=String(s.level);
-  if(rankEl)rankEl.textContent=s.rank;
-  if(fillEl)fillEl.style.width=s.pct+'%';
-  if(xpEl)xpEl.textContent=s.curXp.toLocaleString()+' / '+s.needXp.toLocaleString()+' EXP';
+  if(levelEl)levelEl.textContent=String(st.level);
+  if(rankEl)rankEl.textContent=st.rank;
+  if(fillEl)fillEl.style.width=st.pct+'%';
+  if(xpEl)xpEl.textContent=
+    st.curXp.toLocaleString()+' / '+st.needXp.toLocaleString()+' EXP';
 }
 
 function chrome(){
@@ -134,7 +135,7 @@ async function mount(){
     await waitForArt(art);
     reveal(root);
   }catch(e){
-    console.error('[v51045 Home Reader Level]',e);
+    console.error('[v51045 Home Reader XP]',e);
     const er=$('v51045LevelOnlyError');
     if(er){er.textContent='Home artwork failed to load.';er.hidden=false}
     reveal(root);
@@ -155,6 +156,7 @@ const bindLegacy=()=>{
     wrapped.__v51045Wrapped=1;
     window.go=wrapped;
   }
+
   const oldRenderHome=window.renderHome;
   if(typeof oldRenderHome==='function'&&!oldRenderHome.__v51045Wrapped){
     const wrapped=function(){
