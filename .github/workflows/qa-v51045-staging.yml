@@ -19,7 +19,7 @@ jobs:
           node --check home-v51045-runtime.js
           node --check service-worker-v51043.js
 
-      - name: Validate Reader Rank-only layer
+      - name: Validate complete Reader Level component
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -32,21 +32,23 @@ jobs:
 
           grep -q 'id="v51045-early-boot"' index.html
           grep -q '<section id="home" class="screen active" aria-label="Reading MMO Home"></section>' index.html
-          grep -q 'home-v51045-runtime.js?v=51045rankonly' index.html
+          grep -q 'home-v51045-runtime.js?v=51045readerxp' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045readerxp' index.html
           ! grep -q 'v58-home-frame-v582.png' index.html
 
-          grep -q "v5.10.45-home-rank-only" home-v51045-runtime.js
-          grep -q "home-v51045-master-clean-level.webp?v=51045rankonly" home-v51045-runtime.js
+          grep -q "v5.10.45-home-reader-level-complete" home-v51045-runtime.js
           grep -q "v51045Level" home-v51045-runtime.js
           grep -q "v51045Rank" home-v51045-runtime.js
+          grep -q "v51045ExpFill" home-v51045-runtime.js
+          grep -q "v51045XpLine" home-v51045-runtime.js
+          grep -q "totalXp" home-v51045-runtime.js
+          grep -q "levelFor" home-v51045-runtime.js
+          grep -q "lvlXp" home-v51045-runtime.js
+          grep -q "lvlNeed" home-v51045-runtime.js
           grep -q "rankFor" home-v51045-runtime.js
-          ! grep -q "v51045XpCurrent" home-v51045-runtime.js
-          ! grep -q "v51045ExpFill" home-v51045-runtime.js
 
           ! grep -q "home-v51045-runtime.js" reading-journal-layered-v51043v.js
-          grep -q "simplified-redesign-v51045.js?v=51045structural" reading-journal-layered-v51043v.js
-
           grep -q "reading-mmo-v5.10.45-structural-home" service-worker-v51043.js
           ! grep -q "c.navigate" service-worker-v51043.js
 
-          echo "Live Reader Level + Rank only checkpoint OK"
+          echo "Complete live Reader Level component OK"
