@@ -1,7 +1,7 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-reader-xp-align4';
-const MASTER='./home-v51045-master-clean-level.webp?v=51045xpalign4';
+const BUILD='v5.10.45-home-reader-xp-decorative1';
+const MASTER='./home-v51045-master-clean-level.webp?v=51045decor1';
 const $=id=>document.getElementById(id);
 
 function style(){
@@ -120,7 +120,7 @@ async function mount(){
     '<div class="v51045-canvas">'+
       '<img id="v51045MasterArt" class="v51045-master" alt="">'+
       '<div id="v51045Level" class="v51045-level-number" aria-label="Reader level"></div>'+
-      '<div id="v51045Rank" class="v51045-rank-text" aria-label="Reader rank"></div>'+
+      '<div id="v51045Rank" class="v51045-rank-text" aria-label="Reader rank"></div>'+\n      '<div class="v51045-rank-flourish" aria-hidden="true"><i></i></div>'+
       '<div class="v51045-exp-track" aria-label="Reader experience progress"><i id="v51045ExpFill" class="v51045-exp-fill"></i></div>'+
       '<div id="v51045XpLine" class="v51045-xp-line" aria-label="Reader experience"></div>'+
     '</div>'+
