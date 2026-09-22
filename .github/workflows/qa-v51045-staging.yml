@@ -16,27 +16,21 @@ jobs:
           node --check reading-journal-layered-v51043v.js
           node --check simplified-redesign-v51045.js
           node --check home-v51045-runtime.js
-      - name: Validate Layer 01 artwork source
+      - name: Validate Layer 01C artwork source
         run: |
           python3 - <<'PY'
           import base64, pathlib
-          parts=[
-            pathlib.Path('home-v51045-master-base.b64.txt'),
-            pathlib.Path('home-v51045-master-base.b64.txt'),
-          ]
-          for p in parts:
-            assert p.exists() and p.stat().st_size > 5000, f'{p.name} missing or too small'
-          payload=''.join(p.read_text().strip() for p in parts)
-          raw=base64.b64decode(payload, validate=True)
-          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'clean Home base is not WebP'
-          print('Layer 01 clean source',len(raw),'bytes')
+          p=pathlib.Path('home-v51045-master-base.b64.txt')
+          assert p.exists() and p.stat().st_size > 100000, 'full Home master missing or too small'
+          raw=base64.b64decode(''.join(p.read_text().split()), validate=True)
+          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'Home master is not WebP'
+          print('Layer 01C full Home master',len(raw),'bytes')
           PY
-      - name: Validate Layer 01 staging wiring
+      - name: Validate Layer 01C staging wiring
         run: |
           grep -q "The Reading Journal" manifest.webmanifest
           grep -q "home-v51045-runtime.js?v=51045layer01c" reading-journal-layered-v51043v.js
           grep -q "simplified-redesign-v51045.js?v=51045layer01c" reading-journal-layered-v51043v.js
-          grep -q "home-v51045-master-base.b64.txt" home-v51045-runtime.js
           grep -q "home-v51045-master-base.b64.txt" home-v51045-runtime.js
           grep -q "v5.10.45-home-layer-01c" home-v51045-runtime.js
           grep -q "v51045MasterArt" home-v51045-runtime.js
@@ -47,4 +41,4 @@ jobs:
           ! grep -q "v51045DailyPages" home-v51045-runtime.js
           ! grep -q "v51045Ch3" home-v51045-runtime.js
           ! grep -q "home-v51045-footer-navigation.b64.txt" home-v51045-runtime.js
-          echo "Home Layer 01C (true master + rank) staging wiring OK"
+          echo "Home Layer 01C (true full master + rank only) staging wiring OK"
