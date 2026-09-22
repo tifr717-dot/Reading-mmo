@@ -3772,6 +3772,12 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 </style>
 
 <link rel="stylesheet" href="./archive-v51011.css">
+
+<style id="v51045-home-prepaint-guard">
+/* Prevent legacy Home artwork from ever painting before the approved v5.10.45 Home is ready. */
+#home{visibility:hidden!important}
+body.v51045-home-ready #home{visibility:visible!important}
+</style>
 </head>
 <body>
 <div class="app">
@@ -7069,7 +7075,7 @@ setTimeout(restoreHomeTab,0);
 <script src="./reading-journal-mockup-v51043.js?v=51043v"></script>
 <script src="./reading-journal-unified-v51043.js?v=51043v"></script>
 <script src="./reading-journal-canvas-composite-v51043v.js?v=51043v"></script>
-<script src="./reading-journal-layered-v51043v.js?v=51043v"></script>
+<script src="./reading-journal-layered-v51043v.js?v=51045noflash"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
