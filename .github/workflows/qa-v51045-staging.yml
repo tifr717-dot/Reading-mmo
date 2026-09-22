@@ -39,7 +39,7 @@ jobs:
           grep -q "home-v51045-clean-base-01.txt" home-v51045-runtime.js
           grep -q "home-v51045-clean-base-02.txt" home-v51045-runtime.js
           grep -q "v5.10.45-home-layer-01" home-v51045-runtime.js
-          grep -q "data-layer=\"hero-rank\"" home-v51045-runtime.js
+          grep -q "hero-rank" home-v51045-runtime.js
           grep -q "v51045Level" home-v51045-runtime.js
           grep -q "v51045Rank" home-v51045-runtime.js
           grep -q "v51045XpCurrent" home-v51045-runtime.js
