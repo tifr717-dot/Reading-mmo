@@ -1,6 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
+<style id="v51045-early-boot">
+html,body{margin:0;background:#160907!important}
+body.v51045-booting-home .app{visibility:hidden!important}
+body.v51045-home-ready .app{visibility:visible!important}
+body.v51045-booting-home header,
+body.v51045-booting-home .bottomnav{display:none!important}
+</style>
+<link rel="preload" as="image" href="./home-v51045-master-clean-level.webp?v=51045structural">
+
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#4a2f24"/>
@@ -3772,14 +3781,8 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 </style>
 
 <link rel="stylesheet" href="./archive-v51011.css">
-
-<style id="v51045-home-prepaint-guard">
-/* Keep the entire legacy app shell from painting before the approved Home is ready. */
-.app{visibility:hidden!important}
-body.v51045-home-ready .app{visibility:visible!important}
-</style>
 </head>
-<body>
+<body class="v51045-booting-home">
 <div class="app" id="v51045AppShell" style="visibility:hidden">
 <header>
   <div class="header-title"><img src="./asset-goose.png" class="header-goose" alt=""><h1>READING MMO</h1></div>
@@ -3795,83 +3798,8 @@ body.v51045-home-ready .app{visibility:visible!important}
 </header>
 
 
-<section id="home" class="screen active v58-home tab-reading">
-  <div class="v58-stage" aria-label="Reading MMO Home">
-    <img class="v58-frame" src="./v58-home-frame-v582.png" alt="Unified enchanted library Home frame">
-
-    <div class="v58-tabs" role="tablist" aria-label="Home views">
-      <button class="v53-tab v58-tab active" id="homeTabReading" role="tab" aria-selected="true" onclick="setHomeTab('reading',this)"><img src="./v53-tab-active.png" alt=""><span>READING</span></button>
-      <button class="v53-tab v58-tab" id="homeTabLevel" role="tab" aria-selected="false" onclick="setHomeTab('level',this)"><img src="./v53-tab-inactive.png" alt=""><span>READER LEVEL</span></button>
-      <button class="v53-tab v58-tab" id="homeTabQuests" role="tab" aria-selected="false" onclick="setHomeTab('quests',this)"><img src="./v53-tab-inactive.png" alt=""><span>QUESTS</span></button>
-    </div>
-
-    <div class="v58-panel-zone">
-      <div id="homePanelReading" class="v53-panel v58-panel v58-reading active" role="tabpanel" aria-labelledby="homeTabReading">
-        <div class="v58-reading-canvas">
-          <img class="v58-reading-art" src="./v56-open-book-scene.png" alt="Open reading book">
-          <div class="v58-r-current-label">CURRENT BOOK</div>
-          <div id="homeBookTitle" class="v58-r-title">No current book</div>
-          <div id="homeReadMode" class="v58-r-mode">CURRENT READ</div>
-          <div class="v58-r-session-label">THIS SESSION</div>
-          <div id="homeSessionTime" class="v58-r-time">00:00:00</div>
-          <div class="v58-r-chapters-label">CHAPTERS THIS SESSION</div>
-          <div id="homeSessionChapters" class="v58-r-chapters">0 chapters</div>
-
-          <div class="v58-r-progress-label">PROGRESS</div>
-          <div id="homePageText" class="v58-r-page">Page 0 of 0</div>
-          <div class="v58-r-progress"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="homeBookProgressBar" src="./v53-fill.png" alt=""></div></div>
-          <div id="homePercentText" class="v58-r-percent">0.0%</div>
-          <div class="v58-r-last-label">LAST FINISHED</div>
-          <div id="homeLastFinished" class="v58-r-last">Nothing logged yet</div>
-          <img class="v58-reader-ribbon" src="./v53-reader-ribbon.png" alt="Purple Open Reader bookmark">
-          <button class="v58-open-hit" aria-label="Open Reader" onclick="go('reading')">OPEN<br>READER</button>
-        </div>
-      </div>
-
-      <div id="homePanelLevel" class="v53-panel v58-panel v58-level" role="tabpanel" aria-labelledby="homeTabLevel" hidden>
-        <div class="v58-level-canvas">
-          <img class="v58-level-art" src="./v56-level-panel-tall.png" alt="Reader Level bookshelf">
-          <div id="homeLevel" class="v58-level-title">Level 1</div>
-          <div id="homeRank" class="v58-rank">Page Wanderer</div>
-          <div id="homeRegion" class="v58-region-hidden" aria-hidden="true"></div>
-          <div class="v58-xpbar"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="xpBar" src="./v53-fill.png" alt=""></div></div>
-          <div id="xpText" class="v58-xptxt">0 / 1,000 XP</div>
-          <div id="homeReaderLast" class="v58-lastread">Nothing logged yet</div>
-          <div class="v58-stat books"><b id="homeBooksStat">0</b><span>BOOKS</span></div>
-          <div class="v58-stat pages"><b id="homePagesStat">0</b><span>PAGES</span></div>
-          <div class="v58-stat days"><b id="homeDaysStat">0</b><span>DAYS</span></div>
-        </div>
-      </div>
-
-      <div id="homePanelQuests" class="v53-panel v58-panel v58-quests" role="tabpanel" aria-labelledby="homeTabQuests" hidden>
-        <div class="v58-quests-canvas">
-          <img class="v58-quests-art" src="./v53-quests-panel.png" alt="Quest board">
-          <div class="v58-qslot s1"><div id="homeQ1Title" class="v58-qtitle">Empty Slot</div><div id="homeQ1Objective" class="v58-qobj">Roll a Hunt quest.</div><div id="homeQ1Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ1Xp" class="v58-qxp"></div></div>
-          <div class="v58-qslot s2"><div id="homeQ2Title" class="v58-qtitle">Empty Slot</div><div id="homeQ2Objective" class="v58-qobj">Roll a Gather quest.</div><div id="homeQ2Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ2Xp" class="v58-qxp"></div></div>
-          <div class="v58-qslot s3"><div id="homeQ3Title" class="v58-qtitle">Empty Slot</div><div id="homeQ3Objective" class="v58-qobj">Roll an Alchemy quest.</div><div id="homeQ3Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ3Xp" class="v58-qxp"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="v58-lowerfill" aria-hidden="true"></div>
-
-    <div class="v58-utils">
-      <div class="v58-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
-      <div class="v58-util"><img src="./v53-small-button.png" alt=""><button onclick="toggleHomeLedger()">CHARACTER LEDGER</button></div>
-    </div>
-    <div id="homeKwgtSyncState" class="v58-sync-state"></div>
-
-    <div id="homeLedgerBackdrop" class="v594-ledger-backdrop" hidden onclick="toggleHomeLedger(false)" aria-hidden="true"></div>
-
-    <div id="homeLedgerPanel" class="v58-ledger-panel" role="dialog" aria-modal="true" aria-label="Character Ledger" hidden>
-      <img src="./v53-ledger-panel.png" alt="Character Ledger panel">
-      <button class="v58-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
-      <div class="v58-ledger-grid"><div><span>XP</span><b id="homeXp">0</b></div><div><span>QUESTS</span><b id="homeQuests">0</b></div><div><span>GOLDENS</span><b id="homeGoldens">0</b></div></div>
-      <div id="homeBonuses" class="v58-ledger-note"></div>
-    </div>
-    <div id="homeSaveMini" class="v58-save">Progress saves automatically.</div>
-  </div>
-</section>
+<section id="home" class="screen active" aria-label="Reading MMO Home"></section>
+<script src="./home-v51045-runtime.js?v=51045structural"></script>
 
 <section id="reading" class="screen v591-read">
   <div class="v591-read-stage">
@@ -7075,12 +7003,12 @@ setTimeout(restoreHomeTab,0);
 <script src="./reading-journal-mockup-v51043.js?v=51043v"></script>
 <script src="./reading-journal-unified-v51043.js?v=51043v"></script>
 <script src="./reading-journal-canvas-composite-v51043v.js?v=51043v"></script>
-<script src="./reading-journal-layered-v51043v.js?v=51045boot2"></script>
+<script src="./reading-journal-layered-v51043v.js?v=51045structural"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker-v51043.js?v=51045boot2",{updateViaCache:"none"}).catch(() => {});
+    navigator.serviceWorker.register("./service-worker-v51043.js?v=51045structural",{updateViaCache:"none"}).catch(() => {});
   });
 }
 </script>
