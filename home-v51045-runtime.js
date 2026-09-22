@@ -1,6 +1,6 @@
 (()=>{'use strict';
-if(window.__v51045HomeLayer01C)return;window.__v51045HomeLayer01C=1;
-const BUILD='v5.10.45-home-layer-01c';
+if(window.__v51045HomeLayer01D)return;window.__v51045HomeLayer01D=1;
+const BUILD='v5.10.45-home-layer-01d';
 const MASTER='home-v51045-master-base.b64.txt';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -13,16 +13,18 @@ function state(){
 }
 
 function style(){
-  if($('v51045Layer01CStyle'))return;
+  if($('v51045Layer01DStyle'))return;
   const s=document.createElement('style');
-  s.id='v51045Layer01CStyle';
+  s.id='v51045Layer01DStyle';
   s.textContent=
+    "html,body{overscroll-behavior:none}"+
     "body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!important}"+
-    "#home.v51045-layer01c-home{padding:0!important;margin:0!important;background:#160907!important;overflow-x:hidden!important;min-height:0!important}"+
-    "#home.v51045-layer01c-home>*:not(#v51045Layer01CHome){display:none!important}"+
-    "#v51045Layer01CHome{width:100%;max-width:708px;margin:0 auto;background:#160907;color:#3b2117;font-family:Georgia,'Times New Roman',serif;line-height:1}"+
-    ".v51045-stage{position:relative;width:100%;aspect-ratio:2/3;overflow:hidden;background:#160907}"+
-    ".v51045-master{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;z-index:1;pointer-events:none}"+
+    "#home.v51045-layer01d-home{padding:0!important;margin:0!important;background:#160907!important;overflow:hidden!important;min-height:0!important}"+
+    "#home.v51045-layer01d-home>*:not(#v51045Layer01DHome){display:none!important}"+
+    "#v51045Layer01DHome{position:relative;width:100%;height:100dvh;margin:0 auto;background:#160907;color:#3b2117;font-family:Georgia,'Times New Roman',serif;line-height:1;overflow:hidden}"+
+    ".v51045-stage{position:relative;width:100%;height:100%;overflow:hidden;background:#160907}"+
+    ".v51045-canvas{position:absolute;top:0;left:50%;width:max(100%,calc(100dvh * 2 / 3));aspect-ratio:2/3;transform:translateX(-50%);transform-origin:top center}"+
+    ".v51045-master{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;z-index:1;pointer-events:none}"+
     ".v51045-live{position:absolute;z-index:4;box-sizing:border-box;pointer-events:none;color:#3b2117;text-shadow:0 1px rgba(255,244,216,.55)}"+
     ".v51045-level{left:34.6%;top:32.15%;width:13.2%;transform:translate(-50%,-50%);text-align:center;font-weight:900;font-size:clamp(16px,4.15vw,28px)}"+
     ".v51045-rank{left:53.1%;top:32.05%;width:31%;transform:translate(-50%,-50%);text-align:center;font-size:clamp(9px,2vw,13px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"+
@@ -62,7 +64,7 @@ function xpValues(){
 function set(id,v){const e=$(id);if(e)e.textContent=v}
 
 function render(){
-  if(!$('v51045Layer01CHome'))return;
+  if(!$('v51045Layer01DHome'))return;
   const x=xpValues();
   set('v51045Level',x.level);
   set('v51045Rank',x.rank);
@@ -73,7 +75,7 @@ function render(){
 }
 
 async function masterUrl(){
-  const r=await fetch('./'+MASTER+'?v=51045layer01c',{cache:'no-store'});
+  const r=await fetch('./'+MASTER+'?v=51045layer01d',{cache:'no-store'});
   if(!r.ok)throw Error(MASTER+' '+r.status);
   const b=(await r.text()).replace(/\s+/g,'');
   if(b.length<100000)throw Error(MASTER+' incomplete');
@@ -92,30 +94,32 @@ async function mount(){
   const home=$('home');
   if(!home)return;
   style();
-  home.classList.add('v51045-layer01c-home');
+  home.classList.add('v51045-layer01d-home');
 
-  let root=$('v51045Layer01CHome');
+  let root=$('v51045Layer01DHome');
   if(root){render();chrome();return}
 
   root=document.createElement('div');
-  root.id='v51045Layer01CHome';
+  root.id='v51045Layer01DHome';
   root.dataset.build=BUILD;
   root.innerHTML='<div class="v51045-stage">'+
-    '<img id="v51045MasterArt" class="v51045-master" alt="">'+
-    '<div class="v51045-expbar"><i id="v51045ExpFill"></i></div>'+
-    '<div id="v51045Level" class="v51045-live v51045-level"></div>'+
-    '<div id="v51045Rank" class="v51045-live v51045-rank"></div>'+
-    '<div id="v51045XpCurrent" class="v51045-live v51045-xp-current"></div>'+
-    '<div id="v51045XpTarget" class="v51045-live v51045-xp-target"></div>'+
+    '<div class="v51045-canvas">'+
+      '<img id="v51045MasterArt" class="v51045-master" alt="">'+
+      '<div class="v51045-expbar"><i id="v51045ExpFill"></i></div>'+
+      '<div id="v51045Level" class="v51045-live v51045-level"></div>'+
+      '<div id="v51045Rank" class="v51045-live v51045-rank"></div>'+
+      '<div id="v51045XpCurrent" class="v51045-live v51045-xp-current"></div>'+
+      '<div id="v51045XpTarget" class="v51045-live v51045-xp-target"></div>'+
+    '</div>'+
     '<div id="v51045Layer01Error" class="v51045-error" hidden></div>'+
-    '</div>';
+  '</div>';
 
   home.prepend(root);
 
   try{
     $('v51045MasterArt').src=await masterUrl();
   }catch(e){
-    console.error('[v51045 Home Layer 01C]',e);
+    console.error('[v51045 Home Layer 01D]',e);
     const er=$('v51045Layer01Error');
     if(er){er.textContent='Home master artwork failed to load. Refresh once staging finishes.';er.hidden=false}
   }
