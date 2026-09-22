@@ -16,7 +16,7 @@ jobs:
           node --check reading-journal-layered-v51043v.js
           node --check simplified-redesign-v51045.js
           node --check home-v51045-runtime.js
-      - name: Validate clean Home artwork package
+      - name: Validate Layer 01 artwork source
         run: |
           python3 - <<'PY'
           import base64, pathlib
@@ -29,24 +29,22 @@ jobs:
           payload=''.join(p.read_text().strip() for p in parts)
           raw=base64.b64decode(payload, validate=True)
           assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'clean Home base is not WebP'
-          footer=pathlib.Path('home-v51045-footer-navigation.b64.txt')
-          assert footer.exists() and footer.stat().st_size > 1000, 'footer missing or too small'
-          footraw=base64.b64decode(footer.read_text().strip(), validate=True)
-          assert footraw[:4] == b'RIFF' and footraw[8:12] == b'WEBP', 'footer is not WebP'
-          print('clean Home base',len(raw),'bytes')
-          print('footer',len(footraw),'bytes')
+          print('Layer 01 clean source',len(raw),'bytes')
           PY
-      - name: Validate staging wiring
+      - name: Validate Layer 01 staging wiring
         run: |
           grep -q "The Reading Journal" manifest.webmanifest
-          grep -q "home-v51045-runtime.js?v=51045clean3" reading-journal-layered-v51043v.js
-          grep -q "simplified-redesign-v51045.js?v=51045clean3" reading-journal-layered-v51043v.js
+          grep -q "home-v51045-runtime.js?v=51045layer01" reading-journal-layered-v51043v.js
+          grep -q "simplified-redesign-v51045.js?v=51045layer01" reading-journal-layered-v51043v.js
           grep -q "home-v51045-clean-base-01.txt" home-v51045-runtime.js
           grep -q "home-v51045-clean-base-02.txt" home-v51045-runtime.js
-          grep -q "home-v51045-footer-navigation.b64.txt" home-v51045-runtime.js
-          grep -q "v5.10.45-home-clean-live-03" home-v51045-runtime.js
-          grep -q "v51045DailyPages" home-v51045-runtime.js
-          grep -q "v51045Ch3" home-v51045-runtime.js
-          ! grep -q "v51045-mask" home-v51045-runtime.js
-          ! grep -q "data-live-slot" home-v51045-runtime.js
-          echo "v5.10.45 clean live Home staging wiring OK"
+          grep -q "v5.10.45-home-layer-01" home-v51045-runtime.js
+          grep -q "data-layer=\"hero-rank\"" home-v51045-runtime.js
+          grep -q "v51045Level" home-v51045-runtime.js
+          grep -q "v51045Rank" home-v51045-runtime.js
+          grep -q "v51045XpCurrent" home-v51045-runtime.js
+          ! grep -q "v51045BookTitle" home-v51045-runtime.js
+          ! grep -q "v51045DailyPages" home-v51045-runtime.js
+          ! grep -q "v51045Ch3" home-v51045-runtime.js
+          ! grep -q "home-v51045-footer-navigation.b64.txt" home-v51045-runtime.js
+          echo "Home Layer 01 (header + rank) staging wiring OK"
