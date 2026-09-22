@@ -16,34 +16,37 @@ jobs:
           node --check reading-journal-layered-v51043v.js
           node --check simplified-redesign-v51045.js
           node --check home-v51045-runtime.js
-      - name: Validate Jetpack Home artwork layers
+      - name: Validate clean Home artwork package
         run: |
           python3 - <<'PY'
           import base64, pathlib
-          files=[
-            'home-v51045-hero-rank.b64.txt',
-            'home-v51045-currently-reading.b64.txt',
-            'home-v51045-stats.b64.txt',
-            'home-v51045-progress-challenges.b64.txt',
-            'home-v51045-footer-navigation.b64.txt',
+          parts=[
+            pathlib.Path('home-v51045-clean-base-01.txt'),
+            pathlib.Path('home-v51045-clean-base-02.txt'),
           ]
-          for name in files:
-            p=pathlib.Path(name)
-            assert p.exists() and p.stat().st_size > 1000, f'{name} missing or too small'
-            raw=base64.b64decode(p.read_text().strip(), validate=True)
-            assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', f'{name} is not WebP'
-            print(name, len(raw), 'bytes')
+          for p in parts:
+            assert p.exists() and p.stat().st_size > 5000, f'{p.name} missing or too small'
+          payload=''.join(p.read_text().strip() for p in parts)
+          raw=base64.b64decode(payload, validate=True)
+          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'clean Home base is not WebP'
+          footer=pathlib.Path('home-v51045-footer-navigation.b64.txt')
+          assert footer.exists() and footer.stat().st_size > 1000, 'footer missing or too small'
+          footraw=base64.b64decode(footer.read_text().strip(), validate=True)
+          assert footraw[:4] == b'RIFF' and footraw[8:12] == b'WEBP', 'footer is not WebP'
+          print('clean Home base',len(raw),'bytes')
+          print('footer',len(footraw),'bytes')
           PY
       - name: Validate staging wiring
         run: |
           grep -q "The Reading Journal" manifest.webmanifest
-          grep -q "home-v51045-runtime.js" reading-journal-layered-v51043v.js
-          grep -q "simplified-redesign-v51045.js" reading-journal-layered-v51043v.js
-          grep -q "home-v51045-hero-rank.b64.txt" home-v51045-runtime.js
-          grep -q "home-v51045-currently-reading.b64.txt" home-v51045-runtime.js
-          grep -q "home-v51045-stats.b64.txt" home-v51045-runtime.js
-          grep -q "home-v51045-progress-challenges.b64.txt" home-v51045-runtime.js
+          grep -q "home-v51045-runtime.js?v=51045clean3" reading-journal-layered-v51043v.js
+          grep -q "simplified-redesign-v51045.js?v=51045clean3" reading-journal-layered-v51043v.js
+          grep -q "home-v51045-clean-base-01.txt" home-v51045-runtime.js
+          grep -q "home-v51045-clean-base-02.txt" home-v51045-runtime.js
           grep -q "home-v51045-footer-navigation.b64.txt" home-v51045-runtime.js
-          grep -q "data-live-slot" home-v51045-runtime.js
+          grep -q "v5.10.45-home-clean-live-03" home-v51045-runtime.js
+          grep -q "v51045DailyPages" home-v51045-runtime.js
+          grep -q "v51045Ch3" home-v51045-runtime.js
           ! grep -q "v51045-mask" home-v51045-runtime.js
-          echo "v5.10.45 Jetpack staging wiring OK"
+          ! grep -q "data-live-slot" home-v51045-runtime.js
+          echo "v5.10.45 clean live Home staging wiring OK"
