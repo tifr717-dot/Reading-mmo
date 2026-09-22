@@ -16,7 +16,7 @@ jobs:
           node --check reading-journal-layered-v51043v.js
           node --check simplified-redesign-v51045.js
           node --check home-v51045-runtime.js
-      - name: Validate live Reader Level layer
+      - name: Validate no-flash Home boot
         run: |
           python3 - <<'PY'
           import base64, pathlib
@@ -26,14 +26,17 @@ jobs:
           assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'cleaned Home master is not WebP'
           print('Clean Home master',len(raw),'bytes')
           PY
-          grep -q "home-v51045-runtime.js?v=51045levelready" reading-journal-layered-v51043v.js
-          grep -q "simplified-redesign-v51045.js?v=51045levelready" reading-journal-layered-v51043v.js
-          grep -q "v5.10.45-home-level-only-ready" home-v51045-runtime.js
-          grep -q "v51045Level" home-v51045-runtime.js
-          grep -q "v51045-ready" home-v51045-runtime.js
-          grep -q "totalXp" home-v51045-runtime.js
-          grep -q "levelFor" home-v51045-runtime.js
-          ! grep -q "v51045Rank" home-v51045-runtime.js
-          ! grep -q "v51045XpCurrent" home-v51045-runtime.js
-          ! grep -q "v51045ExpFill" home-v51045-runtime.js
-          echo "Live Reader Level number-only layer OK"
+          grep -q 'id="v51045-home-prepaint-guard"' index.html
+          grep -q '#home{visibility:hidden!important}' index.html
+          grep -q 'body.v51045-home-ready #home{visibility:visible!important}' index.html
+          grep -q 'reading-journal-layered-v51043v.js?v=51045noflash' index.html
+          grep -q 'home-v51045-runtime.js?v=51045noflash' reading-journal-layered-v51043v.js
+          grep -q 'simplified-redesign-v51045.js?v=51045noflash' reading-journal-layered-v51043v.js
+          grep -q 'v5.10.45-home-level-no-flash' home-v51045-runtime.js
+          grep -q 'v51045-home-ready' home-v51045-runtime.js
+          grep -q 'art.decode' home-v51045-runtime.js
+          grep -q 'v51045Level' home-v51045-runtime.js
+          ! grep -q 'v51045Rank' home-v51045-runtime.js
+          ! grep -q 'v51045XpCurrent' home-v51045-runtime.js
+          ! grep -q 'v51045ExpFill' home-v51045-runtime.js
+          echo "No-flash Home boot + level-only layer OK"
