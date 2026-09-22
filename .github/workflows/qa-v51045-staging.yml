@@ -11,31 +11,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Check JavaScript syntax
         run: |
           node --check reading-journal-layered-v51043v.js
           node --check simplified-redesign-v51045.js
           node --check home-v51045-runtime.js
           node --check service-worker-v51043.js
-      - name: Validate Home boot2
+
+      - name: Validate structural Home boot
         run: |
           python3 - <<'PY'
-          import base64, pathlib
-          p=pathlib.Path('home-v51045-master-clean-level.b64.txt')
-          assert p.exists() and p.stat().st_size > 500000
-          raw=base64.b64decode(''.join(p.read_text().split()), validate=True)
-          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP'
-          print('Clean Home master',len(raw),'bytes')
+          from pathlib import Path
+          p=Path('home-v51045-master-clean-level.webp')
+          assert p.exists() and p.stat().st_size > 250000, 'direct Home WebP missing or too small'
+          raw=p.read_bytes()
+          assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'direct Home asset is not WebP'
+          print('Direct Home WebP',p.stat().st_size,'bytes')
           PY
-          grep -q 'id="v51045AppShell" style="visibility:hidden"' index.html
-          grep -q 'reading-journal-layered-v51043v.js?v=51045boot2' index.html
-          grep -q 'service-worker-v51043.js?v=51045boot2' index.html
-          grep -q "home-v51045-runtime.js?v=51045boot2" reading-journal-layered-v51043v.js
-          grep -q "simplified-redesign-v51045.js?v=51045boot2" reading-journal-layered-v51043v.js
-          grep -q "v5.10.45-home-boot2" home-v51045-runtime.js
-          grep -q "v51045-home-active" home-v51045-runtime.js
-          grep -q "style.visibility='visible'" home-v51045-runtime.js
-          grep -q "reading-mmo-v5.10.45-home-boot2" service-worker-v51043.js
+
+          grep -q 'id="v51045-early-boot"' index.html
+          grep -q '<body class="v51045-booting-home">' index.html
+          grep -q '<section id="home" class="screen active" aria-label="Reading MMO Home"></section>' index.html
+          grep -q 'home-v51045-runtime.js?v=51045structural' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045structural' index.html
+          ! grep -q 'v58-home-frame-v582.png' index.html
+
+          grep -q "v5.10.45-home-structural-boot" home-v51045-runtime.js
+          grep -q "home-v51045-master-clean-level.webp?v=51045structural" home-v51045-runtime.js
+          grep -q "home.replaceChildren(root)" home-v51045-runtime.js
+          grep -q "v51045Level" home-v51045-runtime.js
+          ! grep -q "v51045Rank" home-v51045-runtime.js
+          ! grep -q "v51045XpCurrent" home-v51045-runtime.js
+          ! grep -q "v51045ExpFill" home-v51045-runtime.js
+
+          ! grep -q "home-v51045-runtime.js" reading-journal-layered-v51043v.js
+          grep -q "simplified-redesign-v51045.js?v=51045structural" reading-journal-layered-v51043v.js
+
+          grep -q "reading-mmo-v5.10.45-structural-home" service-worker-v51043.js
+          grep -q "home-v51045-master-clean-level.webp" service-worker-v51043.js
           ! grep -q "c.navigate" service-worker-v51043.js
           ! grep -q "FORCE_VERSION" service-worker-v51043.js
-          echo "Home boot2 prevents legacy shell reload/flash"
+
+          echo "Structural Home boot has no legacy Home DOM or loader handoff"
