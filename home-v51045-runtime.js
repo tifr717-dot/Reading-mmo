@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-shell-guard';
+const BUILD='v5.10.45-home-boot2';
 const MASTER='home-v51045-master-clean-level.b64.txt';
 const $=id=>document.getElementById(id);
 
@@ -23,7 +23,7 @@ function style(){
 }
 
 async function masterUrl(){
-  const r=await fetch('./'+MASTER+'?v=51045shellguard',{cache:'no-store'});
+  const r=await fetch('./'+MASTER+'?v=51045boot2',{cache:'no-store'});
   if(!r.ok)throw Error(MASTER+' '+r.status);
   const b=(await r.text()).replace(/\s+/g,'');
   if(b.length<100000)throw Error(MASTER+' incomplete');
@@ -55,8 +55,7 @@ function renderLevel(){
 function chrome(){
   const h=$('home');
   if(!h)return;
-  const c=getComputedStyle(h);
-  const active=c.display!=='none'&&c.visibility!=='hidden'&&!h.hidden;
+  const active=h.classList.contains('active')&&!h.hidden;
   document.body.classList.toggle('v51045-home-active',active);
 }
 
@@ -83,11 +82,11 @@ async function mount(){
   home.prepend(root);
 
   try{
-    const art=$('v51045MasterArt');art.src=await masterUrl();if(art.decode){try{await art.decode()}catch(_){}}root.classList.add('v51045-ready');document.body.classList.add('v51045-home-ready');
+    const art=$('v51045MasterArt');art.src=await masterUrl();if(art.decode){try{await art.decode()}catch(_){}}root.classList.add('v51045-ready');renderLevel();document.body.classList.add('v51045-home-active');document.body.classList.add('v51045-home-ready');const shell=$('v51045AppShell')||document.querySelector('.app');if(shell)shell.style.visibility='visible';
   }catch(e){
     console.error('[v51045 Home Level Only]',e);
     const er=$('v51045LevelOnlyError');
-    if(er){er.textContent='Home artwork failed to load. Refresh once staging finishes.';er.hidden=false}document.body.classList.add('v51045-home-ready');
+    if(er){er.textContent='Home artwork failed to load. Refresh once staging finishes.';er.hidden=false}document.body.classList.add('v51045-home-active');document.body.classList.add('v51045-home-ready');const shell=$('v51045AppShell')||document.querySelector('.app');if(shell)shell.style.visibility='visible';
   }
 
   renderLevel();
