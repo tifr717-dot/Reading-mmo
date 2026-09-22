@@ -16,7 +16,7 @@ jobs:
           node --check reading-journal-layered-v51043v.js
           node --check simplified-redesign-v51045.js
           node --check home-v51045-runtime.js
-      - name: Validate cleaned Reader Level base
+      - name: Validate live Reader Level layer
         run: |
           python3 - <<'PY'
           import base64, pathlib
@@ -24,15 +24,15 @@ jobs:
           assert p.exists() and p.stat().st_size > 500000, 'cleaned Home master missing or too small'
           raw=base64.b64decode(''.join(p.read_text().split()), validate=True)
           assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP', 'cleaned Home master is not WebP'
-          print('Cleaned Reader Level Home master',len(raw),'bytes')
+          print('Clean Home master',len(raw),'bytes')
           PY
-          grep -q "home-v51045-runtime.js?v=51045cleanreaderbase" reading-journal-layered-v51043v.js
-          grep -q "simplified-redesign-v51045.js?v=51045cleanreaderbase" reading-journal-layered-v51043v.js
-          grep -q "v5.10.45-home-clean-reader-base" home-v51045-runtime.js
-          grep -q "home-v51045-master-clean-level.b64.txt" home-v51045-runtime.js
-          grep -q "v51045MasterArt" home-v51045-runtime.js
-          ! grep -q "v51045Level" home-v51045-runtime.js
+          grep -q "home-v51045-runtime.js?v=51045levelonly" reading-journal-layered-v51043v.js
+          grep -q "simplified-redesign-v51045.js?v=51045levelonly" reading-journal-layered-v51043v.js
+          grep -q "v5.10.45-home-level-only" home-v51045-runtime.js
+          grep -q "v51045Level" home-v51045-runtime.js
+          grep -q "totalXp" home-v51045-runtime.js
+          grep -q "levelFor" home-v51045-runtime.js
           ! grep -q "v51045Rank" home-v51045-runtime.js
           ! grep -q "v51045XpCurrent" home-v51045-runtime.js
           ! grep -q "v51045ExpFill" home-v51045-runtime.js
-          echo "Clean Reader Level base checkpoint OK"
+          echo "Live Reader Level number-only layer OK"
