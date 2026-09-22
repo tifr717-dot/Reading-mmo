@@ -16,7 +16,8 @@ jobs:
           node --check reading-journal-layered-v51043v.js
           node --check simplified-redesign-v51045.js
           node --check home-v51045-runtime.js
-      - name: Validate legacy-shell flash guard
+          node --check service-worker-v51043.js
+      - name: Validate Home boot2
         run: |
           python3 - <<'PY'
           import base64, pathlib
@@ -26,17 +27,15 @@ jobs:
           assert raw[:4] == b'RIFF' and raw[8:12] == b'WEBP'
           print('Clean Home master',len(raw),'bytes')
           PY
-          grep -q 'id="v51045-home-prepaint-guard"' index.html
-          grep -q '.app{visibility:hidden!important}' index.html
-          grep -q 'body.v51045-home-ready .app{visibility:visible!important}' index.html
-          grep -q 'reading-journal-layered-v51043v.js?v=51045shellguard' index.html
-          grep -q "add('./home-v51045-runtime.js?v=51045shellguard','v51045Home')" reading-journal-layered-v51043v.js
-          grep -q "finally(()=>add('./simplified-redesign-v51045.js?v=51045shellguard','v51045Simplified'))" reading-journal-layered-v51043v.js
-          grep -q 'v5.10.45-home-shell-guard' home-v51045-runtime.js
-          grep -q 'v51045-home-ready' home-v51045-runtime.js
-          grep -q 'art.decode' home-v51045-runtime.js
-          grep -q 'v51045Level' home-v51045-runtime.js
-          ! grep -q 'v51045Rank' home-v51045-runtime.js
-          ! grep -q 'v51045XpCurrent' home-v51045-runtime.js
-          ! grep -q 'v51045ExpFill' home-v51045-runtime.js
-          echo "Legacy shell cannot paint before approved Home"
+          grep -q 'id="v51045AppShell" style="visibility:hidden"' index.html
+          grep -q 'reading-journal-layered-v51043v.js?v=51045boot2' index.html
+          grep -q 'service-worker-v51043.js?v=51045boot2' index.html
+          grep -q "home-v51045-runtime.js?v=51045boot2" reading-journal-layered-v51043v.js
+          grep -q "simplified-redesign-v51045.js?v=51045boot2" reading-journal-layered-v51043v.js
+          grep -q "v5.10.45-home-boot2" home-v51045-runtime.js
+          grep -q "v51045-home-active" home-v51045-runtime.js
+          grep -q "style.visibility='visible'" home-v51045-runtime.js
+          grep -q "reading-mmo-v5.10.45-home-boot2" service-worker-v51043.js
+          ! grep -q "c.navigate" service-worker-v51043.js
+          ! grep -q "FORCE_VERSION" service-worker-v51043.js
+          echo "Home boot2 prevents legacy shell reload/flash"
