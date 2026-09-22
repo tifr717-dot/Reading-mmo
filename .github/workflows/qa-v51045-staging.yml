@@ -34,12 +34,12 @@ jobs:
       - name: Validate Layer 01 staging wiring
         run: |
           grep -q "The Reading Journal" manifest.webmanifest
-          grep -q "home-v51045-runtime.js?v=51045layer01" reading-journal-layered-v51043v.js
-          grep -q "simplified-redesign-v51045.js?v=51045layer01" reading-journal-layered-v51043v.js
+          grep -q "home-v51045-runtime.js?v=51045layer01b" reading-journal-layered-v51043v.js
+          grep -q "simplified-redesign-v51045.js?v=51045layer01b" reading-journal-layered-v51043v.js
           grep -q "home-v51045-clean-base-01.txt" home-v51045-runtime.js
           grep -q "home-v51045-clean-base-02.txt" home-v51045-runtime.js
-          grep -q "v5.10.45-home-layer-01" home-v51045-runtime.js
-          grep -q "hero-rank" home-v51045-runtime.js
+          grep -q "v5.10.45-home-layer-01b" home-v51045-runtime.js
+          grep -q "v51045BaseArt" home-v51045-runtime.js
           grep -q "v51045Level" home-v51045-runtime.js
           grep -q "v51045Rank" home-v51045-runtime.js
           grep -q "v51045XpCurrent" home-v51045-runtime.js
@@ -47,4 +47,4 @@ jobs:
           ! grep -q "v51045DailyPages" home-v51045-runtime.js
           ! grep -q "v51045Ch3" home-v51045-runtime.js
           ! grep -q "home-v51045-footer-navigation.b64.txt" home-v51045-runtime.js
-          echo "Home Layer 01 (header + rank) staging wiring OK"
+          echo "Home Layer 01B (full base + rank) staging wiring OK"
