@@ -19,7 +19,7 @@ jobs:
           node --check home-v51045-runtime.js
           node --check service-worker-v51043.js
 
-      - name: Validate expanded Reader Level editor
+      - name: Validate locked Reader Level geometry
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -28,18 +28,24 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045bareditor2' index.html
-          grep -q 'home-v51045-master-clean-level.webp?v=51045bareditor2' index.html
-          grep -q 'home-v51045-ornate-bar-frame.png?v=51045bareditor2' index.html
+          grep -q 'home-v51045-runtime.js?v=51045locked1' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
+          grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-reader-xp-bar-editor2" home-v51045-runtime.js
+          grep -q "v5.10.45-home-reader-xp-locked1" home-v51045-runtime.js
+
+          grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
+          grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
+          grep -q "left:52.50%;top:27.60%" home-v51045-runtime.js
+          grep -q "left:53.40%;top:34.80%" home-v51045-runtime.js
+
+          grep -q "barX:53.60,barY:31.50,barW:27.90,barH:3.30" home-v51045-runtime.js
+          grep -q "fillL:7.80,fillR:0.00,fillY:27.00,fillH:47.00" home-v51045-runtime.js
+          grep -q "titleX:52.50,titleY:27.60" home-v51045-runtime.js
+          grep -q "xpX:53.40,xpY:34.80" home-v51045-runtime.js
+
+          grep -q "READER EDITOR" home-v51045-runtime.js
           grep -q "PURPLE FILL" home-v51045-runtime.js
           grep -q "TITLE + EXP" home-v51045-runtime.js
-          grep -q "barX:53.70,barY:31.50,barW:27.90,barH:3.30" home-v51045-runtime.js
-          grep -q "fillL:11.8,fillR:11.8,fillY:38.0,fillH:22.0" home-v51045-runtime.js
-          grep -q "titleX:51.80,titleY:27.95" home-v51045-runtime.js
-          grep -q "xpX:53.70,xpY:36.15" home-v51045-runtime.js
-          grep -q "READER EDITOR" home-v51045-runtime.js
-          grep -q "COPY VALUES" home-v51045-runtime.js
 
-          echo "Expanded Reader Level editor OK"
+          echo "Locked Reader Level geometry + optional editor OK"
