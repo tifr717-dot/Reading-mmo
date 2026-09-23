@@ -156,7 +156,7 @@ void drawHorizontalDistribution(const GfxRenderer& renderer, const int x, const 
   const int barRight = pctRight - pctW - barGap;
   const int barW = std::max(5, barRight - barX);
   const int visualBarW = std::max(5, barW / 2);
-  constexpr int visualBarH = 4;
+  constexpr int visualBarH = 2;
   char buf[12];
   for (size_t i = 0; i < N; ++i) {
     const int yy = rowTop + static_cast<int>(i) * rowH;
