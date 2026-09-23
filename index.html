@@ -3800,7 +3800,7 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 
 
 <section id="home" class="screen active" aria-label="Reading MMO Home"></section>
-<script src="./home-v51045-runtime.js?v=51045locked1"></script>
+<script src="./home-v51045-runtime.js?v=51045today1"></script>
 
 <section id="reading" class="screen v591-read">
   <div class="v591-read-stage">
@@ -4532,6 +4532,11 @@ function normalizeLibraryRecord(b,i=0){
  };
 }
 
+function v51045DayKey(ts=Date.now()){
+ const d=new Date(Number(ts)||Date.now());
+ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+ return `${y}-${m}-${day}`;
+}
 function fresh(){
  let ms={};materials.forEach(x=>ms[x]=0);
  let eq={};slots.forEach(s=>eq[s]="");
@@ -4544,7 +4549,7 @@ function fresh(){
   history:[],firstFind:{},firstGolden:{},lastCompletionUndo:null,recentQuestNames:[],
   library:starterLibrary(),
   meta:{lastSavedAt:0,lastBackupAt:0},
-  reading:{bookName:"",lastFinishedBook:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,sessionLoggedPages:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false,lastSession:null},
+  reading:{bookName:"",lastFinishedBook:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,sessionLoggedPages:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false,lastSession:null,todayDate:"",todayPages:0,todayGoal:100},
   settings:{style:"Adventurous",currentBookFirst:true,hideSpoilers:true,testMode:false,genre:1,tbr:0,focus:2,atmos:0,format:1,time:2,seasonal:1,chaos:0},
   quests:[
    {role:"Hunt",id:"",name:"",objective:"",difficulty:"Normal",xp:0,status:"Empty",extra:"Mushroom Goblin",structure:""},
@@ -4573,6 +4578,15 @@ function migrate(x){
  n.meta=Object.assign(fresh().meta,x.meta||{});
  n.reading=Object.assign(fresh().reading,x.reading||{});
  n.reading.sessionLoggedPages=Math.max(0,Number(n.reading.sessionLoggedPages)||0);
+ const todayKey=v51045DayKey();
+ if(!n.reading.todayDate){
+  const last=n.reading.lastSession;
+  n.reading.todayDate=todayKey;
+  n.reading.todayPages=(last&&v51045DayKey(last.endedAt)===todayKey)?Math.max(0,Number(last.pages)||0):0;
+ }
+ if(n.reading.todayDate!==todayKey){n.reading.todayDate=todayKey;n.reading.todayPages=0}
+ n.reading.todayPages=Math.max(0,Number(n.reading.todayPages)||0);
+ n.reading.todayGoal=Math.max(1,Number(n.reading.todayGoal)||100);
  n.quests=(x.quests&&x.quests.length===3)?x.quests:fresh().quests;
  n.quests.forEach((q,i)=>{
   if(!q.status)q.status=q.name?"Active":"Empty";
@@ -4592,6 +4606,17 @@ function migrate(x){
  return n;
 }
 let S=migrate(JSON.parse(localStorage.getItem("readingMMO_save_v2")||localStorage.getItem("readingMMO_save")||"null"));
+function ensureTodayReading(){
+ const r=S.reading||(S.reading=fresh().reading),key=v51045DayKey();
+ if(r.todayDate!==key){r.todayDate=key;r.todayPages=0}
+ r.todayPages=Math.max(0,Number(r.todayPages)||0);
+ r.todayGoal=Math.max(1,Number(r.todayGoal)||100);
+ return r;
+}
+function todayReadingState(){
+ const r=ensureTodayReading(),pages=Math.max(0,Number(r.todayPages)||0),goal=Math.max(1,Number(r.todayGoal)||100);
+ return {date:r.todayDate,pages,goal,pct:Math.max(0,Math.min(100,pages/goal*100))};
+}
 function persistSilent(){
  S.meta=S.meta||{};
  S.meta.lastSavedAt=Date.now();
@@ -5289,7 +5314,9 @@ function commitSessionPageDelta(){
  r.sessionStartPage=Math.max(0,Number($("readSessionStartPage")?.value)||Number(r.sessionStartPage)||0);
  const added=Math.max(0,r.currentPage-r.sessionStartPage);
  if(!added)return 0;
+ ensureTodayReading();
  S.pages+=added;
+ r.todayPages=Math.max(0,Number(r.todayPages)||0)+added;
  r.sessionLoggedPages=Math.max(0,Number(r.sessionLoggedPages)||0)+added;
  r.sessionStartPage=r.currentPage;
  recordQuestPageProgress(added);
