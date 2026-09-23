@@ -607,6 +607,389 @@ replace_once(
 )
 
 
+
+# Final dashboard feature pass: whole-book current/total Pages plus live Today preview.
+replace_once(
+    "src/activities/home/RecentBookProgress.h",
+    "uint32_t loadPageNumber(const RecentBook& book);\n",
+    "uint32_t loadPageNumber(const RecentBook& book);\n"
+    "// Loads the whole-book page count when it can be determined.\n"
+    "// Returns 0 when no reliable total is available.\n"
+    "uint32_t loadPageCount(const RecentBook& book);\n",
+)
+
+page_count_helpers = r'''
+uint32_t loadEpubPageCount(const RecentBook& book) {
+  Epub epub(book.path, "/.crosspoint");
+  if (!epub.load(false, true)) {
+    return 0;
+  }
+
+  EpubReaderUtils::Progress progress;
+  if (!EpubReaderUtils::loadProgress(epub, progress, "RBPR") || !progress.hasPageCount || progress.pageCount <= 0 ||
+      progress.spineIndex < 0 || progress.spineIndex >= epub.getSpineItemsCount()) {
+    return 0;
+  }
+
+  const float sectionProgress =
+      std::clamp(static_cast<float>(progress.pageNumber) / static_cast<float>(progress.pageCount), 0.0f, 1.0f);
+  uint32_t referencePage = 0;
+  uint32_t referencePageCount = 0;
+  if (epub.resolveReferencePage(progress.spineIndex, sectionProgress, referencePage, referencePageCount) &&
+      referencePageCount > 0) {
+    return referencePageCount;
+  }
+
+  const size_t completedSpineBytes =
+      progress.spineIndex > 0 ? epub.getCumulativeSpineItemSize(progress.spineIndex - 1) : 0;
+  const size_t currentCumulativeBytes = epub.getCumulativeSpineItemSize(progress.spineIndex);
+  const size_t currentSpineBytes =
+      currentCumulativeBytes > completedSpineBytes ? currentCumulativeBytes - completedSpineBytes : 0;
+  const size_t totalSpineBytes =
+      epub.getSpineItemsCount() > 0 ? epub.getCumulativeSpineItemSize(epub.getSpineItemsCount() - 1) : 0;
+  if (currentSpineBytes == 0 || totalSpineBytes == 0) {
+    return 0;
+  }
+
+  const uint64_t estimatedTotalPages =
+      (static_cast<uint64_t>(totalSpineBytes) * static_cast<uint64_t>(progress.pageCount) +
+       static_cast<uint64_t>(currentSpineBytes) / 2ULL) /
+      static_cast<uint64_t>(currentSpineBytes);
+  const uint64_t precedingPages =
+      (static_cast<uint64_t>(completedSpineBytes) * static_cast<uint64_t>(progress.pageCount) +
+       static_cast<uint64_t>(currentSpineBytes) / 2ULL) /
+      static_cast<uint64_t>(currentSpineBytes);
+  const uint64_t estimatedCurrentPage =
+      precedingPages + static_cast<uint64_t>(std::max(progress.pageNumber, 0)) + 1ULL;
+  const uint64_t safeTotal = std::max(estimatedTotalPages, estimatedCurrentPage);
+  return static_cast<uint32_t>(std::min<uint64_t>(safeTotal, std::numeric_limits<uint32_t>::max()));
+}
+
+uint32_t loadXtcPageCount(const RecentBook& book) {
+  Xtc xtc(book.path, "/.crosspoint");
+  return xtc.load() ? xtc.getPageCount() : 0;
+}
+'''
+
+replace_once(
+    "src/activities/home/RecentBookProgress.cpp",
+    "\n}  // namespace\n\nfloat RecentBookProgress::loadPercent(const RecentBook& book) {",
+    "\n" + page_count_helpers + "\n}  // namespace\n\nfloat RecentBookProgress::loadPercent(const RecentBook& book) {",
+)
+
+page_count_api = r'''
+uint32_t RecentBookProgress::loadPageCount(const RecentBook& book) {
+  if (FsHelpers::hasEpubExtension(book.path)) {
+    return loadEpubPageCount(book);
+  }
+  if (FsHelpers::hasXtcExtension(book.path)) {
+    return loadXtcPageCount(book);
+  }
+  return 0;
+}
+
+'''
+replace_once(
+    "src/activities/home/RecentBookProgress.cpp",
+    "float RecentBookProgress::loadCachedEpubPercent(const RecentBook& book) {",
+    page_count_api + "float RecentBookProgress::loadCachedEpubPercent(const RecentBook& book) {",
+)
+
+# BookStatsActivity keeps the total page count and derives live Today deltas from
+# the in-memory display stats vs. the last committed per-book stats.
+replace_once(
+    "src/activities/reader/BookStatsActivity.h",
+    "  uint32_t currentBookPage = 0;\n",
+    "  uint32_t currentBookPage = 0;\n"
+    "  uint32_t currentBookPageCount = 0;\n"
+    "  uint32_t liveTodayPages = 0;\n"
+    "  uint32_t liveTodayReadingSeconds = 0;\n",
+)
+replace_once(
+    "src/activities/reader/BookStatsActivity.h",
+    """                    const GlobalReadingStats& globalStats, bool returnToHomeOnExit = false);""",
+    """                    const GlobalReadingStats& globalStats, bool returnToHomeOnExit = false,
+                    uint32_t currentBookPageCount = 0);""",
+)
+replace_once(
+    "src/activities/reader/BookStatsActivity.h",
+    """                    const GlobalReadingStats& globalStats, const GlobalReadingStats& allDevicesStats,
+                    bool returnToHomeOnExit = false);""",
+    """                    const GlobalReadingStats& globalStats, const GlobalReadingStats& allDevicesStats,
+                    bool returnToHomeOnExit = false, uint32_t currentBookPageCount = 0);""",
+)
+
+replace_once(
+    "src/activities/reader/BookStatsActivity.cpp",
+    """                                     const GlobalReadingStats& globalStats, const bool returnToHomeOnExit)""",
+    """                                     const GlobalReadingStats& globalStats, const bool returnToHomeOnExit,
+                                     const uint32_t currentBookPageCount)""",
+)
+replace_once(
+    "src/activities/reader/BookStatsActivity.cpp",
+    """                                     const GlobalReadingStats& globalStats, const GlobalReadingStats& allDevicesStats,
+                                     const bool returnToHomeOnExit)""",
+    """                                     const GlobalReadingStats& globalStats, const GlobalReadingStats& allDevicesStats,
+                                     const bool returnToHomeOnExit, const uint32_t currentBookPageCount)""",
+)
+text = read("src/activities/reader/BookStatsActivity.cpp")
+old = """      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds),
+      currentBookPage(currentBookPage) {}"""
+new = """      estimatedTimeLeftSeconds(estimatedTimeLeftSeconds),
+      currentBookPage(currentBookPage),
+      currentBookPageCount(currentBookPageCount) {
+  if (!bookCachePath.empty()) {
+    const BookReadingStats committedStats = BookReadingStats::load(bookCachePath);
+    if (this->stats.totalPagesTurned >= committedStats.totalPagesTurned) {
+      liveTodayPages = this->stats.totalPagesTurned - committedStats.totalPagesTurned;
+    }
+    if (this->stats.totalReadingSeconds >= committedStats.totalReadingSeconds) {
+      liveTodayReadingSeconds = this->stats.totalReadingSeconds - committedStats.totalReadingSeconds;
+    }
+  }
+}"""
+if text.count(old) != 2:
+    raise RuntimeError(f"BookStatsActivity.cpp: expected 2 dashboard constructor tails, found {text.count(old)}")
+write("src/activities/reader/BookStatsActivity.cpp", text.replace(old, new))
+
+# Saved/home page totals.
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """  const uint32_t currentBookPage =
+      highlightedBookIdx >= 0 ? RecentBookProgress::loadPageNumber(recentBooks[highlightedBookIdx]) : 0;
+  if (showAllDevicesStats) {""",
+    """  const uint32_t currentBookPage =
+      highlightedBookIdx >= 0 ? RecentBookProgress::loadPageNumber(recentBooks[highlightedBookIdx]) : 0;
+  const uint32_t currentBookPageCount =
+      highlightedBookIdx >= 0 ? RecentBookProgress::loadPageCount(recentBooks[highlightedBookIdx]) : 0;
+  if (showAllDevicesStats) {""",
+)
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """                                                               currentBookPage, globalStats, allDevicesGlobalStats, true),""",
+    """                                                               currentBookPage, globalStats, allDevicesGlobalStats, true,
+                                                               currentBookPageCount),""",
+)
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """                                            currentBookProgressPercent, false, 0, currentBookPage, globalStats, true),""",
+    """                                            currentBookProgressPercent, false, 0, currentBookPage, globalStats, true,
+                                            currentBookPageCount),""",
+)
+
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """  const RecentBook statsBook{path, title, {}, {}};
+  const uint32_t currentBookPage = validEpub ? RecentBookProgress::loadPageNumber(statsBook) : 0;
+  const GlobalReadingStats deviceStats = GlobalReadingStats::load();""",
+    """  const RecentBook statsBook{path, title, {}, {}};
+  const uint32_t currentBookPage = validEpub ? RecentBookProgress::loadPageNumber(statsBook) : 0;
+  const uint32_t currentBookPageCount = validEpub ? RecentBookProgress::loadPageCount(statsBook) : 0;
+  const GlobalReadingStats deviceStats = GlobalReadingStats::load();""",
+)
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """                                                currentBookPage, deviceStats,
+                                                GlobalReadingStats::loadAggregated(deviceStats));""",
+    """                                                currentBookPage, deviceStats,
+                                                GlobalReadingStats::loadAggregated(deviceStats), false,
+                                                currentBookPageCount);""",
+)
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """                                              currentBookPage, deviceStats);""",
+    """                                              currentBookPage, deviceStats, false, currentBookPageCount);""",
+)
+
+replace_once(
+    "src/activities/ActivityManager.cpp",
+    """  float progress = -1.0f;
+  uint32_t currentBookPage = 0;
+  if (source == FrontlightBookSource::LastBook) {""",
+    """  float progress = -1.0f;
+  uint32_t currentBookPage = 0;
+  uint32_t currentBookPageCount = 0;
+  if (source == FrontlightBookSource::LastBook) {""",
+)
+replace_once(
+    "src/activities/ActivityManager.cpp",
+    """    progress = RecentBookProgress::loadCachedEpubPercent(book);
+    currentBookPage = RecentBookProgress::loadPageNumber(book);""",
+    """    progress = RecentBookProgress::loadCachedEpubPercent(book);
+    currentBookPage = RecentBookProgress::loadPageNumber(book);
+    currentBookPageCount = RecentBookProgress::loadPageCount(book);""",
+)
+replace_once(
+    "src/activities/ActivityManager.cpp",
+    """                                             0, currentBookPage, global,
+                                             GlobalReadingStats::loadAggregated(global));""",
+    """                                             0, currentBookPage, global,
+                                             GlobalReadingStats::loadAggregated(global), false,
+                                             currentBookPageCount);""",
+)
+replace_once(
+    "src/activities/ActivityManager.cpp",
+    """                                                                        currentBookPage, global);""",
+    """                                                                        currentBookPage, global, false,
+                                                                        currentBookPageCount);""",
+)
+
+replace_once(
+    "src/activities/boot_sleep/SleepActivity.cpp",
+    """  float progressPercent = -1.0f;
+  uint32_t currentBookPage = 0;""",
+    """  float progressPercent = -1.0f;
+  uint32_t currentBookPage = 0;
+  uint32_t currentBookPageCount = 0;""",
+)
+replace_once(
+    "src/activities/boot_sleep/SleepActivity.cpp",
+    """    progressPercent = RecentBookProgress::loadPercent(book);
+    currentBookPage = RecentBookProgress::loadPageNumber(book);""",
+    """    progressPercent = RecentBookProgress::loadPercent(book);
+    currentBookPage = RecentBookProgress::loadPageNumber(book);
+    currentBookPageCount = RecentBookProgress::loadPageCount(book);""",
+)
+
+# Live EPUB current/total.
+replace_once(
+    "src/activities/reader/EpubReaderActivity.h",
+    "  uint32_t getCurrentBookPageForStats() const;\n",
+    "  uint32_t getCurrentBookPageForStats() const;\n  uint32_t getCurrentBookPageCountForStats() const;\n",
+)
+
+epub_page_count_fn = r'''
+uint32_t EpubReaderActivity::getCurrentBookPageCountForStats() const {
+  const int sectionPageCount = section ? section->estimatedTotalPages() : 0;
+  if (activeFootnotePreview || !epub || !section || sectionPageCount <= 0 || section->currentPage < 0 ||
+      currentSpineIndex < 0 || currentSpineIndex >= epub->getSpineItemsCount()) {
+    return 0;
+  }
+
+  const float sectionProgress =
+      std::clamp(static_cast<float>(section->currentPage) / static_cast<float>(sectionPageCount), 0.0f, 1.0f);
+  uint32_t referencePage = 0;
+  uint32_t referencePageCount = 0;
+  if (epub->resolveReferencePage(currentSpineIndex, sectionProgress, referencePage, referencePageCount) &&
+      referencePageCount > 0) {
+    return referencePageCount;
+  }
+
+  const size_t completedSpineBytes =
+      currentSpineIndex > 0 ? epub->getCumulativeSpineItemSize(currentSpineIndex - 1) : 0;
+  const size_t currentCumulativeBytes = epub->getCumulativeSpineItemSize(currentSpineIndex);
+  const size_t currentSpineBytes =
+      currentCumulativeBytes > completedSpineBytes ? currentCumulativeBytes - completedSpineBytes : 0;
+  const size_t totalSpineBytes =
+      epub->getSpineItemsCount() > 0 ? epub->getCumulativeSpineItemSize(epub->getSpineItemsCount() - 1) : 0;
+  if (currentSpineBytes == 0 || totalSpineBytes == 0) {
+    return 0;
+  }
+
+  const uint64_t estimatedTotalPages =
+      (static_cast<uint64_t>(totalSpineBytes) * static_cast<uint64_t>(sectionPageCount) +
+       static_cast<uint64_t>(currentSpineBytes) / 2ULL) /
+      static_cast<uint64_t>(currentSpineBytes);
+  const uint32_t currentBookPage = getCurrentBookPageForStats();
+  const uint64_t safeTotal = std::max<uint64_t>(estimatedTotalPages, currentBookPage);
+  return static_cast<uint32_t>(std::min<uint64_t>(safeTotal, std::numeric_limits<uint32_t>::max()));
+}
+
+'''
+replace_once(
+    "src/activities/reader/EpubReaderActivity.cpp",
+    """  return static_cast<uint32_t>(section->currentPage + 1);
+}
+
+void EpubReaderActivity::pauseReadingPaceTimer(const char* reason) {""",
+    """  return static_cast<uint32_t>(section->currentPage + 1);
+}
+
+""" + epub_page_count_fn + """void EpubReaderActivity::pauseReadingPaceTimer(const char* reason) {""",
+)
+
+# Include active-session page turns in the preview BookReadingStats. The time
+# preview already exists upstream, so BookStatsActivity can derive today's
+# in-memory deltas by comparing preview stats to committed stats on disk.
+text = read("src/activities/reader/EpubReaderActivity.cpp")
+old = """      BookReadingStats displayStats = stats;
+      if (SETTINGS.shouldTrackReadingStats()) {"""
+new = """      BookReadingStats displayStats = stats;
+      if (SETTINGS.shouldTrackReadingStats()) {
+        displayStats.totalPagesTurned =
+            displayStats.totalPagesTurned > UINT32_MAX - sessionForwardPages
+                ? UINT32_MAX
+                : displayStats.totalPagesTurned + sessionForwardPages;"""
+if text.count(old) != 1:
+    raise RuntimeError(f"EpubReaderActivity.cpp: expected 1 menu stats preview block, found {text.count(old)}")
+text = text.replace(old, new, 1)
+old = """  BookReadingStats displayStats = stats;
+  if (SETTINGS.shouldTrackReadingStats()) {"""
+new = """  BookReadingStats displayStats = stats;
+  if (SETTINGS.shouldTrackReadingStats()) {
+    displayStats.totalPagesTurned =
+        displayStats.totalPagesTurned > UINT32_MAX - sessionForwardPages
+            ? UINT32_MAX
+            : displayStats.totalPagesTurned + sessionForwardPages;"""
+if text.count(old) != 1:
+    raise RuntimeError(f"EpubReaderActivity.cpp: expected 1 frontlight stats preview block, found {text.count(old)}")
+write("src/activities/reader/EpubReaderActivity.cpp", text.replace(old, new, 1))
+
+# Add total-page argument to all live EPUB stats constructors.
+replace_once(
+    "src/activities/reader/EpubReaderActivity.cpp",
+    """                                                estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats,
+                                                displayAllDevicesStats),""",
+    """                                                estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats,
+                                                displayAllDevicesStats, false, getCurrentBookPageCountForStats()),""",
+)
+replace_once(
+    "src/activities/reader/EpubReaderActivity.cpp",
+    """                                                estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats),""",
+    """                                                estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats,
+                                                false, getCurrentBookPageCountForStats()),""",
+)
+replace_once(
+    "src/activities/reader/EpubReaderActivity.cpp",
+    """        hasEstimatedTimeLeft, estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats,
+        GlobalReadingStats::loadAggregated(globalStats));""",
+    """        hasEstimatedTimeLeft, estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats,
+        GlobalReadingStats::loadAggregated(globalStats), false, getCurrentBookPageCountForStats());""",
+)
+replace_once(
+    "src/activities/reader/EpubReaderActivity.cpp",
+    """                                              estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats);""",
+    """                                              estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats,
+                                              false, getCurrentBookPageCountForStats());""",
+)
+
+# Live XTC preview and exact total.
+replace_once(
+    "src/activities/reader/XtcReaderActivity.cpp",
+    """  BookReadingStats displayStats = stats;
+  if (SETTINGS.shouldTrackReadingStats()) {""",
+    """  BookReadingStats displayStats = stats;
+  if (SETTINGS.shouldTrackReadingStats()) {
+    displayStats.totalPagesTurned =
+        displayStats.totalPagesTurned > UINT32_MAX - sessionForwardPages
+            ? UINT32_MAX
+            : displayStats.totalPagesTurned + sessionForwardPages;""",
+)
+replace_once(
+    "src/activities/reader/XtcReaderActivity.cpp",
+    """                                                currentBookPage, globalStats,
+                                                GlobalReadingStats::loadAggregated(globalStats));""",
+    """                                                currentBookPage, globalStats,
+                                                GlobalReadingStats::loadAggregated(globalStats), false, pageCount);""",
+)
+replace_once(
+    "src/activities/reader/XtcReaderActivity.cpp",
+    """                                              getCurrentBookProgressPercent(), false, 0, currentBookPage, globalStats);""",
+    """                                              getCurrentBookProgressPercent(), false, 0, currentBookPage, globalStats,
+                                              false, pageCount);""",
+)
+
+
 # Use the dense dashboard renderer for the X4 Pro per-book page and Reading Stats sleep screen.
 replace_once(
     "src/activities/reader/BookStatsActivity.cpp",
@@ -622,7 +1005,8 @@ replace_once(
     """    case Page::PerBook:
 #if defined(FREEINK_DEVICE_X4PRO) && FREEINK_DEVICE_X4PRO
       renderX4ProStatsDashboard(renderer, &mappedInput, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
-                                estimatedTimeLeftSeconds, currentBookPage, globalStats, true, hasEditableBook(), true);
+                                estimatedTimeLeftSeconds, currentBookPage, currentBookPageCount, globalStats,
+                                liveTodayPages, liveTodayReadingSeconds, true, hasEditableBook(), true);
 #else
       renderPerBookStatsPage(renderer, &mappedInput, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
                              estimatedTimeLeftSeconds, currentBookPage, true, hasEditableBook(), true);
@@ -650,7 +1034,7 @@ replace_once(
     """#if defined(FREEINK_DEVICE_X4PRO) && FREEINK_DEVICE_X4PRO
   const GlobalReadingStats deviceStats = GlobalReadingStats::load();
   renderX4ProStatsDashboard(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0, currentBookPage,
-                            deviceStats, false, false, false);
+                            currentBookPageCount, deviceStats, 0, 0, false, false, false);
 #else
   if (!halClock.isAvailable()) {
     const GlobalReadingStats deviceStats = GlobalReadingStats::load();
