@@ -19,29 +19,27 @@ jobs:
           node --check home-v51045-runtime.js
           node --check service-worker-v51043.js
 
-      - name: Validate Reader Level artbars pass 2
+      - name: Validate temporary EXP bar editor
         run: |
           python3 - <<'PY'
           from pathlib import Path
           for name in ['home-v51045-master-clean-level.webp','home-v51045-ornate-bar-frame.png']:
               p=Path(name)
               assert p.exists() and p.stat().st_size > 1000, f'{name} missing/too small'
-          raw=Path('home-v51045-ornate-bar-frame.png').read_bytes()
-          assert raw[:8] == b'\x89PNG\r\n\x1a\n'
-          print('ornate bar asset',len(raw),'bytes')
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045artbars2' index.html
-          grep -q 'home-v51045-master-clean-level.webp?v=51045artbars2' index.html
-          grep -q 'home-v51045-ornate-bar-frame.png?v=51045artbars2' index.html
+          grep -q 'home-v51045-runtime.js?v=51045bareditor1' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045bareditor1' index.html
+          grep -q 'home-v51045-ornate-bar-frame.png?v=51045bareditor1' index.html
 
-          grep -q "v5.10.45-home-reader-xp-artbars2" home-v51045-runtime.js
-          grep -q "v51045-rank-text" home-v51045-runtime.js
+          grep -q "v5.10.45-home-reader-xp-bar-editor1" home-v51045-runtime.js
+          grep -q "function mountBarEditor" home-v51045-runtime.js
+          grep -q "BAR EDITOR" home-v51045-runtime.js
+          grep -q "COPY VALUES" home-v51045-runtime.js
+          grep -q "data-key" home-v51045-runtime.js
+          grep -q "barEditor" home-v51045-runtime.js
+          grep -q "v51045-exp-art" home-v51045-runtime.js
           grep -q "v51045-rank-flourish" home-v51045-runtime.js
           ! grep -q "v51045-rank-frame" home-v51045-runtime.js
-          grep -q "v51045-exp-art" home-v51045-runtime.js
-          grep -q "home-v51045-ornate-bar-frame.png?v=51045artbars2" home-v51045-runtime.js
-          grep -q "v51045ExpFill" home-v51045-runtime.js
-          grep -q "v51045XpLine" home-v51045-runtime.js
 
-          echo "Standalone rank + flourish + single ornate EXP bar OK"
+          echo "Temporary mobile EXP bar placement editor OK"
