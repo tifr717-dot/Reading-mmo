@@ -559,15 +559,25 @@ replace_once(
 )
 replace_once(
     "src/activities/reader/XtcReaderActivity.cpp",
-    """  stats.save(xtc->getCachePath());
-  globalStats.save();""",
-    """  if (hasSessionStartLocalDateTime && (sessionForwardPages > 0 || elapsedSecs >= 10)) {
+    """    if (elapsedSecs >= 120 && !stats.startDateManual && !stats.startDate.isValid() && hasSessionStartLocalDateTime) {
+      stats.startDate = sessionStartLocalDateTime.date;
+    }
+  }
+  stats.save(xtc->getCachePath());
+  globalStats.save();
+}""",
+    """    if (elapsedSecs >= 120 && !stats.startDateManual && !stats.startDate.isValid() && hasSessionStartLocalDateTime) {
+      stats.startDate = sessionStartLocalDateTime.date;
+    }
+  }
+  if (hasSessionStartLocalDateTime && (sessionForwardPages > 0 || elapsedSecs >= 10)) {
     ReadingDailyStats dailyStats = ReadingDailyStats::load();
     dailyStats.record(sessionStartLocalDateTime.date, sessionForwardPages, elapsedSecs >= 10 ? elapsedSecs : 0);
     dailyStats.save();
   }
   stats.save(xtc->getCachePath());
-  globalStats.save();""",
+  globalStats.save();
+}""",
 )
 
 
