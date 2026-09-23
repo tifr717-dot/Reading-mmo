@@ -908,32 +908,9 @@ void EpubReaderActivity::pauseReadingPaceTimer(const char* reason) {""",
 """ + epub_page_count_fn + """void EpubReaderActivity::pauseReadingPaceTimer(const char* reason) {""",
 )
 
-# Include active-session page turns in the preview BookReadingStats. The time
-# preview already exists upstream, so BookStatsActivity can derive today's
-# in-memory deltas by comparing preview stats to committed stats on disk.
-text = read("src/activities/reader/EpubReaderActivity.cpp")
-old = """      BookReadingStats displayStats = stats;
-      if (SETTINGS.shouldTrackReadingStats()) {"""
-new = """      BookReadingStats displayStats = stats;
-      if (SETTINGS.shouldTrackReadingStats()) {
-        displayStats.totalPagesTurned =
-            displayStats.totalPagesTurned > UINT32_MAX - sessionForwardPages
-                ? UINT32_MAX
-                : displayStats.totalPagesTurned + sessionForwardPages;"""
-if text.count(old) != 1:
-    raise RuntimeError(f"EpubReaderActivity.cpp: expected 1 menu stats preview block, found {text.count(old)}")
-text = text.replace(old, new, 1)
-old = """  BookReadingStats displayStats = stats;
-  if (SETTINGS.shouldTrackReadingStats()) {"""
-new = """  BookReadingStats displayStats = stats;
-  if (SETTINGS.shouldTrackReadingStats()) {
-    displayStats.totalPagesTurned =
-        displayStats.totalPagesTurned > UINT32_MAX - sessionForwardPages
-            ? UINT32_MAX
-            : displayStats.totalPagesTurned + sessionForwardPages;"""
-if text.count(old) != 1:
-    raise RuntimeError(f"EpubReaderActivity.cpp: expected 1 frontlight stats preview block, found {text.count(old)}")
-write("src/activities/reader/EpubReaderActivity.cpp", text.replace(old, new, 1))
+# The active reader's in-memory BookReadingStats already includes forward page turns.
+# Reading-time preview is added by upstream; BookStatsActivity derives live Today
+# deltas by comparing those in-memory stats with the last committed stats on disk.
 
 # Add total-page argument to all live EPUB stats constructors.
 replace_once(
@@ -963,18 +940,7 @@ replace_once(
                                               false, getCurrentBookPageCountForStats());""",
 )
 
-# Live XTC preview and exact total.
-replace_once(
-    "src/activities/reader/XtcReaderActivity.cpp",
-    """  BookReadingStats displayStats = stats;
-  if (SETTINGS.shouldTrackReadingStats()) {""",
-    """  BookReadingStats displayStats = stats;
-  if (SETTINGS.shouldTrackReadingStats()) {
-    displayStats.totalPagesTurned =
-        displayStats.totalPagesTurned > UINT32_MAX - sessionForwardPages
-            ? UINT32_MAX
-            : displayStats.totalPagesTurned + sessionForwardPages;""",
-)
+# Live XTC exact total; in-memory stats already contain live page turns.
 replace_once(
     "src/activities/reader/XtcReaderActivity.cpp",
     """                                                currentBookPage, globalStats,
