@@ -1,7 +1,7 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-reader-xp-bar-editor2';
-const MASTER='./home-v51045-master-clean-level.webp?v=51045bareditor2';
+const BUILD='v5.10.45-home-reader-xp-locked1';
+const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
 function style(){
@@ -19,17 +19,17 @@ function style(){
     ".v51045-canvas{position:absolute;top:0;left:50%;width:max(100%,calc(100dvh * 2 / 3));aspect-ratio:2/3;transform:translateX(-50%);transform-origin:top center}"+
     ".v51045-master{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;z-index:1;pointer-events:none}"+
     ".v51045-level-number{position:absolute;z-index:4;left:34.25%;top:32.15%;width:9.5%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(20px,5vw,34px);line-height:1;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
-    ".v51045-rank-text{position:absolute;z-index:4;left:51.80%;top:27.95%;width:23%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(15px,3.15vw,22px);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
-    ".v51045-rank-flourish{position:absolute;z-index:3;left:51.80%;top:28.95%;width:23.5%;height:12px;transform:translateX(-50%);pointer-events:none}"+
+    ".v51045-rank-text{position:absolute;z-index:4;left:52.50%;top:27.60%;width:23%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(15px,3.15vw,22px);line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
+    ".v51045-rank-flourish{position:absolute;z-index:3;left:52.50%;top:28.60%;width:23.5%;height:12px;transform:translateX(-50%);pointer-events:none}"+
     ".v51045-rank-flourish::before,.v51045-rank-flourish::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:linear-gradient(90deg,rgba(116,78,49,0),rgba(116,78,49,.92),rgba(116,78,49,0));transform:translateY(-50%)}"+
     ".v51045-rank-flourish::before{left:0}.v51045-rank-flourish::after{right:0}"+
     ".v51045-rank-flourish i,.v51045-rank-flourish b{position:absolute;top:50%;width:7px;height:7px;background:linear-gradient(180deg,rgba(240,220,182,.96) 0%,rgba(185,146,94,.94) 100%);border:1px solid rgba(108,73,39,.84);transform:translateY(-50%) rotate(45deg);box-shadow:0 0 0 1px rgba(255,240,211,.22);display:block}"+
     ".v51045-rank-flourish i{left:43.5%}.v51045-rank-flourish b{right:43.5%}"+
-    ".v51045-exp-art{position:absolute;z-index:3;left:53.70%;top:31.50%;width:27.90%;height:3.30%;transform:translate(-50%,-50%);pointer-events:none}"+
+    ".v51045-exp-art{position:absolute;z-index:3;left:53.60%;top:31.50%;width:27.90%;height:3.30%;transform:translate(-50%,-50%);pointer-events:none}"+
     ".v51045-exp-art img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;z-index:1}"+
-    ".v51045-exp-fill-clip{position:absolute;z-index:2;left:11.8%;right:11.8%;top:38%;height:22%;overflow:hidden;border-radius:999px}"+
+    ".v51045-exp-fill-clip{position:absolute;z-index:2;left:7.80%;right:0.00%;top:27.00%;height:47.00%;overflow:hidden;border-radius:999px}"+
     ".v51045-exp-fill{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(180deg,#d7a0df 0%,#c17fce 48%,#9f5db3 100%);box-shadow:inset 0 1px rgba(255,255,255,.36),0 0 3px rgba(177,106,192,.18);transition:width .18s ease}"+
-    ".v51045-xp-line{position:absolute;z-index:4;left:53.70%;top:36.15%;width:34%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(9px,2.0vw,14px);line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
+    ".v51045-xp-line{position:absolute;z-index:4;left:53.40%;top:34.80%;width:34%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(9px,2.0vw,14px);line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-bar-editor{position:fixed;z-index:9999;left:10px;top:92px;width:min(310px,calc(100vw - 20px));background:rgba(37,20,29,.96);border:1px solid #b88a53;border-radius:12px;color:#f4e5c8;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none}"+
     ".v51045-bar-editor[hidden]{display:none!important}"+
     ".v51045-editor-head{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:#4b293d;border-bottom:1px solid #b88a53;border-radius:11px 11px 0 0;cursor:move;user-select:none}"+
@@ -119,10 +119,10 @@ function mountBarEditor(){
   if(!bar||!clip||!title||!xp)return;
 
   const state={
-    barX:53.70,barY:31.50,barW:27.90,barH:3.30,
-    fillL:11.8,fillR:11.8,fillY:38.0,fillH:22.0,
-    titleX:51.80,titleY:27.95,
-    xpX:53.70,xpY:36.15
+    barX:53.60,barY:31.50,barW:27.90,barH:3.30,
+    fillL:7.80,fillR:0.00,fillY:27.00,fillH:47.00,
+    titleX:52.50,titleY:27.60,
+    xpX:53.40,xpY:34.80
   };
 
   const groups=[
@@ -345,7 +345,7 @@ async function mount(){
       '<div id="v51045Rank" class="v51045-rank-text" aria-label="Reader rank"></div>'+
       '<div class="v51045-rank-flourish" aria-hidden="true"><i></i><b></b></div>'+
       '<div class="v51045-exp-art" aria-label="Reader experience progress">'+
-        '<img src="./home-v51045-ornate-bar-frame.png?v=51045bareditor2" alt="" aria-hidden="true">'+
+        '<img src="./home-v51045-ornate-bar-frame.png?v=51045locked1" alt="" aria-hidden="true">'+
         '<div class="v51045-exp-fill-clip"><i id="v51045ExpFill" class="v51045-exp-fill"></i></div>'+
       '</div>'+
       '<div id="v51045XpLine" class="v51045-xp-line" aria-label="Reader experience"></div>'+
