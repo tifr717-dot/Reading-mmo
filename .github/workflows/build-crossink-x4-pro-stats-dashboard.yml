@@ -1,0 +1,142 @@
+name: Build CrossInk X4 Pro Stats Dashboard
+
+on:
+  push:
+    branches:
+      - crossink-x4-pro-stats-dashboard
+    paths:
+      - ".github/workflows/build-crossink-x4-pro-stats-dashboard.yml"
+      - "firmware/crossink-x4-pro-pages/apply_pages_x4pro.py"
+      - "firmware/crossink-x4-pro-pages/dashboard_overlay/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CROSSINK_COMMIT: 7a092e8822c9c90e8beecacd317acc13d3e24dfb
+  FREEINK_COMMIT: 9f4d3f9ca675e64cc9d616081f39a33cdefce57e
+  BUILD_VERSION: 1.5.1-dashboard-dev1
+  BUILD_ENV: x4-pro
+
+jobs:
+  build-dashboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout dashboard inputs
+        uses: actions/checkout@v6
+
+      - name: Fetch pinned CrossInk X4 Pro source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone https://github.com/uxjulia/CrossInk.git crossink
+          cd crossink
+          git checkout --detach "$CROSSINK_COMMIT"
+          git submodule update --init --recursive
+          test "$(git rev-parse HEAD)" = "$CROSSINK_COMMIT"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$FREEINK_COMMIT"
+          grep -q '^\[env:x4-pro\]' platformio.ini
+          grep -q 'FREEINK_DEVICE_X4PRO=1' platformio.ini
+          sha256sum platformio.ini partitions.csv > "$GITHUB_WORKSPACE/protected-x4-pro.sha256"
+
+      - name: Apply Pages and dashboard transforms
+        shell: bash
+        run: |
+          set -euo pipefail
+          python firmware/crossink-x4-pro-pages/apply_pages_x4pro.py
+          cd crossink
+          git diff --check
+          grep -q 'STR_STATS_PAGES_LBL: "Pages"' lib/I18n/translations/english.yaml
+          grep -q 'ReadingDailyStats' src/activities/reader/EpubReaderActivity.cpp
+          grep -q 'sessionForwardPages' src/activities/reader/XtcReaderActivity.h
+          test -f src/activities/reader/ReadingDailyStats.cpp
+          git diff --stat
+
+      - name: Verify X4 Pro hardware inputs untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd crossink
+          sha256sum -c "$GITHUB_WORKSPACE/protected-x4-pro.sha256"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$FREEINK_COMMIT"
+          git diff --exit-code -- platformio.ini partitions.csv freeink-sdk
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-crossink-x4-pro-dashboard-${{ env.CROSSINK_COMMIT }}
+          restore-keys: |
+            ${{ runner.os }}-crossink-x4-pro-
+
+      - name: Install PlatformIO Core
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv pip install --system -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.1.19.zip
+          pio --version
+
+      - name: Build X4 Pro dashboard firmware
+        shell: bash
+        env:
+          CROSSINK_RELEASE_VERSION: ${{ env.BUILD_VERSION }}
+        run: |
+          set -euo pipefail
+          cd crossink
+          pio run -j1 -e "$BUILD_ENV" | tee "$GITHUB_WORKSPACE/x4-pro-dashboard-build.log"
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          mapfile -t versioned < <(find ".pio/build/$BUILD_ENV" -maxdepth 1 -type f -name 'firmware-x4-pro-v*.bin' -print | sort)
+          if [ "${#versioned[@]}" -ne 1 ]; then
+            echo "Expected one versioned X4 Pro firmware, found ${#versioned[@]}"
+            printf '%s\n' "${versioned[@]}"
+            exit 1
+          fi
+          cp "${versioned[0]}" "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.bin"
+          sha256sum "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.bin" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
+          stat -c '%s' "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.bin" > "$GITHUB_WORKSPACE/out/FIRMWARE-SIZE.txt"
+
+      - name: Write build info
+        shell: bash
+        run: |
+          set -euo pipefail
+          firmware="$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.bin"
+          {
+            echo "CrossInk X4 Pro Reading Stats Dashboard development build"
+            echo "CrossInk commit: $CROSSINK_COMMIT"
+            echo "FreeInk SDK commit: $FREEINK_COMMIT"
+            echo "Build version: $BUILD_VERSION"
+            echo "Firmware bytes: $(stat -c '%s' "$firmware")"
+            echo "Firmware SHA-256: $(sha256sum "$firmware" | awk '{print $1}')"
+            echo
+            echo "Development features:"
+            echo "- current whole-book Pages plumbing"
+            echo "- lifetime Pages restored"
+            echo "- separate 14-day daily analytics store"
+            echo "- EPUB/XTC session page and reading-time capture"
+            echo "- global_stats.bin format intentionally unchanged"
+          } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
+
+      - name: Upload dashboard artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: crossink-x4-pro-dashboard-dev1
+          path: |
+            out/firmware-x4-pro-v1.5.1-dashboard-dev1.bin
+            out/SHA256SUMS.txt
+            out/FIRMWARE-SIZE.txt
+            out/BUILD-INFO.txt
+            x4-pro-dashboard-build.log
+          if-no-files-found: error
+          retention-days: 14
