@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045today1' index.html
+          grep -q 'home-v51045-runtime.js?v=51045today2' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-today-progress-editor1" home-v51045-runtime.js
+          grep -q "v5.10.45-home-today-progress-editor2" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -52,6 +52,12 @@ jobs:
           grep -q "left:18.15%;top:69.57%" home-v51045-runtime.js
           grep -q "left:27.50%;top:66.00%;width:18%" home-v51045-runtime.js
           grep -q "ringX:11.90,ringY:65.40,ringSize:12.50,ringHole:55.00" home-v51045-runtime.js
+          grep -q "previewFill:Math.round(live.pct)" home-v51045-runtime.js
+          grep -q "\['ringX','X / Left',0,90,.1\]" home-v51045-runtime.js
+          grep -q "\['ringY','Y / Top',0,92,.1\]" home-v51045-runtime.js
+          grep -q "\['previewFill','Preview fill',0,100,1\]" home-v51045-runtime.js
+          grep -q "data-preview-fill=\"100\"" home-v51045-runtime.js
+          grep -q "ring.style.setProperty('--pct',state.previewFill+'%')" home-v51045-runtime.js
           grep -q "pctX:18.15,pctY:69.57,pctSize:2.20" home-v51045-runtime.js
           grep -q "pagesX:27.50,pagesY:66.00,pagesW:18.00,pagesSize:1.90" home-v51045-runtime.js
           grep -q "TODAY EDITOR" home-v51045-runtime.js
