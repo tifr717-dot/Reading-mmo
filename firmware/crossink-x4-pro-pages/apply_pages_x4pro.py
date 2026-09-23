@@ -435,6 +435,32 @@ replace_once(
                                               estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats);""",
 )
 
+# Home frontlight drawer can construct BookStatsActivity independently of the normal Reading Stats button.
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """  const BookReadingStats bookStats = validEpub ? BookReadingStats::load(cachePath) : BookReadingStats{};
+  const GlobalReadingStats deviceStats = GlobalReadingStats::load();""",
+    """  const BookReadingStats bookStats = validEpub ? BookReadingStats::load(cachePath) : BookReadingStats{};
+  const RecentBook statsBook{path, title, {}, {}};
+  const uint32_t currentBookPage = validEpub ? RecentBookProgress::loadPageNumber(statsBook) : 0;
+  const GlobalReadingStats deviceStats = GlobalReadingStats::load();""",
+)
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """    return makeUniqueNoThrow<BookStatsActivity>(renderer, mappedInput, title, cachePath, bookStats, progress, false, 0,
+                                                deviceStats, GlobalReadingStats::loadAggregated(deviceStats));""",
+    """    return makeUniqueNoThrow<BookStatsActivity>(renderer, mappedInput, title, cachePath, bookStats, progress, false, 0,
+                                                currentBookPage, deviceStats,
+                                                GlobalReadingStats::loadAggregated(deviceStats));""",
+)
+replace_once(
+    "src/activities/home/HomeActivity.cpp",
+    """  return makeUniqueNoThrow<BookStatsActivity>(renderer, mappedInput, title, cachePath, bookStats, progress, false, 0,
+                                              deviceStats);""",
+    """  return makeUniqueNoThrow<BookStatsActivity>(renderer, mappedInput, title, cachePath, bookStats, progress, false, 0,
+                                              currentBookPage, deviceStats);""",
+)
+
 # ActivityManager frontlight fallback can also construct BookStatsActivity.
 replace_once(
     "src/activities/ActivityManager.cpp",
