@@ -155,14 +155,16 @@ void drawHorizontalDistribution(const GfxRenderer& renderer, const int x, const 
   const int pctRight = x + w - 7;
   const int barRight = pctRight - pctW - barGap;
   const int barW = std::max(5, barRight - barX);
-  const int visualBarW = std::max(5, (barW * 2) / 3);
+  const int visualBarW = std::max(5, barW / 2);
+  constexpr int visualBarH = 4;
   char buf[12];
   for (size_t i = 0; i < N; ++i) {
     const int yy = rowTop + static_cast<int>(i) * rowH;
     renderer.drawText(SMALL_FONT_ID, x + 7, yy, I18N.get(labels[i]));
     if (maxValue > 0 && values[i] > 0) {
       const int fill = std::max(2, static_cast<int>((static_cast<uint64_t>(visualBarW) * values[i]) / maxValue));
-      renderer.fillRect(barX, yy + 6, fill, std::max(2, rowH - 13), true);
+      const int barY = yy + std::max(4, (rowH - visualBarH) / 2);
+      renderer.fillRect(barX, barY, fill, visualBarH, true);
     }
     const unsigned pct = total > 0 ? static_cast<unsigned>((values[i] * 100ULL + total / 2ULL) / total) : 0;
     snprintf(buf, sizeof(buf), "%u%%", pct);
