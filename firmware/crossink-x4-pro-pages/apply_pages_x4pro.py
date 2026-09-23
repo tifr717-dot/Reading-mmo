@@ -435,6 +435,42 @@ replace_once(
                                               estimatedTimeLeftSeconds, getCurrentBookPageForStats(), globalStats);""",
 )
 
+# ActivityManager frontlight fallback can also construct BookStatsActivity.
+replace_once(
+    "src/activities/ActivityManager.cpp",
+    """  BookReadingStats bookStats;
+  float progress = -1.0f;
+  if (source == FrontlightBookSource::LastBook) {""",
+    """  BookReadingStats bookStats;
+  float progress = -1.0f;
+  uint32_t currentBookPage = 0;
+  if (source == FrontlightBookSource::LastBook) {""",
+)
+replace_once(
+    "src/activities/ActivityManager.cpp",
+    """    const RecentBook book{context.bookPath, context.bookTitle, {}, {}};
+    progress = RecentBookProgress::loadCachedEpubPercent(book);""",
+    """    const RecentBook book{context.bookPath, context.bookTitle, {}, {}};
+    progress = RecentBookProgress::loadCachedEpubPercent(book);
+    currentBookPage = RecentBookProgress::loadPageNumber(book);""",
+)
+replace_once(
+    "src/activities/ActivityManager.cpp",
+    """        makeUniqueNoThrow<BookStatsActivity>(renderer, mappedInput, statsTitle, cachePath, bookStats, progress, false,
+                                             0, global, GlobalReadingStats::loadAggregated(global));""",
+    """        makeUniqueNoThrow<BookStatsActivity>(renderer, mappedInput, statsTitle, cachePath, bookStats, progress, false,
+                                             0, currentBookPage, global,
+                                             GlobalReadingStats::loadAggregated(global));""",
+)
+replace_once(
+    "src/activities/ActivityManager.cpp",
+    """    context.readingStatsActivity = makeUniqueNoThrow<BookStatsActivity>(renderer, mappedInput, statsTitle, cachePath,
+                                                                        bookStats, progress, false, 0, global);""",
+    """    context.readingStatsActivity = makeUniqueNoThrow<BookStatsActivity>(renderer, mappedInput, statsTitle, cachePath,
+                                                                        bookStats, progress, false, 0,
+                                                                        currentBookPage, global);""",
+)
+
 # XTC: exact current page is already known.
 replace_once(
     "src/activities/reader/XtcReaderActivity.cpp",
