@@ -19,7 +19,7 @@ jobs:
           node --check home-v51045-runtime.js
           node --check service-worker-v51043.js
 
-      - name: Validate artwork-derived Reader Level frames
+      - name: Validate Reader Level artbars pass 2
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -27,20 +27,21 @@ jobs:
               p=Path(name)
               assert p.exists() and p.stat().st_size > 1000, f'{name} missing/too small'
           raw=Path('home-v51045-ornate-bar-frame.png').read_bytes()
-          assert raw[:8] == b'\x89PNG\r\n\x1a\n', 'ornate bar asset is not PNG'
+          assert raw[:8] == b'\x89PNG\r\n\x1a\n'
           print('ornate bar asset',len(raw),'bytes')
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045artbars1' index.html
-          grep -q 'home-v51045-master-clean-level.webp?v=51045artbars1' index.html
-          grep -q 'home-v51045-ornate-bar-frame.png?v=51045artbars1' index.html
+          grep -q 'home-v51045-runtime.js?v=51045artbars2' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045artbars2' index.html
+          grep -q 'home-v51045-ornate-bar-frame.png?v=51045artbars2' index.html
 
-          grep -q "v5.10.45-home-reader-xp-artbars1" home-v51045-runtime.js
-          grep -q "v51045-rank-frame" home-v51045-runtime.js
+          grep -q "v5.10.45-home-reader-xp-artbars2" home-v51045-runtime.js
+          grep -q "v51045-rank-text" home-v51045-runtime.js
+          grep -q "v51045-rank-flourish" home-v51045-runtime.js
+          ! grep -q "v51045-rank-frame" home-v51045-runtime.js
           grep -q "v51045-exp-art" home-v51045-runtime.js
-          grep -q "home-v51045-ornate-bar-frame.png?v=51045artbars1" home-v51045-runtime.js
+          grep -q "home-v51045-ornate-bar-frame.png?v=51045artbars2" home-v51045-runtime.js
           grep -q "v51045ExpFill" home-v51045-runtime.js
           grep -q "v51045XpLine" home-v51045-runtime.js
-          ! grep -q "v51045-rank-plaque" home-v51045-runtime.js
 
-          echo "Artwork-derived Reader Level UI checkpoint OK"
+          echo "Standalone rank + flourish + single ornate EXP bar OK"
