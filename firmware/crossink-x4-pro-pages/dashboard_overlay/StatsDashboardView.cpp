@@ -21,6 +21,8 @@ constexpr std::array<StrId, READING_TIME_BUCKET_COUNT> TIME_LABELS = {
 constexpr std::array<StrId, READING_DAY_OF_WEEK_COUNT> DAY_LABELS = {
     StrId::STR_STATS_MON, StrId::STR_STATS_TUE, StrId::STR_STATS_WED, StrId::STR_STATS_THU,
     StrId::STR_STATS_FRI, StrId::STR_STATS_SAT, StrId::STR_STATS_SUN};
+constexpr std::array<const char*, READING_DAY_OF_WEEK_COUNT> DAY_SHORT = {
+    "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"};
 
 float ppm(const uint32_t pages, const uint32_t seconds) {
   if (seconds < 60) return 0.0f;
@@ -52,12 +54,18 @@ void cardTitle(const GfxRenderer& renderer, const int x, const int y, const int 
   renderer.drawText(UI_10_FONT_ID, x + 8, y + 5, text, true, EpdFontFamily::BOLD);
 }
 
+void chartTitle(const GfxRenderer& renderer, const int x, const int y, const int w, const char* text) {
+  const std::string visible =
+      renderer.truncatedText(SMALL_FONT_ID, text, w - 12, EpdFontFamily::BOLD);
+  renderer.drawText(SMALL_FONT_ID, x + 6, y + 5, visible.c_str(), true, EpdFontFamily::BOLD);
+}
+
 void drawWeeklyPages(const GfxRenderer& renderer, const int x, const int y, const int w, const int h,
                      const std::array<ReadingDailyEntry, ReadingDailyStats::DISPLAY_DAYS>& days) {
   card(renderer, x, y, w, h);
-  cardTitle(renderer, x, y, w, "Pages Read This Week");
-  const int titleH = 28;
-  const int chartTop = y + titleH + 5;
+  chartTitle(renderer, x, y, w, "Pages This Week");
+  const int titleH = 24;
+  const int chartTop = y + titleH + 4;
   const int chartBottom = y + h - 20;
   const int chartH = std::max(1, chartBottom - chartTop);
   const int slotW = std::max(1, (w - 14) / static_cast<int>(days.size()));
@@ -74,8 +82,8 @@ void drawWeeklyPages(const GfxRenderer& renderer, const int x, const int y, cons
     ReadingStatsDate date{};
     if (days[i].dayIndex != 0 && readingStatsDateFromDayIndex(days[i].dayIndex, date)) {
       const uint8_t dow = readingStatsDayOfWeekIndex(date);
-      const char* label = I18N.get(DAY_LABELS[std::min<size_t>(dow, DAY_LABELS.size() - 1)]);
-      centered(renderer, SMALL_FONT_ID, bx, slotW, y + h - 17, label);
+      centered(renderer, SMALL_FONT_ID, bx, slotW, y + h - 17,
+               DAY_SHORT[std::min<size_t>(dow, DAY_SHORT.size() - 1)]);
     }
   }
 }
@@ -83,10 +91,10 @@ void drawWeeklyPages(const GfxRenderer& renderer, const int x, const int y, cons
 void drawPaceTrend(const GfxRenderer& renderer, const int x, const int y, const int w, const int h,
                    const std::array<ReadingDailyEntry, ReadingDailyStats::DISPLAY_DAYS>& days) {
   card(renderer, x, y, w, h);
-  cardTitle(renderer, x, y, w, "Reading Pace");
+  chartTitle(renderer, x, y, w, "Reading Pace");
   const int left = x + 12;
   const int right = x + w - 10;
-  const int top = y + 34;
+  const int top = y + 29;
   const int bottom = y + h - 18;
   const int graphW = std::max(1, right - left);
   const int graphH = std::max(1, bottom - top);
@@ -117,15 +125,15 @@ void drawHorizontalDistribution(const GfxRenderer& renderer, const int x, const 
                                 const char* title, const std::array<uint32_t, N>& values,
                                 const std::array<StrId, N>& labels) {
   card(renderer, x, y, w, h);
-  cardTitle(renderer, x, y, w, title);
+  chartTitle(renderer, x, y, w, title);
   uint64_t total = 0;
   uint32_t maxValue = 0;
   for (const auto v : values) {
     total += v;
     maxValue = std::max(maxValue, v);
   }
-  const int rowTop = y + 31;
-  const int rowH = std::max(14, (h - 34) / static_cast<int>(N));
+  const int rowTop = y + 27;
+  const int rowH = std::max(14, (h - 30) / static_cast<int>(N));
   const int labelW = 64;
   const int pctW = 32;
   const int barX = x + labelW;
@@ -147,8 +155,8 @@ void drawHorizontalDistribution(const GfxRenderer& renderer, const int x, const 
 void drawDayOfWeekBars(const GfxRenderer& renderer, const int x, const int y, const int w, const int h,
                        const std::array<uint32_t, READING_DAY_OF_WEEK_COUNT>& values) {
   card(renderer, x, y, w, h);
-  cardTitle(renderer, x, y, w, "Day of Week");
-  const int top = y + 34;
+  chartTitle(renderer, x, y, w, "Day of Week");
+  const int top = y + 29;
   const int bottom = y + h - 18;
   const int chartH = std::max(1, bottom - top);
   const int slotW = std::max(1, (w - 10) / static_cast<int>(values.size()));
@@ -158,7 +166,7 @@ void drawDayOfWeekBars(const GfxRenderer& renderer, const int x, const int y, co
     const int barW = std::max(3, slotW / 2);
     const int barH = static_cast<int>((static_cast<uint64_t>(chartH - 12) * values[i]) / maxValue);
     if (barH > 0) renderer.fillRect(sx + (slotW - barW) / 2, bottom - barH, barW, barH, true);
-    centered(renderer, SMALL_FONT_ID, sx, slotW, y + h - 17, I18N.get(DAY_LABELS[i]));
+    centered(renderer, SMALL_FONT_ID, sx, slotW, y + h - 17, DAY_SHORT[i]);
   }
 }
 
@@ -202,22 +210,22 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   constexpr int gap = 5;
 
   // Proportional layout tuned for the 480x800 X4 Pro but still scales down.
-  const int bookH = 172;
-  const int todayH = 72;
-  const int deviceH = 96;
+  const int bookH = 180;
+  const int todayH = 74;
+  const int deviceH = 128;
   const int chartsAvailable = std::max(180, contentBottom - y - bookH - todayH - deviceH - gap * 4);
   const int chartRowH = chartsAvailable / 2;
 
   // Current book.
   card(renderer, x, y, w, bookH);
-  const int titleH = 29;
+  const int titleH = 38;
   renderer.drawLine(x, y + titleH, x + w, y + titleH, true);
   const std::string visible =
-      renderer.truncatedText(UI_10_FONT_ID, bookTitle.c_str(), w - 16, EpdFontFamily::BOLD);
-  centered(renderer, UI_10_FONT_ID, x, w, y + 5, visible.c_str(), true);
+      renderer.truncatedText(SMALL_FONT_ID, bookTitle.c_str(), w - 16, EpdFontFamily::BOLD);
+  centered(renderer, SMALL_FONT_ID, x, w, y + 9, visible.c_str(), true);
 
   const int third = w / 3;
-  const int rowH = 52;
+  const int rowH = 49;
   char buf[48];
   snprintf(buf, sizeof(buf), "%u", static_cast<unsigned>(bookStats.sessionCount));
   statCell(renderer, x, y + titleH, third, rowH, buf, tr(STR_STATS_SESSIONS_LBL));
@@ -313,26 +321,29 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   centered(renderer, SMALL_FONT_ID, x + leftW + gap, rightW, y + 50, buf);
   y += todayH + gap;
 
-  // Lifetime device strip.
+  // Lifetime device card: two rows of three so values stay readable
+  // on the physical 480 px-wide X4 Pro screen.
   card(renderer, x, y, w, deviceH);
   cardTitle(renderer, x, y, w, "This Device");
-  const int sixth = w / 6;
-  const int dy = y + 27;
-  const int dh = deviceH - 29;
+  const int deviceThird = w / 3;
+  const int deviceTop = y + 27;
+  const int deviceRowH = (deviceH - 29) / 2;
+
   snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(deviceStats.totalSessions));
-  statCell(renderer, x, dy, sixth, dh, buf, "Sessions");
+  statCell(renderer, x, deviceTop, deviceThird, deviceRowH, buf, "Sessions");
   BookReadingStats::formatDuration(deviceStats.totalReadingSeconds, buf, sizeof(buf));
-  statCell(renderer, x + sixth, dy, sixth, dh, buf, "Reading");
+  statCell(renderer, x + deviceThird, deviceTop, deviceThird, deviceRowH, buf, "Reading");
   snprintf(buf, sizeof(buf), "%.1f", ppm(deviceStats.totalPagesTurned, deviceStats.totalReadingSeconds));
-  statCell(renderer, x + sixth * 2, dy, sixth, dh, buf, "PPM");
+  statCell(renderer, x + deviceThird * 2, deviceTop, w - deviceThird * 2, deviceRowH, buf, "PPM");
+
   const uint32_t avgSession =
       deviceStats.totalSessions > 0 ? deviceStats.totalReadingSeconds / deviceStats.totalSessions : 0;
   BookReadingStats::formatDuration(avgSession, buf, sizeof(buf));
-  statCell(renderer, x + sixth * 3, dy, sixth, dh, buf, "Avg");
+  statCell(renderer, x, deviceTop + deviceRowH, deviceThird, deviceRowH, buf, "Avg Session");
   snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(deviceStats.totalPagesTurned));
-  statCell(renderer, x + sixth * 4, dy, sixth, dh, buf, "Pages");
+  statCell(renderer, x + deviceThird, deviceTop + deviceRowH, deviceThird, deviceRowH, buf, "Pages");
   snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(deviceStats.completedBooks));
-  statCell(renderer, x + sixth * 5, dy, w - sixth * 5, dh, buf, "Books");
+  statCell(renderer, x + deviceThird * 2, deviceTop + deviceRowH, w - deviceThird * 2, deviceRowH, buf, "Books");
   y += deviceH + gap;
 
   // Two chart rows.
