@@ -32,7 +32,7 @@ function style(){
     ".v51045-xp-line{position:absolute;z-index:4;left:53.40%;top:34.80%;width:34%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(9px,2.0vw,14px);line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-today-ring{position:absolute;z-index:4;left:12.10%;top:79.50%;width:12.60%;aspect-ratio:1;border-radius:50%;background:conic-gradient(#a96bc0 0 var(--pct,0%),rgba(112,84,102,.22) var(--pct,0%) 100%);-webkit-mask:radial-gradient(circle,transparent var(--hole,55%),#000 calc(var(--hole,55%) + 2%));mask:radial-gradient(circle,transparent var(--hole,55%),#000 calc(var(--hole,55%) + 2%));filter:drop-shadow(0 1px 1px rgba(65,35,52,.20));pointer-events:none}"+
     ".v51045-today-percent{position:absolute;z-index:5;left:31.20%;top:83.10%;width:12%;transform:translate(-50%,-50%);text-align:center;color:#5f3d68;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.75vw;line-height:1;text-shadow:0 1px rgba(255,244,216,.62);pointer-events:none}"+
-    ".v51045-today-pages{position:absolute;z-index:5;left:28.20%;top:80.00%;width:13.70%;display:flex;align-items:baseline;gap:.60ch;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.75vw;line-height:1.35;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
+    ".v51045-today-pages{position:absolute;z-index:5;left:27.90%;top:80.00%;width:70.00%;display:flex;align-items:baseline;gap:.60ch;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.75vw;line-height:1.35;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-today-pages-current{display:inline-block;width:2.20ch;text-align:right;flex:0 0 2.20ch}.v51045-today-pages-goal{display:inline-block;width:3.20ch;text-align:left;flex:0 0 3.20ch}"+
     ".v51045-bar-editor{position:fixed;z-index:9999;left:10px;top:92px;width:min(310px,calc(100vw - 20px));background:rgba(37,20,29,.96);border:1px solid #b88a53;border-radius:12px;color:#f4e5c8;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none}"+
     ".v51045-bar-editor[hidden]{display:none!important}"+
@@ -153,7 +153,7 @@ function mountProgressEditor(){
     ringX:12.10,ringY:79.50,ringSize:12.60,ringHole:55.00,
     previewFill:Math.round(live.pct),
     pctX:31.20,pctY:83.10,pctSize:2.75,
-    pagesX:28.20,pagesY:80.00,pagesW:13.70,pagesSize:2.75
+    pagesX:27.90,pagesY:80.00,pagesW:70.00,pagesSize:2.75
   };
 
   const groups=[
