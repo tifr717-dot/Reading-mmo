@@ -155,13 +155,14 @@ void drawHorizontalDistribution(const GfxRenderer& renderer, const int x, const 
   const int pctRight = x + w - 7;
   const int barRight = pctRight - pctW - barGap;
   const int barW = std::max(5, barRight - barX);
+  const int visualBarW = std::max(5, (barW * 2) / 3);
   char buf[12];
   for (size_t i = 0; i < N; ++i) {
     const int yy = rowTop + static_cast<int>(i) * rowH;
     renderer.drawText(SMALL_FONT_ID, x + 7, yy, I18N.get(labels[i]));
     if (maxValue > 0 && values[i] > 0) {
-      const int fill = std::max(2, static_cast<int>((static_cast<uint64_t>(barW) * values[i]) / maxValue));
-      renderer.fillRect(barX, yy + 4, fill, std::max(3, rowH - 9), true);
+      const int fill = std::max(2, static_cast<int>((static_cast<uint64_t>(visualBarW) * values[i]) / maxValue));
+      renderer.fillRect(barX, yy + 6, fill, std::max(2, rowH - 13), true);
     }
     const unsigned pct = total > 0 ? static_cast<unsigned>((values[i] * 100ULL + total / 2ULL) / total) : 0;
     snprintf(buf, sizeof(buf), "%u%%", pct);
@@ -263,16 +264,18 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   } else {
     snprintf(buf, sizeof(buf), "-");
   }
-  statCell(renderer, x, y + titleH + rowH, third, rowH, buf, tr(STR_STATS_PAGES_LBL));
+  constexpr int secondRowNudge = 5;
+  statCell(renderer, x, y + titleH + rowH + secondRowNudge, third, rowH, buf, tr(STR_STATS_PAGES_LBL));
   if (!bookStats.isCompleted && hasEstimatedTimeLeft && estimatedTimeLeftSeconds > 0)
     formatCompactReadingDuration(estimatedTimeLeftSeconds, buf, sizeof(buf));
   else if (!bookStats.isCompleted && bookStats.estimatedTimeLeftSeconds > 0)
     formatCompactReadingDuration(bookStats.estimatedTimeLeftSeconds, buf, sizeof(buf));
   else
     snprintf(buf, sizeof(buf), "-");
-  statCell(renderer, x + third, y + titleH + rowH, third, rowH, buf, tr(STR_TIME_LEFT));
+  statCell(renderer, x + third, y + titleH + rowH + secondRowNudge, third, rowH, buf, tr(STR_TIME_LEFT));
   snprintf(buf, sizeof(buf), "%.1f", ppm(bookStats.totalPagesTurned, bookStats.totalReadingSeconds));
-  statCell(renderer, x + third * 2, y + titleH + rowH, w - third * 2, rowH, buf, tr(STR_STATS_PAGES_PER_MIN));
+  statCell(renderer, x + third * 2, y + titleH + rowH + secondRowNudge, w - third * 2, rowH, buf,
+           tr(STR_STATS_PAGES_PER_MIN));
 
   ReadingStatsDateTime now{};
   const bool hasNow = getCurrentLocalReadingStatsDateTime(now);
@@ -292,9 +295,9 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   snprintf(leftDate, sizeof(leftDate), "%s %s", tr(STR_STATS_STARTED), startBuf);
   snprintf(rightDate, sizeof(rightDate), "%s %s",
            bookStats.isCompleted ? tr(STR_STATS_FINISHED_DATE) : tr(STR_STATS_EST_FINISH_DATE), finishBuf);
-  renderer.drawText(SMALL_FONT_ID, x + 7, y + bookH - 17, leftDate);
+  renderer.drawText(SMALL_FONT_ID, x + 7, y + bookH - 22, leftDate);
   const int rw = renderer.getTextWidth(SMALL_FONT_ID, rightDate);
-  renderer.drawText(SMALL_FONT_ID, x + w - rw - 7, y + bookH - 17, rightDate);
+  renderer.drawText(SMALL_FONT_ID, x + w - rw - 7, y + bookH - 22, rightDate);
   y += bookH + gap;
 
   // Today + streak share a row.
@@ -334,9 +337,9 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   cardTitle(renderer, x + leftW + gap, y, rightW, "Streak");
   const uint16_t currentStreak = hasNow ? deviceStats.currentReadingStreak(&now.date) : 0;
   snprintf(buf, sizeof(buf), "%u days", static_cast<unsigned>(currentStreak));
-  centered(renderer, UI_10_FONT_ID, x + leftW + gap, rightW, y + 28, buf, true);
+  centered(renderer, UI_10_FONT_ID, x + leftW + gap, rightW, y + 24, buf, true);
   snprintf(buf, sizeof(buf), "Best %u", static_cast<unsigned>(deviceStats.displayLongestReadingStreak()));
-  centered(renderer, SMALL_FONT_ID, x + leftW + gap, rightW, y + 47, buf);
+  centered(renderer, SMALL_FONT_ID, x + leftW + gap, rightW, y + 45, buf);
   y += todayH + gap;
 
   // Lifetime device card: two rows of three so values stay readable
