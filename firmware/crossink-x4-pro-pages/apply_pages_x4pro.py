@@ -503,6 +503,8 @@ replace_once(
 overlay_dir = Path("firmware/crossink-x4-pro-pages/dashboard_overlay")
 write("src/activities/reader/ReadingDailyStats.h", (overlay_dir / "ReadingDailyStats.h").read_text())
 write("src/activities/reader/ReadingDailyStats.cpp", (overlay_dir / "ReadingDailyStats.cpp").read_text())
+write("src/activities/reader/StatsDashboardView.h", (overlay_dir / "StatsDashboardView.h").read_text())
+write("src/activities/reader/StatsDashboardView.cpp", (overlay_dir / "StatsDashboardView.cpp").read_text())
 
 # Record a small rolling daily history on session commit. Keep this separate
 # from global_stats.bin so Nearby Stats Sync remains backward compatible.
@@ -568,5 +570,66 @@ replace_once(
   globalStats.save();""",
 )
 
-print("X4 Pro Pages + dashboard analytics transformations applied successfully")
+
+# Use the dense dashboard renderer for the X4 Pro per-book page and Reading Stats sleep screen.
+replace_once(
+    "src/activities/reader/BookStatsActivity.cpp",
+    '#include "MappedInputManager.h"\n',
+    '#include "MappedInputManager.h"\n#include "StatsDashboardView.h"\n',
+)
+replace_once(
+    "src/activities/reader/BookStatsActivity.cpp",
+    """    case Page::PerBook:
+      renderPerBookStatsPage(renderer, &mappedInput, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
+                             estimatedTimeLeftSeconds, currentBookPage, true, hasEditableBook(), true);
+      break;""",
+    """    case Page::PerBook:
+#if defined(FREEINK_DEVICE_X4PRO) && FREEINK_DEVICE_X4PRO
+      renderX4ProStatsDashboard(renderer, &mappedInput, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
+                                estimatedTimeLeftSeconds, currentBookPage, globalStats, true, hasEditableBook(), true);
+#else
+      renderPerBookStatsPage(renderer, &mappedInput, bookTitle, stats, progressPercent, hasEstimatedTimeLeft,
+                             estimatedTimeLeftSeconds, currentBookPage, true, hasEditableBook(), true);
+#endif
+      break;""",
+)
+replace_once(
+    "src/activities/boot_sleep/SleepActivity.cpp",
+    '#include "../reader/EpubReaderUtils.h"\n',
+    '#include "../reader/EpubReaderUtils.h"\n#include "../reader/StatsDashboardView.h"\n',
+)
+replace_once(
+    "src/activities/boot_sleep/SleepActivity.cpp",
+    """  if (!halClock.isAvailable()) {
+    const GlobalReadingStats deviceStats = GlobalReadingStats::load();
+    const bool hasSyncedStats = GlobalReadingStats::hasSyncedStats();
+    const GlobalReadingStats allDevicesStats =
+        hasSyncedStats ? GlobalReadingStats::loadAggregated(deviceStats) : GlobalReadingStats{};
+    renderNoRtcCombinedStatsPage(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0,
+                                 currentBookPage, deviceStats, hasSyncedStats ? &allDevicesStats : nullptr, false);
+  } else {
+    renderPerBookStatsPage(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0, currentBookPage,
+                           false, false, false);
+  }""",
+    """#if defined(FREEINK_DEVICE_X4PRO) && FREEINK_DEVICE_X4PRO
+  const GlobalReadingStats deviceStats = GlobalReadingStats::load();
+  renderX4ProStatsDashboard(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0, currentBookPage,
+                            deviceStats, false, false, false);
+#else
+  if (!halClock.isAvailable()) {
+    const GlobalReadingStats deviceStats = GlobalReadingStats::load();
+    const bool hasSyncedStats = GlobalReadingStats::hasSyncedStats();
+    const GlobalReadingStats allDevicesStats =
+        hasSyncedStats ? GlobalReadingStats::loadAggregated(deviceStats) : GlobalReadingStats{};
+    renderNoRtcCombinedStatsPage(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0,
+                                 currentBookPage, deviceStats, hasSyncedStats ? &allDevicesStats : nullptr, false);
+  } else {
+    renderPerBookStatsPage(renderer, nullptr, bookTitle, bookStats, progressPercent, false, 0, currentBookPage,
+                           false, false, false);
+  }
+#endif""",
+)
+
+print("X4 Pro Pages + dashboard renderer transformations applied successfully")
+
 
