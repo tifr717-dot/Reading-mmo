@@ -55,7 +55,7 @@ jobs:
           grep -q "pctX:18.15,pctY:69.57,pctSize:2.20" home-v51045-runtime.js
           grep -q "pagesX:27.50,pagesY:66.00,pagesW:18.00,pagesSize:1.90" home-v51045-runtime.js
           grep -q "TODAY EDITOR" home-v51045-runtime.js
-          grep -q "TODAY'S PROGRESS EDITOR" home-v51045-runtime.js
+          grep -Fq "TODAY\\'S PROGRESS EDITOR" home-v51045-runtime.js
 
           grep -q "function todayReadingState()" index.html
           grep -q 'todayDate:"",todayPages:0,todayGoal:100' index.html
