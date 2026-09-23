@@ -181,8 +181,9 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
                                const std::string& bookTitle, const BookReadingStats& bookStats,
                                const float progressPercent, const bool hasEstimatedTimeLeft,
                                const uint32_t estimatedTimeLeftSeconds, const uint32_t currentBookPage,
-                               const GlobalReadingStats& deviceStats, const bool showButtonHints,
-                               const bool showEditButton, const bool showMoreButton) {
+                               const uint32_t currentBookPageCount, const GlobalReadingStats& deviceStats,
+                               const uint32_t liveTodayPages, const uint32_t liveTodayReadingSeconds,
+                               const bool showButtonHints, const bool showEditButton, const bool showMoreButton) {
   renderer.clearScreen();
   const auto& metrics = UITheme::getInstance().getMetrics();
   if (mappedInput && mappedInput->hasTouchHardware()) {
@@ -228,7 +229,14 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
     snprintf(buf, sizeof(buf), "-");
   statCell(renderer, x + third * 2, y + titleH, w - third * 2, rowH, buf, tr(STR_STATS_PROGRESS_LBL));
 
-  snprintf(buf, sizeof(buf), currentBookPage > 0 ? "%lu" : "-", static_cast<unsigned long>(currentBookPage));
+  if (currentBookPage > 0 && currentBookPageCount >= currentBookPage) {
+    snprintf(buf, sizeof(buf), "%lu / %lu", static_cast<unsigned long>(currentBookPage),
+             static_cast<unsigned long>(currentBookPageCount));
+  } else if (currentBookPage > 0) {
+    snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(currentBookPage));
+  } else {
+    snprintf(buf, sizeof(buf), "-");
+  }
   statCell(renderer, x, y + titleH + rowH, third, rowH, buf, tr(STR_STATS_PAGES_LBL));
   if (!bookStats.isCompleted && hasEstimatedTimeLeft && estimatedTimeLeftSeconds > 0)
     formatCompactReadingDuration(estimatedTimeLeftSeconds, buf, sizeof(buf));
@@ -272,6 +280,17 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   if (hasNow) {
     today = daily.forDate(now.date);
     week = daily.recentSevenDays(now.date);
+
+    // The active reader passes an in-memory preview of the current session.
+    // It is added for display only; ReadingDailyStats remains committed only
+    // when the reader session itself is committed.
+    today.pages = today.pages > UINT32_MAX - liveTodayPages ? UINT32_MAX : today.pages + liveTodayPages;
+    today.readingSeconds =
+        today.readingSeconds > UINT32_MAX - liveTodayReadingSeconds ? UINT32_MAX
+                                                                    : today.readingSeconds + liveTodayReadingSeconds;
+    if (!week.empty()) {
+      week.back() = today;
+    }
   }
 
   card(renderer, x, y, leftW, todayH);
