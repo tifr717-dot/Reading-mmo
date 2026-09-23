@@ -19,27 +19,27 @@ jobs:
           node --check home-v51045-runtime.js
           node --check service-worker-v51043.js
 
-      - name: Validate temporary EXP bar editor
+      - name: Validate expanded Reader Level editor
         run: |
           python3 - <<'PY'
           from pathlib import Path
           for name in ['home-v51045-master-clean-level.webp','home-v51045-ornate-bar-frame.png']:
               p=Path(name)
-              assert p.exists() and p.stat().st_size > 1000, f'{name} missing/too small'
+              assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045bareditor1' index.html
-          grep -q 'home-v51045-master-clean-level.webp?v=51045bareditor1' index.html
-          grep -q 'home-v51045-ornate-bar-frame.png?v=51045bareditor1' index.html
+          grep -q 'home-v51045-runtime.js?v=51045bareditor2' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045bareditor2' index.html
+          grep -q 'home-v51045-ornate-bar-frame.png?v=51045bareditor2' index.html
 
-          grep -q "v5.10.45-home-reader-xp-bar-editor1" home-v51045-runtime.js
-          grep -q "function mountBarEditor" home-v51045-runtime.js
-          grep -q "BAR EDITOR" home-v51045-runtime.js
+          grep -q "v5.10.45-home-reader-xp-bar-editor2" home-v51045-runtime.js
+          grep -q "PURPLE FILL" home-v51045-runtime.js
+          grep -q "TITLE + EXP" home-v51045-runtime.js
+          grep -q "barX:53.70,barY:31.50,barW:27.90,barH:3.30" home-v51045-runtime.js
+          grep -q "fillL:11.8,fillR:11.8,fillY:38.0,fillH:22.0" home-v51045-runtime.js
+          grep -q "titleX:51.80,titleY:27.95" home-v51045-runtime.js
+          grep -q "xpX:53.70,xpY:36.15" home-v51045-runtime.js
+          grep -q "READER EDITOR" home-v51045-runtime.js
           grep -q "COPY VALUES" home-v51045-runtime.js
-          grep -q "data-key" home-v51045-runtime.js
-          grep -q "barEditor" home-v51045-runtime.js
-          grep -q "v51045-exp-art" home-v51045-runtime.js
-          grep -q "v51045-rank-flourish" home-v51045-runtime.js
-          ! grep -q "v51045-rank-frame" home-v51045-runtime.js
 
-          echo "Temporary mobile EXP bar placement editor OK"
+          echo "Expanded Reader Level editor OK"
