@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-today-progress-editor1';
+const BUILD='v5.10.45-home-today-progress-editor2';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -143,23 +143,26 @@ function mountProgressEditor(){
   const pages=$('v51045TodayPages');
   if(!ring||!pct||!pages)return;
 
+  const live=todayProgressState();
   const state={
     ringX:11.90,ringY:65.40,ringSize:12.50,ringHole:55.00,
+    previewFill:Math.round(live.pct),
     pctX:18.15,pctY:69.57,pctSize:2.20,
     pagesX:27.50,pagesY:66.00,pagesW:18.00,pagesSize:1.90
   };
 
   const groups=[
     {label:'RING',rows:[
-      ['ringX','X / Left',3,35,.1],['ringY','Y / Top',55,78,.1],
-      ['ringSize','Size',5,25,.1],['ringHole','Thickness',30,78,1]
+      ['ringX','X / Left',0,90,.1],['ringY','Y / Top',0,92,.1],
+      ['ringSize','Size',3,40,.1],['ringHole','Thickness',20,85,1],
+      ['previewFill','Preview fill',0,100,1]
     ]},
     {label:'% TEXT',rows:[
-      ['pctX','Percent X',5,40,.1],['pctY','Percent Y',58,80,.1],['pctSize','Font size',1,5,.05]
+      ['pctX','Percent X',0,100,.1],['pctY','Percent Y',0,95,.1],['pctSize','Font size',.5,7,.05]
     ]},
     {label:'PAGES',rows:[
-      ['pagesX','Pages X',10,55,.1],['pagesY','Pages Y',58,78,.1],
-      ['pagesW','Width',8,40,.1],['pagesSize','Font size',1,4,.05]
+      ['pagesX','Pages X',0,100,.1],['pagesY','Pages Y',0,95,.1],
+      ['pagesW','Width',5,70,.1],['pagesSize','Font size',.5,6,.05]
     ]}
   ];
 
@@ -201,6 +204,12 @@ function mountProgressEditor(){
         '<button type="button" data-progress-tab="2">PAGES</button>'+
       '</div>'+
       groupHtml+
+      '<div class="v51045-editor-actions" data-preview-presets>'+
+        '<button type="button" data-preview-fill="25">25%</button>'+
+        '<button type="button" data-preview-fill="50">50%</button>'+
+        '<button type="button" data-preview-fill="75">75%</button>'+
+        '<button type="button" data-preview-fill="100">100%</button>'+
+      '</div>'+
       '<div class="v51045-editor-actions"><button type="button" data-progress-action="reset">RESET</button><button type="button" data-progress-action="copy">COPY VALUES</button></div>'+
       '<div id="v51045ProgressEditorOutput" class="v51045-editor-output"></div>'+
     '</div>';
@@ -213,15 +222,19 @@ function mountProgressEditor(){
     ring.style.top=state.ringY+'%';
     ring.style.width=state.ringSize+'%';
     ring.style.setProperty('--hole',state.ringHole+'%');
+    ring.style.setProperty('--pct',state.previewFill+'%');
 
     pct.style.left=state.pctX+'%';
     pct.style.top=state.pctY+'%';
     pct.style.fontSize=state.pctSize+'vw';
+    pct.textContent=Math.round(state.previewFill)+'%';
 
     pages.style.left=state.pagesX+'%';
     pages.style.top=state.pagesY+'%';
     pages.style.width=state.pagesW+'%';
     pages.style.fontSize=state.pagesSize+'vw';
+    const previewPages=Math.round((Number(live.goal)||100)*(state.previewFill/100));
+    pages.textContent=previewPages.toLocaleString()+' / '+(Number(live.goal)||100).toLocaleString()+' pages';
 
     panel.querySelectorAll('[data-progress-key]').forEach(row=>{
       const k=row.dataset.progressKey;
@@ -233,7 +246,8 @@ function mountProgressEditor(){
     if(out)out.textContent=
       'RING left:'+state.ringX.toFixed(2)+'%; top:'+state.ringY.toFixed(2)+'%; size:'+state.ringSize.toFixed(2)+'%; hole:'+state.ringHole.toFixed(2)+'%;\n'+
       'PERCENT left:'+state.pctX.toFixed(2)+'%; top:'+state.pctY.toFixed(2)+'%; font:'+state.pctSize.toFixed(2)+'vw;\n'+
-      'PAGES left:'+state.pagesX.toFixed(2)+'%; top:'+state.pagesY.toFixed(2)+'%; width:'+state.pagesW.toFixed(2)+'%; font:'+state.pagesSize.toFixed(2)+'vw;';
+      'PAGES left:'+state.pagesX.toFixed(2)+'%; top:'+state.pagesY.toFixed(2)+'%; width:'+state.pagesW.toFixed(2)+'%; font:'+state.pagesSize.toFixed(2)+'vw;\n'+
+      'PREVIEW ONLY: '+Math.round(state.previewFill)+'% fill';
   };
 
   panel.querySelectorAll('[data-progress-key]').forEach(row=>{
@@ -247,6 +261,13 @@ function mountProgressEditor(){
         state[k]=Number(next.toFixed(step<1?2:0));
         apply();
       });
+    });
+  });
+
+  panel.querySelectorAll('[data-preview-fill]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      state.previewFill=Number(btn.dataset.previewFill)||0;
+      apply();
     });
   });
 
@@ -271,8 +292,18 @@ function mountProgressEditor(){
     }
   });
 
-  open.addEventListener('click',()=>{panel.hidden=false;open.hidden=true});
-  panel.querySelector('.v51045-editor-close').addEventListener('click',()=>{panel.hidden=true;open.hidden=false});
+  open.addEventListener('click',()=>{
+    const now=todayProgressState();
+    state.previewFill=Math.round(now.pct);
+    panel.hidden=false;
+    open.hidden=true;
+    apply();
+  });
+  panel.querySelector('.v51045-editor-close').addEventListener('click',()=>{
+    panel.hidden=true;
+    open.hidden=false;
+    renderTodayProgress();
+  });
 
   const head=panel.querySelector('.v51045-editor-head');
   let drag=null;
