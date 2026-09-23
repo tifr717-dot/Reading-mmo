@@ -498,4 +498,75 @@ replace_once(
                                               getCurrentBookProgressPercent(), false, 0, currentBookPage, globalStats);""",
 )
 
-print("X4 Pro Pages transformations applied successfully")
+
+# Dashboard analytics overlay files.
+overlay_dir = Path("firmware/crossink-x4-pro-pages/dashboard_overlay")
+write("src/activities/reader/ReadingDailyStats.h", (overlay_dir / "ReadingDailyStats.h").read_text())
+write("src/activities/reader/ReadingDailyStats.cpp", (overlay_dir / "ReadingDailyStats.cpp").read_text())
+
+# Record a small rolling daily history on session commit. Keep this separate
+# from global_stats.bin so Nearby Stats Sync remains backward compatible.
+replace_once(
+    "src/activities/reader/EpubReaderActivity.h",
+    "  uint32_t sessionReadingSeconds = 0;\n",
+    "  uint32_t sessionReadingSeconds = 0;\n  uint32_t sessionForwardPages = 0;\n",
+)
+replace_once(
+    "src/activities/reader/EpubReaderActivity.cpp",
+    '#include "QuickActions.h"\n',
+    '#include "QuickActions.h"\n#include "ReadingDailyStats.h"\n',
+)
+replace_once(
+    "src/activities/reader/EpubReaderActivity.cpp",
+    """      stats.totalPagesTurned++;
+      globalStats.totalPagesTurned++;""",
+    """      stats.totalPagesTurned++;
+      globalStats.totalPagesTurned++;
+      sessionForwardPages++;""",
+)
+replace_once(
+    "src/activities/reader/EpubReaderActivity.cpp",
+    """    if (epub) {
+      recoverStoredPaceFromSession("reader_exit");""",
+    """    if (hasSessionStartLocalDateTime && (sessionForwardPages > 0 || elapsedSecs >= 10)) {
+      ReadingDailyStats dailyStats = ReadingDailyStats::load();
+      dailyStats.record(sessionStartLocalDateTime.date, sessionForwardPages, elapsedSecs >= 10 ? elapsedSecs : 0);
+      dailyStats.save();
+    }
+    if (epub) {
+      recoverStoredPaceFromSession("reader_exit");""",
+)
+
+replace_once(
+    "src/activities/reader/XtcReaderActivity.h",
+    "  uint32_t sessionReadingSeconds = 0;\n",
+    "  uint32_t sessionReadingSeconds = 0;\n  uint32_t sessionForwardPages = 0;\n",
+)
+replace_once(
+    "src/activities/reader/XtcReaderActivity.cpp",
+    '#include "QuickActions.h"\n',
+    '#include "QuickActions.h"\n#include "ReadingDailyStats.h"\n',
+)
+replace_once(
+    "src/activities/reader/XtcReaderActivity.cpp",
+    """  stats.totalPagesTurned++;
+  globalStats.totalPagesTurned++;""",
+    """  stats.totalPagesTurned++;
+  globalStats.totalPagesTurned++;
+  sessionForwardPages++;""",
+)
+replace_once(
+    "src/activities/reader/XtcReaderActivity.cpp",
+    """  stats.save(xtc->getCachePath());
+  globalStats.save();""",
+    """  if (hasSessionStartLocalDateTime && (sessionForwardPages > 0 || elapsedSecs >= 10)) {
+    ReadingDailyStats dailyStats = ReadingDailyStats::load();
+    dailyStats.record(sessionStartLocalDateTime.date, sessionForwardPages, elapsedSecs >= 10 ? elapsedSecs : 0);
+    dailyStats.save();
+  }
+  stats.save(xtc->getCachePath());
+  globalStats.save();""",
+)
+
+print("X4 Pro Pages + dashboard analytics transformations applied successfully")
+
