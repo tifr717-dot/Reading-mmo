@@ -230,7 +230,7 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   statCell(renderer, x + third * 2, y + titleH, w - third * 2, rowH, buf, tr(STR_STATS_PROGRESS_LBL));
 
   if (currentBookPage > 0 && currentBookPageCount >= currentBookPage) {
-    snprintf(buf, sizeof(buf), "%lu / %lu", static_cast<unsigned long>(currentBookPage),
+    snprintf(buf, sizeof(buf), "%lu/%lu", static_cast<unsigned long>(currentBookPage),
              static_cast<unsigned long>(currentBookPageCount));
   } else if (currentBookPage > 0) {
     snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(currentBookPage));
