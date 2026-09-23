@@ -16,5 +16,6 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
                                const std::string& bookTitle, const BookReadingStats& bookStats,
                                float progressPercent, bool hasEstimatedTimeLeft,
                                uint32_t estimatedTimeLeftSeconds, uint32_t currentBookPage,
-                               const GlobalReadingStats& deviceStats, bool showButtonHints,
-                               bool showEditButton, bool showMoreButton);
+                               uint32_t currentBookPageCount, const GlobalReadingStats& deviceStats,
+                               uint32_t liveTodayPages, uint32_t liveTodayReadingSeconds,
+                               bool showButtonHints, bool showEditButton, bool showMoreButton);
