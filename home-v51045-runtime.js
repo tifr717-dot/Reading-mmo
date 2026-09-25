@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-challenges-editor-test1';
+const BUILD='v5.10.45-home-challenges-editor-test2';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -35,9 +35,9 @@ function style(){
     ".v51045-today-page-value{position:absolute;z-index:5;top:80.30%;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.05vw;line-height:1.35;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-today-page-current{left:29.90%;transform:translateX(-100%);text-align:right}"+
     ".v51045-today-page-goal{left:31.40%;text-align:left}"+
-    ".v51045-challenge-row{position:absolute;z-index:5;left:62.00%;width:27.50%;transform:translateY(-50%);color:#4b3027;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:1.45vw;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px rgba(255,244,216,.48);pointer-events:none}"+
+    ".v51045-challenge-row{position:absolute;z-index:5;left:59.00%;width:45.00%;transform:translateY(-50%);color:#4b3027;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:1.85vw;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px rgba(255,244,216,.48);pointer-events:none}"+
     ".v51045-challenge-row[data-status='READY']{font-weight:800;color:#4b5c35}.v51045-challenge-row[data-status='VERIFY']{font-weight:800;color:#6c4b73}"+
-    ".v51045-challenge-row-1{top:80.15%}.v51045-challenge-row-2{top:81.82%}.v51045-challenge-row-3{top:83.49%}"+
+    ".v51045-challenge-row-1{top:80.35%}.v51045-challenge-row-2{top:82.32%}.v51045-challenge-row-3{top:84.19%}"+
     ".v51045-challenges-hit{position:absolute;z-index:4;left:53.00%;top:76.80%;width:44.00%;height:9.70%;border:0;background:transparent;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}"+
     ".v51045-challenges-hit:focus-visible{outline:2px solid rgba(135,91,151,.75);outline-offset:-2px}"+
     ".v51045-bar-editor{position:fixed;z-index:9999;left:10px;top:92px;width:min(310px,calc(100vw - 20px));background:rgba(37,20,29,.96);border:1px solid #b88a53;border-radius:12px;color:#f4e5c8;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none}"+
@@ -385,7 +385,7 @@ function challengeRowText(row){
   if(!row)return'';
   if(String(row.status||'')==='EMPTY')return String(row.name||'Open Quest Board');
   const p=compactChallengeProgress(row.detail);
-  const mark=row.met?'✓ ':row.needsConfirm?'◇ ':'';
+  const mark=row.met?'✓ ':'';
   return mark+String(row.name||row.role||'Challenge')+(p?' · '+p:'');
 }
 
@@ -420,10 +420,10 @@ function mountChallengeEditor(){
   if(els.some(x=>!x))return;
 
   const state={
-    row1X:62.00,row1Y:80.15,
-    row2X:62.00,row2Y:81.82,
-    row3X:62.00,row3Y:83.49,
-    rowW:27.50,fontSize:1.45
+    row1X:59.00,row1Y:80.35,
+    row2X:59.00,row2Y:82.32,
+    row3X:59.00,row3Y:84.19,
+    rowW:45.00,fontSize:1.85
   };
   const rows=[
     ['row1X','Row 1 X',45,90,.1],['row1Y','Row 1 Y',74,90,.1],
