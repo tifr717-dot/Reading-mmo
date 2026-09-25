@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045challenges2' index.html
+          grep -q 'home-v51045-runtime.js?v=51045challenges3' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-challenges-editor-test1" home-v51045-runtime.js
+          grep -q "v5.10.45-home-challenges-editor-test2" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -93,11 +93,13 @@ jobs:
           grep -q "data-screen=\\\"quests\\\"" home-v51045-runtime.js
           grep -q "CHALLENGE EDITOR" home-v51045-runtime.js
           grep -Fq "TODAY\\'S CHALLENGES EDITOR" home-v51045-runtime.js
-          grep -q "row1X:62.00,row1Y:80.15" home-v51045-runtime.js
-          grep -q "row2X:62.00,row2Y:81.82" home-v51045-runtime.js
-          grep -q "row3X:62.00,row3Y:83.49" home-v51045-runtime.js
-          grep -q "rowW:27.50,fontSize:1.45" home-v51045-runtime.js
+          grep -q "row1X:59.00,row1Y:80.35" home-v51045-runtime.js
+          grep -q "row2X:59.00,row2Y:82.32" home-v51045-runtime.js
+          grep -q "row3X:59.00,row3Y:84.19" home-v51045-runtime.js
+          grep -q "rowW:45.00,fontSize:1.85" home-v51045-runtime.js
           grep -q "challengePreview" home-v51045-runtime.js
+          ! grep -q "row.needsConfirm?'◇ '" home-v51045-runtime.js
+          grep -q "const mark=row.met?'✓ ':'';" home-v51045-runtime.js
 
 
           echo "Locked Reader Level + live Today Progress editor OK"
