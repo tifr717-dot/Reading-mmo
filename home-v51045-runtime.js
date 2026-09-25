@@ -38,8 +38,8 @@ function style(){
     ".v51045-challenge-row{position:absolute;z-index:5;left:59.00%;width:45.00%;transform:translateY(-50%);color:#4b3027;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:1.85vw;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px rgba(255,244,216,.48);pointer-events:none}"+
     ".v51045-challenge-row[data-status='READY']{font-weight:800;color:#4b5c35}.v51045-challenge-row[data-status='VERIFY']{font-weight:800;color:#6c4b73}"+
     ".v51045-challenge-row-1{top:80.35%}.v51045-challenge-row-2{top:82.32%}.v51045-challenge-row-3{top:84.19%}"+
-    ".v51045-challenges-hit{position:absolute;z-index:4;left:53.00%;top:76.80%;width:44.00%;height:9.70%;border:0;background:transparent;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}"+
-    ".v51045-challenges-hit:focus-visible{outline:2px solid rgba(135,91,151,.75);outline-offset:-2px}"+
+    ".v51045-challenges-hit{position:absolute;z-index:4;left:53.00%;top:76.80%;width:44.00%;height:9.70%;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:0;margin:0;cursor:pointer;opacity:0;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent}"+
+    ".v51045-challenges-hit:focus,.v51045-challenges-hit:focus-visible,.v51045-challenges-hit:active{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}"+
     ".v51045-bar-editor{position:fixed;z-index:9999;left:10px;top:92px;width:min(310px,calc(100vw - 20px));background:rgba(37,20,29,.96);border:1px solid #b88a53;border-radius:12px;color:#f4e5c8;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none}"+
     ".v51045-bar-editor[hidden]{display:none!important}"+
     ".v51045-editor-head{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:#4b293d;border-bottom:1px solid #b88a53;border-radius:11px 11px 0 0;cursor:move;user-select:none}"+
