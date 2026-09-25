@@ -376,9 +376,6 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   // on the physical 480 px-wide X4 Pro screen.
   card(renderer, x, y, w, deviceH);
   cardTitle(renderer, x, y, w, "This Device");
-  // Temporary physical-device build marker for Test 7.
-  renderer.drawText(SMALL_FONT_ID, x + w - renderer.getTextWidth(SMALL_FONT_ID, "T7") - 7, y + 5, "T7", true,
-                    EpdFontFamily::BOLD);
   const int deviceThird = w / 3;
   const int deviceTop = y + 22;
   const int deviceRowH = (deviceH - 24) / 2;
