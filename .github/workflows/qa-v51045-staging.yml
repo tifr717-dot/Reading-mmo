@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045today7' index.html
+          grep -q 'home-v51045-runtime.js?v=51045today8' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-today-pages-split-test1" home-v51045-runtime.js
+          grep -q "v5.10.45-home-today-pages-split-test2" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -50,9 +50,11 @@ jobs:
 
           grep -q "left:12.10%;top:79.50%;width:12.60%" home-v51045-runtime.js
           grep -q "left:31.20%;top:83.10%" home-v51045-runtime.js
-          grep -q "left:27.10%;transform:translateX(-100%)" home-v51045-runtime.js
-          grep -q "left:28.55%;transform:translateX(-50%)" home-v51045-runtime.js
-          grep -q "left:30.00%;text-align:left" home-v51045-runtime.js
+          grep -q "left:30.30%;transform:translateX(-100%)" home-v51045-runtime.js
+          grep -q "left:30.65%;transform:translateX(-50%)" home-v51045-runtime.js
+          grep -q "left:31.00%;text-align:left" home-v51045-runtime.js
+          grep -q "top:80.30%;color:#3b2117" home-v51045-runtime.js
+          grep -q "font-size:2.15vw;line-height:1.35" home-v51045-runtime.js
           grep -q "ringX:12.10,ringY:79.50,ringSize:12.60,ringHole:55.00" home-v51045-runtime.js
           grep -q "previewFill:Math.round(live.pct)" home-v51045-runtime.js
           grep -q "\['ringX','X / Left',0,90,.1\]" home-v51045-runtime.js
@@ -61,7 +63,7 @@ jobs:
           grep -q "data-preview-fill=\"100\"" home-v51045-runtime.js
           grep -q "ring.style.setProperty('--pct',state.previewFill+'%')" home-v51045-runtime.js
           grep -q "pctX:31.20,pctY:83.10,pctSize:2.75" home-v51045-runtime.js
-          grep -q "pageCurrentX:27.10,pageSlashX:28.55,pageGoalX:30.00,pagesY:80.00,pagesSize:2.75" home-v51045-runtime.js
+          grep -q "pageCurrentX:30.30,pageSlashX:30.65,pageGoalX:31.00,pagesY:80.30,pagesSize:2.15" home-v51045-runtime.js
           grep -q "v51045TodayPagesCurrent" home-v51045-runtime.js
           grep -q "v51045TodayPagesSlash" home-v51045-runtime.js
           grep -q "v51045TodayPagesGoal" home-v51045-runtime.js
