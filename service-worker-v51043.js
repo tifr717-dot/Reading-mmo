@@ -1,4 +1,4 @@
-const CACHE='reading-mmo-v5.10.45-home-today-pages-split-test2';
+const CACHE='reading-mmo-v5.10.45-home-today-baked-slash-test1';
 const CORE=[
  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
  './reading-journal-layered-v51043v.js',
