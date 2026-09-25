@@ -5458,6 +5458,24 @@ function startReadingUiClock(){
  setInterval(()=>{updateReadingLive();renderHomeReading()},1000);
 }
 
+window.v51045HomeChallengeState=function(){
+ const fallbackRoles=['Hunt','Gather','Alchemy'];
+ return [0,1,2].map(i=>{
+  const q=(S.quests||[])[i]||{};
+  const role=String(q.role||fallbackRoles[i]||'Challenge').replace('Craft / Alchemy','Alchemy');
+  if(!q.name){
+   return{slot:i,role,name:'Roll a '+role+' quest',detail:'Tap to open Quest Board',status:'EMPTY',xp:0,active:false,met:false,needsConfirm:false};
+  }
+  let st={tracked:false,met:false,needsConfirm:false,text:''};
+  try{st=questRequirementState(q)||st}catch(e){}
+  const status=st.met?'READY':st.needsConfirm?'VERIFY':(q.status==='Active'?'ACTIVE':String(q.status||'').toUpperCase());
+  return{
+   slot:i,role,name:String(q.name||''),detail:String(st.text||q.objective||''),status,
+   xp:Math.max(0,Number(q.xp)||0),active:q.status==='Active',met:!!st.met,needsConfirm:!!st.needsConfirm
+  };
+ });
+};
+
 function renderHome(){
  const xp=Math.max(0,totalXp()),l=levelFor(xp),lx=Math.max(0,lvlXp(xp,l)),need=lvlNeed(l);
  if($('homeLevel'))$('homeLevel').textContent=`Level ${l}`;
