@@ -28,7 +28,7 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045today4' index.html
+          grep -q 'home-v51045-runtime.js?v=51045today5' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
@@ -60,6 +60,7 @@ jobs:
           grep -q "ring.style.setProperty('--pct',state.previewFill+'%')" home-v51045-runtime.js
           grep -q "pctX:31.20,pctY:83.10,pctSize:2.75" home-v51045-runtime.js
           grep -q "pagesX:27.90,pagesY:80.00,pagesW:70.00,pagesSize:2.75" home-v51045-runtime.js
+          grep -q "gap:1.00ch" home-v51045-runtime.js
           grep -q "TODAY EDITOR" home-v51045-runtime.js
           grep -Fq "TODAY\\'S PROGRESS EDITOR" home-v51045-runtime.js
           grep -q "v51045TodayPagesCurrent" home-v51045-runtime.js
