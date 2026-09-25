@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-today-pages-baked-slash-test2';
+const BUILD='v5.10.45-home-today-pages-baked-slash-test3';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -32,7 +32,7 @@ function style(){
     ".v51045-xp-line{position:absolute;z-index:4;left:53.40%;top:34.80%;width:34%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(9px,2.0vw,14px);line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-today-ring{position:absolute;z-index:4;left:12.10%;top:79.50%;width:12.60%;aspect-ratio:1;border-radius:50%;background:conic-gradient(#a96bc0 0 var(--pct,0%),rgba(112,84,102,.22) var(--pct,0%) 100%);-webkit-mask:radial-gradient(circle,transparent var(--hole,55%),#000 calc(var(--hole,55%) + 2%));mask:radial-gradient(circle,transparent var(--hole,55%),#000 calc(var(--hole,55%) + 2%));filter:drop-shadow(0 1px 1px rgba(65,35,52,.20));pointer-events:none}"+
     ".v51045-today-percent{position:absolute;z-index:5;left:30.20%;top:83.10%;width:12%;transform:translate(-50%,-50%);text-align:center;color:#5f3d68;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.75vw;line-height:1;text-shadow:0 1px rgba(255,244,216,.62);pointer-events:none}"+
-    ".v51045-today-page-value{position:absolute;z-index:5;top:80.30%;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.15vw;line-height:1.35;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
+    ".v51045-today-page-value{position:absolute;z-index:5;top:80.30%;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.05vw;line-height:1.35;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-today-page-current{left:29.90%;transform:translateX(-100%);text-align:right}"+
     ".v51045-today-page-goal{left:31.40%;text-align:left}"+
     ".v51045-bar-editor{position:fixed;z-index:9999;left:10px;top:92px;width:min(310px,calc(100vw - 20px));background:rgba(37,20,29,.96);border:1px solid #b88a53;border-radius:12px;color:#f4e5c8;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none}"+
@@ -160,7 +160,7 @@ function mountProgressEditor(){
     ringX:12.10,ringY:79.50,ringSize:12.60,ringHole:55.00,
     previewFill:Math.round(live.pct),
     pctX:30.20,pctY:83.10,pctSize:2.75,
-    pageCurrentX:29.90,pageGoalX:31.40,pagesY:80.30,pagesSize:2.15
+    pageCurrentX:29.90,pageGoalX:31.40,pagesY:80.30,pagesSize:2.05
   };
 
   const groups=[
