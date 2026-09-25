@@ -28,7 +28,7 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045challenges3' index.html
+          grep -q 'home-v51045-runtime.js?v=51045challenges4' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
@@ -89,6 +89,8 @@ jobs:
           grep -q "v51045Challenge2" home-v51045-runtime.js
           grep -q "v51045Challenge3" home-v51045-runtime.js
           grep -q "v51045ChallengesHit" home-v51045-runtime.js
+          grep -q "opacity:0;-webkit-appearance:none;appearance:none" home-v51045-runtime.js
+          grep -q "outline:0!important;box-shadow:none!important" home-v51045-runtime.js
           grep -q "openHomeChallenges" home-v51045-runtime.js
           grep -q "data-screen=\\\"quests\\\"" home-v51045-runtime.js
           grep -q "CHALLENGE EDITOR" home-v51045-runtime.js
