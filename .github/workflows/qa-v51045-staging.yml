@@ -50,7 +50,9 @@ jobs:
 
           grep -q "left:12.10%;top:79.50%;width:12.60%" home-v51045-runtime.js
           grep -q "left:31.20%;top:83.10%" home-v51045-runtime.js
-          grep -q "left:27.90%;top:80.00%;width:70.00%" home-v51045-runtime.js
+          grep -q "left:27.10%;transform:translateX(-100%)" home-v51045-runtime.js
+          grep -q "left:28.55%;transform:translateX(-50%)" home-v51045-runtime.js
+          grep -q "left:30.00%;text-align:left" home-v51045-runtime.js
           grep -q "ringX:12.10,ringY:79.50,ringSize:12.60,ringHole:55.00" home-v51045-runtime.js
           grep -q "previewFill:Math.round(live.pct)" home-v51045-runtime.js
           grep -q "\['ringX','X / Left',0,90,.1\]" home-v51045-runtime.js
