@@ -102,26 +102,54 @@ void drawPaceTrend(const GfxRenderer& renderer, const int x, const int y, const 
                    const std::array<ReadingDailyEntry, ReadingDailyStats::DISPLAY_DAYS>& days) {
   card(renderer, x, y, w, h);
   chartTitle(renderer, x, y, w, "Reading Pace");
-  const int left = x + 12;
-  const int right = x + w - 10;
-  const int top = y + 29;
-  const int bottom = y + h - 24;
-  const int graphW = std::max(1, right - left);
-  const int graphH = std::max(1, bottom - top);
 
   std::array<float, ReadingDailyStats::DISPLAY_DAYS> values{};
-  float maxPace = 1.0f;
+  float maxPace = 0.0f;
   for (size_t i = 0; i < days.size(); ++i) {
     values[i] = ppm(days[i].pages, days[i].readingSeconds);
     maxPace = std::max(maxPace, values[i]);
   }
+
+  // Keep a familiar 0-6 PPM scale for normal reading speeds, but expand
+  // automatically in 2 PPM steps if a faster day would otherwise be clipped.
+  const float scaleMax = std::max(6.0f, std::ceil(maxPace / 2.0f) * 2.0f);
+  const float scaleMid = scaleMax / 2.0f;
+
+  char currentBuf[20];
+  snprintf(currentBuf, sizeof(currentBuf), "%.1f ppm", values.back());
+  const int currentW = renderer.getTextWidth(SMALL_FONT_ID, currentBuf, EpdFontFamily::BOLD);
+  renderer.drawText(SMALL_FONT_ID, x + w - currentW - 7, y + 5, currentBuf, true, EpdFontFamily::BOLD);
+
+  const int labelRight = x + 28;
+  const int left = x + 34;
+  const int right = x + w - 10;
+  const int top = y + 31;
+  const int bottom = y + h - 24;
+  const int graphW = std::max(1, right - left);
+  const int graphH = std::max(1, bottom - top);
+  const int smallH = renderer.getLineHeight(SMALL_FONT_ID);
+
+  char scaleBuf[12];
+  snprintf(scaleBuf, sizeof(scaleBuf), "%.0f", scaleMax);
+  int labelW = renderer.getTextWidth(SMALL_FONT_ID, scaleBuf);
+  renderer.drawText(SMALL_FONT_ID, labelRight - labelW, top - 2, scaleBuf);
+
+  snprintf(scaleBuf, sizeof(scaleBuf), "%.0f", scaleMid);
+  labelW = renderer.getTextWidth(SMALL_FONT_ID, scaleBuf);
+  renderer.drawText(SMALL_FONT_ID, labelRight - labelW, top + graphH / 2 - smallH / 2, scaleBuf);
+
+  renderer.drawText(SMALL_FONT_ID, labelRight - renderer.getTextWidth(SMALL_FONT_ID, "0"),
+                    bottom - smallH + 2, "0");
+
+  renderer.drawLine(left - 4, top, left - 4, bottom, true);
+  renderer.drawLine(left - 4, bottom, right, bottom, true);
 
   bool havePrev = false;
   int prevX = 0;
   int prevY = 0;
   for (size_t i = 0; i < values.size(); ++i) {
     const int px = left + static_cast<int>((static_cast<long long>(graphW) * i) / (values.size() - 1));
-    const int py = bottom - static_cast<int>((values[i] / maxPace) * static_cast<float>(graphH));
+    const int py = bottom - static_cast<int>((values[i] / scaleMax) * static_cast<float>(graphH));
     if (havePrev) renderer.drawLine(prevX, prevY, px, py, true);
     renderer.fillRect(px - 1, py - 1, 3, 3, true);
     prevX = px;
