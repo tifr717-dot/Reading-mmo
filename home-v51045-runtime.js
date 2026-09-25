@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-today-progress-locked-final';
+const BUILD='v5.10.45-home-challenges-editor-test1';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -35,6 +35,11 @@ function style(){
     ".v51045-today-page-value{position:absolute;z-index:5;top:80.30%;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.05vw;line-height:1.35;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-today-page-current{left:29.90%;transform:translateX(-100%);text-align:right}"+
     ".v51045-today-page-goal{left:31.40%;text-align:left}"+
+    ".v51045-challenge-row{position:absolute;z-index:5;left:62.00%;width:27.50%;transform:translateY(-50%);color:#4b3027;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:1.45vw;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px rgba(255,244,216,.48);pointer-events:none}"+
+    ".v51045-challenge-row[data-status='READY']{font-weight:800;color:#4b5c35}.v51045-challenge-row[data-status='VERIFY']{font-weight:800;color:#6c4b73}"+
+    ".v51045-challenge-row-1{top:80.15%}.v51045-challenge-row-2{top:81.82%}.v51045-challenge-row-3{top:83.49%}"+
+    ".v51045-challenges-hit{position:absolute;z-index:4;left:53.00%;top:76.80%;width:44.00%;height:9.70%;border:0;background:transparent;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}"+
+    ".v51045-challenges-hit:focus-visible{outline:2px solid rgba(135,91,151,.75);outline-offset:-2px}"+
     ".v51045-bar-editor{position:fixed;z-index:9999;left:10px;top:92px;width:min(310px,calc(100vw - 20px));background:rgba(37,20,29,.96);border:1px solid #b88a53;border-radius:12px;color:#f4e5c8;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none}"+
     ".v51045-bar-editor[hidden]{display:none!important}"+
     ".v51045-editor-head{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:#4b293d;border-bottom:1px solid #b88a53;border-radius:11px 11px 0 0;cursor:move;user-select:none}"+
@@ -339,6 +344,195 @@ function mountProgressEditor(){
   apply();
 }
 
+
+function challengeEditorEnabled(){
+  try{return new URLSearchParams(location.search).get('challengeEditor')==='1'}catch(e){return false}
+}
+
+function challengeState(){
+  try{
+    const q=new URLSearchParams(location.search);
+    if(q.get('challengePreview')==='1'){
+      return[
+        {slot:0,role:'Hunt',name:'Moonlit Page Hunt',detail:'📖 42 / 100 pages',status:'ACTIVE',active:true,met:false},
+        {slot:1,role:'Gather',name:'Three Trail Markers',detail:'🔁 1 / 3 sessions',status:'ACTIVE',active:true,met:false},
+        {slot:2,role:'Alchemy',name:'Choice Forage',detail:'⏱ 20 / 45 minutes',status:'VERIFY',active:true,met:false,needsConfirm:true}
+      ];
+    }
+    if(typeof window.v51045HomeChallengeState==='function'){
+      const rows=window.v51045HomeChallengeState();
+      if(Array.isArray(rows))return rows.slice(0,3);
+    }
+  }catch(e){}
+  return[
+    {slot:0,role:'Hunt',name:'Roll a Hunt quest',detail:'Tap to open Quest Board',status:'EMPTY'},
+    {slot:1,role:'Gather',name:'Roll a Gather quest',detail:'Tap to open Quest Board',status:'EMPTY'},
+    {slot:2,role:'Alchemy',name:'Roll an Alchemy quest',detail:'Tap to open Quest Board',status:'EMPTY'}
+  ];
+}
+
+function compactChallengeProgress(detail){
+  const s=String(detail||'').replace(/[📖⏱📚🧭🔁⚔️🏃✨🏁]/g,'').trim();
+  let m=s.match(/([\d,.]+)\s*\/\s*([\d,.]+)\s*pages?/i);if(m)return m[1]+'/'+m[2]+'p';
+  m=s.match(/([\d,.]+)\s*\/\s*([\d,.]+)\s*minutes?/i);if(m)return m[1]+'/'+m[2]+'m';
+  m=s.match(/([\d,.]+)\s*\/\s*([\d,.]+)\s*chapters?/i);if(m)return m[1]+'/'+m[2]+'ch';
+  m=s.match(/([\d,.]+)\s*\/\s*([\d,.]+)\s*sessions?/i);if(m)return m[1]+'/'+m[2]+' sessions';
+  m=s.match(/([\d,.]+)\s*\/\s*([\d,.]+)%/i);if(m)return m[1]+'/'+m[2]+'%';
+  return'';
+}
+
+function challengeRowText(row){
+  if(!row)return'';
+  if(String(row.status||'')==='EMPTY')return String(row.name||'Open Quest Board');
+  const p=compactChallengeProgress(row.detail);
+  const mark=row.met?'✓ ':row.needsConfirm?'◇ ':'';
+  return mark+String(row.name||row.role||'Challenge')+(p?' · '+p:'');
+}
+
+function renderChallenges(){
+  const rows=challengeState();
+  for(let i=0;i<3;i++){
+    const el=$('v51045Challenge'+(i+1));
+    if(!el)continue;
+    const row=rows[i]||{};
+    el.textContent=challengeRowText(row);
+    el.dataset.status=String(row.status||'');
+    el.title=[row.name,row.detail,row.status].filter(Boolean).join(' — ');
+  }
+  const hit=$('v51045ChallengesHit');
+  if(hit){
+    const active=rows.filter(r=>r&&r.status!=='EMPTY').length;
+    hit.setAttribute('aria-label',active?('Open Quest Board with '+active+' active challenge'+(active===1?'':'s')):'Open Quest Board');
+  }
+}
+
+function openHomeChallenges(){
+  const nav=document.querySelector('.bottomnav button[data-screen="quests"]');
+  try{
+    if(typeof window.go==='function'){window.go('quests',nav);return}
+  }catch(e){}
+  if(nav)nav.click();
+}
+
+function mountChallengeEditor(){
+  if(!challengeEditorEnabled()||$('v51045ChallengeEditor'))return;
+  const els=[$('v51045Challenge1'),$('v51045Challenge2'),$('v51045Challenge3')];
+  if(els.some(x=>!x))return;
+
+  const state={
+    row1X:62.00,row1Y:80.15,
+    row2X:62.00,row2Y:81.82,
+    row3X:62.00,row3Y:83.49,
+    rowW:27.50,fontSize:1.45
+  };
+  const rows=[
+    ['row1X','Row 1 X',45,90,.1],['row1Y','Row 1 Y',74,90,.1],
+    ['row2X','Row 2 X',45,90,.1],['row2Y','Row 2 Y',74,90,.1],
+    ['row3X','Row 3 X',45,90,.1],['row3Y','Row 3 Y',74,90,.1],
+    ['rowW','Width',10,45,.1],['fontSize','Font size',.7,4,.05]
+  ];
+
+  const open=document.createElement('button');
+  open.id='v51045ChallengeEditorOpen';
+  open.className='v51045-editor-open';
+  open.type='button';
+  open.textContent='CHALLENGE EDITOR';
+  open.style.top='192px';
+  document.body.appendChild(open);
+
+  const panel=document.createElement('div');
+  panel.id='v51045ChallengeEditor';
+  panel.className='v51045-bar-editor';
+  panel.style.top='192px';
+  panel.hidden=true;
+  panel.innerHTML=
+    '<div class="v51045-editor-head"><strong>TODAY\'S CHALLENGES EDITOR</strong><button type="button" class="v51045-editor-close" aria-label="Hide editor">×</button></div>'+
+    '<div class="v51045-editor-body">'+
+      rows.map(row=>{
+        const [k,label,min,max,step]=row;
+        return '<div class="v51045-editor-row" data-challenge-key="'+k+'" data-min="'+min+'" data-max="'+max+'" data-step="'+step+'">'+
+          '<span>'+label+'</span>'+
+          '<button type="button" data-delta="-1">−</button>'+
+          '<input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+state[k]+'">'+
+          '<button type="button" data-delta="1">+</button>'+
+          '<span class="v51045-editor-value">'+state[k].toFixed(2)+'</span>'+
+        '</div>';
+      }).join('')+
+      '<div class="v51045-editor-actions"><button type="button" data-challenge-action="reset">RESET</button><button type="button" data-challenge-action="copy">COPY VALUES</button></div>'+
+      '<div id="v51045ChallengeEditorOutput" class="v51045-editor-output"></div>'+
+    '</div>';
+  document.body.appendChild(panel);
+
+  const defaults={...state};
+  const apply=()=>{
+    const vals=[[state.row1X,state.row1Y],[state.row2X,state.row2Y],[state.row3X,state.row3Y]];
+    els.forEach((el,i)=>{
+      el.style.left=vals[i][0]+'%';
+      el.style.top=vals[i][1]+'%';
+      el.style.width=state.rowW+'%';
+      el.style.fontSize=state.fontSize+'vw';
+    });
+    panel.querySelectorAll('[data-challenge-key]').forEach(row=>{
+      const k=row.dataset.challengeKey;
+      row.querySelector('input').value=state[k];
+      row.querySelector('.v51045-editor-value').textContent=state[k].toFixed(2);
+    });
+    const out=$('v51045ChallengeEditorOutput');
+    if(out)out.textContent=
+      'ROW 1 left:'+state.row1X.toFixed(2)+'%; top:'+state.row1Y.toFixed(2)+'%;\n'+
+      'ROW 2 left:'+state.row2X.toFixed(2)+'%; top:'+state.row2Y.toFixed(2)+'%;\n'+
+      'ROW 3 left:'+state.row3X.toFixed(2)+'%; top:'+state.row3Y.toFixed(2)+'%;\n'+
+      'STYLE width:'+state.rowW.toFixed(2)+'%; font:'+state.fontSize.toFixed(2)+'vw;';
+  };
+
+  panel.querySelectorAll('[data-challenge-key]').forEach(row=>{
+    const k=row.dataset.challengeKey,input=row.querySelector('input');
+    const min=Number(row.dataset.min),max=Number(row.dataset.max),step=Number(row.dataset.step);
+    input.addEventListener('input',()=>{state[k]=Number(input.value);apply()});
+    row.querySelectorAll('button[data-delta]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const dir=Number(btn.dataset.delta);
+        const next=Math.max(min,Math.min(max,state[k]+dir*step));
+        state[k]=Number(next.toFixed(step<1?2:0));
+        apply();
+      });
+    });
+  });
+
+  panel.querySelector('[data-challenge-action="reset"]').addEventListener('click',()=>{Object.assign(state,defaults);apply()});
+  panel.querySelector('[data-challenge-action="copy"]').addEventListener('click',async()=>{
+    const txt=$('v51045ChallengeEditorOutput').textContent;
+    try{
+      await navigator.clipboard.writeText(txt);
+      const b=panel.querySelector('[data-challenge-action="copy"]');
+      b.textContent='COPIED!';
+      setTimeout(()=>b.textContent='COPY VALUES',900);
+    }catch(e){
+      $('v51045ChallengeEditorOutput').textContent=txt+'\n(long-press to copy)';
+    }
+  });
+
+  open.addEventListener('click',()=>{panel.hidden=false;open.hidden=true;renderChallenges();apply()});
+  panel.querySelector('.v51045-editor-close').addEventListener('click',()=>{panel.hidden=true;open.hidden=false;renderChallenges()});
+
+  const head=panel.querySelector('.v51045-editor-head');
+  let drag=null;
+  head.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button'))return;
+    drag={id:e.pointerId,sx:e.clientX,sy:e.clientY,left:panel.offsetLeft,top:panel.offsetTop};
+    head.setPointerCapture(e.pointerId);
+  });
+  head.addEventListener('pointermove',e=>{
+    if(!drag||e.pointerId!==drag.id)return;
+    const maxX=Math.max(0,innerWidth-panel.offsetWidth),maxY=Math.max(0,innerHeight-panel.offsetHeight);
+    panel.style.left=Math.max(0,Math.min(maxX,drag.left+e.clientX-drag.sx))+'px';
+    panel.style.top=Math.max(0,Math.min(maxY,drag.top+e.clientY-drag.sy))+'px';
+  });
+  head.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.id)drag=null});
+  head.addEventListener('pointercancel',()=>{drag=null});
+  apply();
+}
+
 function barEditorEnabled(){
   try{return new URLSearchParams(location.search).get('barEditor')==='1'}catch(e){return false}
 }
@@ -568,7 +762,7 @@ async function mount(){
   home.classList.add('v51045-level-only-home');
 
   let root=$('v51045LevelOnlyHome');
-  if(root){renderReaderLevel();renderTodayProgress();chrome();mountBarEditor();mountProgressEditor();return}
+  if(root){renderReaderLevel();renderTodayProgress();renderChallenges();chrome();mountBarEditor();mountProgressEditor();mountChallengeEditor();return}
 
   root=document.createElement('div');
   root.id='v51045LevelOnlyHome';
@@ -588,28 +782,38 @@ async function mount(){
       '<div id="v51045TodayPercent" class="v51045-today-percent" aria-label="Today reading percent"></div>'+
       '<div id="v51045TodayPagesCurrent" class="v51045-today-page-value v51045-today-page-current" aria-label="Pages read today"></div>'+
       '<div id="v51045TodayPagesGoal" class="v51045-today-page-value v51045-today-page-goal" aria-label="Today page goal"></div>'+
+      '<button id="v51045ChallengesHit" class="v51045-challenges-hit" type="button" aria-label="Open Quest Board"></button>'+
+      '<div id="v51045Challenge1" class="v51045-challenge-row v51045-challenge-row-1"></div>'+
+      '<div id="v51045Challenge2" class="v51045-challenge-row v51045-challenge-row-2"></div>'+
+      '<div id="v51045Challenge3" class="v51045-challenge-row v51045-challenge-row-3"></div>'+
     '</div>'+
     '<div id="v51045LevelOnlyError" class="v51045-error" hidden></div>'+
   '</div>';
   home.replaceChildren(root);
 
   const art=$('v51045MasterArt');
+  const challengeHit=$('v51045ChallengesHit');
+  if(challengeHit)challengeHit.addEventListener('click',openHomeChallenges);
   art.src=MASTER;
 
   try{
     await waitForArt(art);
     reveal(root);
     renderTodayProgress();
+    renderChallenges();
     mountBarEditor();
     mountProgressEditor();
+    mountChallengeEditor();
   }catch(e){
     console.error('[v51045 Home Reader XP]',e);
     const er=$('v51045LevelOnlyError');
     if(er){er.textContent='Home artwork failed to load.';er.hidden=false}
     reveal(root);
     renderTodayProgress();
+    renderChallenges();
     mountBarEditor();
     mountProgressEditor();
+    mountChallengeEditor();
   }
 }
 
@@ -621,7 +825,7 @@ const bindLegacy=()=>{
   if(typeof oldGo==='function'&&!oldGo.__v51045Wrapped){
     const wrapped=function(){
       const r=oldGo.apply(this,arguments);
-      setTimeout(()=>{chrome();renderReaderLevel()},0);
+      setTimeout(()=>{chrome();renderReaderLevel();renderTodayProgress();renderChallenges()},0);
       return r;
     };
     wrapped.__v51045Wrapped=1;
@@ -632,7 +836,7 @@ const bindLegacy=()=>{
   if(typeof oldRenderHome==='function'&&!oldRenderHome.__v51045Wrapped){
     const wrapped=function(){
       const r=oldRenderHome.apply(this,arguments);
-      setTimeout(renderReaderLevel,0);
+      setTimeout(()=>{renderReaderLevel();renderTodayProgress();renderChallenges()},0);
       return r;
     };
     wrapped.__v51045Wrapped=1;
@@ -640,6 +844,6 @@ const bindLegacy=()=>{
   }
 };
 
-setInterval(()=>{try{bindLegacy();renderReaderLevel();renderTodayProgress();chrome()}catch(e){}},500);
-window.addEventListener('pageshow',()=>{mount();renderReaderLevel();renderTodayProgress();chrome()});
+setInterval(()=>{try{bindLegacy();renderReaderLevel();renderTodayProgress();renderChallenges();chrome()}catch(e){}},500);
+window.addEventListener('pageshow',()=>{mount();renderReaderLevel();renderTodayProgress();renderChallenges();chrome()});
 })();
