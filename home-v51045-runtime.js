@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-today-pages-split-test2';
+const BUILD='v5.10.45-home-today-pages-baked-slash-test1';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -31,10 +31,9 @@ function style(){
     ".v51045-exp-fill{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(180deg,#d7a0df 0%,#c17fce 48%,#9f5db3 100%);box-shadow:inset 0 1px rgba(255,255,255,.36),0 0 3px rgba(177,106,192,.18);transition:width .18s ease}"+
     ".v51045-xp-line{position:absolute;z-index:4;left:53.40%;top:34.80%;width:34%;transform:translate(-50%,-50%);text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(9px,2.0vw,14px);line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-today-ring{position:absolute;z-index:4;left:12.10%;top:79.50%;width:12.60%;aspect-ratio:1;border-radius:50%;background:conic-gradient(#a96bc0 0 var(--pct,0%),rgba(112,84,102,.22) var(--pct,0%) 100%);-webkit-mask:radial-gradient(circle,transparent var(--hole,55%),#000 calc(var(--hole,55%) + 2%));mask:radial-gradient(circle,transparent var(--hole,55%),#000 calc(var(--hole,55%) + 2%));filter:drop-shadow(0 1px 1px rgba(65,35,52,.20));pointer-events:none}"+
-    ".v51045-today-percent{position:absolute;z-index:5;left:31.20%;top:83.10%;width:12%;transform:translate(-50%,-50%);text-align:center;color:#5f3d68;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.75vw;line-height:1;text-shadow:0 1px rgba(255,244,216,.62);pointer-events:none}"+
+    ".v51045-today-percent{position:absolute;z-index:5;left:30.20%;top:83.10%;width:12%;transform:translate(-50%,-50%);text-align:center;color:#5f3d68;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.75vw;line-height:1;text-shadow:0 1px rgba(255,244,216,.62);pointer-events:none}"+
     ".v51045-today-page-value{position:absolute;z-index:5;top:80.30%;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:2.15vw;line-height:1.35;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.55);pointer-events:none}"+
     ".v51045-today-page-current{left:30.30%;transform:translateX(-100%);text-align:right}"+
-    ".v51045-today-page-slash{left:30.65%;transform:translateX(-50%);text-align:center}"+
     ".v51045-today-page-goal{left:31.00%;text-align:left}"+
     ".v51045-bar-editor{position:fixed;z-index:9999;left:10px;top:92px;width:min(310px,calc(100vw - 20px));background:rgba(37,20,29,.96);border:1px solid #b88a53;border-radius:12px;color:#f4e5c8;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none}"+
     ".v51045-bar-editor[hidden]{display:none!important}"+
@@ -135,13 +134,11 @@ function renderTodayProgress(){
   const ring=$('v51045TodayRing');
   const pctEl=$('v51045TodayPercent');
   const curEl=$('v51045TodayPagesCurrent');
-  const slashEl=$('v51045TodayPagesSlash');
   const goalEl=$('v51045TodayPagesGoal');
   const st=todayProgressState();
   if(ring)ring.style.setProperty('--pct',st.pct+'%');
   if(pctEl)pctEl.textContent=String(Math.round(st.pct));
   if(curEl)curEl.textContent=st.pages.toLocaleString();
-  if(slashEl)slashEl.textContent='/';
   if(goalEl)goalEl.textContent=st.goal.toLocaleString();
 }
 
@@ -155,16 +152,15 @@ function mountProgressEditor(){
   const ring=$('v51045TodayRing');
   const pct=$('v51045TodayPercent');
   const pageCurrent=$('v51045TodayPagesCurrent');
-  const pageSlash=$('v51045TodayPagesSlash');
   const pageGoal=$('v51045TodayPagesGoal');
-  if(!ring||!pct||!pageCurrent||!pageSlash||!pageGoal)return;
+  if(!ring||!pct||!pageCurrent||!pageGoal)return;
 
   const live=todayProgressState();
   const state={
     ringX:12.10,ringY:79.50,ringSize:12.60,ringHole:55.00,
     previewFill:Math.round(live.pct),
-    pctX:31.20,pctY:83.10,pctSize:2.75,
-    pageCurrentX:30.30,pageSlashX:30.65,pageGoalX:31.00,pagesY:80.30,pagesSize:2.15
+    pctX:30.20,pctY:83.10,pctSize:2.75,
+    pageCurrentX:30.30,pageGoalX:31.00,pagesY:80.30,pagesSize:2.15
   };
 
   const groups=[
@@ -177,9 +173,8 @@ function mountProgressEditor(){
       ['pctX','Percent X',0,100,.1],['pctY','Percent Y',0,95,.1],['pctSize','Font size',.5,7,.05]
     ]},
     {label:'PAGES',rows:[
-      ['pageCurrentX','Current X',0,55,.1],['pageSlashX','Slash X',0,55,.1],
-      ['pageGoalX','Goal X',0,55,.1],['pagesY','Pages Y',0,95,.1],
-      ['pagesSize','Font size',.5,6,.05]
+      ['pageCurrentX','Current X',0,55,.1],['pageGoalX','Goal X',0,55,.1],
+      ['pagesY','Pages Y',0,95,.1],['pagesSize','Font size',.5,6,.05]
     ]}
   ];
 
@@ -249,15 +244,11 @@ function mountProgressEditor(){
     pageCurrent.style.left=state.pageCurrentX+'%';
     pageCurrent.style.top=state.pagesY+'%';
     pageCurrent.style.fontSize=state.pagesSize+'vw';
-    pageSlash.style.left=state.pageSlashX+'%';
-    pageSlash.style.top=state.pagesY+'%';
-    pageSlash.style.fontSize=state.pagesSize+'vw';
     pageGoal.style.left=state.pageGoalX+'%';
     pageGoal.style.top=state.pagesY+'%';
     pageGoal.style.fontSize=state.pagesSize+'vw';
     const previewPages=Math.round((Number(live.goal)||100)*(state.previewFill/100));
     pageCurrent.textContent=previewPages.toLocaleString();
-    pageSlash.textContent='/';
     pageGoal.textContent=(Number(live.goal)||100).toLocaleString();
 
     panel.querySelectorAll('[data-progress-key]').forEach(row=>{
@@ -270,7 +261,7 @@ function mountProgressEditor(){
     if(out)out.textContent=
       'RING left:'+state.ringX.toFixed(2)+'%; top:'+state.ringY.toFixed(2)+'%; size:'+state.ringSize.toFixed(2)+'%; hole:'+state.ringHole.toFixed(2)+'%;\n'+
       'PERCENT left:'+state.pctX.toFixed(2)+'%; top:'+state.pctY.toFixed(2)+'%; font:'+state.pctSize.toFixed(2)+'vw;\n'+
-      'PAGES currentX:'+state.pageCurrentX.toFixed(2)+'%; slashX:'+state.pageSlashX.toFixed(2)+'%; goalX:'+state.pageGoalX.toFixed(2)+'%; top:'+state.pagesY.toFixed(2)+'%; font:'+state.pagesSize.toFixed(2)+'vw;\n'+
+      'PAGES currentX:'+state.pageCurrentX.toFixed(2)+'%; goalX:'+state.pageGoalX.toFixed(2)+'%; top:'+state.pagesY.toFixed(2)+'%; font:'+state.pagesSize.toFixed(2)+'vw;\n'+
       'PREVIEW ONLY: '+Math.round(state.previewFill)+'% fill';
   };
 
@@ -596,7 +587,6 @@ async function mount(){
       '<div id="v51045TodayRing" class="v51045-today-ring" aria-label="Today reading progress"></div>'+
       '<div id="v51045TodayPercent" class="v51045-today-percent" aria-label="Today reading percent"></div>'+
       '<div id="v51045TodayPagesCurrent" class="v51045-today-page-value v51045-today-page-current" aria-label="Pages read today"></div>'+
-      '<div id="v51045TodayPagesSlash" class="v51045-today-page-value v51045-today-page-slash" aria-hidden="true">/</div>'+
       '<div id="v51045TodayPagesGoal" class="v51045-today-page-value v51045-today-page-goal" aria-label="Today page goal"></div>'+
     '</div>'+
     '<div id="v51045LevelOnlyError" class="v51045-error" hidden></div>'+
