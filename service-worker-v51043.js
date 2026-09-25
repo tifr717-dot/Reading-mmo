@@ -1,4 +1,4 @@
-const CACHE='reading-mmo-v5.10.45-home-challenges-editor3';
+const CACHE='reading-mmo-v5.10.45-home-challenges-editor4';
 const CORE=[
  './','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png',
  './reading-journal-layered-v51043v.js',
