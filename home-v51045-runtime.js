@@ -111,6 +111,13 @@ function renderReaderLevel(){
 
 function todayProgressState(){
   try{
+    const q=new URLSearchParams(location.search);
+    const qp=q.get('progressPreviewCurrent'),qg=q.get('progressPreviewGoal');
+    if(qp!==null&&qg!==null){
+      const pages=Math.max(0,Number(qp)||0);
+      const goal=Math.max(1,Number(qg)||100);
+      return{pages,goal,pct:Math.max(0,Math.min(100,pages/goal*100)),preview:true};
+    }
     if(typeof window.todayReadingState==='function'){
       const st=window.todayReadingState();
       const pages=Math.max(0,Number(st?.pages)||0);
