@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045today6' index.html
+          grep -q 'home-v51045-runtime.js?v=51045today7' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-today-progress-locked1" home-v51045-runtime.js
+          grep -q "v5.10.45-home-today-pages-split-test1" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -59,8 +59,14 @@ jobs:
           grep -q "data-preview-fill=\"100\"" home-v51045-runtime.js
           grep -q "ring.style.setProperty('--pct',state.previewFill+'%')" home-v51045-runtime.js
           grep -q "pctX:31.20,pctY:83.10,pctSize:2.75" home-v51045-runtime.js
-          grep -q "pagesX:27.90,pagesY:80.00,pagesW:70.00,pagesSize:2.75" home-v51045-runtime.js
-          grep -q "gap:1.00ch" home-v51045-runtime.js
+          grep -q "pageCurrentX:27.10,pageSlashX:28.55,pageGoalX:30.00,pagesY:80.00,pagesSize:2.75" home-v51045-runtime.js
+          grep -q "v51045TodayPagesCurrent" home-v51045-runtime.js
+          grep -q "v51045TodayPagesSlash" home-v51045-runtime.js
+          grep -q "v51045TodayPagesGoal" home-v51045-runtime.js
+          grep -q "\['pageCurrentX','Current X',0,55,.1\]" home-v51045-runtime.js
+          grep -q "\['pageSlashX','Slash X',0,55,.1\]" home-v51045-runtime.js
+          grep -q "\['pageGoalX','Goal X',0,55,.1\]" home-v51045-runtime.js
+          grep -q "pageSlash.textContent='/'" home-v51045-runtime.js
           grep -q "progressPreviewCurrent" home-v51045-runtime.js
           grep -q "progressPreviewGoal" home-v51045-runtime.js
           grep -q "TODAY EDITOR" home-v51045-runtime.js
