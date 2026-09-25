@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045today8' index.html
+          grep -q 'home-v51045-runtime.js?v=51045today9' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-today-pages-split-test2" home-v51045-runtime.js
+          grep -q "v5.10.45-home-today-pages-baked-slash-test1" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -49,7 +49,7 @@ jobs:
           grep -q "TITLE + EXP" home-v51045-runtime.js
 
           grep -q "left:12.10%;top:79.50%;width:12.60%" home-v51045-runtime.js
-          grep -q "left:31.20%;top:83.10%" home-v51045-runtime.js
+          grep -q "left:30.20%;top:83.10%" home-v51045-runtime.js
           grep -q "left:30.30%;transform:translateX(-100%)" home-v51045-runtime.js
           grep -q "left:30.65%;transform:translateX(-50%)" home-v51045-runtime.js
           grep -q "left:31.00%;text-align:left" home-v51045-runtime.js
@@ -62,15 +62,14 @@ jobs:
           grep -q "\['previewFill','Preview fill',0,100,1\]" home-v51045-runtime.js
           grep -q "data-preview-fill=\"100\"" home-v51045-runtime.js
           grep -q "ring.style.setProperty('--pct',state.previewFill+'%')" home-v51045-runtime.js
-          grep -q "pctX:31.20,pctY:83.10,pctSize:2.75" home-v51045-runtime.js
-          grep -q "pageCurrentX:30.30,pageSlashX:30.65,pageGoalX:31.00,pagesY:80.30,pagesSize:2.15" home-v51045-runtime.js
+          grep -q "pctX:30.20,pctY:83.10,pctSize:2.75" home-v51045-runtime.js
+          grep -q "pageCurrentX:30.30,pageGoalX:31.00,pagesY:80.30,pagesSize:2.15" home-v51045-runtime.js
           grep -q "v51045TodayPagesCurrent" home-v51045-runtime.js
-          grep -q "v51045TodayPagesSlash" home-v51045-runtime.js
           grep -q "v51045TodayPagesGoal" home-v51045-runtime.js
+          ! grep -q "v51045TodayPagesSlash" home-v51045-runtime.js
+          ! grep -q "pageSlash" home-v51045-runtime.js
           grep -q "\['pageCurrentX','Current X',0,55,.1\]" home-v51045-runtime.js
-          grep -q "\['pageSlashX','Slash X',0,55,.1\]" home-v51045-runtime.js
           grep -q "\['pageGoalX','Goal X',0,55,.1\]" home-v51045-runtime.js
-          grep -q "pageSlash.textContent='/'" home-v51045-runtime.js
           grep -q "progressPreviewCurrent" home-v51045-runtime.js
           grep -q "progressPreviewGoal" home-v51045-runtime.js
           grep -q "TODAY EDITOR" home-v51045-runtime.js
