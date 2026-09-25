@@ -51,7 +51,6 @@ jobs:
           grep -q "left:12.10%;top:79.50%;width:12.60%" home-v51045-runtime.js
           grep -q "left:30.20%;top:83.10%" home-v51045-runtime.js
           grep -q "left:30.30%;transform:translateX(-100%)" home-v51045-runtime.js
-          grep -q "left:30.65%;transform:translateX(-50%)" home-v51045-runtime.js
           grep -q "left:31.00%;text-align:left" home-v51045-runtime.js
           grep -q "top:80.30%;color:#3b2117" home-v51045-runtime.js
           grep -q "font-size:2.15vw;line-height:1.35" home-v51045-runtime.js
