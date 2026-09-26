@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-bottom-nav-test1';
+const BUILD='v5.10.45-home-bottom-nav-gapfix1';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -12,6 +12,7 @@ function style(){
     "html,body{overscroll-behavior:none;background:#160907!important}"+
     "body.v51045-home-active header{display:none!important}"+
     "body.v51045-home-active .bottomnav{display:grid!important}"+
+    "body.v51045-home-active .app{padding-bottom:0!important}"+
     "#home.v51045-level-only-home{padding:0!important;margin:0!important;background:#160907!important;overflow:hidden!important;min-height:0!important}"+
     "#home.v51045-level-only-home.active{display:block!important}"+
     "#home.v51045-level-only-home:not(.active){display:none!important}"+
