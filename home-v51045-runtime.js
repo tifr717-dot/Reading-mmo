@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-challenges-editor-test2';
+const BUILD='v5.10.45-home-challenges-nav-fix1';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -11,7 +11,9 @@ function style(){
   s.textContent=
     "html,body{overscroll-behavior:none;background:#160907!important}"+
     "body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!important}"+
-    "#home.v51045-level-only-home{display:block!important;padding:0!important;margin:0!important;background:#160907!important;overflow:hidden!important;min-height:0!important}"+
+    "#home.v51045-level-only-home{padding:0!important;margin:0!important;background:#160907!important;overflow:hidden!important;min-height:0!important}"+
+    "#home.v51045-level-only-home.active{display:block!important}"+
+    "#home.v51045-level-only-home:not(.active){display:none!important}"+
     "#home.v51045-level-only-home>*:not(#v51045LevelOnlyHome){display:none!important}"+
     "#v51045LevelOnlyHome{position:relative;width:100%;height:100dvh;margin:0 auto;background:#160907;overflow:hidden;opacity:0}"+
     "#v51045LevelOnlyHome.v51045-ready{opacity:1}"+
