@@ -16,7 +16,7 @@ permissions:
 env:
   CROSSINK_COMMIT: 7a092e8822c9c90e8beecacd317acc13d3e24dfb
   FREEINK_COMMIT: 9f4d3f9ca675e64cc9d616081f39a33cdefce57e
-  BUILD_VERSION: 1.5.1-dashboard-dev3
+  BUILD_VERSION: 1.5.1-dashboard-dev4
   BUILD_ENV: x4-pro
 
 jobs:
@@ -131,9 +131,9 @@ jobs:
       - name: Upload dashboard artifact
         uses: actions/upload-artifact@v4
         with:
-          name: crossink-x4-pro-dashboard-dev3
+          name: crossink-x4-pro-dashboard-dev4
           path: |
-            out/firmware-x4-pro-v1.5.1-dashboard-dev3.bin
+            out/firmware-x4-pro-v1.5.1-dashboard-dev4.bin
             out/SHA256SUMS.txt
             out/FIRMWARE-SIZE.txt
             out/BUILD-INFO.txt
