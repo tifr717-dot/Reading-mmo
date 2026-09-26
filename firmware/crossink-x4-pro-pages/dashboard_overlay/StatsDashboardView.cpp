@@ -318,10 +318,12 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
     if (day == todayDate.day && liveTodayRead) read = true;
     const bool isToday = day == todayDate.day;
 
-    const int boxX = cellX + 2;
-    const int boxY = cellY - 1;
-    const int boxW = std::max(7, cellW - 4);
-    const int boxH = std::max(9, rowH - 1);
+    // Keep inverted read-day tiles visually separated on the physical X4 Pro.
+    // The extra inset prevents adjacent read days from merging into one black strip.
+    const int boxX = cellX + 3;
+    const int boxY = cellY;
+    const int boxW = std::max(7, cellW - 6);
+    const int boxH = std::max(9, rowH - 3);
     const int textW = renderer.getTextWidth(SMALL_FONT_ID, dayBuf);
     const int textX = cellX + (cellW - textW) / 2;
 
