@@ -312,23 +312,40 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
     const int cellY = gridTop + row * rowH;
 
     snprintf(dayBuf, sizeof(dayBuf), "%u", static_cast<unsigned>(day));
-    centered(renderer, SMALL_FONT_ID, cellX, cellW, cellY, dayBuf);
 
     ReadingStatsDate date{todayDate.year, todayDate.month, day};
     bool read = historyHasDay(stats, readingStatsDayIndex(date));
     if (day == todayDate.day && liveTodayRead) read = true;
+    const bool isToday = day == todayDate.day;
+
+    const int boxX = cellX + 2;
+    const int boxY = cellY - 1;
+    const int boxW = std::max(7, cellW - 4);
+    const int boxH = std::max(9, rowH - 1);
+    const int textW = renderer.getTextWidth(SMALL_FONT_ID, dayBuf);
+    const int textX = cellX + (cellW - textW) / 2;
 
     if (read) {
-      // Use a compact 5x5 round-ish dot instead of the old 2 px underline.
-      // The dot remains visible inside today's outline on the X4 Pro panel.
-      const int dotX = cellX + cellW / 2;
-      const int dotY = cellY + rowH - 6;
-      renderer.fillRect(dotX - 1, dotY - 2, 3, 1, true);
-      renderer.fillRect(dotX - 2, dotY - 1, 5, 3, true);
-      renderer.fillRect(dotX - 1, dotY + 2, 3, 1, true);
-    }
-    if (day == todayDate.day) {
-      renderer.drawRect(cellX + 1, cellY - 1, std::max(3, cellW - 2), std::max(8, rowH - 1), true);
+      // Read days are fully inverted for strong e-ink contrast.
+      renderer.fillRect(boxX, boxY, boxW, boxH, true);
+      renderer.drawText(SMALL_FONT_ID, textX, cellY, dayBuf, false);
+
+      if (isToday) {
+        // Today + read: a small white folded-corner marker in the
+        // upper-right distinguishes today from any other read day.
+        const int corner = std::min(5, std::max(3, boxH / 3));
+        const int cornerX = boxX + boxW - 1;
+        const int cornerY = boxY;
+        const int cornerXs[3] = {cornerX, cornerX - corner, cornerX};
+        const int cornerYs[3] = {cornerY, cornerY, cornerY + corner};
+        renderer.fillPolygon(cornerXs, cornerYs, 3, false);
+      }
+    } else {
+      centered(renderer, SMALL_FONT_ID, cellX, cellW, cellY, dayBuf);
+      if (isToday) {
+        // Today but not read yet: outline only.
+        renderer.drawRect(boxX, boxY, boxW, boxH, true);
+      }
     }
   }
 }
