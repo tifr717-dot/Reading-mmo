@@ -319,8 +319,13 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
     if (day == todayDate.day && liveTodayRead) read = true;
 
     if (read) {
-      const int markerW = std::max(5, cellW - 10);
-      renderer.fillRect(cellX + (cellW - markerW) / 2, cellY + rowH - 4, markerW, 2, true);
+      // Use a compact 5x5 round-ish dot instead of the old 2 px underline.
+      // The dot remains visible inside today's outline on the X4 Pro panel.
+      const int dotX = cellX + cellW / 2;
+      const int dotY = cellY + rowH - 6;
+      renderer.fillRect(dotX - 1, dotY - 2, 3, 1, true);
+      renderer.fillRect(dotX - 2, dotY - 1, 5, 3, true);
+      renderer.fillRect(dotX - 1, dotY + 2, 3, 1, true);
     }
     if (day == todayDate.day) {
       renderer.drawRect(cellX + 1, cellY - 1, std::max(3, cellW - 2), std::max(8, rowH - 1), true);
