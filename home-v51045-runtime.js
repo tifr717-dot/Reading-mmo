@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-bottom-nav-gapfix1';
+const BUILD='v5.10.45-home-live-reading-stats-editor1';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -44,6 +44,17 @@ function style(){
     ".v51045-challenge-row-1{top:80.35%}.v51045-challenge-row-2{top:82.32%}.v51045-challenge-row-3{top:84.19%}"+
     ".v51045-challenges-hit{position:absolute;z-index:4;left:53.00%;top:76.80%;width:44.00%;height:9.70%;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:0;margin:0;cursor:pointer;opacity:0;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent}"+
     ".v51045-challenges-hit:focus,.v51045-challenges-hit:focus-visible,.v51045-challenges-hit:active{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}"+
+    ".v51045-current-cover{position:absolute;z-index:4;left:7.10%;top:46.20%;width:22.20%;height:15.20%;object-fit:cover;border-radius:2px;box-shadow:0 1px 3px rgba(44,24,18,.35);pointer-events:none}"+
+    ".v51045-current-cover[hidden]{display:none!important}"+
+    ".v51045-current-text{position:absolute;z-index:5;left:39.20%;width:36.50%;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:700;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px rgba(255,244,216,.52);pointer-events:none}"+
+    ".v51045-current-title{top:49.20%;font-size:1.72vw}.v51045-current-author{top:51.90%;font-size:1.50vw}.v51045-current-series{top:54.55%;font-size:1.42vw}"+
+    ".v51045-book-progress{position:absolute;z-index:4;left:34.70%;top:57.68%;width:43.00%;height:1.15%;border-radius:999px;overflow:hidden;pointer-events:none}"+
+    ".v51045-book-progress-fill{display:block;width:0%;height:100%;border-radius:999px;background:linear-gradient(180deg,#d79be0,#ab66bf);box-shadow:inset 0 1px rgba(255,255,255,.35);transition:width .18s ease}"+
+    ".v51045-book-page{position:absolute;z-index:5;top:60.55%;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:1.68vw;line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.52);pointer-events:none}"+
+    ".v51045-book-page-current{left:46.20%;transform:translateX(-100%);text-align:right}.v51045-book-page-total{left:50.90%;text-align:left}"+
+    ".v51045-book-percent{position:absolute;z-index:5;left:75.70%;top:60.55%;transform:translateX(-50%);color:#5f3d68;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:1.78vw;line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.52);pointer-events:none}"+
+    ".v51045-stat-value{position:absolute;z-index:5;top:71.75%;transform:translate(-50%,-50%);width:15%;text-align:center;color:#3b2117;font-family:Georgia,'Times New Roman',serif;font-weight:800;font-size:1.82vw;line-height:1;white-space:nowrap;text-shadow:0 1px rgba(255,244,216,.52);pointer-events:none}"+
+    ".v51045-stat-books{left:11.50%}.v51045-stat-pages{left:35.20%}.v51045-stat-days{left:60.75%}.v51045-stat-streak{left:85.15%}"+
     ".v51045-bar-editor{position:fixed;z-index:9999;left:10px;top:92px;width:min(310px,calc(100vw - 20px));background:rgba(37,20,29,.96);border:1px solid #b88a53;border-radius:12px;color:#f4e5c8;font:600 12px/1.25 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);touch-action:none}"+
     ".v51045-bar-editor[hidden]{display:none!important}"+
     ".v51045-editor-head{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:#4b293d;border-bottom:1px solid #b88a53;border-radius:11px 11px 0 0;cursor:move;user-select:none}"+
@@ -348,6 +359,124 @@ function mountProgressEditor(){
   apply();
 }
 
+
+
+function homeReadingState(){
+  try{
+    if(typeof window.v51045HomeReadingState==='function')return window.v51045HomeReadingState()||{};
+  }catch(e){}
+  return{title:'No current book',author:'',series:'',cover:'',page:0,total:0,pct:0};
+}
+function homeStatsState(){
+  try{
+    if(typeof window.v51045HomeStatsState==='function')return window.v51045HomeStatsState()||{};
+  }catch(e){}
+  return{books:0,pages:0,days:0,streak:0};
+}
+function renderHomeData(){
+  const d=homeReadingState(),stats=homeStatsState();
+  const title=$('v51045CurrentTitle'),author=$('v51045CurrentAuthor'),series=$('v51045CurrentSeries');
+  const cover=$('v51045CurrentCover'),fill=$('v51045BookProgressFill');
+  const cur=$('v51045BookPageCurrent'),total=$('v51045BookPageTotal'),pct=$('v51045BookPercent');
+  if(title)title.textContent=String(d.title||'No current book');
+  if(author)author.textContent=String(d.author||'—');
+  if(series)series.textContent=String(d.series||((d.readMode==='reread')?'Reread':'First Read'));
+  if(cover){
+    const src=String(d.cover||'').trim();
+    if(src){if(cover.src!==src)cover.src=src;cover.hidden=false}else{cover.hidden=true;cover.removeAttribute('src')}
+  }
+  const p=Math.max(0,Math.min(100,Number(d.pct)||0));
+  if(fill)fill.style.width=p+'%';
+  if(cur)cur.textContent=(Math.max(0,Number(d.page)||0)).toLocaleString();
+  if(total)total.textContent=(Math.max(0,Number(d.total)||0)).toLocaleString();
+  if(pct)pct.textContent=String(Math.round(p));
+  const vals={Books:stats.books,Pages:stats.pages,Days:stats.days,Streak:stats.streak};
+  Object.entries(vals).forEach(([k,v])=>{const el=$('v51045Stat'+k);if(el)el.textContent=Math.max(0,Number(v)||0).toLocaleString()});
+}
+function homeDataEditorEnabled(){
+  try{return new URLSearchParams(location.search).get('homeDataEditor')==='1'}catch(e){return false}
+}
+function mountHomeDataEditor(){
+  if(!homeDataEditorEnabled()||$('v51045HomeDataEditor'))return;
+  const els={
+    cover:$('v51045CurrentCover'),title:$('v51045CurrentTitle'),author:$('v51045CurrentAuthor'),series:$('v51045CurrentSeries'),
+    bar:$('v51045BookProgress'),cur:$('v51045BookPageCurrent'),total:$('v51045BookPageTotal'),pct:$('v51045BookPercent'),
+    books:$('v51045StatBooks'),pages:$('v51045StatPages'),days:$('v51045StatDays'),streak:$('v51045StatStreak')
+  };
+  if(Object.values(els).some(x=>!x))return;
+  const state={
+    coverX:7.10,coverY:46.20,coverW:22.20,coverH:15.20,
+    titleX:39.20,titleY:49.20,titleFont:1.72,
+    authorX:39.20,authorY:51.90,authorFont:1.50,
+    seriesX:39.20,seriesY:54.55,seriesFont:1.42,
+    barX:34.70,barY:57.68,barW:43.00,barH:1.15,
+    curX:46.20,totalX:50.90,pageY:60.55,pageFont:1.68,
+    pctX:75.70,pctY:60.55,pctFont:1.78,
+    booksX:11.50,booksY:71.75,pagesX:35.20,pagesY:71.75,
+    daysX:60.75,daysY:71.75,streakX:85.15,streakY:71.75,statFont:1.82
+  };
+  const groups=[
+    [
+      ['coverX','Cover X',0,35,.1],['coverY','Cover Y',38,62,.1],['coverW','Cover W',8,35,.1],['coverH','Cover H',8,26,.1],
+      ['titleX','Title X',20,80,.1],['titleY','Title Y',42,62,.1],['titleFont','Title font',.7,4,.05],
+      ['authorX','Author X',20,80,.1],['authorY','Author Y',42,62,.1],['authorFont','Author font',.7,4,.05],
+      ['seriesX','Series X',20,80,.1],['seriesY','Series Y',42,62,.1],['seriesFont','Series font',.7,4,.05],
+      ['barX','Bar X',20,60,.1],['barY','Bar Y',50,66,.1],['barW','Bar W',15,65,.1],['barH','Bar H',.3,4,.05],
+      ['curX','Current X',25,65,.1],['totalX','Total X',25,70,.1],['pageY','Pages Y',52,66,.1],['pageFont','Page font',.7,4,.05],
+      ['pctX','Percent X',55,90,.1],['pctY','Percent Y',52,66,.1],['pctFont','Percent font',.7,4,.05]
+    ],
+    [
+      ['booksX','Books X',0,30,.1],['booksY','Books Y',64,76,.1],
+      ['pagesX','Pages X',20,50,.1],['pagesY','Pages Y',64,76,.1],
+      ['daysX','Days X',48,73,.1],['daysY','Days Y',64,76,.1],
+      ['streakX','Streak X',73,100,.1],['streakY','Streak Y',64,76,.1],
+      ['statFont','Stat font',.7,4,.05]
+    ]
+  ];
+  const open=document.createElement('button');
+  open.id='v51045HomeDataEditorOpen';open.className='v51045-editor-open';open.type='button';open.textContent='HOME DATA EDITOR';open.style.top='242px';document.body.appendChild(open);
+  const panel=document.createElement('div');
+  panel.id='v51045HomeDataEditor';panel.className='v51045-bar-editor';panel.style.top='80px';panel.style.maxHeight='calc(100dvh - 100px)';panel.style.overflow='auto';panel.hidden=true;
+  const groupHtml=groups.map((rows,gi)=>'<div class="v51045-editor-group" data-home-data-group="'+gi+'"'+(gi?' hidden':'')+'>'+rows.map(row=>{
+    const [k,label,min,max,step]=row;
+    return '<div class="v51045-editor-row" data-home-data-key="'+k+'" data-min="'+min+'" data-max="'+max+'" data-step="'+step+'"><span>'+label+'</span><button type="button" data-delta="-1">−</button><input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+state[k]+'"><button type="button" data-delta="1">+</button><span class="v51045-editor-value">'+state[k].toFixed(2)+'</span></div>';
+  }).join('')+'</div>').join('');
+  panel.innerHTML='<div class="v51045-editor-head"><strong>HOME DATA EDITOR</strong><button type="button" class="v51045-editor-close">×</button></div><div class="v51045-editor-body"><div class="v51045-editor-tabs"><button type="button" class="active" data-home-data-tab="0">READING</button><button type="button" data-home-data-tab="1">STATS</button></div>'+groupHtml+'<div class="v51045-editor-actions"><button type="button" data-home-data-action="reset">RESET</button><button type="button" data-home-data-action="copy">COPY VALUES</button></div><div id="v51045HomeDataEditorOutput" class="v51045-editor-output"></div></div>';
+  document.body.appendChild(panel);
+  const defaults={...state};
+  const apply=()=>{
+    els.cover.style.left=state.coverX+'%';els.cover.style.top=state.coverY+'%';els.cover.style.width=state.coverW+'%';els.cover.style.height=state.coverH+'%';
+    els.title.style.left=state.titleX+'%';els.title.style.top=state.titleY+'%';els.title.style.fontSize=state.titleFont+'vw';
+    els.author.style.left=state.authorX+'%';els.author.style.top=state.authorY+'%';els.author.style.fontSize=state.authorFont+'vw';
+    els.series.style.left=state.seriesX+'%';els.series.style.top=state.seriesY+'%';els.series.style.fontSize=state.seriesFont+'vw';
+    els.bar.style.left=state.barX+'%';els.bar.style.top=state.barY+'%';els.bar.style.width=state.barW+'%';els.bar.style.height=state.barH+'%';
+    els.cur.style.left=state.curX+'%';els.cur.style.top=state.pageY+'%';els.cur.style.fontSize=state.pageFont+'vw';
+    els.total.style.left=state.totalX+'%';els.total.style.top=state.pageY+'%';els.total.style.fontSize=state.pageFont+'vw';
+    els.pct.style.left=state.pctX+'%';els.pct.style.top=state.pctY+'%';els.pct.style.fontSize=state.pctFont+'vw';
+    [['books',state.booksX,state.booksY],['pages',state.pagesX,state.pagesY],['days',state.daysX,state.daysY],['streak',state.streakX,state.streakY]].forEach(([k,x,y])=>{els[k].style.left=x+'%';els[k].style.top=y+'%';els[k].style.fontSize=state.statFont+'vw'});
+    panel.querySelectorAll('[data-home-data-key]').forEach(row=>{const k=row.dataset.homeDataKey;row.querySelector('input').value=state[k];row.querySelector('.v51045-editor-value').textContent=state[k].toFixed(2)});
+    $('v51045HomeDataEditorOutput').textContent=
+      'COVER left:'+state.coverX.toFixed(2)+'%; top:'+state.coverY.toFixed(2)+'%; width:'+state.coverW.toFixed(2)+'%; height:'+state.coverH.toFixed(2)+'%;\n'+
+      'TITLE left:'+state.titleX.toFixed(2)+'%; top:'+state.titleY.toFixed(2)+'%; font:'+state.titleFont.toFixed(2)+'vw;\n'+
+      'AUTHOR left:'+state.authorX.toFixed(2)+'%; top:'+state.authorY.toFixed(2)+'%; font:'+state.authorFont.toFixed(2)+'vw;\n'+
+      'SERIES left:'+state.seriesX.toFixed(2)+'%; top:'+state.seriesY.toFixed(2)+'%; font:'+state.seriesFont.toFixed(2)+'vw;\n'+
+      'BAR left:'+state.barX.toFixed(2)+'%; top:'+state.barY.toFixed(2)+'%; width:'+state.barW.toFixed(2)+'%; height:'+state.barH.toFixed(2)+'%;\n'+
+      'PAGES currentX:'+state.curX.toFixed(2)+'%; totalX:'+state.totalX.toFixed(2)+'%; top:'+state.pageY.toFixed(2)+'%; font:'+state.pageFont.toFixed(2)+'vw;\n'+
+      'PERCENT left:'+state.pctX.toFixed(2)+'%; top:'+state.pctY.toFixed(2)+'%; font:'+state.pctFont.toFixed(2)+'vw;\n'+
+      'STATS books('+state.booksX.toFixed(2)+','+state.booksY.toFixed(2)+') pages('+state.pagesX.toFixed(2)+','+state.pagesY.toFixed(2)+') days('+state.daysX.toFixed(2)+','+state.daysY.toFixed(2)+') streak('+state.streakX.toFixed(2)+','+state.streakY.toFixed(2)+') font:'+state.statFont.toFixed(2)+'vw;';
+  };
+  panel.querySelectorAll('[data-home-data-key]').forEach(row=>{
+    const k=row.dataset.homeDataKey,input=row.querySelector('input'),min=Number(row.dataset.min),max=Number(row.dataset.max),step=Number(row.dataset.step);
+    input.addEventListener('input',()=>{state[k]=Number(input.value);apply()});
+    row.querySelectorAll('button[data-delta]').forEach(btn=>btn.addEventListener('click',()=>{state[k]=Number(Math.max(min,Math.min(max,state[k]+Number(btn.dataset.delta)*step)).toFixed(step<1?2:0));apply()}));
+  });
+  panel.querySelectorAll('[data-home-data-tab]').forEach(btn=>btn.addEventListener('click',()=>{const n=btn.dataset.homeDataTab;panel.querySelectorAll('[data-home-data-tab]').forEach(b=>b.classList.toggle('active',b===btn));panel.querySelectorAll('[data-home-data-group]').forEach(g=>g.hidden=g.dataset.homeDataGroup!==n)}));
+  panel.querySelector('[data-home-data-action="reset"]').addEventListener('click',()=>{Object.assign(state,defaults);apply()});
+  panel.querySelector('[data-home-data-action="copy"]').addEventListener('click',async()=>{const txt=$('v51045HomeDataEditorOutput').textContent;try{await navigator.clipboard.writeText(txt);const b=panel.querySelector('[data-home-data-action="copy"]');b.textContent='COPIED!';setTimeout(()=>b.textContent='COPY VALUES',900)}catch(e){}});
+  open.addEventListener('click',()=>{panel.hidden=false;open.hidden=true;renderHomeData();apply()});
+  panel.querySelector('.v51045-editor-close').addEventListener('click',()=>{panel.hidden=true;open.hidden=false;renderHomeData()});
+  apply();
+}
 
 function challengeEditorEnabled(){
   try{return new URLSearchParams(location.search).get('challengeEditor')==='1'}catch(e){return false}
@@ -766,7 +895,7 @@ async function mount(){
   home.classList.add('v51045-level-only-home');
 
   let root=$('v51045LevelOnlyHome');
-  if(root){renderReaderLevel();renderTodayProgress();renderChallenges();chrome();mountBarEditor();mountProgressEditor();mountChallengeEditor();return}
+  if(root){renderReaderLevel();renderTodayProgress();renderChallenges();renderHomeData();chrome();mountBarEditor();mountProgressEditor();mountChallengeEditor();mountHomeDataEditor();return}
 
   root=document.createElement('div');
   root.id='v51045LevelOnlyHome';
@@ -790,6 +919,18 @@ async function mount(){
       '<div id="v51045Challenge1" class="v51045-challenge-row v51045-challenge-row-1"></div>'+
       '<div id="v51045Challenge2" class="v51045-challenge-row v51045-challenge-row-2"></div>'+
       '<div id="v51045Challenge3" class="v51045-challenge-row v51045-challenge-row-3"></div>'+
+      '<img id="v51045CurrentCover" class="v51045-current-cover" alt="Current book cover" hidden>'+
+      '<div id="v51045CurrentTitle" class="v51045-current-text v51045-current-title"></div>'+
+      '<div id="v51045CurrentAuthor" class="v51045-current-text v51045-current-author"></div>'+
+      '<div id="v51045CurrentSeries" class="v51045-current-text v51045-current-series"></div>'+
+      '<div id="v51045BookProgress" class="v51045-book-progress"><span id="v51045BookProgressFill" class="v51045-book-progress-fill"></span></div>'+
+      '<div id="v51045BookPageCurrent" class="v51045-book-page v51045-book-page-current"></div>'+
+      '<div id="v51045BookPageTotal" class="v51045-book-page v51045-book-page-total"></div>'+
+      '<div id="v51045BookPercent" class="v51045-book-percent"></div>'+
+      '<div id="v51045StatBooks" class="v51045-stat-value v51045-stat-books"></div>'+
+      '<div id="v51045StatPages" class="v51045-stat-value v51045-stat-pages"></div>'+
+      '<div id="v51045StatDays" class="v51045-stat-value v51045-stat-days"></div>'+
+      '<div id="v51045StatStreak" class="v51045-stat-value v51045-stat-streak"></div>'+
     '</div>'+
     '<div id="v51045LevelOnlyError" class="v51045-error" hidden></div>'+
   '</div>';
@@ -805,9 +946,11 @@ async function mount(){
     reveal(root);
     renderTodayProgress();
     renderChallenges();
+    renderHomeData();
     mountBarEditor();
     mountProgressEditor();
     mountChallengeEditor();
+    mountHomeDataEditor();
   }catch(e){
     console.error('[v51045 Home Reader XP]',e);
     const er=$('v51045LevelOnlyError');
@@ -815,9 +958,11 @@ async function mount(){
     reveal(root);
     renderTodayProgress();
     renderChallenges();
+    renderHomeData();
     mountBarEditor();
     mountProgressEditor();
     mountChallengeEditor();
+    mountHomeDataEditor();
   }
 }
 
@@ -829,7 +974,7 @@ const bindLegacy=()=>{
   if(typeof oldGo==='function'&&!oldGo.__v51045Wrapped){
     const wrapped=function(){
       const r=oldGo.apply(this,arguments);
-      setTimeout(()=>{chrome();renderReaderLevel();renderTodayProgress();renderChallenges()},0);
+      setTimeout(()=>{chrome();renderReaderLevel();renderTodayProgress();renderChallenges();renderHomeData()},0);
       return r;
     };
     wrapped.__v51045Wrapped=1;
@@ -840,7 +985,7 @@ const bindLegacy=()=>{
   if(typeof oldRenderHome==='function'&&!oldRenderHome.__v51045Wrapped){
     const wrapped=function(){
       const r=oldRenderHome.apply(this,arguments);
-      setTimeout(()=>{renderReaderLevel();renderTodayProgress();renderChallenges()},0);
+      setTimeout(()=>{renderReaderLevel();renderTodayProgress();renderChallenges();renderHomeData()},0);
       return r;
     };
     wrapped.__v51045Wrapped=1;
@@ -848,6 +993,6 @@ const bindLegacy=()=>{
   }
 };
 
-setInterval(()=>{try{bindLegacy();renderReaderLevel();renderTodayProgress();renderChallenges();chrome()}catch(e){}},500);
-window.addEventListener('pageshow',()=>{mount();renderReaderLevel();renderTodayProgress();renderChallenges();chrome()});
+setInterval(()=>{try{bindLegacy();renderReaderLevel();renderTodayProgress();renderChallenges();renderHomeData();chrome()}catch(e){}},500);
+window.addEventListener('pageshow',()=>{mount();renderReaderLevel();renderTodayProgress();renderChallenges();renderHomeData();chrome()});
 })();
