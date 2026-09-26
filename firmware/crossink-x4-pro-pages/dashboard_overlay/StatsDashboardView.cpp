@@ -18,11 +18,10 @@
 namespace {
 constexpr std::array<StrId, READING_TIME_BUCKET_COUNT> TIME_LABELS = {
     StrId::STR_STATS_MORNING, StrId::STR_STATS_AFTERNOON, StrId::STR_STATS_EVENING, StrId::STR_STATS_NIGHT};
-constexpr std::array<StrId, READING_DAY_OF_WEEK_COUNT> DAY_LABELS = {
-    StrId::STR_STATS_MON, StrId::STR_STATS_TUE, StrId::STR_STATS_WED, StrId::STR_STATS_THU,
-    StrId::STR_STATS_FRI, StrId::STR_STATS_SAT, StrId::STR_STATS_SUN};
 constexpr std::array<const char*, READING_DAY_OF_WEEK_COUNT> DAY_SHORT = {
     "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"};
+constexpr std::array<const char*, READING_DAY_OF_WEEK_COUNT> CAL_DAY_SHORT = {
+    "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"};
 
 float ppm(const uint32_t pages, const uint32_t seconds) {
   if (seconds < 60) return 0.0f;
@@ -70,24 +69,82 @@ void chartTitle(const GfxRenderer& renderer, const int x, const int y, const int
   renderer.drawText(SMALL_FONT_ID, x + 6, y + 5, visible.c_str(), true, EpdFontFamily::BOLD);
 }
 
+void formatCommaNumber(const uint32_t value, char* buf, const size_t len) {
+  if (value < 1000U) {
+    snprintf(buf, len, "%lu", static_cast<unsigned long>(value));
+  } else if (value < 1000000U) {
+    snprintf(buf, len, "%lu,%03lu", static_cast<unsigned long>(value / 1000U),
+             static_cast<unsigned long>(value % 1000U));
+  } else if (value < 1000000000U) {
+    snprintf(buf, len, "%lu,%03lu,%03lu", static_cast<unsigned long>(value / 1000000U),
+             static_cast<unsigned long>((value / 1000U) % 1000U), static_cast<unsigned long>(value % 1000U));
+  } else {
+    snprintf(buf, len, "%lu,%03lu,%03lu,%03lu", static_cast<unsigned long>(value / 1000000000U),
+             static_cast<unsigned long>((value / 1000000U) % 1000U),
+             static_cast<unsigned long>((value / 1000U) % 1000U), static_cast<unsigned long>(value % 1000U));
+  }
+}
+
+uint32_t nicePageScale(const uint32_t maximum) {
+  if (maximum <= 10U) return 10U;
+  if (maximum <= 25U) return 25U;
+  if (maximum <= 50U) return 50U;
+  if (maximum <= 100U) return 100U;
+  return ((maximum + 49U) / 50U) * 50U;
+}
+
+uint32_t niceMinuteScale(const uint32_t maximumMinutes) {
+  if (maximumMinutes <= 5U) return 5U;
+  if (maximumMinutes <= 10U) return 10U;
+  if (maximumMinutes <= 30U) return ((maximumMinutes + 4U) / 5U) * 5U;
+  if (maximumMinutes <= 60U) return ((maximumMinutes + 9U) / 10U) * 10U;
+  return ((maximumMinutes + 29U) / 30U) * 30U;
+}
+
+bool historyHasDay(const GlobalReadingStats& stats, const uint32_t dayIndex) {
+  if (stats.readingHistoryAnchorDay == 0U || dayIndex > stats.readingHistoryAnchorDay) return false;
+  const uint32_t delta = stats.readingHistoryAnchorDay - dayIndex;
+  if (delta >= READING_HISTORY_DAYS) return false;
+  return (stats.readingHistoryBits[delta / 8U] & static_cast<uint8_t>(1U << (delta % 8U))) != 0;
+}
+
 void drawWeeklyPages(const GfxRenderer& renderer, const int x, const int y, const int w, const int h,
                      const std::array<ReadingDailyEntry, ReadingDailyStats::DISPLAY_DAYS>& days) {
   card(renderer, x, y, w, h);
   chartTitle(renderer, x, y, w, "Pages This Week");
-  const int titleH = 24;
-  const int chartTop = y + titleH + 4;
-  const int chartBottom = y + h - 26;
-  const int chartH = std::max(1, chartBottom - chartTop);
-  const int slotW = std::max(1, (w - 14) / static_cast<int>(days.size()));
+
   uint32_t maxPages = 0;
   for (const auto& day : days) maxPages = std::max(maxPages, day.pages);
-  maxPages = std::max<uint32_t>(1, maxPages);
+  const uint32_t scaleMax = nicePageScale(maxPages);
+  const uint32_t scaleMid = scaleMax / 2U;
+
+  const int labelRight = x + 28;
+  const int left = x + 34;
+  const int right = x + w - 7;
+  const int top = y + 31;
+  const int bottom = y + h - 24;
+  const int graphW = std::max(1, right - left);
+  const int graphH = std::max(1, bottom - top);
+  const int slotW = std::max(1, graphW / static_cast<int>(days.size()));
+  const int smallH = renderer.getLineHeight(SMALL_FONT_ID);
+
+  char scaleBuf[12];
+  snprintf(scaleBuf, sizeof(scaleBuf), "%lu", static_cast<unsigned long>(scaleMax));
+  renderer.drawText(SMALL_FONT_ID, labelRight - renderer.getTextWidth(SMALL_FONT_ID, scaleBuf), top - 2, scaleBuf);
+  snprintf(scaleBuf, sizeof(scaleBuf), "%lu", static_cast<unsigned long>(scaleMid));
+  renderer.drawText(SMALL_FONT_ID, labelRight - renderer.getTextWidth(SMALL_FONT_ID, scaleBuf),
+                    top + graphH / 2 - smallH / 2, scaleBuf);
+  renderer.drawText(SMALL_FONT_ID, labelRight - renderer.getTextWidth(SMALL_FONT_ID, "0"),
+                    bottom - smallH + 2, "0");
+  renderer.drawLine(left - 4, top, left - 4, bottom, true);
+  renderer.drawLine(left - 4, bottom, right, bottom, true);
 
   for (size_t i = 0; i < days.size(); ++i) {
-    const int bx = x + 7 + static_cast<int>(i) * slotW;
+    const int bx = left + static_cast<int>(i) * slotW;
     const int barW = std::max(3, slotW / 2);
-    const int barH = static_cast<int>((static_cast<uint64_t>(chartH - 14) * days[i].pages) / maxPages);
-    if (barH > 0) renderer.fillRect(bx + (slotW - barW) / 2, chartBottom - barH, barW, barH, true);
+    const int barH =
+        static_cast<int>((static_cast<uint64_t>(graphH) * std::min(days[i].pages, scaleMax)) / scaleMax);
+    if (barH > 0) renderer.fillRect(bx + (slotW - barW) / 2, bottom - barH, barW, barH, true);
 
     ReadingStatsDate date{};
     if (days[i].dayIndex != 0 && readingStatsDateFromDayIndex(days[i].dayIndex, date)) {
@@ -98,27 +155,26 @@ void drawWeeklyPages(const GfxRenderer& renderer, const int x, const int y, cons
   }
 }
 
-void drawPaceTrend(const GfxRenderer& renderer, const int x, const int y, const int w, const int h,
-                   const std::array<ReadingDailyEntry, ReadingDailyStats::DISPLAY_DAYS>& days) {
+void drawWeeklyReadingTime(const GfxRenderer& renderer, const int x, const int y, const int w, const int h,
+                           const std::array<ReadingDailyEntry, ReadingDailyStats::DISPLAY_DAYS>& days) {
   card(renderer, x, y, w, h);
-  chartTitle(renderer, x, y, w, "Reading Pace");
 
-  std::array<float, ReadingDailyStats::DISPLAY_DAYS> values{};
-  float maxPace = 0.0f;
-  for (size_t i = 0; i < days.size(); ++i) {
-    values[i] = ppm(days[i].pages, days[i].readingSeconds);
-    maxPace = std::max(maxPace, values[i]);
-  }
+  const char* title = "Reading Time";
+  renderer.drawText(SMALL_FONT_ID, x + 6, y + 5, title, true, EpdFontFamily::BOLD);
 
-  // Keep a familiar 0-6 PPM scale for normal reading speeds, but expand
-  // automatically in 2 PPM steps if a faster day would otherwise be clipped.
-  const float scaleMax = std::max(6.0f, std::ceil(maxPace / 2.0f) * 2.0f);
-  const float scaleMid = scaleMax / 2.0f;
+  char todayDuration[16];
+  formatCompactReadingDuration(days.back().readingSeconds, todayDuration, sizeof(todayDuration));
+  char todayBuf[24];
+  snprintf(todayBuf, sizeof(todayBuf), "Today %s", todayDuration);
+  const int todayW = renderer.getTextWidth(SMALL_FONT_ID, todayBuf);
+  renderer.drawText(SMALL_FONT_ID, x + w - todayW - 6, y + 5, todayBuf);
 
-  char currentBuf[20];
-  snprintf(currentBuf, sizeof(currentBuf), "%.1f ppm", values.back());
-  const int currentW = renderer.getTextWidth(SMALL_FONT_ID, currentBuf, EpdFontFamily::BOLD);
-  renderer.drawText(SMALL_FONT_ID, x + w - currentW - 7, y + 5, currentBuf, true, EpdFontFamily::BOLD);
+  uint32_t maxSeconds = 0;
+  for (const auto& day : days) maxSeconds = std::max(maxSeconds, day.readingSeconds);
+  const uint32_t maxMinutes = (maxSeconds + 59U) / 60U;
+  const uint32_t scaleMaxMinutes = niceMinuteScale(maxMinutes);
+  const uint32_t scaleMidMinutes = scaleMaxMinutes / 2U;
+  const uint32_t scaleMaxSeconds = scaleMaxMinutes * 60U;
 
   const int labelRight = x + 28;
   const int left = x + 34;
@@ -130,31 +186,38 @@ void drawPaceTrend(const GfxRenderer& renderer, const int x, const int y, const 
   const int smallH = renderer.getLineHeight(SMALL_FONT_ID);
 
   char scaleBuf[12];
-  snprintf(scaleBuf, sizeof(scaleBuf), "%.0f", scaleMax);
-  int labelW = renderer.getTextWidth(SMALL_FONT_ID, scaleBuf);
-  renderer.drawText(SMALL_FONT_ID, labelRight - labelW, top - 2, scaleBuf);
-
-  snprintf(scaleBuf, sizeof(scaleBuf), "%.0f", scaleMid);
-  labelW = renderer.getTextWidth(SMALL_FONT_ID, scaleBuf);
-  renderer.drawText(SMALL_FONT_ID, labelRight - labelW, top + graphH / 2 - smallH / 2, scaleBuf);
-
+  snprintf(scaleBuf, sizeof(scaleBuf), "%lu", static_cast<unsigned long>(scaleMaxMinutes));
+  renderer.drawText(SMALL_FONT_ID, labelRight - renderer.getTextWidth(SMALL_FONT_ID, scaleBuf), top - 2, scaleBuf);
+  snprintf(scaleBuf, sizeof(scaleBuf), "%lu", static_cast<unsigned long>(scaleMidMinutes));
+  renderer.drawText(SMALL_FONT_ID, labelRight - renderer.getTextWidth(SMALL_FONT_ID, scaleBuf),
+                    top + graphH / 2 - smallH / 2, scaleBuf);
   renderer.drawText(SMALL_FONT_ID, labelRight - renderer.getTextWidth(SMALL_FONT_ID, "0"),
                     bottom - smallH + 2, "0");
-
   renderer.drawLine(left - 4, top, left - 4, bottom, true);
   renderer.drawLine(left - 4, bottom, right, bottom, true);
 
   bool havePrev = false;
   int prevX = 0;
   int prevY = 0;
-  for (size_t i = 0; i < values.size(); ++i) {
-    const int px = left + static_cast<int>((static_cast<long long>(graphW) * i) / (values.size() - 1));
-    const int py = bottom - static_cast<int>((values[i] / scaleMax) * static_cast<float>(graphH));
+  for (size_t i = 0; i < days.size(); ++i) {
+    const int px = left + static_cast<int>((static_cast<long long>(graphW) * i) / (days.size() - 1));
+    const uint32_t seconds = std::min(days[i].readingSeconds, scaleMaxSeconds);
+    const int py =
+        bottom - static_cast<int>((static_cast<uint64_t>(graphH) * seconds) / std::max<uint32_t>(1, scaleMaxSeconds));
     if (havePrev) renderer.drawLine(prevX, prevY, px, py, true);
     renderer.fillRect(px - 1, py - 1, 3, 3, true);
     prevX = px;
     prevY = py;
     havePrev = true;
+
+    ReadingStatsDate date{};
+    if (days[i].dayIndex != 0 && readingStatsDateFromDayIndex(days[i].dayIndex, date)) {
+      const uint8_t dow = readingStatsDayOfWeekIndex(date);
+      const int slotW = std::max(1, graphW / static_cast<int>(days.size()));
+      const int labelX = std::clamp(px - slotW / 2, left - 3, right - slotW);
+      centered(renderer, SMALL_FONT_ID, labelX, slotW, y + h - 21,
+               DAY_SHORT[std::min<size_t>(dow, DAY_SHORT.size() - 1)]);
+    }
   }
 }
 
@@ -201,21 +264,67 @@ void drawHorizontalDistribution(const GfxRenderer& renderer, const int x, const 
   }
 }
 
-void drawDayOfWeekBars(const GfxRenderer& renderer, const int x, const int y, const int w, const int h,
-                       const std::array<uint32_t, READING_DAY_OF_WEEK_COUNT>& values) {
+void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const int y, const int w, const int h,
+                                const GlobalReadingStats& stats, const ReadingStatsDate& todayDate,
+                                const bool liveTodayRead) {
   card(renderer, x, y, w, h);
-  chartTitle(renderer, x, y, w, "Day of Week");
-  const int top = y + 29;
-  const int bottom = y + h - 24;
-  const int chartH = std::max(1, bottom - top);
-  const int slotW = std::max(1, (w - 10) / static_cast<int>(values.size()));
-  const uint32_t maxValue = std::max<uint32_t>(1, *std::max_element(values.begin(), values.end()));
-  for (size_t i = 0; i < values.size(); ++i) {
-    const int sx = x + 5 + static_cast<int>(i) * slotW;
-    const int barW = std::max(3, slotW / 2);
-    const int barH = static_cast<int>((static_cast<uint64_t>(chartH - 12) * values[i]) / maxValue);
-    if (barH > 0) renderer.fillRect(sx + (slotW - barW) / 2, bottom - barH, barW, barH, true);
-    centered(renderer, SMALL_FONT_ID, sx, slotW, y + h - 21, DAY_SHORT[i]);
+  chartTitle(renderer, x, y, w, "Reading Calendar");
+  if (!todayDate.isValid()) return;
+
+  const uint8_t monthDays = daysInMonth(todayDate.year, todayDate.month);
+  ReadingStatsDate first{todayDate.year, todayDate.month, 1};
+  const uint8_t mondayIndex = readingStatsDayOfWeekIndex(first);
+  const uint8_t sundayFirstOffset = static_cast<uint8_t>((mondayIndex + 1U) % 7U);
+
+  uint8_t readCount = 0;
+  for (uint8_t day = 1; day <= todayDate.day; ++day) {
+    ReadingStatsDate date{todayDate.year, todayDate.month, day};
+    bool read = historyHasDay(stats, readingStatsDayIndex(date));
+    if (day == todayDate.day && liveTodayRead) read = true;
+    if (read) readCount++;
+  }
+
+  char summary[20];
+  snprintf(summary, sizeof(summary), "%u/%u", static_cast<unsigned>(readCount),
+           static_cast<unsigned>(todayDate.day));
+  const int summaryW = renderer.getTextWidth(SMALL_FONT_ID, summary);
+  renderer.drawText(SMALL_FONT_ID, x + w - summaryW - 6, y + 5, summary);
+
+  const int left = x + 6;
+  const int right = x + w - 6;
+  const int gridW = std::max(7, right - left);
+  const int cellW = std::max(1, gridW / 7);
+  const int weekdayY = y + 27;
+  for (size_t col = 0; col < CAL_DAY_SHORT.size(); ++col) {
+    centered(renderer, SMALL_FONT_ID, left + static_cast<int>(col) * cellW, cellW, weekdayY, CAL_DAY_SHORT[col]);
+  }
+
+  const int gridTop = y + 45;
+  const int gridBottom = y + h - 5;
+  const int rowH = std::max(13, (gridBottom - gridTop) / 6);
+
+  char dayBuf[4];
+  for (uint8_t day = 1; day <= monthDays; ++day) {
+    const int cell = static_cast<int>(sundayFirstOffset) + static_cast<int>(day) - 1;
+    const int col = cell % 7;
+    const int row = cell / 7;
+    const int cellX = left + col * cellW;
+    const int cellY = gridTop + row * rowH;
+
+    snprintf(dayBuf, sizeof(dayBuf), "%u", static_cast<unsigned>(day));
+    centered(renderer, SMALL_FONT_ID, cellX, cellW, cellY, dayBuf);
+
+    ReadingStatsDate date{todayDate.year, todayDate.month, day};
+    bool read = historyHasDay(stats, readingStatsDayIndex(date));
+    if (day == todayDate.day && liveTodayRead) read = true;
+
+    if (read) {
+      const int markerW = std::max(5, cellW - 10);
+      renderer.fillRect(cellX + (cellW - markerW) / 2, cellY + rowH - 4, markerW, 2, true);
+    }
+    if (day == todayDate.day) {
+      renderer.drawRect(cellX + 1, cellY - 1, std::max(3, cellW - 2), std::max(8, rowH - 1), true);
+    }
   }
 }
 
@@ -391,7 +500,7 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
       deviceStats.totalSessions > 0 ? deviceStats.totalReadingSeconds / deviceStats.totalSessions : 0;
   BookReadingStats::formatDuration(avgSession, buf, sizeof(buf));
   compactStatCell(renderer, x, deviceTop + deviceRowH, deviceThird, deviceRowH, buf, "Avg Session");
-  snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(deviceStats.totalPagesTurned));
+  formatCommaNumber(deviceStats.totalPagesTurned, buf, sizeof(buf));
   compactStatCell(renderer, x + deviceThird, deviceTop + deviceRowH, deviceThird, deviceRowH, buf, "Pages");
   snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(deviceStats.completedBooks));
   compactStatCell(renderer, x + deviceThird * 2, deviceTop + deviceRowH, w - deviceThird * 2, deviceRowH, buf, "Books");
@@ -400,10 +509,11 @@ void renderX4ProStatsDashboard(GfxRenderer& renderer, const MappedInputManager* 
   // Two chart rows.
   const int half = (w - gap) / 2;
   drawWeeklyPages(renderer, x, y, half, chartRowH, week);
-  drawPaceTrend(renderer, x + half + gap, y, w - half - gap, chartRowH, week);
+  drawWeeklyReadingTime(renderer, x + half + gap, y, w - half - gap, chartRowH, week);
   y += chartRowH + gap;
   drawHorizontalDistribution(renderer, x, y, half, chartRowH, "Time of Day", deviceStats.timeOfDaySeconds, TIME_LABELS);
-  drawDayOfWeekBars(renderer, x + half + gap, y, w - half - gap, chartRowH, deviceStats.dayOfWeekSeconds);
+  drawMonthlyReadingCalendar(renderer, x + half + gap, y, w - half - gap, chartRowH, deviceStats, now.date,
+                             today.readingSeconds > 0);
 
   if (showButtonHints && mappedInput) {
     const auto labels =
