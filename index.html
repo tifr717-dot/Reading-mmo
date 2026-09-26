@@ -4549,7 +4549,7 @@ function fresh(){
   history:[],firstFind:{},firstGolden:{},lastCompletionUndo:null,recentQuestNames:[],
   library:starterLibrary(),
   meta:{lastSavedAt:0,lastBackupAt:0},
-  reading:{bookName:"",lastFinishedBook:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,sessionLoggedPages:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false,lastSession:null,todayDate:"",todayPages:0,todayGoal:100},
+  reading:{bookName:"",lastFinishedBook:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,sessionLoggedPages:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false,lastSession:null,todayDate:"",todayPages:0,todayGoal:100,readDates:[]},
   settings:{style:"Adventurous",currentBookFirst:true,hideSpoilers:true,testMode:false,genre:1,tbr:0,focus:2,atmos:0,format:1,time:2,seasonal:1,chaos:0},
   quests:[
    {role:"Hunt",id:"",name:"",objective:"",difficulty:"Normal",xp:0,status:"Empty",extra:"Mushroom Goblin",structure:""},
@@ -4587,6 +4587,12 @@ function migrate(x){
  if(n.reading.todayDate!==todayKey){n.reading.todayDate=todayKey;n.reading.todayPages=0}
  n.reading.todayPages=Math.max(0,Number(n.reading.todayPages)||0);
  n.reading.todayGoal=Math.max(1,Number(n.reading.todayGoal)||100);
+ n.reading.readDates=Array.isArray(n.reading.readDates)?[...new Set(n.reading.readDates.map(String).filter(Boolean))].sort():[];
+ if(n.reading.lastSession?.endedAt){
+  const lastKey=v51045DayKey(n.reading.lastSession.endedAt);
+  if(lastKey&&!n.reading.readDates.includes(lastKey))n.reading.readDates.push(lastKey);
+  n.reading.readDates.sort();
+ }
  n.quests=(x.quests&&x.quests.length===3)?x.quests:fresh().quests;
  n.quests.forEach((q,i)=>{
   if(!q.status)q.status=q.name?"Active":"Empty";
@@ -4616,6 +4622,31 @@ function ensureTodayReading(){
 function todayReadingState(){
  const r=ensureTodayReading(),pages=Math.max(0,Number(r.todayPages)||0),goal=Math.max(1,Number(r.todayGoal)||100);
  return {date:r.todayDate,pages,goal,pct:Math.max(0,Math.min(100,pages/goal*100))};
+}
+function recordReadDay(ts=Date.now()){
+ const r=S.reading||(S.reading=fresh().reading),key=v51045DayKey(ts);
+ const dates=new Set(Array.isArray(r.readDates)?r.readDates.map(String):[]);
+ dates.add(key);
+ r.readDates=[...dates].filter(Boolean).sort().slice(-1460);
+ return key;
+}
+function currentReadStreak(){
+ const dates=new Set((S.reading?.readDates||[]).map(String));
+ if(!dates.size)return 0;
+ const dayMs=86400000;
+ const noon=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate(),12,0,0,0);
+ let d=noon(new Date()),key=v51045DayKey(d);
+ if(!dates.has(key)){
+  d=new Date(d.getTime()-dayMs);
+  key=v51045DayKey(d);
+  if(!dates.has(key))return 0;
+ }
+ let streak=0;
+ while(dates.has(v51045DayKey(d))){
+  streak++;
+  d=new Date(d.getTime()-dayMs);
+ }
+ return streak;
 }
 function persistSilent(){
  S.meta=S.meta||{};
@@ -5316,6 +5347,7 @@ function commitSessionPageDelta(){
  if(!added)return 0;
  ensureTodayReading();
  S.pages+=added;
+ recordReadDay();
  r.todayPages=Math.max(0,Number(r.todayPages)||0)+added;
  r.sessionLoggedPages=Math.max(0,Number(r.sessionLoggedPages)||0)+added;
  r.sessionStartPage=r.currentPage;
@@ -5344,6 +5376,7 @@ function endReadingSession(){
  recordQuestSessionProgress(minutes,chapters);
  const before=S.quests.map(q=>questRequirementState(q));
  r.lastSession={endedAt:Date.now(),elapsedMs,pages:totalPages,chapters};
+ recordReadDay(r.lastSession.endedAt);
  r.timerElapsedMs=0;r.timerStartedAt=null;r.timerRunning=false;r.chapters=0;r.sessionLoggedPages=0;
  r.sessionStartPage=Math.max(0,Number(r.currentPage)||0);
  persistSilent();
@@ -5457,6 +5490,31 @@ function renderHomeReading(){
 function startReadingUiClock(){
  setInterval(()=>{updateReadingLive();renderHomeReading()},1000);
 }
+
+window.v51045HomeReadingState=function(){
+ const r=S.reading||{};
+ const title=String(r.bookName||'').trim();
+ const book=(S.library||[]).find(b=>String(b?.title||'').trim().toLowerCase()===title.toLowerCase())||{};
+ const total=Math.max(0,Number(r.bookTotal)||Number(book.pages)||0);
+ const page=Math.max(0,Number(r.currentPage)||0);
+ const pct=total?Math.max(0,Math.min(100,page/total*100)):Math.max(0,Math.min(100,Number(r.percent)||0));
+ return{
+  title:title||'No current book',
+  author:String(r.author||book.author||'').trim(),
+  series:String(r.series||book.series||'').trim(),
+  cover:String(r.cover||book.cover||'').trim(),
+  readMode:String(r.readMode||'first'),
+  page,total,pct
+ };
+};
+window.v51045HomeStatsState=function(){
+ return{
+  books:Math.max(0,Number(S.books)||0),
+  pages:Math.max(0,Number(S.pages)||0),
+  days:Math.max(0,Number(S.days)||0),
+  streak:Math.max(0,currentReadStreak())
+ };
+};
 
 window.v51045HomeChallengeState=function(){
  const fallbackRoles=['Hunt','Gather','Alchemy'];
