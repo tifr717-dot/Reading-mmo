@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045bottomnav1' index.html
+          grep -q 'home-v51045-runtime.js?v=51045bottomnav2' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-bottom-nav-test1" home-v51045-runtime.js
+          grep -q "v5.10.45-home-bottom-nav-gapfix1" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -96,6 +96,7 @@ jobs:
           ! grep -q "#home.v51045-level-only-home{display:block!important" home-v51045-runtime.js
           grep -q "body.v51045-home-active header{display:none!important}" home-v51045-runtime.js
           grep -q "body.v51045-home-active .bottomnav{display:grid!important}" home-v51045-runtime.js
+          grep -q "body.v51045-home-active .app{padding-bottom:0!important}" home-v51045-runtime.js
           grep -q "height:calc(100dvh - 64px - env(safe-area-inset-bottom))" home-v51045-runtime.js
           grep -q "calc((100dvh - 64px - env(safe-area-inset-bottom)) \* 2 / 3)" home-v51045-runtime.js
           ! grep -q "body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!important}" home-v51045-runtime.js
