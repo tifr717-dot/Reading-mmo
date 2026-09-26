@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045challenges4' index.html
+          grep -q 'home-v51045-runtime.js?v=51045challenges5' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-challenges-editor-test2" home-v51045-runtime.js
+          grep -q "v5.10.45-home-challenges-nav-fix1" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -91,6 +91,9 @@ jobs:
           grep -q "v51045ChallengesHit" home-v51045-runtime.js
           grep -q "opacity:0;-webkit-appearance:none;appearance:none" home-v51045-runtime.js
           grep -q "outline:0!important;box-shadow:none!important" home-v51045-runtime.js
+          grep -q "#home.v51045-level-only-home.active{display:block!important}" home-v51045-runtime.js
+          grep -q "#home.v51045-level-only-home:not(.active){display:none!important}" home-v51045-runtime.js
+          ! grep -q "#home.v51045-level-only-home{display:block!important" home-v51045-runtime.js
           grep -q "openHomeChallenges" home-v51045-runtime.js
           grep -q "data-screen=\\\"quests\\\"" home-v51045-runtime.js
           grep -q "CHALLENGE EDITOR" home-v51045-runtime.js
