@@ -1,6 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
+<style id="v51045-early-boot">
+html,body{margin:0;background:#160907!important}
+body.v51045-booting-home .app{visibility:hidden!important}
+body.v51045-home-ready .app{visibility:visible!important}
+body.v51045-booting-home header,
+body.v51045-booting-home .bottomnav{display:none!important}
+</style>
+<link rel="preload" as="image" href="./home-v51045-master-clean-level.webp?v=51045locked1">
+<link rel="preload" as="image" href="./home-v51045-ornate-bar-frame.png?v=51045locked1">
+
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#4a2f24"/>
@@ -3773,8 +3783,8 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 
 <link rel="stylesheet" href="./archive-v51011.css">
 </head>
-<body>
-<div class="app">
+<body class="v51045-booting-home">
+<div class="app" id="v51045AppShell" style="visibility:hidden">
 <header>
   <div class="header-title"><img src="./asset-goose.png" class="header-goose" alt=""><h1>READING MMO</h1></div>
   <div class="sub">Enchanted Library</div>
@@ -3789,83 +3799,8 @@ body:has(#home.screen.active) > header{position:relative!important;top:auto!impo
 </header>
 
 
-<section id="home" class="screen active v58-home tab-reading">
-  <div class="v58-stage" aria-label="Reading MMO Home">
-    <img class="v58-frame" src="./v58-home-frame-v582.png" alt="Unified enchanted library Home frame">
-
-    <div class="v58-tabs" role="tablist" aria-label="Home views">
-      <button class="v53-tab v58-tab active" id="homeTabReading" role="tab" aria-selected="true" onclick="setHomeTab('reading',this)"><img src="./v53-tab-active.png" alt=""><span>READING</span></button>
-      <button class="v53-tab v58-tab" id="homeTabLevel" role="tab" aria-selected="false" onclick="setHomeTab('level',this)"><img src="./v53-tab-inactive.png" alt=""><span>READER LEVEL</span></button>
-      <button class="v53-tab v58-tab" id="homeTabQuests" role="tab" aria-selected="false" onclick="setHomeTab('quests',this)"><img src="./v53-tab-inactive.png" alt=""><span>QUESTS</span></button>
-    </div>
-
-    <div class="v58-panel-zone">
-      <div id="homePanelReading" class="v53-panel v58-panel v58-reading active" role="tabpanel" aria-labelledby="homeTabReading">
-        <div class="v58-reading-canvas">
-          <img class="v58-reading-art" src="./v56-open-book-scene.png" alt="Open reading book">
-          <div class="v58-r-current-label">CURRENT BOOK</div>
-          <div id="homeBookTitle" class="v58-r-title">No current book</div>
-          <div id="homeReadMode" class="v58-r-mode">CURRENT READ</div>
-          <div class="v58-r-session-label">THIS SESSION</div>
-          <div id="homeSessionTime" class="v58-r-time">00:00:00</div>
-          <div class="v58-r-chapters-label">CHAPTERS THIS SESSION</div>
-          <div id="homeSessionChapters" class="v58-r-chapters">0 chapters</div>
-
-          <div class="v58-r-progress-label">PROGRESS</div>
-          <div id="homePageText" class="v58-r-page">Page 0 of 0</div>
-          <div class="v58-r-progress"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="homeBookProgressBar" src="./v53-fill.png" alt=""></div></div>
-          <div id="homePercentText" class="v58-r-percent">0.0%</div>
-          <div class="v58-r-last-label">LAST FINISHED</div>
-          <div id="homeLastFinished" class="v58-r-last">Nothing logged yet</div>
-          <img class="v58-reader-ribbon" src="./v53-reader-ribbon.png" alt="Purple Open Reader bookmark">
-          <button class="v58-open-hit" aria-label="Open Reader" onclick="go('reading')">OPEN<br>READER</button>
-        </div>
-      </div>
-
-      <div id="homePanelLevel" class="v53-panel v58-panel v58-level" role="tabpanel" aria-labelledby="homeTabLevel" hidden>
-        <div class="v58-level-canvas">
-          <img class="v58-level-art" src="./v56-level-panel-tall.png" alt="Reader Level bookshelf">
-          <div id="homeLevel" class="v58-level-title">Level 1</div>
-          <div id="homeRank" class="v58-rank">Page Wanderer</div>
-          <div id="homeRegion" class="v58-region-hidden" aria-hidden="true"></div>
-          <div class="v58-xpbar"><img class="frame" src="./v53-xp-frame.png" alt=""><div class="fillclip"><img id="xpBar" src="./v53-fill.png" alt=""></div></div>
-          <div id="xpText" class="v58-xptxt">0 / 1,000 XP</div>
-          <div id="homeReaderLast" class="v58-lastread">Nothing logged yet</div>
-          <div class="v58-stat books"><b id="homeBooksStat">0</b><span>BOOKS</span></div>
-          <div class="v58-stat pages"><b id="homePagesStat">0</b><span>PAGES</span></div>
-          <div class="v58-stat days"><b id="homeDaysStat">0</b><span>DAYS</span></div>
-        </div>
-      </div>
-
-      <div id="homePanelQuests" class="v53-panel v58-panel v58-quests" role="tabpanel" aria-labelledby="homeTabQuests" hidden>
-        <div class="v58-quests-canvas">
-          <img class="v58-quests-art" src="./v53-quests-panel.png" alt="Quest board">
-          <div class="v58-qslot s1"><div id="homeQ1Title" class="v58-qtitle">Empty Slot</div><div id="homeQ1Objective" class="v58-qobj">Roll a Hunt quest.</div><div id="homeQ1Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ1Xp" class="v58-qxp"></div></div>
-          <div class="v58-qslot s2"><div id="homeQ2Title" class="v58-qtitle">Empty Slot</div><div id="homeQ2Objective" class="v58-qobj">Roll a Gather quest.</div><div id="homeQ2Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ2Xp" class="v58-qxp"></div></div>
-          <div class="v58-qslot s3"><div id="homeQ3Title" class="v58-qtitle">Empty Slot</div><div id="homeQ3Objective" class="v58-qobj">Roll an Alchemy quest.</div><div id="homeQ3Meta" class="v51-qmeta v58-qmeta"></div><div id="homeQ3Xp" class="v58-qxp"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="v58-lowerfill" aria-hidden="true"></div>
-
-    <div class="v58-utils">
-      <div class="v58-util"><img src="./v53-small-button.png" alt=""><button id="homeKwgtSyncBtn" onclick="sendAllWidgetsToKWGT()">SYNC WIDGETS</button></div>
-      <div class="v58-util"><img src="./v53-small-button.png" alt=""><button onclick="toggleHomeLedger()">CHARACTER LEDGER</button></div>
-    </div>
-    <div id="homeKwgtSyncState" class="v58-sync-state"></div>
-
-    <div id="homeLedgerBackdrop" class="v594-ledger-backdrop" hidden onclick="toggleHomeLedger(false)" aria-hidden="true"></div>
-
-    <div id="homeLedgerPanel" class="v58-ledger-panel" role="dialog" aria-modal="true" aria-label="Character Ledger" hidden>
-      <img src="./v53-ledger-panel.png" alt="Character Ledger panel">
-      <button class="v58-ledger-close" onclick="toggleHomeLedger(false)">CLOSE</button>
-      <div class="v58-ledger-grid"><div><span>XP</span><b id="homeXp">0</b></div><div><span>QUESTS</span><b id="homeQuests">0</b></div><div><span>GOLDENS</span><b id="homeGoldens">0</b></div></div>
-      <div id="homeBonuses" class="v58-ledger-note"></div>
-    </div>
-    <div id="homeSaveMini" class="v58-save">Progress saves automatically.</div>
-  </div>
-</section>
+<section id="home" class="screen active" aria-label="Reading MMO Home"></section>
+<script src="./home-v51045-runtime.js?v=51045readingstats1"></script>
 
 <section id="reading" class="screen v591-read">
   <div class="v591-read-stage">
@@ -4597,6 +4532,11 @@ function normalizeLibraryRecord(b,i=0){
  };
 }
 
+function v51045DayKey(ts=Date.now()){
+ const d=new Date(Number(ts)||Date.now());
+ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+ return `${y}-${m}-${day}`;
+}
 function fresh(){
  let ms={};materials.forEach(x=>ms[x]=0);
  let eq={};slots.forEach(s=>eq[s]="");
@@ -4609,7 +4549,7 @@ function fresh(){
   history:[],firstFind:{},firstGolden:{},lastCompletionUndo:null,recentQuestNames:[],
   library:starterLibrary(),
   meta:{lastSavedAt:0,lastBackupAt:0},
-  reading:{bookName:"",lastFinishedBook:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,sessionLoggedPages:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false,lastSession:null},
+  reading:{bookName:"",lastFinishedBook:"",readMode:"first",bookTotal:0,currentPage:0,percent:0,sessionStartPage:0,sessionLoggedPages:0,chapters:0,timerElapsedMs:0,timerStartedAt:null,timerRunning:false,lastSession:null,todayDate:"",todayPages:0,todayGoal:100,readDates:[]},
   settings:{style:"Adventurous",currentBookFirst:true,hideSpoilers:true,testMode:false,genre:1,tbr:0,focus:2,atmos:0,format:1,time:2,seasonal:1,chaos:0},
   quests:[
    {role:"Hunt",id:"",name:"",objective:"",difficulty:"Normal",xp:0,status:"Empty",extra:"Mushroom Goblin",structure:""},
@@ -4638,6 +4578,21 @@ function migrate(x){
  n.meta=Object.assign(fresh().meta,x.meta||{});
  n.reading=Object.assign(fresh().reading,x.reading||{});
  n.reading.sessionLoggedPages=Math.max(0,Number(n.reading.sessionLoggedPages)||0);
+ const todayKey=v51045DayKey();
+ if(!n.reading.todayDate){
+  const last=n.reading.lastSession;
+  n.reading.todayDate=todayKey;
+  n.reading.todayPages=(last&&v51045DayKey(last.endedAt)===todayKey)?Math.max(0,Number(last.pages)||0):0;
+ }
+ if(n.reading.todayDate!==todayKey){n.reading.todayDate=todayKey;n.reading.todayPages=0}
+ n.reading.todayPages=Math.max(0,Number(n.reading.todayPages)||0);
+ n.reading.todayGoal=Math.max(1,Number(n.reading.todayGoal)||100);
+ n.reading.readDates=Array.isArray(n.reading.readDates)?[...new Set(n.reading.readDates.map(String).filter(Boolean))].sort():[];
+ if(n.reading.lastSession?.endedAt){
+  const lastKey=v51045DayKey(n.reading.lastSession.endedAt);
+  if(lastKey&&!n.reading.readDates.includes(lastKey))n.reading.readDates.push(lastKey);
+  n.reading.readDates.sort();
+ }
  n.quests=(x.quests&&x.quests.length===3)?x.quests:fresh().quests;
  n.quests.forEach((q,i)=>{
   if(!q.status)q.status=q.name?"Active":"Empty";
@@ -4657,6 +4612,42 @@ function migrate(x){
  return n;
 }
 let S=migrate(JSON.parse(localStorage.getItem("readingMMO_save_v2")||localStorage.getItem("readingMMO_save")||"null"));
+function ensureTodayReading(){
+ const r=S.reading||(S.reading=fresh().reading),key=v51045DayKey();
+ if(r.todayDate!==key){r.todayDate=key;r.todayPages=0}
+ r.todayPages=Math.max(0,Number(r.todayPages)||0);
+ r.todayGoal=Math.max(1,Number(r.todayGoal)||100);
+ return r;
+}
+function todayReadingState(){
+ const r=ensureTodayReading(),pages=Math.max(0,Number(r.todayPages)||0),goal=Math.max(1,Number(r.todayGoal)||100);
+ return {date:r.todayDate,pages,goal,pct:Math.max(0,Math.min(100,pages/goal*100))};
+}
+function recordReadDay(ts=Date.now()){
+ const r=S.reading||(S.reading=fresh().reading),key=v51045DayKey(ts);
+ const dates=new Set(Array.isArray(r.readDates)?r.readDates.map(String):[]);
+ dates.add(key);
+ r.readDates=[...dates].filter(Boolean).sort().slice(-1460);
+ return key;
+}
+function currentReadStreak(){
+ const dates=new Set((S.reading?.readDates||[]).map(String));
+ if(!dates.size)return 0;
+ const dayMs=86400000;
+ const noon=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate(),12,0,0,0);
+ let d=noon(new Date()),key=v51045DayKey(d);
+ if(!dates.has(key)){
+  d=new Date(d.getTime()-dayMs);
+  key=v51045DayKey(d);
+  if(!dates.has(key))return 0;
+ }
+ let streak=0;
+ while(dates.has(v51045DayKey(d))){
+  streak++;
+  d=new Date(d.getTime()-dayMs);
+ }
+ return streak;
+}
 function persistSilent(){
  S.meta=S.meta||{};
  S.meta.lastSavedAt=Date.now();
@@ -5354,7 +5345,10 @@ function commitSessionPageDelta(){
  r.sessionStartPage=Math.max(0,Number($("readSessionStartPage")?.value)||Number(r.sessionStartPage)||0);
  const added=Math.max(0,r.currentPage-r.sessionStartPage);
  if(!added)return 0;
+ ensureTodayReading();
  S.pages+=added;
+ recordReadDay();
+ r.todayPages=Math.max(0,Number(r.todayPages)||0)+added;
  r.sessionLoggedPages=Math.max(0,Number(r.sessionLoggedPages)||0)+added;
  r.sessionStartPage=r.currentPage;
  recordQuestPageProgress(added);
@@ -5382,6 +5376,7 @@ function endReadingSession(){
  recordQuestSessionProgress(minutes,chapters);
  const before=S.quests.map(q=>questRequirementState(q));
  r.lastSession={endedAt:Date.now(),elapsedMs,pages:totalPages,chapters};
+ recordReadDay(r.lastSession.endedAt);
  r.timerElapsedMs=0;r.timerStartedAt=null;r.timerRunning=false;r.chapters=0;r.sessionLoggedPages=0;
  r.sessionStartPage=Math.max(0,Number(r.currentPage)||0);
  persistSilent();
@@ -5495,6 +5490,49 @@ function renderHomeReading(){
 function startReadingUiClock(){
  setInterval(()=>{updateReadingLive();renderHomeReading()},1000);
 }
+
+window.v51045HomeReadingState=function(){
+ const r=S.reading||{};
+ const title=String(r.bookName||'').trim();
+ const book=(S.library||[]).find(b=>String(b?.title||'').trim().toLowerCase()===title.toLowerCase())||{};
+ const total=Math.max(0,Number(r.bookTotal)||Number(book.pages)||0);
+ const page=Math.max(0,Number(r.currentPage)||0);
+ const pct=total?Math.max(0,Math.min(100,page/total*100)):Math.max(0,Math.min(100,Number(r.percent)||0));
+ return{
+  title:title||'No current book',
+  author:String(r.author||book.author||'').trim(),
+  series:String(r.series||book.series||'').trim(),
+  cover:String(r.cover||book.cover||'').trim(),
+  readMode:String(r.readMode||'first'),
+  page,total,pct
+ };
+};
+window.v51045HomeStatsState=function(){
+ return{
+  books:Math.max(0,Number(S.books)||0),
+  pages:Math.max(0,Number(S.pages)||0),
+  days:Math.max(0,Number(S.days)||0),
+  streak:Math.max(0,currentReadStreak())
+ };
+};
+
+window.v51045HomeChallengeState=function(){
+ const fallbackRoles=['Hunt','Gather','Alchemy'];
+ return [0,1,2].map(i=>{
+  const q=(S.quests||[])[i]||{};
+  const role=String(q.role||fallbackRoles[i]||'Challenge').replace('Craft / Alchemy','Alchemy');
+  if(!q.name){
+   return{slot:i,role,name:'Roll a '+role+' quest',detail:'Tap to open Quest Board',status:'EMPTY',xp:0,active:false,met:false,needsConfirm:false};
+  }
+  let st={tracked:false,met:false,needsConfirm:false,text:''};
+  try{st=questRequirementState(q)||st}catch(e){}
+  const status=st.met?'READY':st.needsConfirm?'VERIFY':(q.status==='Active'?'ACTIVE':String(q.status||'').toUpperCase());
+  return{
+   slot:i,role,name:String(q.name||''),detail:String(st.text||q.objective||''),status,
+   xp:Math.max(0,Number(q.xp)||0),active:q.status==='Active',met:!!st.met,needsConfirm:!!st.needsConfirm
+  };
+ });
+};
 
 function renderHome(){
  const xp=Math.max(0,totalXp()),l=levelFor(xp),lx=Math.max(0,lvlXp(xp,l)),need=lvlNeed(l);
@@ -7069,12 +7107,12 @@ setTimeout(restoreHomeTab,0);
 <script src="./reading-journal-mockup-v51043.js?v=51043v"></script>
 <script src="./reading-journal-unified-v51043.js?v=51043v"></script>
 <script src="./reading-journal-canvas-composite-v51043v.js?v=51043v"></script>
-<script src="./reading-journal-layered-v51043v.js?v=51043v"></script>
+<script src="./reading-journal-layered-v51043v.js?v=51045structural"></script>
 
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker-v51043.js?v=51043v",{updateViaCache:"none"}).catch(() => {});
+    navigator.serviceWorker.register("./service-worker-v51043.js?v=51045structural",{updateViaCache:"none"}).catch(() => {});
   });
 }
 </script>

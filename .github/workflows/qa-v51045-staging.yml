@@ -1,0 +1,137 @@
+name: QA v5.10.45 Staging
+
+on:
+  push:
+    branches:
+      - v51045-simplified-redesign
+  workflow_dispatch:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check reading-journal-layered-v51043v.js
+          node --check simplified-redesign-v51045.js
+          node --check home-v51045-runtime.js
+          node --check service-worker-v51043.js
+
+      - name: Validate locked Reader Level geometry
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ['home-v51045-master-clean-level.webp','home-v51045-ornate-bar-frame.png']:
+              p=Path(name)
+              assert p.exists() and p.stat().st_size > 1000
+          PY
+
+          grep -q 'home-v51045-runtime.js?v=51045readingstats1' index.html
+          grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
+          grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
+
+          grep -q "v5.10.45-home-live-reading-stats-editor1" home-v51045-runtime.js
+
+          grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
+          grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
+          grep -q "left:52.50%;top:27.60%" home-v51045-runtime.js
+          grep -q "left:53.40%;top:34.80%" home-v51045-runtime.js
+
+          grep -q "barX:53.60,barY:31.50,barW:27.90,barH:3.30" home-v51045-runtime.js
+          grep -q "fillL:7.80,fillR:0.00,fillY:27.00,fillH:47.00" home-v51045-runtime.js
+          grep -q "titleX:52.50,titleY:27.60" home-v51045-runtime.js
+          grep -q "xpX:53.40,xpY:34.80" home-v51045-runtime.js
+
+          grep -q "READER EDITOR" home-v51045-runtime.js
+          grep -q "PURPLE FILL" home-v51045-runtime.js
+          grep -q "TITLE + EXP" home-v51045-runtime.js
+
+          grep -q "left:12.10%;top:79.50%;width:12.60%" home-v51045-runtime.js
+          grep -q "left:30.20%;top:83.10%" home-v51045-runtime.js
+          grep -q "left:29.90%;transform:translateX(-100%)" home-v51045-runtime.js
+          grep -q "left:31.40%;text-align:left" home-v51045-runtime.js
+          grep -q "top:80.30%;color:#3b2117" home-v51045-runtime.js
+          grep -q "font-size:2.05vw;line-height:1.35" home-v51045-runtime.js
+          grep -q "ringX:12.10,ringY:79.50,ringSize:12.60,ringHole:55.00" home-v51045-runtime.js
+          grep -q "previewFill:Math.round(live.pct)" home-v51045-runtime.js
+          grep -q "\['ringX','X / Left',0,90,.1\]" home-v51045-runtime.js
+          grep -q "\['ringY','Y / Top',0,92,.1\]" home-v51045-runtime.js
+          grep -q "\['previewFill','Preview fill',0,100,1\]" home-v51045-runtime.js
+          grep -q "data-preview-fill=\"100\"" home-v51045-runtime.js
+          grep -q "ring.style.setProperty('--pct',state.previewFill+'%')" home-v51045-runtime.js
+          grep -q "pctX:30.20,pctY:83.10,pctSize:2.75" home-v51045-runtime.js
+          grep -q "pageCurrentX:29.90,pageGoalX:31.40,pagesY:80.30,pagesSize:2.05" home-v51045-runtime.js
+          grep -q "v51045TodayPagesCurrent" home-v51045-runtime.js
+          grep -q "v51045TodayPagesGoal" home-v51045-runtime.js
+          ! grep -q "v51045TodayPagesSlash" home-v51045-runtime.js
+          ! grep -q "pageSlash" home-v51045-runtime.js
+          grep -q "\['pageCurrentX','Current X',0,55,.1\]" home-v51045-runtime.js
+          grep -q "\['pageGoalX','Goal X',0,55,.1\]" home-v51045-runtime.js
+          grep -q "progressPreviewCurrent" home-v51045-runtime.js
+          grep -q "progressPreviewGoal" home-v51045-runtime.js
+          grep -q "TODAY EDITOR" home-v51045-runtime.js
+          grep -Fq "TODAY\\'S PROGRESS EDITOR" home-v51045-runtime.js
+          grep -q "v51045TodayPagesCurrent" home-v51045-runtime.js
+          grep -q "v51045TodayPagesGoal" home-v51045-runtime.js
+          grep -q "pctEl.textContent=String(Math.round(st.pct))" home-v51045-runtime.js
+          grep -q "curEl.textContent=st.pages.toLocaleString()" home-v51045-runtime.js
+          grep -q "goalEl.textContent=st.goal.toLocaleString()" home-v51045-runtime.js
+          ! grep -q "pctEl.textContent=Math.round(st.pct)+'%'" home-v51045-runtime.js
+          ! grep -q "st.goal.toLocaleString()+' pages'" home-v51045-runtime.js
+
+          grep -q "function todayReadingState()" index.html
+          grep -q 'todayDate:"",todayPages:0,todayGoal:100' index.html
+          grep -q "r.todayPages=Math.max(0,Number(r.todayPages)||0)+added" index.html
+          grep -q "window.v51045HomeChallengeState=function()" index.html
+          grep -q "v51045Challenge1" home-v51045-runtime.js
+          grep -q "v51045Challenge2" home-v51045-runtime.js
+          grep -q "v51045Challenge3" home-v51045-runtime.js
+          grep -q "v51045ChallengesHit" home-v51045-runtime.js
+          grep -q "opacity:0;-webkit-appearance:none;appearance:none" home-v51045-runtime.js
+          grep -q "outline:0!important;box-shadow:none!important" home-v51045-runtime.js
+          grep -q "#home.v51045-level-only-home.active{display:block!important}" home-v51045-runtime.js
+          grep -q "#home.v51045-level-only-home:not(.active){display:none!important}" home-v51045-runtime.js
+          ! grep -q "#home.v51045-level-only-home{display:block!important" home-v51045-runtime.js
+          grep -q "body.v51045-home-active header{display:none!important}" home-v51045-runtime.js
+          grep -q "body.v51045-home-active .bottomnav{display:grid!important}" home-v51045-runtime.js
+          grep -q "body.v51045-home-active .app{padding-bottom:0!important}" home-v51045-runtime.js
+          grep -q "height:calc(100dvh - 64px - env(safe-area-inset-bottom))" home-v51045-runtime.js
+          grep -q "calc((100dvh - 64px - env(safe-area-inset-bottom)) \* 2 / 3)" home-v51045-runtime.js
+          ! grep -q "body.v51045-home-active header,body.v51045-home-active .bottomnav{display:none!important}" home-v51045-runtime.js
+          grep -q "openHomeChallenges" home-v51045-runtime.js
+          grep -q "data-screen=\\\"quests\\\"" home-v51045-runtime.js
+          grep -q "CHALLENGE EDITOR" home-v51045-runtime.js
+          grep -Fq "TODAY\\'S CHALLENGES EDITOR" home-v51045-runtime.js
+          grep -q "row1X:59.00,row1Y:80.35" home-v51045-runtime.js
+          grep -q "row2X:59.00,row2Y:82.32" home-v51045-runtime.js
+          grep -q "row3X:59.00,row3Y:84.19" home-v51045-runtime.js
+          grep -q "rowW:45.00,fontSize:1.85" home-v51045-runtime.js
+          grep -q "challengePreview" home-v51045-runtime.js
+          ! grep -q "row.needsConfirm?'◇ '" home-v51045-runtime.js
+          grep -q "const mark=row.met?'✓ ':'';" home-v51045-runtime.js
+          grep -q "window.v51045HomeReadingState=function()" index.html
+          grep -q "window.v51045HomeStatsState=function()" index.html
+          grep -q "function currentReadStreak()" index.html
+          grep -q "readDates:\[\]" index.html
+          grep -q "recordReadDay()" index.html
+          grep -q "v51045CurrentTitle" home-v51045-runtime.js
+          grep -q "v51045CurrentAuthor" home-v51045-runtime.js
+          grep -q "v51045CurrentSeries" home-v51045-runtime.js
+          grep -q "v51045BookProgressFill" home-v51045-runtime.js
+          grep -q "v51045BookPageCurrent" home-v51045-runtime.js
+          grep -q "v51045BookPageTotal" home-v51045-runtime.js
+          grep -q "v51045BookPercent" home-v51045-runtime.js
+          grep -q "v51045StatBooks" home-v51045-runtime.js
+          grep -q "v51045StatPages" home-v51045-runtime.js
+          grep -q "v51045StatDays" home-v51045-runtime.js
+          grep -q "v51045StatStreak" home-v51045-runtime.js
+          grep -q "HOME DATA EDITOR" home-v51045-runtime.js
+          grep -q "homeDataEditor" home-v51045-runtime.js
+          grep -q "coverX:7.10,coverY:46.20,coverW:22.20,coverH:15.20" home-v51045-runtime.js
+          grep -q "booksX:11.50,booksY:71.75" home-v51045-runtime.js
+          grep -q "streakX:85.15,streakY:71.75,statFont:1.82" home-v51045-runtime.js
+
+
+          echo "Locked Reader Level + live Today Progress editor OK"
