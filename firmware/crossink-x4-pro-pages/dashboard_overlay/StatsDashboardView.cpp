@@ -325,12 +325,15 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
     const int boxW = std::max(7, cellW - 6);
     const int boxH = std::max(9, rowH - 3);
     const int textW = renderer.getTextWidth(SMALL_FONT_ID, dayBuf);
-    const int textX = cellX + (cellW - textW) / 2;
+    const int textH = renderer.getLineHeight(SMALL_FONT_ID);
+    const int textX = boxX + std::max(0, (boxW - textW) / 2);
+    const int textY = boxY + std::max(0, (boxH - textH) / 2);
 
     if (read) {
       // Read days are fully inverted for strong e-ink contrast.
+      // Center the date inside the black tile itself, not the wider calendar cell.
       renderer.fillRect(boxX, boxY, boxW, boxH, true);
-      renderer.drawText(SMALL_FONT_ID, textX, cellY, dayBuf, false);
+      renderer.drawText(SMALL_FONT_ID, textX, textY, dayBuf, false);
 
       if (isToday) {
         // Today + read: a small white folded-corner marker in the
@@ -342,12 +345,12 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
         const int cornerYs[3] = {cornerY, cornerY, cornerY + corner};
         renderer.fillPolygon(cornerXs, cornerYs, 3, false);
       }
+    } else if (isToday) {
+      // Today but not read yet: outline only, with the date centered in the outline.
+      renderer.drawText(SMALL_FONT_ID, textX, textY, dayBuf, true);
+      renderer.drawRect(boxX, boxY, boxW, boxH, true);
     } else {
       centered(renderer, SMALL_FONT_ID, cellX, cellW, cellY, dayBuf);
-      if (isToday) {
-        // Today but not read yet: outline only.
-        renderer.drawRect(boxX, boxY, boxW, boxH, true);
-      }
     }
   }
 }
