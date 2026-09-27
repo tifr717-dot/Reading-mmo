@@ -323,10 +323,12 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
     // away from the already-positioned number.
     const int glyphH = renderer.getTextHeight(SMALL_FONT_ID);
     const int twoDigitW = renderer.getTextWidth(SMALL_FONT_ID, "88");
-    const int desiredTile = std::max(twoDigitW, glyphH) + 4;
-    const int tileSize = std::max(9, std::min(desiredTile, std::min(cellW - 6, rowH - 2)));
+    // Give the inverted date more padding so two-digit dates do not look clipped.
+    // Keep a small gap between neighboring calendar cells.
+    const int desiredTile = std::max(twoDigitW, glyphH) + 8;
+    const int tileSize = std::max(11, std::min(desiredTile, std::min(cellW - 2, rowH)));
     const int boxX = cellX + (cellW - tileSize) / 2;
-    const int boxY = cellY - 1;
+    const int boxY = cellY - 2;
     const int boxW = tileSize;
     const int boxH = tileSize;
 
