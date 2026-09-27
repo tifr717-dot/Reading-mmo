@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045readingstats1' index.html
+          grep -q 'home-v51045-runtime.js?v=51045readingstats2' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-live-reading-stats-editor1" home-v51045-runtime.js
+          grep -q "v5.10.45-home-data-editor-drag-peek1" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -129,6 +129,12 @@ jobs:
           grep -q "v51045StatStreak" home-v51045-runtime.js
           grep -q "HOME DATA EDITOR" home-v51045-runtime.js
           grep -q "homeDataEditor" home-v51045-runtime.js
+          grep -q "data-home-data-action=\"peek\"" home-v51045-runtime.js
+          grep -q "RETURN TO EDITOR" home-v51045-runtime.js
+          grep -q "head.addEventListener('pointerdown'" home-v51045-runtime.js
+          grep -q "head.addEventListener('pointermove'" home-v51045-runtime.js
+          grep -q "head.style.touchAction='none'" home-v51045-runtime.js
+          grep -q "panel.style.touchAction='auto'" home-v51045-runtime.js
           grep -q "coverX:7.10,coverY:46.20,coverW:22.20,coverH:15.20" home-v51045-runtime.js
           grep -q "booksX:11.50,booksY:71.75" home-v51045-runtime.js
           grep -q "streakX:85.15,streakY:71.75,statFont:1.82" home-v51045-runtime.js
