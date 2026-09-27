@@ -199,8 +199,18 @@ void drawWeeklyReadingTime(const GfxRenderer& renderer, const int x, const int y
   bool havePrev = false;
   int prevX = 0;
   int prevY = 0;
+  const int dayCount = static_cast<int>(days.size());
   for (size_t i = 0; i < days.size(); ++i) {
-    const int px = left + static_cast<int>((static_cast<long long>(graphW) * i) / (days.size() - 1));
+    // Give every weekday its own equal-width horizontal slot. The point sits
+    // at that slot's center, so Monday/Sunday no longer hug the chart edges
+    // and neighboring weekday labels keep their own breathing room.
+    const int slotLeft =
+        left + static_cast<int>((static_cast<long long>(graphW) * static_cast<int>(i)) / dayCount);
+    const int slotRight =
+        left + static_cast<int>((static_cast<long long>(graphW) * (static_cast<int>(i) + 1)) / dayCount);
+    const int slotW = std::max(1, slotRight - slotLeft);
+    const int px = slotLeft + slotW / 2;
+
     const uint32_t seconds = std::min(days[i].readingSeconds, scaleMaxSeconds);
     const int py =
         bottom - static_cast<int>((static_cast<uint64_t>(graphH) * seconds) / std::max<uint32_t>(1, scaleMaxSeconds));
@@ -213,9 +223,7 @@ void drawWeeklyReadingTime(const GfxRenderer& renderer, const int x, const int y
     ReadingStatsDate date{};
     if (days[i].dayIndex != 0 && readingStatsDateFromDayIndex(days[i].dayIndex, date)) {
       const uint8_t dow = readingStatsDayOfWeekIndex(date);
-      const int slotW = std::max(1, graphW / static_cast<int>(days.size()));
-      const int labelX = std::clamp(px - slotW / 2, left - 3, right - slotW);
-      centered(renderer, SMALL_FONT_ID, labelX, slotW, y + h - 21,
+      centered(renderer, SMALL_FONT_ID, slotLeft, slotW, y + h - 21,
                DAY_SHORT[std::min<size_t>(dow, DAY_SHORT.size() - 1)]);
     }
   }
