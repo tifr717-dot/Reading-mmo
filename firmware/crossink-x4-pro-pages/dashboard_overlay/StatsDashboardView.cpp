@@ -318,16 +318,20 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
     if (day == todayDate.day && liveTodayRead) read = true;
     const bool isToday = day == todayDate.day;
 
-    // Keep inverted read-day tiles visually separated on the physical X4 Pro.
-    // The extra inset prevents adjacent read days from merging into one black strip.
-    const int boxX = cellX + 3;
-    const int boxY = cellY;
-    const int boxW = std::max(7, cellW - 6);
-    const int boxH = std::max(9, rowH - 3);
+    // Use a true square tile centered in the calendar cell. The previous
+    // full-width rectangle made the number look off-center even when its
+    // coordinates were mathematically centered.
     const int textW = renderer.getTextWidth(SMALL_FONT_ID, dayBuf);
-    const int textH = renderer.getLineHeight(SMALL_FONT_ID);
+    const int glyphH = renderer.getTextHeight(SMALL_FONT_ID);
+    const int twoDigitW = renderer.getTextWidth(SMALL_FONT_ID, "88");
+    const int desiredTile = std::max(twoDigitW, glyphH) + 4;
+    const int tileSize = std::max(9, std::min(desiredTile, std::min(cellW - 5, rowH - 1)));
+    const int boxX = cellX + (cellW - tileSize) / 2;
+    const int boxY = cellY + std::max(0, (rowH - tileSize) / 2);
+    const int boxW = tileSize;
+    const int boxH = tileSize;
     const int textX = boxX + std::max(0, (boxW - textW) / 2);
-    const int textY = boxY + std::max(0, (boxH - textH) / 2);
+    const int textY = boxY + std::max(0, (boxH - glyphH) / 2);
 
     if (read) {
       // Read days are fully inverted for strong e-ink contrast.
