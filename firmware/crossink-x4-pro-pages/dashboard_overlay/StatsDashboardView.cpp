@@ -318,30 +318,27 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
     if (day == todayDate.day && liveTodayRead) read = true;
     const bool isToday = day == todayDate.day;
 
-    // Use a true square tile centered in the calendar cell. The previous
-    // full-width rectangle made the number look off-center even when its
-    // coordinates were mathematically centered.
-    const int textW = renderer.getTextWidth(SMALL_FONT_ID, dayBuf);
+    // Draw the date exactly where an ordinary calendar date belongs first.
+    // Read days are then inverted in-place so the black tile can never drift
+    // away from the already-positioned number.
     const int glyphH = renderer.getTextHeight(SMALL_FONT_ID);
     const int twoDigitW = renderer.getTextWidth(SMALL_FONT_ID, "88");
     const int desiredTile = std::max(twoDigitW, glyphH) + 4;
-    const int tileSize = std::max(9, std::min(desiredTile, std::min(cellW - 5, rowH - 1)));
+    const int tileSize = std::max(9, std::min(desiredTile, std::min(cellW - 6, rowH - 2)));
     const int boxX = cellX + (cellW - tileSize) / 2;
-    const int boxY = cellY + std::max(0, (rowH - tileSize) / 2);
+    const int boxY = cellY - 1;
     const int boxW = tileSize;
     const int boxH = tileSize;
-    const int textX = boxX + std::max(0, (boxW - textW) / 2);
-    const int textY = boxY + std::max(0, (boxH - glyphH) / 2);
+
+    centered(renderer, SMALL_FONT_ID, cellX, cellW, cellY, dayBuf);
 
     if (read) {
-      // Read days are fully inverted for strong e-ink contrast.
-      // Center the date inside the black tile itself, not the wider calendar cell.
-      renderer.fillRect(boxX, boxY, boxW, boxH, true);
-      renderer.drawText(SMALL_FONT_ID, textX, textY, dayBuf, false);
+      // Invert the pixels behind the rendered date. This turns the background
+      // black and the existing black glyph white without redrawing/repositioning it.
+      renderer.invertRect(boxX, boxY, boxW, boxH);
 
       if (isToday) {
-        // Today + read: a small white folded-corner marker in the
-        // upper-right distinguishes today from any other read day.
+        // Today + read: a small white folded-corner marker in the upper-right.
         const int corner = std::min(5, std::max(3, boxH / 3));
         const int cornerX = boxX + boxW - 1;
         const int cornerY = boxY;
@@ -350,11 +347,8 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
         renderer.fillPolygon(cornerXs, cornerYs, 3, false);
       }
     } else if (isToday) {
-      // Today but not read yet: outline only, with the date centered in the outline.
-      renderer.drawText(SMALL_FONT_ID, textX, textY, dayBuf, true);
+      // Today but not read yet: same centered number, outline only.
       renderer.drawRect(boxX, boxY, boxW, boxH, true);
-    } else {
-      centered(renderer, SMALL_FONT_ID, cellX, cellW, cellY, dayBuf);
     }
   }
 }
