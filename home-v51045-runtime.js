@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-live-reading-stats-editor1';
+const BUILD='v5.10.45-home-data-editor-drag-peek1';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -436,12 +436,12 @@ function mountHomeDataEditor(){
   const open=document.createElement('button');
   open.id='v51045HomeDataEditorOpen';open.className='v51045-editor-open';open.type='button';open.textContent='HOME DATA EDITOR';open.style.top='242px';document.body.appendChild(open);
   const panel=document.createElement('div');
-  panel.id='v51045HomeDataEditor';panel.className='v51045-bar-editor';panel.style.top='80px';panel.style.maxHeight='calc(100dvh - 100px)';panel.style.overflow='auto';panel.hidden=true;
+  panel.id='v51045HomeDataEditor';panel.className='v51045-bar-editor';panel.style.top='80px';panel.style.maxHeight='calc(100dvh - 100px)';panel.style.overflow='auto';panel.style.touchAction='auto';panel.hidden=true;
   const groupHtml=groups.map((rows,gi)=>'<div class="v51045-editor-group" data-home-data-group="'+gi+'"'+(gi?' hidden':'')+'>'+rows.map(row=>{
     const [k,label,min,max,step]=row;
     return '<div class="v51045-editor-row" data-home-data-key="'+k+'" data-min="'+min+'" data-max="'+max+'" data-step="'+step+'"><span>'+label+'</span><button type="button" data-delta="-1">−</button><input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+state[k]+'"><button type="button" data-delta="1">+</button><span class="v51045-editor-value">'+state[k].toFixed(2)+'</span></div>';
   }).join('')+'</div>').join('');
-  panel.innerHTML='<div class="v51045-editor-head"><strong>HOME DATA EDITOR</strong><button type="button" class="v51045-editor-close">×</button></div><div class="v51045-editor-body"><div class="v51045-editor-tabs"><button type="button" class="active" data-home-data-tab="0">READING</button><button type="button" data-home-data-tab="1">STATS</button></div>'+groupHtml+'<div class="v51045-editor-actions"><button type="button" data-home-data-action="reset">RESET</button><button type="button" data-home-data-action="copy">COPY VALUES</button></div><div id="v51045HomeDataEditorOutput" class="v51045-editor-output"></div></div>';
+  panel.innerHTML='<div class="v51045-editor-head"><strong>HOME DATA EDITOR</strong><button type="button" class="v51045-editor-close">×</button></div><div class="v51045-editor-body"><div class="v51045-editor-tabs"><button type="button" class="active" data-home-data-tab="0">READING</button><button type="button" data-home-data-tab="1">STATS</button></div>'+groupHtml+'<div class="v51045-editor-actions"><button type="button" data-home-data-action="peek">PEEK</button><button type="button" data-home-data-action="reset">RESET</button><button type="button" data-home-data-action="copy">COPY VALUES</button></div><div id="v51045HomeDataEditorOutput" class="v51045-editor-output"></div></div>';
   document.body.appendChild(panel);
   const defaults={...state};
   const apply=()=>{
@@ -473,8 +473,33 @@ function mountHomeDataEditor(){
   panel.querySelectorAll('[data-home-data-tab]').forEach(btn=>btn.addEventListener('click',()=>{const n=btn.dataset.homeDataTab;panel.querySelectorAll('[data-home-data-tab]').forEach(b=>b.classList.toggle('active',b===btn));panel.querySelectorAll('[data-home-data-group]').forEach(g=>g.hidden=g.dataset.homeDataGroup!==n)}));
   panel.querySelector('[data-home-data-action="reset"]').addEventListener('click',()=>{Object.assign(state,defaults);apply()});
   panel.querySelector('[data-home-data-action="copy"]').addEventListener('click',async()=>{const txt=$('v51045HomeDataEditorOutput').textContent;try{await navigator.clipboard.writeText(txt);const b=panel.querySelector('[data-home-data-action="copy"]');b.textContent='COPIED!';setTimeout(()=>b.textContent='COPY VALUES',900)}catch(e){}});
-  open.addEventListener('click',()=>{panel.hidden=false;open.hidden=true;renderHomeData();apply()});
-  panel.querySelector('.v51045-editor-close').addEventListener('click',()=>{panel.hidden=true;open.hidden=false;renderHomeData()});
+  panel.querySelector('[data-home-data-action="peek"]').addEventListener('click',()=>{
+    panel.hidden=true;
+    open.hidden=false;
+    open.textContent='RETURN TO EDITOR';
+    renderHomeData();
+  });
+  open.addEventListener('click',()=>{panel.hidden=false;open.hidden=true;open.textContent='HOME DATA EDITOR';renderHomeData();apply()});
+  panel.querySelector('.v51045-editor-close').addEventListener('click',()=>{panel.hidden=true;open.hidden=false;open.textContent='HOME DATA EDITOR';renderHomeData()});
+
+  const head=panel.querySelector('.v51045-editor-head');
+  head.style.touchAction='none';
+  let drag=null;
+  head.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button'))return;
+    const rect=panel.getBoundingClientRect();
+    panel.style.right='auto';
+    drag={id:e.pointerId,sx:e.clientX,sy:e.clientY,left:rect.left,top:rect.top};
+    head.setPointerCapture(e.pointerId);
+  });
+  head.addEventListener('pointermove',e=>{
+    if(!drag||e.pointerId!==drag.id)return;
+    const maxX=Math.max(0,innerWidth-panel.offsetWidth),maxY=Math.max(0,innerHeight-panel.offsetHeight);
+    panel.style.left=Math.max(0,Math.min(maxX,drag.left+e.clientX-drag.sx))+'px';
+    panel.style.top=Math.max(0,Math.min(maxY,drag.top+e.clientY-drag.sy))+'px';
+  });
+  head.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.id)drag=null});
+  head.addEventListener('pointercancel',()=>{drag=null});
   apply();
 }
 
