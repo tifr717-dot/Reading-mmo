@@ -301,7 +301,12 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
 
   const int gridTop = y + 45;
   const int gridBottom = y + h - 5;
-  const int rowH = std::max(13, (gridBottom - gridTop) / 6);
+  // Use only the number of week rows this month actually needs. Five-row
+  // months such as September 2026 reclaim the unused sixth row, giving each
+  // date cell more vertical room and allowing a visibly larger read-day tile.
+  const int calendarRows =
+      std::clamp((static_cast<int>(sundayFirstOffset) + static_cast<int>(monthDays) + 6) / 7, 4, 6);
+  const int rowH = std::max(13, (gridBottom - gridTop) / calendarRows);
 
   char dayBuf[4];
   for (uint8_t day = 1; day <= monthDays; ++day) {
@@ -325,10 +330,10 @@ void drawMonthlyReadingCalendar(const GfxRenderer& renderer, const int x, const 
     const int twoDigitW = renderer.getTextWidth(SMALL_FONT_ID, "88");
     // Give the inverted date more padding so two-digit dates do not look clipped.
     // Keep a small gap between neighboring calendar cells.
-    const int desiredTile = std::max(twoDigitW, glyphH) + 8;
-    const int tileSize = std::max(11, std::min(desiredTile, std::min(cellW - 2, rowH)));
+    const int desiredTile = std::max(twoDigitW, glyphH) + 10;
+    const int tileSize = std::max(13, std::min(desiredTile, std::min(cellW - 2, rowH - 2)));
     const int boxX = cellX + (cellW - tileSize) / 2;
-    const int boxY = cellY - 2;
+    const int boxY = cellY - 3;
     const int boxW = tileSize;
     const int boxH = tileSize;
 
