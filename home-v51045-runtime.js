@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-data-editor-drag-peek1';
+const BUILD='v5.10.45-home-data-editor-compact1';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -436,12 +436,35 @@ function mountHomeDataEditor(){
   const open=document.createElement('button');
   open.id='v51045HomeDataEditorOpen';open.className='v51045-editor-open';open.type='button';open.textContent='HOME DATA EDITOR';open.style.top='242px';document.body.appendChild(open);
   const panel=document.createElement('div');
-  panel.id='v51045HomeDataEditor';panel.className='v51045-bar-editor';panel.style.top='80px';panel.style.maxHeight='calc(100dvh - 100px)';panel.style.overflow='auto';panel.style.touchAction='auto';panel.hidden=true;
+  panel.id='v51045HomeDataEditor';panel.className='v51045-bar-editor';panel.style.top='80px';panel.style.width='min(290px,calc(100vw - 24px))';panel.style.maxHeight='52dvh';panel.style.overflow='auto';panel.style.touchAction='auto';panel.hidden=true;
+  const sectionFor=k=>{
+    if(k.startsWith('cover'))return'cover';
+    if(k.startsWith('title'))return'title';
+    if(k.startsWith('author'))return'author';
+    if(k.startsWith('series'))return'series';
+    if(k.startsWith('bar'))return'bar';
+    if(k==='curX'||k==='totalX'||k==='pageY'||k==='pageFont')return'pages';
+    if(k.startsWith('pct'))return'percent';
+    if(k.startsWith('books'))return'books';
+    if(k.startsWith('pages'))return'stats-pages';
+    if(k.startsWith('days'))return'days';
+    if(k.startsWith('streak'))return'streak';
+    if(k==='statFont')return'style';
+    return'misc';
+  };
+  const sectionOptions=[
+    [
+      ['cover','Cover'],['title','Title'],['author','Author'],['series','Series'],['bar','Progress Bar'],['pages','Pages'],['percent','Percent']
+    ],
+    [
+      ['books','Books'],['stats-pages','Pages'],['days','Days'],['streak','Streak'],['style','Style']
+    ]
+  ];
   const groupHtml=groups.map((rows,gi)=>'<div class="v51045-editor-group" data-home-data-group="'+gi+'"'+(gi?' hidden':'')+'>'+rows.map(row=>{
     const [k,label,min,max,step]=row;
-    return '<div class="v51045-editor-row" data-home-data-key="'+k+'" data-min="'+min+'" data-max="'+max+'" data-step="'+step+'"><span>'+label+'</span><button type="button" data-delta="-1">−</button><input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+state[k]+'"><button type="button" data-delta="1">+</button><span class="v51045-editor-value">'+state[k].toFixed(2)+'</span></div>';
+    return '<div class="v51045-editor-row" data-home-data-section="'+sectionFor(k)+'" data-home-data-key="'+k+'" data-min="'+min+'" data-max="'+max+'" data-step="'+step+'"><span>'+label+'</span><button type="button" data-delta="-1">−</button><input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+state[k]+'"><button type="button" data-delta="1">+</button><span class="v51045-editor-value">'+state[k].toFixed(2)+'</span></div>';
   }).join('')+'</div>').join('');
-  panel.innerHTML='<div class="v51045-editor-head"><strong>HOME DATA EDITOR</strong><button type="button" class="v51045-editor-close">×</button></div><div class="v51045-editor-body"><div class="v51045-editor-tabs"><button type="button" class="active" data-home-data-tab="0">READING</button><button type="button" data-home-data-tab="1">STATS</button></div>'+groupHtml+'<div class="v51045-editor-actions"><button type="button" data-home-data-action="peek">PEEK</button><button type="button" data-home-data-action="reset">RESET</button><button type="button" data-home-data-action="copy">COPY VALUES</button></div><div id="v51045HomeDataEditorOutput" class="v51045-editor-output"></div></div>';
+  panel.innerHTML='<div class="v51045-editor-head"><strong>HOME DATA EDITOR</strong><button type="button" class="v51045-editor-close">×</button></div><div class="v51045-editor-body"><div class="v51045-editor-tabs"><button type="button" class="active" data-home-data-tab="0">READING</button><button type="button" data-home-data-tab="1">STATS</button></div><select id="v51045HomeDataSection" style="width:100%;height:36px;margin:0 0 8px;border:1px solid #a77d4a;border-radius:7px;background:#34202d;color:#f4e5c8;font-weight:800;padding:0 8px"></select>'+groupHtml+'<div class="v51045-editor-actions"><button type="button" data-home-data-action="peek">PEEK</button><button type="button" data-home-data-action="reset">RESET</button><button type="button" data-home-data-action="copy">COPY VALUES</button></div><div id="v51045HomeDataEditorOutput" class="v51045-editor-output" hidden></div></div>';
   document.body.appendChild(panel);
   const defaults={...state};
   const apply=()=>{
@@ -470,7 +493,22 @@ function mountHomeDataEditor(){
     input.addEventListener('input',()=>{state[k]=Number(input.value);apply()});
     row.querySelectorAll('button[data-delta]').forEach(btn=>btn.addEventListener('click',()=>{state[k]=Number(Math.max(min,Math.min(max,state[k]+Number(btn.dataset.delta)*step)).toFixed(step<1?2:0));apply()}));
   });
-  panel.querySelectorAll('[data-home-data-tab]').forEach(btn=>btn.addEventListener('click',()=>{const n=btn.dataset.homeDataTab;panel.querySelectorAll('[data-home-data-tab]').forEach(b=>b.classList.toggle('active',b===btn));panel.querySelectorAll('[data-home-data-group]').forEach(g=>g.hidden=g.dataset.homeDataGroup!==n)}));
+  const sectionSelect=$('v51045HomeDataSection');
+  let activeTab=0;
+  const refreshSections=()=>{
+    const opts=sectionOptions[activeTab];
+    sectionSelect.innerHTML=opts.map(([v,label])=>'<option value="'+v+'">'+label+'</option>').join('');
+    sectionSelect.value=opts[0][0];
+    panel.querySelectorAll('[data-home-data-section]').forEach(row=>row.hidden=row.dataset.homeDataSection!==sectionSelect.value);
+  };
+  sectionSelect.addEventListener('change',()=>{panel.querySelectorAll('[data-home-data-section]').forEach(row=>row.hidden=row.dataset.homeDataSection!==sectionSelect.value)});
+  panel.querySelectorAll('[data-home-data-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+    activeTab=Number(btn.dataset.homeDataTab)||0;
+    panel.querySelectorAll('[data-home-data-tab]').forEach(b=>b.classList.toggle('active',b===btn));
+    panel.querySelectorAll('[data-home-data-group]').forEach(g=>g.hidden=g.dataset.homeDataGroup!==String(activeTab));
+    refreshSections();
+  }));
+  refreshSections();
   panel.querySelector('[data-home-data-action="reset"]').addEventListener('click',()=>{Object.assign(state,defaults);apply()});
   panel.querySelector('[data-home-data-action="copy"]').addEventListener('click',async()=>{const txt=$('v51045HomeDataEditorOutput').textContent;try{await navigator.clipboard.writeText(txt);const b=panel.querySelector('[data-home-data-action="copy"]');b.textContent='COPIED!';setTimeout(()=>b.textContent='COPY VALUES',900)}catch(e){}});
   panel.querySelector('[data-home-data-action="peek"]').addEventListener('click',()=>{
