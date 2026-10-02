@@ -1,6 +1,6 @@
 (()=>{'use strict';
 if(window.__v51045HomeLevelOnly)return;window.__v51045HomeLevelOnly=1;
-const BUILD='v5.10.45-home-data-editor-compact1';
+const BUILD='v5.10.45-home-data-editor-compact2-filterfix';
 const MASTER='./home-v51045-master-clean-level.webp?v=51045locked1';
 const $=id=>document.getElementById(id);
 
@@ -66,6 +66,7 @@ function style(){
     ".v51045-editor-tabs button.active{background:#6a3d56;color:#fff;box-shadow:inset 0 0 0 1px #d0a566}"+
     ".v51045-editor-group[hidden]{display:none!important}"+
     ".v51045-editor-row{display:grid;grid-template-columns:52px 36px minmax(0,1fr) 36px 58px;gap:5px;align-items:center;margin:6px 0}"+
+    ".v51045-editor-row[hidden]{display:none!important}"+
     ".v51045-editor-row button{height:32px;border:1px solid #a77d4a;border-radius:7px;background:#5a3449;color:#fff;font-weight:800}"+
     ".v51045-editor-row input[type=range]{width:100%;min-width:0}"+
     ".v51045-editor-value{text-align:right;font-variant-numeric:tabular-nums;color:#f7e8ca}"+
@@ -495,13 +496,20 @@ function mountHomeDataEditor(){
   });
   const sectionSelect=$('v51045HomeDataSection');
   let activeTab=0;
+  const showHomeDataSection=section=>{
+    panel.querySelectorAll('[data-home-data-section]').forEach(row=>{
+      const show=row.dataset.homeDataSection===section;
+      row.hidden=!show;
+      row.style.display=show?'grid':'none';
+    });
+  };
   const refreshSections=()=>{
     const opts=sectionOptions[activeTab];
     sectionSelect.innerHTML=opts.map(([v,label])=>'<option value="'+v+'">'+label+'</option>').join('');
     sectionSelect.value=opts[0][0];
-    panel.querySelectorAll('[data-home-data-section]').forEach(row=>row.hidden=row.dataset.homeDataSection!==sectionSelect.value);
+    showHomeDataSection(sectionSelect.value);
   };
-  sectionSelect.addEventListener('change',()=>{panel.querySelectorAll('[data-home-data-section]').forEach(row=>row.hidden=row.dataset.homeDataSection!==sectionSelect.value)});
+  sectionSelect.addEventListener('change',()=>showHomeDataSection(sectionSelect.value));
   panel.querySelectorAll('[data-home-data-tab]').forEach(btn=>btn.addEventListener('click',()=>{
     activeTab=Number(btn.dataset.homeDataTab)||0;
     panel.querySelectorAll('[data-home-data-tab]').forEach(b=>b.classList.toggle('active',b===btn));
