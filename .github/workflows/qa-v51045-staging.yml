@@ -28,11 +28,11 @@ jobs:
               assert p.exists() and p.stat().st_size > 1000
           PY
 
-          grep -q 'home-v51045-runtime.js?v=51045readingstats3' index.html
+          grep -q 'home-v51045-runtime.js?v=51045readingstats4' index.html
           grep -q 'home-v51045-master-clean-level.webp?v=51045locked1' index.html
           grep -q 'home-v51045-ornate-bar-frame.png?v=51045locked1' index.html
 
-          grep -q "v5.10.45-home-data-editor-compact1" home-v51045-runtime.js
+          grep -q "v5.10.45-home-data-editor-compact2-filterfix" home-v51045-runtime.js
 
           grep -q "left:53.60%;top:31.50%;width:27.90%;height:3.30%" home-v51045-runtime.js
           grep -q "left:7.80%;right:0.00%;top:27.00%;height:47.00%" home-v51045-runtime.js
@@ -128,6 +128,10 @@ jobs:
           grep -q "v51045StatDays" home-v51045-runtime.js
           grep -q "v51045StatStreak" home-v51045-runtime.js
           grep -q "HOME DATA EDITOR" home-v51045-runtime.js
+          grep -q ".v51045-editor-row\[hidden\]{display:none!important}" home-v51045-runtime.js
+          grep -q "const showHomeDataSection=section=>" home-v51045-runtime.js
+          grep -q "row.style.display=show?'grid':'none'" home-v51045-runtime.js
+          grep -q "sectionSelect.addEventListener('change',()=>showHomeDataSection(sectionSelect.value))" home-v51045-runtime.js
           grep -q "homeDataEditor" home-v51045-runtime.js
           grep -q "data-home-data-action=\"peek\"" home-v51045-runtime.js
           grep -q "RETURN TO EDITOR" home-v51045-runtime.js
