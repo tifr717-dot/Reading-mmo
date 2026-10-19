@@ -154,7 +154,7 @@ replace_once(activity,
   if (page == Page::ThisDevice) {""")
 replace_once(activity,
 """  const bool downOrRightPressed = mappedInput.wasPressed(MappedInputManager::Button::Down) ||
-                                   mappedInput.wasPressed(MappedInputManager::Button::Right);
+                                  mappedInput.wasPressed(MappedInputManager::Button::Right);
 
   if (page == Page::EditDates) {""",
 """  const bool downOrRightPressed = mappedInput.wasPressed(MappedInputManager::Button::Down) ||
