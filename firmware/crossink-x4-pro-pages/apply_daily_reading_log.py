@@ -210,4 +210,8 @@ replace_once(activity,
     const int dotPage = page == Page::AllDevices ? 2 : static_cast<int>(page);
     drawPageIndicators(renderer, dotPage, showAllDevicesStats ? 3 : 2);
 #endif""")
+
+replace_once(activity,
+    "  if (page == Page::ThisDevice && showAllDevicesStats && downOrRightPressed) {",
+    "  if (page == Page::ThisDevice && downOrRightPressed) {")
 print("X4 Pro per-book daily diary recorder + browseable Stats page applied")
