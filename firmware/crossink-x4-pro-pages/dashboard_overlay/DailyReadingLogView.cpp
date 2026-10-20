@@ -92,7 +92,7 @@ void renderX4ProDailyReadingLog(const GfxRenderer& renderer,
 
     char timeBuf[24],sessionBuf[20],line[104];
     BookReadingStats::formatDuration(e.seconds,timeBuf,sizeof(timeBuf));
-    if (e.sessionCount>0) {
+    if (e.sessionCount>0 && e.sessionCount!=UINT16_MAX) {
       snprintf(sessionBuf,sizeof(sessionBuf),"%u %s",
                unsigned(e.sessionCount),e.sessionCount==1?"session":"sessions");
     } else {
