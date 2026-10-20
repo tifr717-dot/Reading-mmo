@@ -5,10 +5,9 @@ on:
     branches:
       - crossink-x4-pro-daily-log-dev13
     paths:
-      - ".github/workflows/build-crossink-x4-pro-stats-dashboard.yml"
+      - ".github/workflows/build-crossink-x4-pro-daily-log-dev13.yml"
       - "firmware/crossink-x4-pro-pages/apply_pages_x4pro.py"
       - "firmware/crossink-x4-pro-pages/apply_daily_reading_log.py"
-      - "firmware/crossink-x4-pro-pages/dashboard_overlay/**"
       - "firmware/crossink-x4-pro-pages/dashboard_overlay/**"
   workflow_dispatch:
 
