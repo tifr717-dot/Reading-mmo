@@ -232,4 +232,9 @@ replace_once(activity,
 replace_once(activity,
     "  if (page == Page::ThisDevice && showAllDevicesStats && downOrRightPressed) {",
     "  if (page == Page::ThisDevice && downOrRightPressed) {")
+# DEV13 diary draws its own generous bottom control area; the preexisting
+# page-indicator dots would otherwise overwrite and clip those labels.
+replace_once(activity,
+    "  if (page != Page::EditDates) {",
+    "  if (page != Page::EditDates && page != Page::DailyLog) {")
 print("X4 Pro per-book daily diary recorder + browseable Stats page applied")
