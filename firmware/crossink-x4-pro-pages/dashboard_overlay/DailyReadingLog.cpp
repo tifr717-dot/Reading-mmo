@@ -136,7 +136,7 @@ bool decode(const Buffer& b,size_t len,uint32_t dayId,DayData& day) {
       e.startingPermille=UINT16_MAX;
       e.startingXtePage=0;
       e.endingXtePage=0;
-      e.sessionCount=0;
+      e.sessionCount=UINT16_MAX; // Historical session count is unknown.
     }
   }
   return true;
