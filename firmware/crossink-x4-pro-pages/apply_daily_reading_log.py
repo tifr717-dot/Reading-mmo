@@ -34,6 +34,9 @@ for file in (epub,xtc):
     replace_once(file,
                  '#include "ReadingDailyStats.h"\n',
                  '#include "ReadingDailyStats.h"\n#include "DailyReadingLogDeviceAdapter.h"\n')
+    replace_once("src/activities/reader/" + ("EpubReaderActivity.h" if file==epub else "XtcReaderActivity.h"),
+                 "  uint32_t sessionForwardPages = 0;\n",
+                 "  uint32_t sessionForwardPages = 0;\n  uint32_t dailyLogSessionDay = 0xffffffffu;\n")
 
 time_old="""  if (currentPageReadingSecondsForStats(seconds, source)) {
     sessionReadingSeconds = sessionReadingSeconds > UINT32_MAX - seconds ? UINT32_MAX : sessionReadingSeconds + seconds;
@@ -41,15 +44,19 @@ time_old="""  if (currentPageReadingSecondsForStats(seconds, source)) {
   pageShownAtMs = 0UL;
 }"""
 for file,book in ((epub,"epub"),(xtc,"xtc")):
+    pos = "getCurrentBookPageForStats()" if book=="epub" else "std::min<uint32_t>(currentPage + 1, xtc->getPageCount())"
     time_new="""  if (currentPageReadingSecondsForStats(seconds, source)) {
     sessionReadingSeconds = sessionReadingSeconds > UINT32_MAX - seconds ? UINT32_MAX : sessionReadingSeconds + seconds;
     if (BOOK && SETTINGS.shouldTrackReadingStats()) {
       const float pct = getCurrentBookProgressPercent();
-      DailyReadingLog::recordAtCurrentTime(BOOK->getPath(), BOOK->getTitle(), seconds, 0, pct, pct);
+      const uint32_t xtePos = POSITION;
+      DailyReadingLog::recordAtCurrentTime(BOOK->getPath(), BOOK->getTitle(),
+                                            seconds, 0, pct, pct, xtePos, xtePos,
+                                            dailyLogSessionDay);
     }
   }
   pageShownAtMs = 0UL;
-}""".replace("BOOK",book)
+}""".replace("BOOK",book).replace("POSITION",pos)
     replace_once(file,time_old,time_new)
 
 replace_once(epub,
@@ -57,6 +64,7 @@ replace_once(epub,
   pageLoadRetryCount = 0;""",
 """void EpubReaderActivity::pageTurn(bool isForwardTurn, const char* source) {
   const float dailyBefore = getCurrentBookProgressPercent();
+  const uint32_t dailyStartPage = getCurrentBookPageForStats();
   pageLoadRetryCount = 0;""")
 replace_once(epub,
 """      stats.totalPagesTurned++;
@@ -69,7 +77,10 @@ replace_once(epub,
         // During a spine boundary, section may be unloaded temporarily.
         const float after = getCurrentBookProgressPercent();
         const float ending = (after <= 0.0f && dailyBefore > 0.0f) ? dailyBefore : after;
-        DailyReadingLog::recordAtCurrentTime(epub->getPath(), epub->getTitle(), 0, 1, dailyBefore, ending);
+        const uint32_t dailyEndPage = getCurrentBookPageForStats();
+        DailyReadingLog::recordAtCurrentTime(epub->getPath(), epub->getTitle(),
+                                              0, 1, dailyBefore, ending,
+                                              dailyStartPage, dailyEndPage, dailyLogSessionDay);
       }""")
 replace_once(xtc,
 """  stats.totalPagesTurned++;
@@ -80,8 +91,15 @@ replace_once(xtc,
   sessionForwardPages++;
   // Do not classify a 10-page navigation skip as a page read.
   if (recordPace && xtc && SETTINGS.shouldTrackReadingStats()) {
-    const float pct = getCurrentBookProgressPercent();
-    DailyReadingLog::recordAtCurrentTime(xtc->getPath(), xtc->getTitle(), 0, 1, pct, pct);
+    const uint32_t totalPages = xtc->getPageCount();
+    const uint32_t firstPage = std::min<uint32_t>(currentPage,totalPages);
+    const uint32_t lastPage = std::min<uint32_t>(currentPage+1,totalPages);
+    const float endPct = getCurrentBookProgressPercent();
+    const float startPct = currentPage > 0
+      ? static_cast<float>(xtc->calculateProgress(currentPage-1)) : endPct;
+    DailyReadingLog::recordAtCurrentTime(xtc->getPath(), xtc->getTitle(),
+                                          0, 1, startPct, endPct,
+                                          firstPage, lastPage, dailyLogSessionDay);
   }""")
 
 # Add a separate day-detail page to the X4 Pro stats navigation.
