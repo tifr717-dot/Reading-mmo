@@ -15,7 +15,8 @@ namespace DailyReadingLog {
 namespace {
 constexpr char DIR[] = "/.crosspoint/reading_log";
 constexpr size_t HEADER_BYTES = 16;
-constexpr size_t RECORD_BYTES = 96;
+constexpr size_t V1_RECORD_BYTES = 96;
+constexpr size_t RECORD_BYTES = 112;
 constexpr size_t FILE_MAX = HEADER_BYTES + MAX_BOOKS_PER_DAY * RECORD_BYTES;
 using Buffer = std::array<uint8_t, FILE_MAX>;
 struct DayData { Entry rows[MAX_BOOKS_PER_DAY]{}; size_t count = 0; };
@@ -103,15 +104,18 @@ bool saveFile(const std::string& path,const Buffer& buf,size_t size) {
   return ok && closed;
 }
 bool decode(const Buffer& b,size_t len,uint32_t dayId,DayData& day) {
-  if (len<HEADER_BYTES || memcmp(b.data(),"DRL1",4)!=0 || r32(b.data()+4)!=dayId) return false;
+  if (len<HEADER_BYTES || r32(b.data()+4)!=dayId) return false;
+  const bool legacy=memcmp(b.data(),"DRL1",4)==0;
+  if (!legacy && memcmp(b.data(),"DRL2",4)!=0) return false;
+  const size_t stride=legacy?V1_RECORD_BYTES:RECORD_BYTES;
   const uint16_t count=r16(b.data()+8);
   if (count>MAX_BOOKS_PER_DAY ||
-      len!=HEADER_BYTES+size_t(count)*RECORD_BYTES ||
+      len!=HEADER_BYTES+size_t(count)*stride ||
       checksum(b,len)!=r32(b.data()+12)) return false;
   day=DayData{};
   day.count=count;
   for (size_t i=0;i<count;i++) {
-    const uint8_t* p=b.data()+HEADER_BYTES+i*RECORD_BYTES;
+    const uint8_t* p=b.data()+HEADER_BYTES+i*stride;
     Entry& e=day.rows[i];
     e.bookId=r64(p);
     e.pages=r32(p+8);
@@ -120,12 +124,26 @@ bool decode(const Buffer& b,size_t len,uint32_t dayId,DayData& day) {
     if (!e.bookId || e.endingPermille>1000) return false;
     memcpy(e.title,p+18,MAX_TITLE_BYTES);
     e.title[MAX_TITLE_BYTES]=0;
+    if (!legacy) {
+      e.startingPermille=r16(p+94);
+      e.startingXtePage=r32(p+96);
+      e.endingXtePage=r32(p+100);
+      e.sessionCount=r16(p+104);
+      if (e.startingPermille!=UINT16_MAX && e.startingPermille>1000) return false;
+    } else {
+      // Previously recorded DEV12 totals survive. Unknown start/position and
+      // session count are not invented for historical rows.
+      e.startingPermille=UINT16_MAX;
+      e.startingXtePage=0;
+      e.endingXtePage=0;
+      e.sessionCount=0;
+    }
   }
   return true;
 }
 void encode(uint32_t dayId,const DayData& day,Buffer& b,size_t& size) {
   b.fill(0);
-  memcpy(b.data(),"DRL1",4);
+  memcpy(b.data(),"DRL2",4);
   w32(b.data()+4,dayId);
   w16(b.data()+8,uint16_t(day.count));
   for (size_t i=0;i<day.count;i++) {
@@ -136,6 +154,10 @@ void encode(uint32_t dayId,const DayData& day,Buffer& b,size_t& size) {
     w32(p+12,e.seconds);
     w16(p+16,e.endingPermille);
     memcpy(p+18,e.title,MAX_TITLE_BYTES);
+    w16(p+94,e.startingPermille);
+    w32(p+96,e.startingXtePage);
+    w32(p+100,e.endingXtePage);
+    w16(p+104,e.sessionCount);
   }
   size=HEADER_BYTES+day.count*RECORD_BYTES;
   w32(b.data()+12,checksum(b,size));
@@ -182,7 +204,8 @@ bool save(const LocalDateTime& d,const DayData& day) {
   return true;
 }
 bool update(const LocalDateTime& d,uint64_t bookId,const std::string& title,
-            uint32_t seconds,uint16_t pages,uint16_t ending) {
+            uint32_t seconds,uint16_t pages,uint16_t firstPct,uint16_t endingPct,
+            uint32_t firstPage,uint32_t endingPage,bool newSession) {
   std::unique_ptr<DayData> day(new(std::nothrow) DayData{});
   if (!day || !load(d,*day)) return false;
   size_t i=0;
@@ -194,9 +217,18 @@ bool update(const LocalDateTime& d,uint64_t bookId,const std::string& title,
     day->rows[i].bookId=bookId;
   }
   Entry& e=day->rows[i];
+  // Start is latched at the first qualified event of the day, not recomputed
+  // from a later navigation jump. Old DRL1 rows keep their unknown start.
+  if (e.pages==0 && e.seconds==0 && e.sessionCount==0 &&
+      e.startingPermille==UINT16_MAX) {
+    e.startingPermille=firstPct;
+    e.startingXtePage=firstPage;
+  }
   e.pages=saturated(e.pages,pages);
   e.seconds=saturated(e.seconds,seconds);
-  e.endingPermille=ending;
+  e.endingPermille=endingPct;
+  if (endingPage>0) e.endingXtePage=endingPage;
+  if (newSession && e.sessionCount<UINT16_MAX) ++e.sessionCount;
   size_t n=std::min(title.size(),MAX_TITLE_BYTES);
   while (n>0 && n<title.size() &&
          (uint8_t(title[n]) & 0xC0)==0x80) --n;
@@ -211,14 +243,17 @@ bool isValid(const LocalDateTime& dt) {
 }
 bool recordEvent(const std::string& path,const std::string& title,
                  const LocalDateTime& finishedAt,uint32_t elapsedSeconds,
-                 uint16_t forwardPages,float startPercent,float endPercent) {
+                 uint16_t forwardPages,float startPercent,float endPercent,
+                 uint32_t startPage,uint32_t endPage,bool newSession) {
   if (!isValid(finishedAt) || path.empty() ||
       (elapsedSeconds==0 && forwardPages==0)) return false;
   const uint64_t id=hashPath(path);
   LocalDateTime start=finishedAt;
   subtractSeconds(start,elapsedSeconds);
   if (dateKey(start)==dateKey(finishedAt)) {
-    return update(finishedAt,id,title,elapsedSeconds,forwardPages,progressTenths(endPercent));
+    return update(finishedAt,id,title,elapsedSeconds,forwardPages,
+                  progressTenths(startPercent),progressTenths(endPercent),
+                  startPage,endPage,newSession);
   }
   LocalDateTime cursor=start;
   uint32_t remaining=elapsedSeconds;
@@ -227,14 +262,17 @@ bool recordEvent(const std::string& path,const std::string& title,
     const uint32_t sinceMidnight=uint32_t(cursor.hour)*3600u+
         uint32_t(cursor.minute)*60u+cursor.second;
     const uint32_t chunk=std::min(86400u-sinceMidnight,remaining);
-    if (chunk) success=update(cursor,id,title,chunk,0,progressTenths(startPercent)) && success;
+    if (chunk) success=update(cursor,id,title,chunk,0,
+                              progressTenths(startPercent),progressTenths(startPercent),
+                              startPage,startPage,false) && success;
     remaining-=chunk;
     cursor.hour=cursor.minute=cursor.second=0;
     advanceDay(cursor);
   }
   if (!remaining && !forwardPages) return success;
   return update(finishedAt,id,title,remaining,forwardPages,
-                progressTenths(endPercent)) && success;
+                progressTenths(startPercent),progressTenths(endPercent),
+                startPage,endPage,newSession) && success;
 }
 bool readDay(const LocalDateTime& date,Entry* entries,size_t capacity,size_t& count) {
   count=0;
