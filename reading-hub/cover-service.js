@@ -1,8 +1,8 @@
 (function(){
   'use strict';
 
-  const CACHE_KEY='readingJournalCoverCacheV1';
-  const MAX_LOOKUPS_PER_SESSION=24;
+  const CACHE_KEY='readingJournalCoverCacheV2';
+  const MAX_LOOKUPS_PER_SESSION=30;
   const LOOKUP_GAP_MS=900;
   let lookups=0, lastLookup=0;
   const pending=new Map();
@@ -33,6 +33,7 @@
     if(ref.olid)return 'https://covers.openlibrary.org/b/olid/'+encodeURIComponent(ref.olid)+'-'+size+'.jpg?default=false';
     if(ref.coverId)return 'https://covers.openlibrary.org/b/id/'+encodeURIComponent(ref.coverId)+'-'+size+'.jpg?default=false';
     if(ref.isbn)return 'https://covers.openlibrary.org/b/isbn/'+encodeURIComponent(ref.isbn)+'-'+size+'.jpg?default=false';
+    if(ref.url)return String(ref.url).replace(/^http:/,'https:');
     return'';
   }
   function cachedRef(title,author){
@@ -60,6 +61,40 @@
     if(doc.cover_i)s+=2;
     return s;
   }
+
+  function scoreGoogle(item,title,author){
+    const info=item&&item.volumeInfo||{};
+    let s=0;
+    const t=norm(cleanTitle(title)),dt=norm(info.title||'');
+    if(dt===t)s+=8;else if(dt.includes(t)||t.includes(dt))s+=4;
+    const a=norm(author),authors=(info.authors||[]).map(norm);
+    if(authors.some(x=>x===a))s+=6;
+    else if(authors.some(x=>x.includes(a)||a.includes(x)))s+=3;
+    if(info.imageLinks?.thumbnail||info.imageLinks?.smallThumbnail)s+=2;
+    return s;
+  }
+
+  async function lookupGoogle(title,author){
+    try{
+      const terms=['intitle:"'+cleanTitle(title).replace(/"/g,'')+'"'];
+      if(author)terms.push('inauthor:"'+String(author).replace(/"/g,'')+'"');
+      const q=new URLSearchParams({q:terms.join(' '),maxResults:'5',printType:'books'});
+      const res=await fetch('https://www.googleapis.com/books/v1/volumes?'+q.toString(),{mode:'cors'});
+      if(!res.ok)throw new Error('google cover lookup '+res.status);
+      const data=await res.json();
+      const items=(data.items||[]).filter(x=>{
+        const links=x?.volumeInfo?.imageLinks||{};
+        return links.thumbnail||links.smallThumbnail;
+      });
+      items.sort((a,b)=>scoreGoogle(b,title,author)-scoreGoogle(a,title,author));
+      const best=items[0],links=best?.volumeInfo?.imageLinks||{};
+      const url=links.thumbnail||links.smallThumbnail||'';
+      return url?{url:String(url).replace(/^http:/,'https:').replace('&edge=curl','')}:null;
+    }catch(err){
+      console.warn('Reading Journal Google cover fallback failed',title,err);
+      return null;
+    }
+  }
   async function lookup(title,author){
     const k=key(title,author);
     if(exact[k])return exact[k];
@@ -86,12 +121,15 @@
         const docs=(data.docs||[]).filter(d=>d.cover_i);
         docs.sort((a,b)=>scoreDoc(b,title,author)-scoreDoc(a,title,author));
         const best=docs[0];
-        const ref=best&&best.cover_i?{coverId:best.cover_i}:null;
+        let ref=best&&best.cover_i?{coverId:best.cover_i}:null;
+        if(!ref) ref=await lookupGoogle(title,author);
         setRef(title,author,ref);
         return ref;
       }catch(err){
-        console.warn('Reading Journal cover lookup failed',title,err);
-        return null;
+        console.warn('Reading Journal Open Library cover lookup failed',title,err);
+        const ref=await lookupGoogle(title,author);
+        setRef(title,author,ref);
+        return ref;
       }finally{pending.delete(k)}
     })();
     pending.set(k,p);
