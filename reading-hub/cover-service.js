@@ -2,8 +2,8 @@
   'use strict';
 
   const CACHE_KEY='readingJournalCoverCacheV2';
-  const MAX_LOOKUPS_PER_SESSION=30;
-  const LOOKUP_GAP_MS=900;
+  const MAX_LOOKUPS_PER_SESSION=80;
+  const LOOKUP_GAP_MS=750;
   let lookups=0, lastLookup=0;
   const pending=new Map();
 
@@ -121,7 +121,8 @@
         const docs=(data.docs||[]).filter(d=>d.cover_i);
         docs.sort((a,b)=>scoreDoc(b,title,author)-scoreDoc(a,title,author));
         const best=docs[0];
-        let ref=best&&best.cover_i?{coverId:best.cover_i}:null;
+        const bestScore=best?scoreDoc(best,title,author):0;
+        let ref=best&&best.cover_i&&bestScore>=10?{coverId:best.cover_i}:null;
         if(!ref) ref=await lookupGoogle(title,author);
         setRef(title,author,ref);
         return ref;
