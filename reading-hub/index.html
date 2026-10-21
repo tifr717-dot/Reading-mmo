@@ -63,6 +63,11 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .page-compare-note{font-size:10px;color:#7a6657;line-height:1.45;margin-top:10px}
 .stats .stat span{display:block;font-size:11px;line-height:1.15}
 
+
+.book-cover-slot{background-position:center;background-size:cover;background-repeat:no-repeat;overflow:hidden}
+.book-cover-slot.has-cover{color:transparent;text-shadow:none}
+.cover.book-cover-slot{display:flex;align-items:center;justify-content:center;text-align:center}
+.mini.book-cover-slot,.cal-cover.book-cover-slot,.cal-detail-cover.book-cover-slot{background-position:center;background-size:cover;background-repeat:no-repeat;color:#fff}
 </style>
 </head>
 <body>
@@ -75,7 +80,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 
   <section id="home" class="screen active">
     <div class="card hero">
-      <div class="cover">FALSE<br>GODS</div>
+      <div class="cover book-cover-slot" id="homeCover" data-book-cover data-cover-title="False Gods" data-cover-author="Graham McNeill" data-cover-size="L">FALSE GODS</div>
       <div>
         <div class="label">Currently reading</div>
         <div class="book">False Gods</div>
@@ -231,6 +236,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 </nav>
 <script src="./data.js"></script>
 <script src="./library-data.js"></script>
+<script src="./cover-service.js?v=51049"></script>
 <script src="./reading-calendar-x4pro-v1.js"></script>
 <script>
 const titles={
@@ -486,9 +492,11 @@ function renderLibrary(){
    const rating=Number(b.rating)>0 ? Number(b.rating).toFixed(Number(b.rating)%1?1:0)+"★" : "";
    const meta=[b.author,b.series,b.pages?b.pages+" pages":"",b.finish?("Finished "+b.finish):""].filter(Boolean).join(" · ");
    const title=esc(b.title), url=esc(b.source||"");
-   const inner='<div class="mini"></div><div><div class="library-book-title">'+title+'</div><div class="library-meta">'+esc(meta)+'</div></div><div style="text-align:right"><div class="rating">'+rating+'</div><div class="library-status">'+esc(b.status||"")+'</div></div>';
+   const coverTitle=esc(b.title||""), coverAuthor=esc(b.author||"");
+   const inner='<div class="mini book-cover-slot" data-book-cover data-cover-title="'+coverTitle+'" data-cover-author="'+coverAuthor+'" data-cover-size="M"></div><div><div class="library-book-title">'+title+'</div><div class="library-meta">'+esc(meta)+'</div></div><div style="text-align:right"><div class="rating">'+rating+'</div><div class="library-status">'+esc(b.status||"")+'</div></div>';
    return '<button class="listrow" data-book-index="'+i+'" style="width:100%;border:0;background:transparent;color:inherit;text-align:left;padding-left:0;padding-right:0">'+inner+'</button>';
  }).join("") + (rows.length>100?'<div class="tiny" style="padding:12px 0;text-align:center">Showing first 100 matches — narrow your search to jump anywhere in the library.</div>':"");
+ if(window.ReadingCovers) requestAnimationFrame(()=>window.ReadingCovers.hydrate(result));
 }
 function updateLibraryStats(){
  const all=window.READING_LIBRARY_DATA||[];
@@ -509,6 +517,8 @@ function bootData(){
  document.getElementById("todayMinutes").textContent=cur.latestMinutes||0;
  document.getElementById("libraryCount").textContent=D.library?.total||0;
  document.querySelector("#home .label").textContent="Currently reading · last log "+(cur.latestDate||"");
+ const homeCover=document.getElementById("homeCover");
+ if(homeCover && window.ReadingCovers) window.ReadingCovers.refreshElement(homeCover,cur.title||"Current book",cur.author||"");
  updateLibraryStats();
  renderLibrary();
  document.querySelector("#wrapped .big-number").textContent=D.library.total;
@@ -545,7 +555,7 @@ bootData();
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("../service-worker-journal-v51048.js?v=51048",{updateViaCache:"none"}).catch(()=>{});
+    navigator.serviceWorker.register("../service-worker-journal-v51049.js?v=51049",{updateViaCache:"none"}).catch(()=>{});
   });
 }
 </script>
