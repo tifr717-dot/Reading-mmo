@@ -105,13 +105,18 @@
     panel.innerHTML = Object.entries(grouped).map(([title,list]) => {
       const pages = list.reduce((s,r)=>s+(Number(r.pages)||0),0);
       const seconds = list.reduce((s,r)=>s+(Number(r.seconds)||0),0);
-      const sessions = list.reduce((s,r)=>s+(Number(r.sessions)||1),0);
+      const sessionValues = list.map(r=>Number(r.sessions)||0);
+      const sessionsKnown = sessionValues.every(n=>n>0);
+      const sessions = sessionValues.reduce((s,n)=>s+n,0);
+      const sessionText = sessionsKnown
+        ? sessions+' '+(sessions===1?'session':'sessions')
+        : 'sessions --';
       const first = list[0], last = list[list.length-1];
       const pct = Number.isFinite(Number(first.startPercent)) && Number.isFinite(Number(last.endPercent))
         ? Number(first.startPercent).toFixed(1)+'% → '+Number(last.endPercent).toFixed(1)+'%'
         : '';
       const xte = Number(first.startXte)>0 && Number(last.endXte)>0 ? 'XTE '+first.startXte+' → '+last.endXte : '';
-      return '<div class="cal-detail-book"><div class="cal-detail-cover">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.round(seconds/60)+' min · '+sessions+' '+(sessions===1?'session':'sessions')+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'</div></div>';
+      return '<div class="cal-detail-book"><div class="cal-detail-cover">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.round(seconds/60)+' min · '+sessionText+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'</div></div>';
     }).join('');
     const totalPages = rows.reduce((s,r)=>s+(Number(r.pages)||0),0);
     const totalMin = Math.round(rows.reduce((s,r)=>s+(Number(r.seconds)||0),0)/60);
