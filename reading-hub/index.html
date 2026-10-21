@@ -464,7 +464,11 @@ function handleStatusChange(){
  }
 }
 function renderLibrary(){
- const all=(window.READING_LIBRARY_DATA||[]).map(mergedBook);
+ const all=(window.READING_LIBRARY_DATA||[]).map(function(b,originalIndex){
+   const merged=mergedBook(b);
+   merged.__libraryIndex=originalIndex;
+   return merged;
+ });
  const q=(document.getElementById("librarySearch")?.value||"").trim().toLowerCase();
  let rows=all.filter(function(b){
    if(libraryFilter==="Read" && b.status!=="Read") return false;
@@ -488,13 +492,13 @@ function renderLibrary(){
  if(count) count.textContent=rows.length+" "+(rows.length===1?"book":"books");
  if(!result) return;
  if(!rows.length){result.innerHTML='<div class="empty" style="color:#77665a;border-color:#bda679">No books match that search.</div>';return;}
- result.innerHTML=rows.slice(0,100).map(function(b,i){
+ result.innerHTML=rows.slice(0,100).map(function(b){
    const rating=Number(b.rating)>0 ? Number(b.rating).toFixed(Number(b.rating)%1?1:0)+"★" : "";
    const meta=[b.author,b.series,b.pages?b.pages+" pages":"",b.finish?("Finished "+b.finish):""].filter(Boolean).join(" · ");
    const title=esc(b.title), url=esc(b.source||"");
    const coverTitle=esc(b.title||""), coverAuthor=esc(b.author||"");
    const inner='<div class="mini book-cover-slot" data-book-cover data-cover-title="'+coverTitle+'" data-cover-author="'+coverAuthor+'" data-cover-size="M"></div><div><div class="library-book-title">'+title+'</div><div class="library-meta">'+esc(meta)+'</div></div><div style="text-align:right"><div class="rating">'+rating+'</div><div class="library-status">'+esc(b.status||"")+'</div></div>';
-   return '<button class="listrow" data-book-index="'+i+'" style="width:100%;border:0;background:transparent;color:inherit;text-align:left;padding-left:0;padding-right:0">'+inner+'</button>';
+   return '<button class="listrow" data-book-index="'+b.__libraryIndex+'" style="width:100%;border:0;background:transparent;color:inherit;text-align:left;padding-left:0;padding-right:0">'+inner+'</button>';
  }).join("") + (rows.length>100?'<div class="tiny" style="padding:12px 0;text-align:center">Showing first 100 matches — narrow your search to jump anywhere in the library.</div>':"");
  if(window.ReadingCovers) requestAnimationFrame(()=>window.ReadingCovers.hydrate(result));
 }
