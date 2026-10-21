@@ -63,7 +63,7 @@
     const grouped = byDate(rows);
     const daysRead = Object.keys(grouped).length;
     const pages = rows.reduce((s,r)=>s+(Number(r.pages)||0),0);
-    const minutes = Math.round(rows.reduce((s,r)=>s+(Number(r.seconds)||0),0)/60);
+    const minutes = Math.floor(rows.reduce((s,r)=>s+(Number(r.seconds)||0),0)/60);
     const books = new Set(rows.map(r=>String(r.title||'').trim()).filter(Boolean)).size;
     $('calendarDaysRead').textContent = daysRead;
     $('calendarPages').textContent = pages;
@@ -116,10 +116,10 @@
         ? Number(first.startPercent).toFixed(1)+'% → '+Number(last.endPercent).toFixed(1)+'%'
         : '';
       const xte = Number(first.startXte)>0 && Number(last.endXte)>0 ? 'XTE '+first.startXte+' → '+last.endXte : '';
-      return '<div class="cal-detail-book"><div class="cal-detail-cover">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.round(seconds/60)+' min · '+sessionText+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'</div></div>';
+      return '<div class="cal-detail-book"><div class="cal-detail-cover">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.floor(seconds/60)+' min · '+sessionText+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'</div></div>';
     }).join('');
     const totalPages = rows.reduce((s,r)=>s+(Number(r.pages)||0),0);
-    const totalMin = Math.round(rows.reduce((s,r)=>s+(Number(r.seconds)||0),0)/60);
+    const totalMin = Math.floor(rows.reduce((s,r)=>s+(Number(r.seconds)||0),0)/60);
     $('calendarDayTitle').textContent = new Date(date+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
     $('calendarDayTotals').textContent = totalPages+' XTE pages · '+totalMin+' minutes';
     $('calendarDayModal').classList.add('show');
