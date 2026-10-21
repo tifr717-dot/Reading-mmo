@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const CACHE_KEY='readingJournalCoverCacheV2';
+  const CACHE_KEY='readingJournalCoverCacheV3';
   const MAX_LOOKUPS_PER_SESSION=80;
   const LOOKUP_GAP_MS=750;
   let lookups=0, lastLookup=0;
@@ -75,17 +75,23 @@
   }
 
   async function lookupGoogle(title,author){
-    try{
-      const terms=['intitle:"'+cleanTitle(title).replace(/"/g,'')+'"'];
-      if(author)terms.push('inauthor:"'+String(author).replace(/"/g,'')+'"');
-      const q=new URLSearchParams({q:terms.join(' '),maxResults:'5',printType:'books'});
+    async function runQuery(qText){
+      const q=new URLSearchParams({q:qText,maxResults:'8',printType:'books'});
       const res=await fetch('https://www.googleapis.com/books/v1/volumes?'+q.toString(),{mode:'cors'});
       if(!res.ok)throw new Error('google cover lookup '+res.status);
       const data=await res.json();
-      const items=(data.items||[]).filter(x=>{
+      return (data.items||[]).filter(x=>{
         const links=x?.volumeInfo?.imageLinks||{};
         return links.thumbnail||links.smallThumbnail;
       });
+    }
+    try{
+      const safeTitle=cleanTitle(title).replace(/"/g,'');
+      const safeAuthor=String(author||'').replace(/"/g,'');
+      let items=await runQuery('intitle:"'+safeTitle+'"'+(safeAuthor?' inauthor:"'+safeAuthor+'"':''));
+      if(!items.length){
+        items=await runQuery([safeTitle,safeAuthor].filter(Boolean).join(' '));
+      }
       items.sort((a,b)=>scoreGoogle(b,title,author)-scoreGoogle(a,title,author));
       const best=items[0],links=best?.volumeInfo?.imageLinks||{};
       const url=links.thumbnail||links.smallThumbnail||'';
@@ -149,7 +155,17 @@
       el.classList.add('has-cover');
       el.textContent='';
     };
-    img.onerror=()=>{};
+    img.onerror=async()=>{
+      if(ref.url || el.dataset.coverFallbackTried==='1')return;
+      el.dataset.coverFallbackTried='1';
+      const title=el.dataset.coverTitle||'';
+      const author=el.dataset.coverAuthor||'';
+      const fallback=await lookupGoogle(title,author);
+      if(fallback){
+        setRef(title,author,fallback);
+        paint(el,fallback);
+      }
+    };
     img.src=url;
   }
   async function resolveElement(el){
@@ -194,6 +210,7 @@
     el.dataset.coverTitle=title||'';
     el.dataset.coverAuthor=author||'';
     el.dataset.coverResolved='0';
+    el.dataset.coverFallbackTried='0';
     el.style.backgroundImage='';
     el.classList.remove('has-cover');
     el.textContent=fallbackText(title);
