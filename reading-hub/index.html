@@ -52,6 +52,17 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .home-live-note{font-size:9px;color:#8a725f;margin-top:5px}
 @media(max-width:390px){.day-summary{grid-template-columns:repeat(2,1fr)}}
 
+ 
+.page-compare{padding:14px 16px}
+.page-compare-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-top:10px}
+.page-compare-grid>div:not(.page-compare-vs){background:#fff8e8;border:1px solid #d6bf91;border-radius:14px;padding:11px;text-align:center}
+.page-compare-grid b{display:block;font-size:26px;color:var(--wine);margin:2px 0}
+.page-compare-grid small{display:block;color:#77665a;font-size:10px}
+.page-compare-kicker{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:#806d60}
+.page-compare-vs{font-size:18px;color:#9d7d56;font-weight:900}
+.page-compare-note{font-size:10px;color:#7a6657;line-height:1.45;margin-top:10px}
+.stats .stat span{display:block;font-size:11px;line-height:1.15}
+
 </style>
 </head>
 <body>
@@ -74,9 +85,18 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
       </div>
     </div>
     <div class="stats">
-      <div class="stat"><b id="todayPages">15</b>pages</div>
-      <div class="stat"><b id="todayMinutes">5</b>minutes</div>
-      <div class="stat"><b id="libraryCount">589</b>library</div>
+      <div class="stat"><b id="todayPages">0</b><span id="todayPagesLabel">XTE pages today</span></div>
+      <div class="stat"><b id="todayMinutes">0</b><span>minutes today</span></div>
+      <div class="stat"><b id="libraryCount">589</b><span>library</span></div>
+    </div>
+    <div class="card page-compare" id="homePageCompare" hidden>
+      <div class="label">PAGE POSITION</div>
+      <div class="page-compare-grid">
+        <div><span class="page-compare-kicker">Estimated print</span><b id="homeActualPage">—</b><small id="homeActualTotal">of — pages</small></div>
+        <div class="page-compare-vs">↔</div>
+        <div><span class="page-compare-kicker">X4 Pro</span><b id="homeXtePage">—</b><small>XTE page</small></div>
+      </div>
+      <div class="page-compare-note" id="homePageCompareNote"></div>
     </div>
     <div class="section-title">For you today</div>
     <div class="card dark">
