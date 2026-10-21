@@ -122,7 +122,61 @@ function go(id,btn){
  document.getElementById('pageSub').textContent=titles[id][1];
  window.scrollTo({top:0,behavior:'smooth'});
 }
-function feedback(v){alert(v+" — UI is working. Sheet write-back is the next wiring step.");}
-document.getElementById('currentProgress').style.width='10%';
+let mood="All";
+const feedbackKey="readingHubFeedbackV1";
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\\\"":"&quot;","'":"&#39;"}[m]));}
+function savedFeedback(){try{return JSON.parse(localStorage.getItem(feedbackKey)||"{}")}catch(e){return {}}}
+function feedback(title,v){
+  const map=savedFeedback(); map[title]={interest:v,updatedAt:new Date().toISOString()};
+  localStorage.setItem(feedbackKey,JSON.stringify(map)); renderDiscover();
+}
+function matchesMood(r){
+ if(mood==="All")return true;
+ const hay=(r.tropes.join(" ")+" "+r.dark+" "+r.why).toLowerCase();
+ const q={Dark:"dark",FMC:"fmc",Vampires:"vamp",Courts:"court",Romance:"romance",Duo:"power couple"}[mood];
+ return hay.includes(q);
+}
+function setMood(v){mood=v;renderDiscover()}
+function renderDiscover(){
+ const D=window.READING_HUB_DATA||{}; const fb=savedFeedback();
+ const rows=(D.recommendations||[]).filter(matchesMood);
+ const moods=[["All","✦ All"],["Dark","🔥 Dark"],["FMC","⚔️ Powerful FMC"],["Vampires","🩸 Vampires"],["Courts","👑 Courts"],["Romance","💘 Romance"],["Duo","🗡️ Power Couple"]];
+ document.getElementById("discover").innerHTML=
+   '<div class="section-title">Discover</div><div class="section-copy">Real picks from Book Recommendation HQ. Your Want / Maybe / Skip choices stay saved on this phone while Sheet write-back is connected.</div>'+
+   '<div class="moodrow">'+moods.map(x=>'<button onclick="setMood(\\\''+x[0]+'\\\')" style="'+(mood===x[0]?'border-color:#f0ca73;color:#f0ca73':'')+'">'+x[1]+'</button>').join("")+'</div>'+
+   (rows.length?rows.map((r,i)=>{
+      const state=fb[r.title]?.interest || (r.interest?"Want It":"");
+      const coverClass=i%3===0?'#512a35,#8a5d4d,#25382f':i%3===1?'#312239,#805b78,#533123':'#24363d,#745a3b,#5a2834';
+      return '<article class="card reco">'+
+       '<div class="reco-cover" style="background:linear-gradient(135deg,'+coverClass+')"><div><span class="match">'+r.match.toFixed(1)+'★ MATCH</span><div style="font:700 26px Georgia,serif;margin-top:12px;max-width:310px">'+esc(r.title)+'</div></div></div>'+
+       '<div class="reco-body"><div class="label">'+esc(r.series)+'</div><div class="book">'+esc(r.title)+'</div><div class="author">'+esc(r.author)+' · '+r.pages+' pages · GR '+r.gr+'★</div>'+
+       '<div class="chips">'+r.tropes.slice(0,5).map(t=>'<span class="chip">'+esc(t)+'</span>').join("")+'<span class="chip">Spice '+r.spice+'/5</span><span class="chip">'+esc(r.dark)+'</span></div>'+
+       '<p class="why">'+esc(r.summary)+'</p><div class="why"><b>Why you’ll like it</b><br>'+esc(r.why)+'</div>'+
+       '<div class="actions"><button class="want" onclick="feedback(\\\''+esc(r.title).replace(/'/g,"\\\\'")+'\\\',\\\'Want It\\\')">'+(state==="Want It"?"✓ ":"")+'❤️ Want</button>'+
+       '<button class="maybe" onclick="feedback(\\\''+esc(r.title).replace(/'/g,"\\\\'")+'\\\',\\\'Maybe\\\')">'+(state==="Maybe"?"✓ ":"")+'🔖 Maybe</button>'+
+       '<button class="skip" onclick="feedback(\\\''+esc(r.title).replace(/'/g,"\\\\'")+'\\\',\\\'Skip\\\')">'+(state==="Skip"?"✓ ":"")+'✕ Skip</button></div>'+
+       '<a href="'+r.url+'" target="_blank" rel="noopener" style="display:block;margin-top:12px;color:#6f2e3c;font-size:11px;font-weight:800">Open on Goodreads ↗</a>'+
+       '</div></article>';
+   }).join(""):'<div class="empty">No recommendations match that mood yet.</div>');
+}
+function bootData(){
+ const D=window.READING_HUB_DATA;if(!D)return;
+ const cur=D.current||{};
+ document.querySelector("#home .book").textContent=cur.title||"Current book";
+ document.querySelector("#home .author").textContent=cur.series||"";
+ document.getElementById("currentProgress").style.width=(cur.progress||0)+"%";
+ document.getElementById("progressText").textContent=(cur.progress||0)+"% complete";
+ document.getElementById("todayPages").textContent=cur.latestPages||0;
+ document.getElementById("todayMinutes").textContent=cur.latestMinutes||0;
+ document.getElementById("libraryCount").textContent=D.library?.total||0;
+ document.querySelector("#library .card").innerHTML=
+   '<div class="stats"><div class="stat"><b>'+D.library.total+'</b>books</div><div class="stat"><b>'+D.library.read+'</b>read</div><div class="stat"><b>'+D.library.toRead+'</b>TBR</div></div>'+
+   '<div class="listrow"><div class="mini"></div><div><b>Full Goodreads library</b><div class="tiny">Sheet-backed master catalog</div></div><div class="rating">★</div></div>'+
+   '<div class="listrow"><div class="mini"></div><div><b>Search + filters</b><div class="tiny">Read · Reading · TBR · DNF · Rating · Series</div></div><div>⌕</div></div>'+
+   '<div class="listrow"><div class="mini"></div><div><b>DNF</b><div class="tiny">'+D.library.dnf+' titles tracked</div></div><div>›</div></div>';
+ document.querySelector("#wrapped .big-number").textContent=D.library.total;
+ renderDiscover();
+}
+bootData();
 </script>
 </body></html>
