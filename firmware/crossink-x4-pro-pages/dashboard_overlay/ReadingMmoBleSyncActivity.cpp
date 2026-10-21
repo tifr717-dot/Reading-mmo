@@ -10,6 +10,7 @@
 #include <string>
 
 #include "MappedInputManager.h"
+#include "activities/ActivityManager.h"
 #include "SilentRestart.h"
 #include "components/TouchHeaderBackButton.h"
 #include "components/UITheme.h"
