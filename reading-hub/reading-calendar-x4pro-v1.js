@@ -96,6 +96,8 @@
       if ($('progressText')) $('progressText').textContent = pct.toFixed(1)+'% complete';
     }
     if (labelEl) labelEl.textContent = 'Currently reading · synced '+new Date(last.date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    const homeCover = $('homeCover');
+    if (homeCover && window.ReadingCovers) window.ReadingCovers.refreshElement(homeCover,last.title||'',book?.author||'');
 
     const compare = $('homePageCompare');
     const totalPrint = Number(book?.pages)||0;
@@ -149,16 +151,19 @@
       const titles = [...new Set(dayRows.map(r=>r.title).filter(Boolean))];
       const totalPages = dayRows.reduce((s,r)=>s+(Number(r.pages)||0),0);
       const coverLabel = titles[0] ? titles[0].split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase() : '';
+      const coverBook = titles[0] ? findLibraryBook(titles[0]) : null;
+      const coverAuthor = coverBook?.author || '';
       cells.push(
         '<button class="cal-day '+(date===today?'today ':'')+(dayRows.length?'has-reading':'')+'" data-cal-date="'+date+'">'+
           '<span class="cal-num">'+day+'</span>'+
-          (dayRows.length ? '<span class="cal-cover">'+esc(coverLabel||'📖')+'</span>' : '')+
+          (dayRows.length ? '<span class="cal-cover book-cover-slot" data-book-cover data-cover-title="'+esc(titles[0]||'')+'" data-cover-author="'+esc(coverAuthor)+'" data-cover-size="S">'+esc(coverLabel||'📖')+'</span>' : '')+
           (titles.length>1 ? '<span class="cal-plus">+'+(titles.length-1)+'</span>' : '')+
           (totalPages ? '<span class="cal-pages">'+totalPages+'p</span>' : '')+
         '</button>'
       );
     }
     grid.innerHTML = cells.join('');
+    if (window.ReadingCovers) requestAnimationFrame(()=>window.ReadingCovers.hydrate(grid));
   }
 
   function openDay(date) {
@@ -184,7 +189,9 @@
         ? Number(first.startPercent).toFixed(1)+'% → '+Number(last.endPercent).toFixed(1)+'%'
         : '';
       const xte = Number(first.startXte)>0 && Number(last.endXte)>0 ? 'XTE '+first.startXte+' → '+last.endXte : '';
-      return '<div class="cal-detail-book"><div class="cal-detail-cover">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.floor(seconds/60)+' min · '+sessionText+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'<span class="calendar-source">X4 Pro diary</span></div></div>';
+      const coverBook = findLibraryBook(title);
+      const coverAuthor = coverBook?.author || '';
+      return '<div class="cal-detail-book"><div class="cal-detail-cover book-cover-slot" data-book-cover data-cover-title="'+esc(title)+'" data-cover-author="'+esc(coverAuthor)+'" data-cover-size="M">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.floor(seconds/60)+' min · '+sessionText+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'<span class="calendar-source">X4 Pro diary</span></div></div>';
     }).join('');
     const totalPages = rows.reduce((s,r)=>s+(Number(r.pages)||0),0);
     const totalSeconds = rows.reduce((s,r)=>s+(Number(r.seconds)||0),0);
@@ -216,6 +223,7 @@
       } else progress.innerHTML = '';
     }
     $('calendarDayModal').classList.add('show');
+    if (window.ReadingCovers) requestAnimationFrame(()=>window.ReadingCovers.hydrate($('calendarDayModal')));
   }
 
   function normalizeEntry(e, fallbackDate) {
