@@ -96,6 +96,29 @@
       if ($('progressText')) $('progressText').textContent = pct.toFixed(1)+'% complete';
     }
     if (labelEl) labelEl.textContent = 'Currently reading · synced '+new Date(last.date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+
+    const compare = $('homePageCompare');
+    const totalPrint = Number(book?.pages)||0;
+    const endXte = Number(last.endXte)||0;
+    if (compare && totalPrint>0 && Number.isFinite(pct) && endXte>0) {
+      const estimatedPrint = Math.max(1,Math.min(totalPrint,Math.round(totalPrint*pct/100)));
+      if ($('homeActualPage')) $('homeActualPage').textContent = estimatedPrint;
+      if ($('homeActualTotal')) $('homeActualTotal').textContent = 'of '+totalPrint+' pages';
+      if ($('homeXtePage')) $('homeXtePage').textContent = endXte;
+      const startPct = Number(sameBook[0]?.startPercent);
+      const startXte = Number(sameBook[0]?.startXte);
+      const printDelta = Number.isFinite(startPct) ? Math.max(0,Math.round(totalPrint*(pct-startPct)/100)) : null;
+      const xteDelta = startXte>0 ? Math.max(0,endXte-startXte) : null;
+      if ($('homePageCompareNote')) {
+        $('homePageCompareNote').textContent =
+          printDelta!=null && xteDelta!=null
+            ? 'Last synced reading: ~'+printDelta+' print pages vs '+xteDelta+' XTE pages. Print pages are estimated from book progress.'
+            : 'Print page is estimated from '+pct.toFixed(1)+'% progress; XTE page is the reader’s displayed position.';
+      }
+      compare.hidden = false;
+    } else if (compare) {
+      compare.hidden = true;
+    }
   }
 
   function render() {
