@@ -16,7 +16,7 @@ def replace_once(path: Path, old: str, new: str, label: str) -> None:
 
 
 # Re-enable Arduino BLE only for this isolated build. BLE is still started only
-# after Home -> Reading MMO Sync -> a date/range selection -> minimal reboot.
+# after Home -> Reading Journal -> a date/range selection -> minimal reboot.
 platformio = root / "platformio.ini"
 s = platformio.read_text()
 ble_ignore = re.compile(r"(?m)^[ \t]+BLE[ \t]*\r?\n")
@@ -40,7 +40,7 @@ replace_once(
   READING_MMO_SYNC = 8,
 };
 """,
-    "Reading MMO network boot enum",
+    "Reading Journal network boot enum",
 )
 replace_once(
     silent,
@@ -53,7 +53,7 @@ replace_once(
     case NetworkBootTarget::READING_MMO_SYNC:
       return true;
 """,
-    "Reading MMO target validation",
+    "Reading Journal target validation",
 )
 replace_once(
     silent,
@@ -64,7 +64,7 @@ replace_once(
                   isNetworkBootTargetValue(static_cast<uint32_t>(NetworkBootTarget::MANAGE_FONTS)) &&
                   isNetworkBootTargetValue(static_cast<uint32_t>(NetworkBootTarget::READING_MMO_SYNC)),
 """,
-    "Reading MMO static target validation",
+    "Reading Journal static target validation",
 )
 
 manager_h = root / "src/activities/ActivityManager.h"
@@ -77,7 +77,7 @@ replace_once(
   bool goToReadingMmoBleSync(bool networkBootReady = false, uint32_t selectionPayload = 0);
   bool goToNearbyBookSend(std::string path, bool returnToReader);
 """,
-    "ActivityManager Reading MMO declaration",
+    "ActivityManager Reading Journal declaration",
 )
 
 manager_cpp = root / "src/activities/ActivityManager.cpp"
@@ -90,7 +90,7 @@ replace_once(
 #include "network/ReadingMmoBleSyncActivity.h"
 #include "network/UsbDriveActivity.h"
 """,
-    "ActivityManager Reading MMO include",
+    "ActivityManager Reading Journal include",
 )
 replace_once(
     manager_cpp,
@@ -116,7 +116,7 @@ bool ActivityManager::goToReadingMmoBleSync(const bool networkBootReady, const u
 
 void ActivityManager::goToSettings(const bool dismissOnUpSwipe) {
 """,
-    "ActivityManager Reading MMO launcher",
+    "ActivityManager Reading Journal launcher",
 )
 
 main = root / "src/main.cpp"
@@ -129,7 +129,7 @@ replace_once(
                           snapshotTarget == static_cast<uint32_t>(NetworkBootTarget::FILE_TRANSFER) ||
                           snapshotTarget == static_cast<uint32_t>(NetworkBootTarget::READING_MMO_SYNC)));
 """,
-    "Reading MMO network render stack",
+    "Reading Journal network render stack",
 )
 replace_once(
     main,
@@ -161,7 +161,7 @@ replace_once(
   void onReadingMmoSyncOpen();
   void onOpdsBrowserOpen();
 """,
-    "Home Reading MMO handler declaration",
+    "Home Reading Journal handler declaration",
 )
 
 home = root / "src/activities/home/HomeActivity.cpp"
@@ -178,7 +178,7 @@ replace_once(
   Settings,
 };
 """,
-    "Home Reading MMO action enum",
+    "Home Reading Journal action enum",
 )
 replace_once(
     home,
@@ -194,7 +194,7 @@ replace_once(
   items.push({tr(STR_SETTINGS_TITLE), Settings, HomeMenuAction::Settings});
 """,
     """  items.push({tr(STR_FILE_TRANSFER), Transfer, HomeMenuAction::FileTransfer});
-  items.push({"Reading MMO Sync", Transfer, HomeMenuAction::ReadingMmoSync});
+  items.push({"Reading Journal", Transfer, HomeMenuAction::ReadingMmoSync});
   items.push({tr(STR_SETTINGS_TITLE), Settings, HomeMenuAction::Settings});
 """,
     "Home full menu Reading MMO item",
@@ -207,7 +207,7 @@ replace_once(
 
 HomeMenuEntries buildSelectableHomeMenuItems""",
     """  items.push({tr(STR_FILE_TRANSFER), Transfer, HomeMenuAction::FileTransfer});
-  items.push({"Reading MMO Sync", Transfer, HomeMenuAction::ReadingMmoSync});
+  items.push({"Reading Journal", Transfer, HomeMenuAction::ReadingMmoSync});
   return items;
 }
 
@@ -218,7 +218,7 @@ replace_once(
     home,
     """  int count = 4;  // File Browser, Recents, File transfer, Settings
 """,
-    """  int count = 5;  // File Browser, Recents, File transfer, Reading MMO Sync, Settings
+    """  int count = 5;  // File Browser, Recents, File transfer, Reading Journal, Settings
 """,
     "Home fixed item count",
 )
@@ -268,13 +268,13 @@ void HomeActivity::onReadingMmoSyncOpen() { activityManager.goToReadingMmoBleSyn
 
 void HomeActivity::onOpdsBrowserOpen() { activityManager.goToBrowser(); }
 """,
-    "Home Reading MMO handler",
+    "Home Reading Journal handler",
 )
 
 assert "NetworkBootTarget::READING_MMO_SYNC" in main.read_text()
-assert "Reading MMO Sync" in home.read_text()
+assert "Reading Journal" in home.read_text()
 assert "goToReadingMmoBleSync" in manager_cpp.read_text()
 assert "BLEDevice::startAdvertising()" in (network_dir / "ReadingMmoBleSyncActivity.cpp").read_text()
 assert not any(line.strip() == "BLE" for line in platformio.read_text().splitlines())
 
-print("Applied Reading MMO selective BLE sync: Today, Yesterday, Pick a Day, Pick a Range")
+print("Applied Reading Journal selective BLE sync: Today, Yesterday, Pick a Day, Pick a Range")
