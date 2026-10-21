@@ -24,7 +24,7 @@
 #endif
 
 namespace {
-constexpr char READING_MMO_BLE_NAME[] = "Reading MMO Reader";
+constexpr char READING_MMO_BLE_NAME[] = "Reading Journal Reader";
 constexpr char READING_MMO_SERVICE_UUID[] = "7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e";
 constexpr char READING_MMO_STATS_UUID[] = "7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e";
 constexpr uint32_t SYNC_WINDOW_MS = 120000;
@@ -440,7 +440,7 @@ bool ReadingMmoBleSyncActivity::beginBle() {
   advertising->addServiceUUID(READING_MMO_SERVICE_UUID);
   advertising->setScanResponse(true);
   BLEDevice::startAdvertising();
-  LOG_INF("BLE", "Reading MMO selective sync advertising (%u bytes)", unsigned(payload_.size()));
+  LOG_INF("BLE", "Reading Journal selective sync advertising (%u bytes)", unsigned(payload_.size()));
   return true;
 #else
   return false;
@@ -454,8 +454,8 @@ void ReadingMmoBleSyncActivity::render(RenderLock&&) {
   renderer.clearScreen();
 
   const Rect header{0, metrics.topPadding, width, TouchHeaderBackButton::height(metrics, mappedInput)};
-  if (mappedInput.hasTouchHardware()) TouchHeaderBackButton::draw(renderer, header, "Reading MMO Sync", false);
-  else GUI.drawHeader(renderer, header, "Reading MMO Sync");
+  if (mappedInput.hasTouchHardware()) TouchHeaderBackButton::draw(renderer, header, "Reading Journal", false);
+  else GUI.drawHeader(renderer, header, "Reading Journal");
 
   if (state_ == State::MENU) {
     renderer.drawText(UI_10_FONT_ID, 22, 84, "Choose what to send to your phone", true, EpdFontFamily::BOLD);
@@ -495,7 +495,7 @@ void ReadingMmoBleSyncActivity::render(RenderLock&&) {
   } else if (state_ == State::READY) {
     renderer.drawCenteredText(UI_12_FONT_ID, height / 2 - 75, "Bluetooth is ready", true, EpdFontFamily::BOLD);
     renderer.drawCenteredText(UI_10_FONT_ID, height / 2 - 35, statusLine_.c_str());
-    renderer.drawCenteredText(UI_10_FONT_ID, height / 2 + 5, "Open Reading MMO > Calendar");
+    renderer.drawCenteredText(UI_10_FONT_ID, height / 2 + 5, "Open Reading Journal > Calendar");
     renderer.drawCenteredText(UI_10_FONT_ID, height / 2 + 40, "Tap Sync X4 Pro on your phone");
     renderer.drawCenteredText(SMALL_FONT_ID, height / 2 + 78, "Bluetooth closes automatically after 2 minutes");
   } else if (state_ == State::ERROR) {
