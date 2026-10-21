@@ -53,6 +53,51 @@
     return rows.reduce((acc,r) => ((acc[r.date] ||= []).push(r), acc), {});
   }
 
+  function allLogs() {
+    return readLogs().slice().sort((a,b)=>{
+      const da=String(a.date||''), db=String(b.date||'');
+      if (da !== db) return da.localeCompare(db);
+      return String(a.importedAt||'').localeCompare(String(b.importedAt||''));
+    });
+  }
+
+  function findLibraryBook(title) {
+    const clean = String(title||'').trim().toLowerCase();
+    if (!clean) return null;
+    const base = clean.replace(/\s*\([^)]*\)\s*$/,'').trim();
+    const books = window.READING_LIBRARY_DATA || [];
+    return books.find(b => String(b.title||'').trim().toLowerCase() === clean)
+      || books.find(b => String(b.title||'').trim().toLowerCase().replace(/\s*\([^)]*\)\s*$/,'').trim() === base)
+      || null;
+  }
+
+  function updateHomeFromDiary() {
+    const rows = allLogs();
+    if (!rows.length) return;
+    const today = isoLocal(new Date());
+    const todayRows = rows.filter(r=>r.date===today);
+    const todayPages = todayRows.reduce((n,r)=>n+(Number(r.pages)||0),0);
+    const todaySeconds = todayRows.reduce((n,r)=>n+(Number(r.seconds)||0),0);
+    if ($('todayPages')) $('todayPages').textContent = todayPages;
+    if ($('todayMinutes')) $('todayMinutes').textContent = Math.floor(todaySeconds/60);
+
+    const latest = rows[rows.length-1];
+    const sameBook = rows.filter(r=>r.title===latest.title && r.date===latest.date);
+    const last = sameBook[sameBook.length-1] || latest;
+    const pct = Number(last.endPercent);
+    const book = findLibraryBook(last.title);
+    const titleEl = document.querySelector('#home .book');
+    const authorEl = document.querySelector('#home .author');
+    const labelEl = document.querySelector('#home .label');
+    if (titleEl) titleEl.textContent = last.title || 'Current book';
+    if (authorEl) authorEl.textContent = book ? [book.author,book.series].filter(Boolean).join(' · ') : 'Synced from X4 Pro';
+    if (Number.isFinite(pct)) {
+      if ($('currentProgress')) $('currentProgress').style.width = Math.max(0,Math.min(100,pct))+'%';
+      if ($('progressText')) $('progressText').textContent = pct.toFixed(1)+'% complete';
+    }
+    if (labelEl) labelEl.textContent = 'Currently reading · synced '+new Date(last.date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  }
+
   function render() {
     const grid = $('readingCalendarGrid');
     if (!grid) return;
@@ -116,12 +161,37 @@
         ? Number(first.startPercent).toFixed(1)+'% → '+Number(last.endPercent).toFixed(1)+'%'
         : '';
       const xte = Number(first.startXte)>0 && Number(last.endXte)>0 ? 'XTE '+first.startXte+' → '+last.endXte : '';
-      return '<div class="cal-detail-book"><div class="cal-detail-cover">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.floor(seconds/60)+' min · '+sessionText+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'</div></div>';
+      return '<div class="cal-detail-book"><div class="cal-detail-cover">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.floor(seconds/60)+' min · '+sessionText+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'<span class="calendar-source">X4 Pro diary</span></div></div>';
     }).join('');
     const totalPages = rows.reduce((s,r)=>s+(Number(r.pages)||0),0);
-    const totalMin = Math.floor(rows.reduce((s,r)=>s+(Number(r.seconds)||0),0)/60);
+    const totalSeconds = rows.reduce((s,r)=>s+(Number(r.seconds)||0),0);
+    const totalMin = Math.floor(totalSeconds/60);
+    const sessionValues = rows.map(r=>Number(r.sessions)||0);
+    const knownSessions = sessionValues.filter(n=>n>0);
+    const totalSessions = knownSessions.reduce((s,n)=>s+n,0);
+    const bookCount = Object.keys(grouped).length;
     $('calendarDayTitle').textContent = new Date(date+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-    $('calendarDayTotals').textContent = totalPages+' XTE pages · '+totalMin+' minutes';
+    $('calendarDayTotals').textContent = bookCount+' '+(bookCount===1?'book':'books')+' · synced reading day';
+    const summary = $('calendarDaySummary');
+    if (summary) summary.innerHTML =
+      '<div class="day-stat"><b>'+totalPages+'</b>XTE pages</div>'+
+      '<div class="day-stat"><b>'+totalMin+'</b>minutes</div>'+
+      '<div class="day-stat"><b>'+(knownSessions.length?totalSessions:'—')+'</b>sessions</div>'+
+      '<div class="day-stat"><b>'+bookCount+'</b>books</div>';
+
+    const progressRows = rows.filter(r=>Number.isFinite(Number(r.startPercent)) && Number.isFinite(Number(r.endPercent)));
+    const progress = $('calendarDayProgress');
+    if (progress) {
+      if (progressRows.length) {
+        const firstPct = Number(progressRows[0].startPercent);
+        const lastPct = Number(progressRows[progressRows.length-1].endPercent);
+        const gain = Math.max(0,lastPct-firstPct);
+        progress.innerHTML =
+          '<div class="day-progress-card"><div class="day-progress-title">'+esc(progressRows[progressRows.length-1].title||'Reading progress')+'</div>'+
+          '<div class="day-progress-sub">'+firstPct.toFixed(1)+'% → '+lastPct.toFixed(1)+'% · +'+gain.toFixed(1)+'% today</div>'+
+          '<div class="day-progress-track"><span style="width:'+Math.max(0,Math.min(100,lastPct))+'%"></span></div></div>';
+      } else progress.innerHTML = '';
+    }
     $('calendarDayModal').classList.add('show');
   }
 
@@ -237,9 +307,15 @@
         const dup = result.duplicates ? ' · '+result.duplicates+' duplicate'+(result.duplicates===1?'':'s')+' skipped' : '';
         setSyncStatus('Synced ✓ '+result.count+' '+(result.count===1?'reading-day entry':'reading-day entries')+' imported'+dup+'.','ok');
       }
+      updateHomeFromDiary();
     } catch (err) {
       console.error(err);
-      setSyncStatus('Sync failed: '+(err?.message || String(err)),'bad');
+      const msg = err?.message || String(err);
+      if (err?.name === 'NotFoundError' || /cancelled|canceled|chooser/i.test(msg)) {
+        setSyncStatus('Bluetooth chooser closed — nothing changed.','neutral');
+      } else {
+        setSyncStatus('Sync failed: '+msg,'bad');
+      }
     } finally {
       try { if (device?.gatt?.connected) device.gatt.disconnect(); } catch (_) {}
       if (btn) btn.disabled = false;
@@ -254,7 +330,8 @@
     $('calendarDayModal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('show');});
     $('x4SyncButton')?.addEventListener('click',syncX4Pro);
     render();
-    window.ReadingCalendar = {render, importPayload, readLogs};
+    updateHomeFromDiary();
+    window.ReadingCalendar = {render, importPayload, readLogs, updateHomeFromDiary};
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
