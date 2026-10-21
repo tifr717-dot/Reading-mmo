@@ -17,6 +17,8 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .wrapped-hero{text-align:center;padding:26px 18px}.big-number{font:700 56px Georgia,serif;color:var(--gold2)}.wrapped-hero p{margin:2px 0;color:#ddcbbb}.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.story{min-height:140px;border-radius:18px;padding:14px;background:linear-gradient(145deg,#43272b,#201315);border:1px solid #674943}.story b{display:block;font:700 26px Georgia,serif;color:var(--gold2);margin-top:28px}
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#1a100eeb;backdrop-filter:blur(14px);border-top:1px solid #614535;padding:7px 8px calc(7px + env(safe-area-inset-bottom));z-index:20}.nav button{border:0;background:transparent;color:#a99587;padding:9px 3px;border-radius:13px;font-size:10px}.nav button span{display:block;font-size:20px;margin-bottom:2px}.nav button.active{background:#36221c;color:#f4d497}
 .empty{padding:28px 15px;text-align:center;color:#ccbbae;font-size:13px;border:1px dashed #6d5547;border-radius:18px;margin:12px 0}
+
+.modal{position:fixed;inset:0;background:#120b09e8;display:none;align-items:flex-end;justify-content:center;z-index:50;padding:18px 12px 0}.modal.show{display:flex}.sheet-panel{width:min(480px,100%);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#f5e8c9,#ead5a9);color:#2f211b;border:1px solid #9b733a;border-radius:24px 24px 0 0;padding:18px 16px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -18px 50px #0008}.sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.sheet-title{font:700 24px Georgia,serif}.close-btn{border:0;background:#3b2a24;color:#fff;border-radius:999px;width:36px;height:36px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.form-field{display:flex;flex-direction:column;gap:5px}.form-field.full{grid-column:1/-1}.form-field label{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#7a6453}.form-field input,.form-field select,.form-field textarea{width:100%;border:1px solid #b89b68;background:#fff9e9;color:#2f211b;border-radius:12px;padding:10px;font:inherit}.form-field textarea{min-height:92px;resize:vertical}.save-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.save-row button{border:0;border-radius:14px;padding:12px;font-weight:800}.save-local{background:#6f2e3c;color:white}.mark-reread{background:#5e4a6e;color:white}.sync-note{font-size:10px;line-height:1.4;color:#77665a;margin-top:10px}.edit-badge{font-size:9px;color:#7a5a2d;margin-top:4px}
 </style>
 </head>
 <body>
@@ -110,6 +112,35 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
   </section>
 </main>
 
+<div class="modal" id="bookEditor" aria-hidden="true">
+  <div class="sheet-panel">
+    <div class="sheet-head">
+      <div>
+        <div class="label">Library record</div>
+        <div class="sheet-title" id="editTitle">Book</div>
+        <div class="edit-badge" id="editAuthor"></div>
+      </div>
+      <button class="close-btn" id="closeEditor">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-field full"><label>Status</label><select id="editStatus"><option>To-Read</option><option>Currently Reading</option><option>Read</option><option>DNF</option></select></div>
+      <div class="form-field"><label>Start date</label><input id="editStart" type="date"></div>
+      <div class="form-field"><label>Finish date</label><input id="editFinish" type="date"></div>
+      <div class="form-field"><label>Your rating</label><input id="editRating" type="number" min="0" max="5" step="0.25"></div>
+      <div class="form-field"><label>Read count</label><input id="editReadCount" type="number" min="0" step="1"></div>
+      <div class="form-field"><label>Pages</label><input id="editPages" type="number" min="0"></div>
+      <div class="form-field"><label>Format</label><input id="editFormat" type="text" placeholder="Hardcover, Kindle…"></div>
+      <div class="form-field full"><label>Notes</label><textarea id="editNotes" placeholder="What did you think? Anything to remember?"></textarea></div>
+    </div>
+    <div class="save-row">
+      <button class="save-local" id="saveBookEdit">Save changes</button>
+      <button class="mark-reread" id="markReread">↻ Log reread</button>
+    </div>
+    <div class="sync-note">Saved changes are kept in the app on this device right now. They’re structured to sync back into Book Recommendation HQ once the private write-back bridge is connected.</div>
+    <a id="editGoodreads" href="#" target="_blank" rel="noopener" style="display:block;margin-top:12px;color:#6f2e3c;font-size:11px;font-weight:800">Open on Goodreads ↗</a>
+  </div>
+</div>
+
 <nav class="nav">
   <button class="active" data-screen="home" onclick="go('home',this)"><span>⌂</span>Home</button>
   <button data-screen="discover" onclick="go('discover',this)"><span>✦</span>Discover</button>
@@ -128,6 +159,8 @@ const titles={
 let mood="All";
 let libraryFilter="All";
 const feedbackKey="readingHubFeedbackV1";
+const editKey="readingHubLibraryEditsV1";
+let currentBookIndex=null;
 
 function go(id){
  document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));
@@ -191,8 +224,70 @@ function renderDiscover(){
  }
  document.getElementById("discover").innerHTML=html;
 }
+
+function savedLibraryEdits(){try{return JSON.parse(localStorage.getItem(editKey)||"{}")}catch(e){return {}}}
+function mergedBook(b){
+ const edits=savedLibraryEdits()[b.goodreadsId||b.title];
+ return edits?Object.assign({},b,edits):b;
+}
+function toInputDate(v){
+ if(!v)return "";
+ const d=new Date(v);
+ if(!isNaN(d)) return d.toISOString().slice(0,10);
+ const m=String(v).match(/([A-Za-z]{3})\s+(\d{1,2}),\s+(\d{4})/);
+ if(!m)return "";
+ const map={Jan:"01",Feb:"02",Mar:"03",Apr:"04",May:"05",Jun:"06",Jul:"07",Aug:"08",Sep:"09",Oct:"10",Nov:"11",Dec:"12"};
+ return m[3]+"-"+map[m[1]]+"-"+String(m[2]).padStart(2,"0");
+}
+function openBookEditor(index){
+ const all=(window.READING_LIBRARY_DATA||[]).map(mergedBook);
+ const b=all[index]; if(!b)return;
+ currentBookIndex=index;
+ document.getElementById("editTitle").textContent=b.title||"Book";
+ document.getElementById("editAuthor").textContent=[b.author,b.series].filter(Boolean).join(" · ");
+ document.getElementById("editStatus").value=b.status||"To-Read";
+ document.getElementById("editStart").value=toInputDate(b.start);
+ document.getElementById("editFinish").value=toInputDate(b.finish);
+ document.getElementById("editRating").value=b.rating||"";
+ document.getElementById("editReadCount").value=b.readCount||0;
+ document.getElementById("editPages").value=b.pages||"";
+ document.getElementById("editFormat").value=b.format||"";
+ document.getElementById("editNotes").value=b.notes||"";
+ document.getElementById("editGoodreads").href=b.source||"#";
+ document.getElementById("bookEditor").classList.add("show");
+ document.getElementById("bookEditor").setAttribute("aria-hidden","false");
+}
+function closeBookEditor(){
+ document.getElementById("bookEditor").classList.remove("show");
+ document.getElementById("bookEditor").setAttribute("aria-hidden","true");
+ currentBookIndex=null;
+}
+function saveBookEdit(){
+ const base=(window.READING_LIBRARY_DATA||[])[currentBookIndex]; if(!base)return;
+ const key=base.goodreadsId||base.title;
+ const map=savedLibraryEdits();
+ map[key]={
+   status:document.getElementById("editStatus").value,
+   start:document.getElementById("editStart").value,
+   finish:document.getElementById("editFinish").value,
+   rating:document.getElementById("editRating").value,
+   readCount:document.getElementById("editReadCount").value,
+   pages:document.getElementById("editPages").value,
+   format:document.getElementById("editFormat").value,
+   notes:document.getElementById("editNotes").value,
+   updatedAt:new Date().toISOString()
+ };
+ localStorage.setItem(editKey,JSON.stringify(map));
+ renderLibrary(); closeBookEditor();
+}
+function logReread(){
+ const n=Math.max(0,Number(document.getElementById("editReadCount").value)||0)+1;
+ document.getElementById("editReadCount").value=n;
+ if(!document.getElementById("editStart").value) document.getElementById("editStart").value=new Date().toISOString().slice(0,10);
+ document.getElementById("editStatus").value="Currently Reading";
+}
 function renderLibrary(){
- const all=window.READING_LIBRARY_DATA||[];
+ const all=(window.READING_LIBRARY_DATA||[]).map(mergedBook);
  const q=(document.getElementById("librarySearch")?.value||"").trim().toLowerCase();
  let rows=all.filter(function(b){
    if(libraryFilter==="Read" && b.status!=="Read") return false;
@@ -221,7 +316,7 @@ function renderLibrary(){
    const meta=[b.author,b.series,b.pages?b.pages+" pages":"",b.finish?("Finished "+b.finish):""].filter(Boolean).join(" · ");
    const title=esc(b.title), url=esc(b.source||"");
    const inner='<div class="mini"></div><div><div class="library-book-title">'+title+'</div><div class="library-meta">'+esc(meta)+'</div></div><div style="text-align:right"><div class="rating">'+rating+'</div><div class="library-status">'+esc(b.status||"")+'</div></div>';
-   return url?'<a class="library-open listrow" href="'+url+'" target="_blank" rel="noopener">'+inner+'</a>':'<div class="listrow">'+inner+'</div>';
+   return '<button class="listrow" data-book-index="'+i+'" style="width:100%;border:0;background:transparent;color:inherit;text-align:left;padding-left:0;padding-right:0">'+inner+'</button>';
  }).join("") + (rows.length>100?'<div class="tiny" style="padding:12px 0;text-align:center">Showing first 100 matches — narrow your search to jump anywhere in the library.</div>':"");
 }
 function updateLibraryStats(){
@@ -265,6 +360,14 @@ document.getElementById("discover").addEventListener("click",function(e){
  const b=e.target.closest("button[data-feedback]");
  if(b) setFeedback(b.dataset.title,b.dataset.feedback);
 });
+
+document.getElementById("libraryResults").addEventListener("click",function(e){
+ const b=e.target.closest("[data-book-index]"); if(b) openBookEditor(Number(b.dataset.bookIndex));
+});
+document.getElementById("closeEditor").addEventListener("click",closeBookEditor);
+document.getElementById("bookEditor").addEventListener("click",function(e){if(e.target===this)closeBookEditor();});
+document.getElementById("saveBookEdit").addEventListener("click",saveBookEdit);
+document.getElementById("markReread").addEventListener("click",logReread);
 bootData();
 </script>
 </body></html>
