@@ -1,8 +1,8 @@
 {
-  "name": "Reading MMO",
-  "short_name": "Reading MMO",
-  "description": "A cozy enchanted reading MMO with quests, reading tools, loot, and KWGT sync.",
-  "start_url": "./?appv=51042",
+  "name": "The Reading Journal",
+  "short_name": "Reading Journal",
+  "description": "A magical reading journal for tracking books, pages, reading progress, levels, and optional reading challenges.",
+  "start_url": "./?appv=51045",
   "scope": "./",
   "display": "standalone",
   "background_color": "#17100d",
