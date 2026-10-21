@@ -1,0 +1,210 @@
+(() => {
+  'use strict';
+
+  const LOG_KEY = 'readingHubDailyLogV1';
+  const IMPORT_KEY = 'readingHubX4ProImportsV1';
+  const SERVICE_UUID = '7d2ea28a-f7bd-485a-bd9d-92ad6ecfe93e';
+  const CHARACTERISTIC_UUID = '7d2ea28b-f7bd-485a-bd9d-92ad6ecfe93e';
+  let viewDate = new Date();
+  viewDate.setDate(1);
+
+  const $ = id => document.getElementById(id);
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+  function readLogs() {
+    try {
+      const v = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+      return Array.isArray(v) ? v : [];
+    } catch (_) { return []; }
+  }
+
+  function writeLogs(rows) {
+    localStorage.setItem(LOG_KEY, JSON.stringify(rows));
+  }
+
+  function importedIds() {
+    try {
+      const v = JSON.parse(localStorage.getItem(IMPORT_KEY) || '[]');
+      return Array.isArray(v) ? v : [];
+    } catch (_) { return []; }
+  }
+
+  function rememberImport(id) {
+    const ids = importedIds().filter(x => x !== id);
+    ids.push(id);
+    localStorage.setItem(IMPORT_KEY, JSON.stringify(ids.slice(-200)));
+  }
+
+  function isoLocal(d) {
+    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+day;
+  }
+
+  function monthRows() {
+    const year = viewDate.getFullYear(), month = viewDate.getMonth();
+    return readLogs().filter(r => {
+      const d = new Date(String(r.date)+'T12:00:00');
+      return !isNaN(d) && d.getFullYear() === year && d.getMonth() === month;
+    });
+  }
+
+  function byDate(rows) {
+    return rows.reduce((acc,r) => ((acc[r.date] ||= []).push(r), acc), {});
+  }
+
+  function render() {
+    const grid = $('readingCalendarGrid');
+    if (!grid) return;
+
+    const year = viewDate.getFullYear(), month = viewDate.getMonth();
+    $('calendarMonthLabel').textContent = viewDate.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    const rows = monthRows();
+    const grouped = byDate(rows);
+    const daysRead = Object.keys(grouped).length;
+    const pages = rows.reduce((s,r)=>s+(Number(r.pages)||0),0);
+    const minutes = Math.round(rows.reduce((s,r)=>s+(Number(r.seconds)||0),0)/60);
+    const books = new Set(rows.map(r=>String(r.title||'').trim()).filter(Boolean)).size;
+    $('calendarDaysRead').textContent = daysRead;
+    $('calendarPages').textContent = pages;
+    $('calendarMinutes').textContent = minutes;
+    $('calendarBooks').textContent = books;
+
+    const first = new Date(year,month,1);
+    const last = new Date(year,month+1,0);
+    const cells = [];
+    for(let i=0;i<first.getDay();i++) cells.push('<button class="cal-day blank" disabled></button>');
+    const today = isoLocal(new Date());
+    for(let day=1;day<=last.getDate();day++) {
+      const date = isoLocal(new Date(year,month,day));
+      const dayRows = grouped[date] || [];
+      const titles = [...new Set(dayRows.map(r=>r.title).filter(Boolean))];
+      const totalPages = dayRows.reduce((s,r)=>s+(Number(r.pages)||0),0);
+      const coverLabel = titles[0] ? titles[0].split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase() : '';
+      cells.push(
+        '<button class="cal-day '+(date===today?'today ':'')+(dayRows.length?'has-reading':'')+'" data-cal-date="'+date+'">'+
+          '<span class="cal-num">'+day+'</span>'+
+          (dayRows.length ? '<span class="cal-cover">'+esc(coverLabel||'📖')+'</span>' : '')+
+          (titles.length>1 ? '<span class="cal-plus">+'+(titles.length-1)+'</span>' : '')+
+          (totalPages ? '<span class="cal-pages">'+totalPages+'p</span>' : '')+
+        '</button>'
+      );
+    }
+    grid.innerHTML = cells.join('');
+  }
+
+  function openDay(date) {
+    const rows = readLogs().filter(r=>r.date===date);
+    if (!rows.length) return;
+    const panel = $('calendarDayBody');
+    const grouped = {};
+    rows.forEach(r => {
+      const k = r.title || 'Unknown book';
+      (grouped[k] ||= []).push(r);
+    });
+    panel.innerHTML = Object.entries(grouped).map(([title,list]) => {
+      const pages = list.reduce((s,r)=>s+(Number(r.pages)||0),0);
+      const seconds = list.reduce((s,r)=>s+(Number(r.seconds)||0),0);
+      const sessions = list.reduce((s,r)=>s+(Number(r.sessions)||1),0);
+      const first = list[0], last = list[list.length-1];
+      const pct = Number.isFinite(Number(first.startPercent)) && Number.isFinite(Number(last.endPercent))
+        ? Number(first.startPercent).toFixed(1)+'% → '+Number(last.endPercent).toFixed(1)+'%'
+        : '';
+      const xte = Number(first.startXte)>0 && Number(last.endXte)>0 ? 'XTE '+first.startXte+' → '+last.endXte : '';
+      return '<div class="cal-detail-book"><div class="cal-detail-cover">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.round(seconds/60)+' min · '+sessions+' '+(sessions===1?'session':'sessions')+'</div>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'</div></div>';
+    }).join('');
+    const totalPages = rows.reduce((s,r)=>s+(Number(r.pages)||0),0);
+    const totalMin = Math.round(rows.reduce((s,r)=>s+(Number(r.seconds)||0),0)/60);
+    $('calendarDayTitle').textContent = new Date(date+'T12:00:00').toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+    $('calendarDayTotals').textContent = totalPages+' XTE pages · '+totalMin+' minutes';
+    $('calendarDayModal').classList.add('show');
+  }
+
+  function normalizeEntry(e, fallbackDate) {
+    return {
+      date: String(e.date || fallbackDate || isoLocal(new Date())).slice(0,10),
+      title: String(e.title || '').trim() || 'Unknown book',
+      pages: Math.max(0, Number(e.pages ?? e.pg) || 0),
+      seconds: Math.max(0, Number(e.seconds ?? e.sec) || 0),
+      sessions: Math.max(1, Number(e.sessions) || 1),
+      startPercent: e.startPercent ?? e.spct ?? null,
+      endPercent: e.endPercent ?? e.epct ?? null,
+      startXte: e.startXte ?? e.sp ?? null,
+      endXte: e.endXte ?? e.ep ?? null,
+      source: 'x4pro'
+    };
+  }
+
+  function importPayload(payload) {
+    let entries = [];
+    let importId = '';
+    if (Number(payload.p) === 4) {
+      if (Number(payload.none) === 1) return {none:true};
+      entries = Array.isArray(payload.entries) ? payload.entries.map(e=>normalizeEntry(e,payload.date)) : [normalizeEntry(payload,payload.date)];
+      importId = 'p4:'+String(payload.id || payload.date || '')+':'+JSON.stringify(entries);
+    } else if (Number(payload.p) === 2 || Number(payload.p) === 3) {
+      if (Number(payload.none) === 1) return {none:true};
+      entries = [normalizeEntry(payload, isoLocal(new Date()))];
+      importId = 'legacy:'+payload.p+':'+[payload.sid,payload.sp,payload.ep,payload.pg,payload.sec,payload.title||''].join(':');
+    } else {
+      throw new Error('Unsupported reader protocol '+String(payload.p));
+    }
+    if (importedIds().includes(importId)) return {duplicate:true,count:0};
+
+    const rows = readLogs();
+    entries.forEach((e,i)=>rows.push({...e, importId: importId+':'+i, importedAt:new Date().toISOString()}));
+    writeLogs(rows);
+    rememberImport(importId);
+    render();
+    return {count:entries.length};
+  }
+
+  function setSyncStatus(msg, kind='') {
+    const el = $('x4SyncStatus');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'x4-sync-status '+kind;
+  }
+
+  async function syncX4Pro() {
+    const btn = $('x4SyncButton');
+    if (btn) btn.disabled = true;
+    let device;
+    try {
+      if (!navigator.bluetooth?.requestDevice) throw new Error('Web Bluetooth is unavailable here. Open the installed app/Chrome version on Android.');
+      setSyncStatus('Scanning for X4 Pro…');
+      device = await navigator.bluetooth.requestDevice({filters:[{services:[SERVICE_UUID]}], optionalServices:[SERVICE_UUID]});
+      setSyncStatus('Connecting…');
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService(SERVICE_UUID);
+      const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+      setSyncStatus('Reading today’s diary…');
+      const value = await characteristic.readValue();
+      const raw = new TextDecoder().decode(value.buffer).replace(/\0+$/g,'').trim();
+      const payload = JSON.parse(raw);
+      const result = importPayload(payload);
+      if (result.none) setSyncStatus('Connected ✓ No completed reading is ready to import yet.','ok');
+      else if (result.duplicate) setSyncStatus('Already synced ✓ Nothing counted twice.','ok');
+      else setSyncStatus('Synced ✓ '+result.count+' '+(result.count===1?'book entry':'book entries')+' added to the calendar.','ok');
+    } catch (err) {
+      console.error(err);
+      setSyncStatus('Sync failed: '+(err?.message || String(err)),'bad');
+    } finally {
+      try { if (device?.gatt?.connected) device.gatt.disconnect(); } catch (_) {}
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  function boot() {
+    $('calendarPrev')?.addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()-1);render();});
+    $('calendarNext')?.addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()+1);render();});
+    $('readingCalendarGrid')?.addEventListener('click',e=>{const b=e.target.closest('[data-cal-date]'); if(b) openDay(b.dataset.calDate);});
+    $('calendarDayClose')?.addEventListener('click',()=>$('calendarDayModal')?.classList.remove('show'));
+    $('calendarDayModal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('show');});
+    $('x4SyncButton')?.addEventListener('click',syncX4Pro);
+    render();
+    window.ReadingCalendar = {render, importPayload, readLogs};
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
