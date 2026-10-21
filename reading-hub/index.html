@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#160d0b">
+<title>Reading Hub</title>
+<style>
+:root{--bg:#160d0b;--panel:#211613;--paper:#f3e6c9;--paper2:#ead7ae;--ink:#2f211b;--gold:#c89a43;--gold2:#f0ca73;--wine:#6f2e3c;--green:#48624a;--plum:#604565;--muted:#ad9b8e}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:#fff}
+body{min-height:100vh;background:radial-gradient(circle at top,#352018 0,#160d0b 48%)}
+button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:env(safe-area-inset-top) 14px calc(88px + env(safe-area-inset-bottom))}
+.top{padding:18px 4px 8px}.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2)}h1{font-family:Georgia,serif;margin:5px 0 0;font-size:28px}.sub{color:#d8c5b7;font-size:13px;margin-top:5px}
+.screen{display:none}.screen.active{display:block}.card{background:linear-gradient(180deg,var(--paper),var(--paper2));color:var(--ink);border:1px solid #9b733a;border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 10px 30px #0006}.dark{background:linear-gradient(180deg,#2b1a17,#1c1210);color:#fff;border-color:#5e4432}.hero{display:grid;grid-template-columns:82px 1fr;gap:14px;align-items:center}.cover{width:82px;height:122px;border-radius:10px;background:linear-gradient(145deg,#8d5c50,#2c1b22);box-shadow:0 5px 18px #0005;display:flex;align-items:center;justify-content:center;text-align:center;font:700 12px Georgia,serif;padding:8px;color:#f7ead7}.label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#806d60}.book{font:700 21px Georgia,serif;margin:4px 0}.author{font-size:12px;color:#77665a}.progress{height:10px;border-radius:99px;background:#c8b896;overflow:hidden;margin:12px 0 5px}.progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--wine),var(--plum));width:10%;border-radius:99px}.progressline{display:flex;justify-content:space-between;font-size:11px;color:#6b5b50}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{padding:11px 8px;border-radius:14px;background:#fff8e8;border:1px solid #d6bf91;text-align:center}.stat b{font-size:20px;display:block;color:var(--wine)}.section-title{font:700 18px Georgia,serif;margin:20px 3px 8px}.section-copy{font-size:12px;color:#cdbdb3;margin:0 3px 8px}
+.reco{overflow:hidden;padding:0}.reco-cover{height:210px;background:linear-gradient(135deg,#4e2630,#9a6b5c 45%,#253528);display:flex;align-items:end;padding:16px;color:#fff}.match{display:inline-flex;padding:6px 9px;border-radius:99px;background:#152117cc;color:#dff2d7;font-size:11px;font-weight:800}.reco-body{padding:16px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.chip{font-size:10px;border:1px solid #b78e4a;background:#f8edd3;border-radius:99px;padding:5px 8px}.why{font-size:13px;line-height:1.5}.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:14px}.actions button,.pill{border:0;border-radius:13px;padding:11px 8px;font-weight:800}.want{background:var(--wine);color:#fff}.maybe{background:#715f86;color:#fff}.skip{background:#4c443e;color:#fff}.moodrow{display:flex;gap:7px;overflow:auto;padding:3px 1px 9px}.moodrow button{white-space:nowrap;border:1px solid #765a3e;background:#271915;color:#f3dcc0;border-radius:99px;padding:8px 11px;font-size:11px}
+.listrow{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid #cdbb97}.mini{width:46px;height:66px;border-radius:7px;background:#5a3a34}.listrow b{font-family:Georgia,serif}.tiny{font-size:10px;color:#77665a}.rating{font-weight:800;color:#8a631f}
+.wrapped-hero{text-align:center;padding:26px 18px}.big-number{font:700 56px Georgia,serif;color:var(--gold2)}.wrapped-hero p{margin:2px 0;color:#ddcbbb}.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.story{min-height:140px;border-radius:18px;padding:14px;background:linear-gradient(145deg,#43272b,#201315);border:1px solid #674943}.story b{display:block;font:700 26px Georgia,serif;color:var(--gold2);margin-top:28px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:#1a100eeb;backdrop-filter:blur(14px);border-top:1px solid #614535;padding:7px 8px calc(7px + env(safe-area-inset-bottom));z-index:20}.nav button{border:0;background:transparent;color:#a99587;padding:9px 3px;border-radius:13px;font-size:10px}.nav button span{display:block;font-size:20px;margin-bottom:2px}.nav button.active{background:#36221c;color:#f4d497}
+.empty{padding:28px 15px;text-align:center;color:#ccbbae;font-size:13px;border:1px dashed #6d5547;border-radius:18px;margin:12px 0}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="eyebrow">The Reading Journal</div>
+    <h1 id="pageTitle">Good evening, Tiff ✦</h1>
+    <div class="sub" id="pageSub">Your reading life, without the spreadsheet look.</div>
+  </header>
+
+  <section id="home" class="screen active">
+    <div class="card hero">
+      <div class="cover">FALSE<br>GODS</div>
+      <div>
+        <div class="label">Currently reading</div>
+        <div class="book">False Gods</div>
+        <div class="author">Horus Heresy · Book 2</div>
+        <div class="progress"><span id="currentProgress"></span></div>
+        <div class="progressline"><span id="progressText">10% complete</span><span>Keep going ✦</span></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="todayPages">15</b>pages</div>
+      <div class="stat"><b id="todayMinutes">5</b>minutes</div>
+      <div class="stat"><b id="libraryCount">589</b>library</div>
+    </div>
+    <div class="section-title">For you today</div>
+    <div class="card dark">
+      <div class="label" style="color:#c7ad9f">Recommendation pulse</div>
+      <div style="font:700 18px Georgia,serif;margin-top:5px">Your Discover feed is ready.</div>
+      <p style="font-size:12px;line-height:1.5;color:#dbcbbf">The next step is syncing the recommendation rows from Book Recommendation HQ so this card updates from the Sheet automatically.</p>
+      <button class="pill want" onclick="go('discover')">Open Discover →</button>
+    </div>
+  </section>
+
+  <section id="discover" class="screen">
+    <div class="section-title">Discover</div>
+    <div class="section-copy">Scroll recommendations, then ❤️ / Maybe / Skip. Those choices will be written back to the Sheet.</div>
+    <div class="moodrow">
+      <button>🔥 Dark</button><button>⚔️ Powerful FMC</button><button>🩸 Vampires</button><button>👑 Courts</button><button>💘 Romance heavy</button><button>🗡️ Unhinged duo</button>
+    </div>
+    <article class="card reco">
+      <div class="reco-cover"><span class="match">Sheet sync pending</span></div>
+      <div class="reco-body">
+        <div class="label">Personalized recommendation</div>
+        <div class="book">Next recommendation</div>
+        <div class="author">Book Recommendation HQ</div>
+        <div class="chips"><span class="chip">MATCH %</span><span class="chip">TROPES</span><span class="chip">FMC TYPE</span><span class="chip">SERIES</span></div>
+        <div class="why"><b>Why you'll like it</b><br>Your full personalized explanation from the recommendation sheet will appear here—without making you open the spreadsheet.</div>
+        <div class="actions"><button class="want" onclick="feedback('Want It')">❤️ Want</button><button class="maybe" onclick="feedback('Maybe')">🔖 Maybe</button><button class="skip" onclick="feedback('Skip')">✕ Skip</button></div>
+      </div>
+    </article>
+    <div class="empty">More cards will stack vertically here so Discover feels like a real book feed rather than a table.</div>
+  </section>
+
+  <section id="library" class="screen">
+    <div class="section-title">Library</div>
+    <div class="section-copy">Your Goodreads/StoryGraph history and everything you add going forward.</div>
+    <div class="card">
+      <div class="stats">
+        <div class="stat"><b>589</b>books</div><div class="stat"><b>294</b>read</div><div class="stat"><b>208</b>TBR</div>
+      </div>
+      <div class="listrow"><div class="mini"></div><div><b>Library sync</b><div class="tiny">Author → Series → Book ordering</div></div><div class="rating">★</div></div>
+      <div class="listrow"><div class="mini"></div><div><b>Search + filters</b><div class="tiny">Read · Reading · TBR · DNF · Rating · Series</div></div><div>⌕</div></div>
+      <div class="listrow"><div class="mini"></div><div><b>Book detail</b><div class="tiny">Dates · rating · pages · notes · rereads</div></div><div>›</div></div>
+    </div>
+  </section>
+
+  <section id="wrapped" class="screen">
+    <div class="card dark wrapped-hero">
+      <div class="eyebrow">Your Reading Wrapped</div>
+      <div class="big-number">589</div>
+      <p>books in your reading universe</p>
+    </div>
+    <div class="story-grid">
+      <div class="story">Reading days<b>→</b></div>
+      <div class="story">Biggest sessions<b>→</b></div>
+      <div class="story">Top authors<b>→</b></div>
+      <div class="story">Ratings<b>→</b></div>
+      <div class="story">Pace<b>→</b></div>
+      <div class="story">Monthly wrap<b>→</b></div>
+    </div>
+  </section>
+</main>
+
+<nav class="nav">
+  <button class="active" data-screen="home" onclick="go('home',this)"><span>⌂</span>Home</button>
+  <button data-screen="discover" onclick="go('discover',this)"><span>✦</span>Discover</button>
+  <button data-screen="library" onclick="go('library',this)"><span>▥</span>Library</button>
+  <button data-screen="wrapped" onclick="go('wrapped',this)"><span>◌</span>Wrapped</button>
+</nav>
+<script src="./data.js"></script>
+<script>
+const titles={
+ home:["Good evening, Tiff ✦","Your reading life, without the spreadsheet look."],
+ discover:["Find your next obsession","Recommendations chosen for your actual taste."],
+ library:["Your library","Every book, series, rating and reading date in one place."],
+ wrapped:["Reading Wrapped","The fun version of your stats."]
+};
+let mood="All";
+const feedbackKey="readingHubFeedbackV1";
+
+function go(id){
+ document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.screen===id));
+ document.getElementById("pageTitle").textContent=titles[id][0];
+ document.getElementById("pageSub").textContent=titles[id][1];
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function esc(s){
+ return String(s==null?"":s).replace(/[&<>"']/g,function(m){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];
+ });
+}
+function savedFeedback(){
+ try{return JSON.parse(localStorage.getItem(feedbackKey)||"{}")}catch(e){return {}}
+}
+function setFeedback(title,value){
+ const map=savedFeedback();
+ map[title]={interest:value,updatedAt:new Date().toISOString()};
+ localStorage.setItem(feedbackKey,JSON.stringify(map));
+ renderDiscover();
+}
+function matchesMood(r){
+ if(mood==="All") return true;
+ const hay=(r.tropes.join(" ")+" "+r.dark+" "+r.why).toLowerCase();
+ const q={Dark:"dark",FMC:"fmc",Vampires:"vamp",Courts:"court",Romance:"romance",Duo:"power couple"}[mood];
+ return hay.includes(q);
+}
+function renderDiscover(){
+ const D=window.READING_HUB_DATA||{};
+ const feedback=savedFeedback();
+ const rows=(D.recommendations||[]).filter(matchesMood);
+ const moods=[["All","✦ All"],["Dark","🔥 Dark"],["FMC","⚔️ Powerful FMC"],["Vampires","🩸 Vampires"],["Courts","👑 Courts"],["Romance","💘 Romance"],["Duo","🗡️ Power Couple"]];
+ let html='<div class="section-title">Discover</div>'+
+   '<div class="section-copy">Real picks from Book Recommendation HQ. Want / Maybe / Skip are remembered on this device now; private Sheet write-back is the next secure sync step.</div>'+
+   '<div class="moodrow">'+moods.map(function(x){
+      return '<button data-mood="'+esc(x[0])+'" style="'+(mood===x[0]?'border-color:#f0ca73;color:#f0ca73':'')+'">'+esc(x[1])+'</button>';
+   }).join("")+'</div>';
+ if(!rows.length){
+   html+='<div class="empty">No recommendations match that mood yet.</div>';
+ }else{
+   html+=rows.map(function(r,i){
+     const state=feedback[r.title]?.interest || (r.interest?"Want It":"");
+     const coverClass=i%3===0?'#512a35,#8a5d4d,#25382f':i%3===1?'#312239,#805b78,#533123':'#24363d,#745a3b,#5a2834';
+     return '<article class="card reco">'+
+      '<div class="reco-cover" style="background:linear-gradient(135deg,'+coverClass+')"><div><span class="match">'+r.match.toFixed(1)+'★ MATCH</span><div style="font:700 26px Georgia,serif;margin-top:12px;max-width:310px">'+esc(r.title)+'</div></div></div>'+
+      '<div class="reco-body"><div class="label">'+esc(r.series)+'</div><div class="book">'+esc(r.title)+'</div>'+
+      '<div class="author">'+esc(r.author)+' · '+r.pages+' pages · GR '+r.gr+'★</div>'+
+      '<div class="chips">'+r.tropes.slice(0,5).map(function(t){return '<span class="chip">'+esc(t)+'</span>';}).join("")+
+        '<span class="chip">Spice '+r.spice+'/5</span><span class="chip">'+esc(r.dark)+'</span></div>'+
+      '<p class="why">'+esc(r.summary)+'</p>'+
+      '<div class="why"><b>Why you’ll like it</b><br>'+esc(r.why)+'</div>'+
+      '<div class="actions">'+
+       '<button class="want" data-feedback="Want It" data-title="'+esc(r.title)+'">'+(state==="Want It"?"✓ ":"")+'❤️ Want</button>'+
+       '<button class="maybe" data-feedback="Maybe" data-title="'+esc(r.title)+'">'+(state==="Maybe"?"✓ ":"")+'🔖 Maybe</button>'+
+       '<button class="skip" data-feedback="Skip" data-title="'+esc(r.title)+'">'+(state==="Skip"?"✓ ":"")+'✕ Skip</button>'+
+      '</div>'+
+      '<a href="'+esc(r.url)+'" target="_blank" rel="noopener" style="display:block;margin-top:12px;color:#6f2e3c;font-size:11px;font-weight:800">Open on Goodreads ↗</a>'+
+      '</div></article>';
+   }).join("");
+ }
+ document.getElementById("discover").innerHTML=html;
+}
+function bootData(){
+ const D=window.READING_HUB_DATA;
+ if(!D) return;
+ const cur=D.current||{};
+ document.querySelector("#home .book").textContent=cur.title||"Current book";
+ document.querySelector("#home .author").textContent=cur.series||"";
+ document.getElementById("currentProgress").style.width=(cur.progress||0)+"%";
+ document.getElementById("progressText").textContent=(cur.progress||0)+"% complete";
+ document.getElementById("todayPages").textContent=cur.latestPages||0;
+ document.getElementById("todayMinutes").textContent=cur.latestMinutes||0;
+ document.getElementById("libraryCount").textContent=D.library?.total||0;
+ document.querySelector("#home .label").textContent="Currently reading · last log "+(cur.latestDate||"");
+ document.querySelector("#library .card").innerHTML=
+  '<div class="stats"><div class="stat"><b>'+D.library.total+'</b>books</div><div class="stat"><b>'+D.library.read+'</b>read</div><div class="stat"><b>'+D.library.toRead+'</b>TBR</div></div>'+
+  '<div class="listrow"><div class="mini"></div><div><b>Full Goodreads library</b><div class="tiny">Sheet-backed master catalog</div></div><div class="rating">★</div></div>'+
+  '<div class="listrow"><div class="mini"></div><div><b>Search + filters</b><div class="tiny">Read · Reading · TBR · DNF · Rating · Series</div></div><div>⌕</div></div>'+
+  '<div class="listrow"><div class="mini"></div><div><b>DNF</b><div class="tiny">'+D.library.dnf+' titles tracked</div></div><div>›</div></div>';
+ document.querySelector("#wrapped .big-number").textContent=D.library.total;
+ renderDiscover();
+}
+document.querySelector(".nav").addEventListener("click",function(e){
+ const b=e.target.closest("button[data-screen]");
+ if(b) go(b.dataset.screen);
+});
+document.getElementById("discover").addEventListener("click",function(e){
+ const m=e.target.closest("button[data-mood]");
+ if(m){mood=m.dataset.mood;renderDiscover();return;}
+ const b=e.target.closest("button[data-feedback]");
+ if(b) setFeedback(b.dataset.title,b.dataset.feedback);
+});
+bootData();
+</script>
+</body></html>
