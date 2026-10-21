@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script id="reading-journal-launch-51046">
+(() => {
+  try {
+    const u = new URL(location.href);
+    const launchedAsInstalledApp = u.searchParams.has('appv');
+    if (launchedAsInstalledApp && !u.pathname.includes('/reading-hub/')) {
+      location.replace('./reading-hub/?appv=51046');
+    }
+  } catch (_) {}
+})();
+</script>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#4a2f24"/>
