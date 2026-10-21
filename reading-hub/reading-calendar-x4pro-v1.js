@@ -112,8 +112,8 @@
       if ($('homePageCompareNote')) {
         $('homePageCompareNote').textContent =
           printDelta!=null && xteDelta!=null
-            ? 'Last synced reading: ~'+printDelta+' print pages vs '+xteDelta+' XTE pages. Print pages are estimated from book progress.'
-            : 'Print page is estimated from '+pct.toFixed(1)+'% progress; XTE page is the reader’s displayed position.';
+            ? 'Last synced session: ~'+printDelta+' print pages · '+xteDelta+' XTE pages · +'+Math.max(0,pct-startPct).toFixed(1)+'%'
+            : 'Print '+estimatedPrint+' · XTE '+endXte;
       }
       compare.hidden = false;
     } else if (compare) {
