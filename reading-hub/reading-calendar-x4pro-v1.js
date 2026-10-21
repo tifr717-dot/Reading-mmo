@@ -140,8 +140,12 @@
     const bookIndex = Number(row[1]);
     const startPermille = Number(row[5]);
     const endPermille = Number(row[6]);
+    const rawDate = String(row[0] || '');
+    const date = /^\d{8}$/.test(rawDate)
+      ? rawDate.slice(0,4)+'-'+rawDate.slice(4,6)+'-'+rawDate.slice(6,8)
+      : rawDate;
     return normalizeEntry({
-      date: row[0],
+      date,
       title: books[bookIndex] || 'Unknown book',
       pages: row[2],
       seconds: row[3],
@@ -164,9 +168,11 @@
     let entries = [];
     if (Number(payload.p) === 5) {
       if (Number(payload.none) === 1) return {none:true,count:0,duplicates:0};
-      const books = Array.isArray(payload.books) ? payload.books.map(x=>String(x||'')) : [];
-      if (!Array.isArray(payload.entries)) throw new Error('Malformed X4 Pro range payload');
-      entries = payload.entries.map(row=>normalizeCompactV5(row,books));
+      const booksRaw = Array.isArray(payload.b) ? payload.b : payload.books;
+      const entriesRaw = Array.isArray(payload.e) ? payload.e : payload.entries;
+      const books = Array.isArray(booksRaw) ? booksRaw.map(x=>String(x||'')) : [];
+      if (!Array.isArray(entriesRaw)) throw new Error('Malformed X4 Pro range payload');
+      entries = entriesRaw.map(row=>normalizeCompactV5(row,books));
     } else if (Number(payload.p) === 4) {
       if (Number(payload.none) === 1) return {none:true,count:0,duplicates:0};
       entries = Array.isArray(payload.entries) ? payload.entries.map(e=>normalizeEntry(e,payload.date)) : [normalizeEntry(payload,payload.date)];
