@@ -29,10 +29,11 @@
     } catch (_) { return []; }
   }
 
-  function rememberImport(id) {
-    const ids = importedIds().filter(x => x !== id);
-    ids.push(id);
-    localStorage.setItem(IMPORT_KEY, JSON.stringify(ids.slice(-200)));
+  function rememberImports(newIds) {
+    const incoming = Array.isArray(newIds) ? newIds : [newIds];
+    const ids = importedIds().filter(x => !incoming.includes(x));
+    incoming.forEach(id => { if (id) ids.push(id); });
+    localStorage.setItem(IMPORT_KEY, JSON.stringify(ids.slice(-2000)));
   }
 
   function isoLocal(d) {
@@ -125,7 +126,7 @@
       title: String(e.title || '').trim() || 'Unknown book',
       pages: Math.max(0, Number(e.pages ?? e.pg) || 0),
       seconds: Math.max(0, Number(e.seconds ?? e.sec) || 0),
-      sessions: Math.max(1, Number(e.sessions) || 1),
+      sessions: Math.max(0, Number(e.sessions) || 0),
       startPercent: e.startPercent ?? e.spct ?? null,
       endPercent: e.endPercent ?? e.epct ?? null,
       startXte: e.startXte ?? e.sp ?? null,
@@ -134,28 +135,65 @@
     };
   }
 
+  function normalizeCompactV5(row, books) {
+    if (!Array.isArray(row) || row.length < 9) throw new Error('Malformed X4 Pro range entry');
+    const bookIndex = Number(row[1]);
+    const startPermille = Number(row[5]);
+    const endPermille = Number(row[6]);
+    return normalizeEntry({
+      date: row[0],
+      title: books[bookIndex] || 'Unknown book',
+      pages: row[2],
+      seconds: row[3],
+      sessions: row[4],
+      startPercent: startPermille >= 0 ? startPermille / 10 : null,
+      endPercent: endPermille >= 0 ? endPermille / 10 : null,
+      startXte: row[7] || null,
+      endXte: row[8] || null
+    }, row[0]);
+  }
+
+  function entryFingerprint(e) {
+    return 'x4:'+[
+      e.date,e.title,e.pages,e.seconds,e.sessions,
+      e.startPercent ?? '',e.endPercent ?? '',e.startXte ?? '',e.endXte ?? ''
+    ].join('|');
+  }
+
   function importPayload(payload) {
     let entries = [];
-    let importId = '';
-    if (Number(payload.p) === 4) {
-      if (Number(payload.none) === 1) return {none:true};
+    if (Number(payload.p) === 5) {
+      if (Number(payload.none) === 1) return {none:true,count:0,duplicates:0};
+      const books = Array.isArray(payload.books) ? payload.books.map(x=>String(x||'')) : [];
+      if (!Array.isArray(payload.entries)) throw new Error('Malformed X4 Pro range payload');
+      entries = payload.entries.map(row=>normalizeCompactV5(row,books));
+    } else if (Number(payload.p) === 4) {
+      if (Number(payload.none) === 1) return {none:true,count:0,duplicates:0};
       entries = Array.isArray(payload.entries) ? payload.entries.map(e=>normalizeEntry(e,payload.date)) : [normalizeEntry(payload,payload.date)];
-      importId = 'p4:'+String(payload.id || payload.date || '')+':'+JSON.stringify(entries);
     } else if (Number(payload.p) === 2 || Number(payload.p) === 3) {
-      if (Number(payload.none) === 1) return {none:true};
+      if (Number(payload.none) === 1) return {none:true,count:0,duplicates:0};
       entries = [normalizeEntry(payload, isoLocal(new Date()))];
-      importId = 'legacy:'+payload.p+':'+[payload.sid,payload.sp,payload.ep,payload.pg,payload.sec,payload.title||''].join(':');
     } else {
       throw new Error('Unsupported reader protocol '+String(payload.p));
     }
-    if (importedIds().includes(importId)) return {duplicate:true,count:0};
 
+    const known = new Set(importedIds());
     const rows = readLogs();
-    entries.forEach((e,i)=>rows.push({...e, importId: importId+':'+i, importedAt:new Date().toISOString()}));
-    writeLogs(rows);
-    rememberImport(importId);
-    render();
-    return {count:entries.length};
+    const addedIds = [];
+    let duplicates = 0;
+    entries.forEach(e => {
+      const id = entryFingerprint(e);
+      if (known.has(id)) { duplicates++; return; }
+      known.add(id);
+      addedIds.push(id);
+      rows.push({...e, importId:id, importedAt:new Date().toISOString()});
+    });
+    if (addedIds.length) {
+      writeLogs(rows);
+      rememberImports(addedIds);
+      render();
+    }
+    return {count:addedIds.length,duplicates,duplicate:addedIds.length===0 && duplicates>0};
   }
 
   function setSyncStatus(msg, kind='') {
@@ -177,14 +215,17 @@
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService(SERVICE_UUID);
       const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
-      setSyncStatus('Reading today’s diary…');
+      setSyncStatus('Reading selected X4 Pro diary…');
       const value = await characteristic.readValue();
       const raw = new TextDecoder().decode(value.buffer).replace(/\0+$/g,'').trim();
       const payload = JSON.parse(raw);
       const result = importPayload(payload);
-      if (result.none) setSyncStatus('Connected ✓ No completed reading is ready to import yet.','ok');
+      if (result.none) setSyncStatus('Connected ✓ No reading is stored for that selection.','ok');
       else if (result.duplicate) setSyncStatus('Already synced ✓ Nothing counted twice.','ok');
-      else setSyncStatus('Synced ✓ '+result.count+' '+(result.count===1?'book entry':'book entries')+' added to the calendar.','ok');
+      else {
+        const dup = result.duplicates ? ' · '+result.duplicates+' duplicate'+(result.duplicates===1?'':'s')+' skipped' : '';
+        setSyncStatus('Synced ✓ '+result.count+' '+(result.count===1?'reading-day entry':'reading-day entries')+' imported'+dup+'.','ok');
+      }
     } catch (err) {
       console.error(err);
       setSyncStatus('Sync failed: '+(err?.message || String(err)),'bad');
