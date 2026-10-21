@@ -2,7 +2,7 @@
   "name": "The Reading Journal",
   "short_name": "Reading Journal",
   "description": "A personal reading journal with your library, reading calendar, recommendations, stats, and X4 Pro sync.",
-  "start_url": "./reading-hub/?appv=51047",
+  "start_url": "./reading-hub/?appv=51048",
   "scope": "./",
   "display": "standalone",
   "background_color": "#160d0b",
