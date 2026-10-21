@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#160d0b">
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Reading Journal">
 <title>Reading Journal</title>
 <style>
 :root{--bg:#160d0b;--panel:#211613;--paper:#f3e6c9;--paper2:#ead7ae;--ink:#2f211b;--gold:#c89a43;--gold2:#f0ca73;--wine:#6f2e3c;--green:#48624a;--plum:#604565;--muted:#ad9b8e}
@@ -489,5 +493,12 @@ document.getElementById("saveBookEdit").addEventListener("click",saveBookEdit);
 document.getElementById("editStatus").addEventListener("change",handleStatusChange);
 document.getElementById("markReread").addEventListener("click",logReread);
 bootData();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("../service-worker-journal-v51046.js?v=51046",{updateViaCache:"none"}).catch(()=>{});
+  });
+}
 </script>
 </body></html>
