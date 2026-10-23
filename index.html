@@ -1,13 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script id="reading-journal-launch-51046">
+<script id="reading-journal-launch-51053">
 (() => {
   try {
     const u = new URL(location.href);
-    const launchedAsInstalledApp = u.searchParams.has('appv');
-    if (launchedAsInstalledApp && !u.pathname.includes('/reading-hub/')) {
-      location.replace('./reading-hub/?appv=51046');
+    const standalone =
+      window.matchMedia?.('(display-mode: standalone)')?.matches ||
+      window.navigator.standalone === true;
+    const installedLaunch = standalone || u.searchParams.has('appv');
+    if (installedLaunch && !u.pathname.includes('/reading-hub/')) {
+      location.replace('./reading-hub/?appv=51053');
     }
   } catch (_) {}
 })();
@@ -7084,8 +7087,10 @@ setTimeout(restoreHomeTab,0);
 
 <script>
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker-v51043.js?v=51043v",{updateViaCache:"none"}).catch(() => {});
+  window.addEventListener("load", async () => {
+    try {
+      await navigator.serviceWorker.register("./service-worker-journal-v51053.js?v=51053",{updateViaCache:"none"});
+    } catch (_) {}
   });
 }
 </script>
