@@ -319,7 +319,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 </nav>
 <script src="./data.js"></script>
 <script src="./library-data.js"></script>
-<script src="./cover-service.js?v=51052"></script>
+<script src="./cover-service.js?v=51053"></script>
 <script src="./reading-calendar-x4pro-v1.js"></script>
 <script>
 const titles={
@@ -629,6 +629,13 @@ document.getElementById("discover").addEventListener("click",function(e){
  if(b) setFeedback(b.dataset.title,b.dataset.feedback);
 });
 
+document.getElementById("home").addEventListener("click",function(e){
+ const b=e.target.closest("button[data-home-feedback]");
+ if(!b)return;
+ setFeedback(b.dataset.title,b.dataset.homeFeedback);
+ if(window.ReadingCalendar?.renderHomeDashboard) window.ReadingCalendar.renderHomeDashboard();
+});
+
 document.getElementById("libraryResults").addEventListener("click",function(e){
  const b=e.target.closest("[data-book-index]"); if(b) openBookEditor(Number(b.dataset.bookIndex));
 });
@@ -642,7 +649,7 @@ bootData();
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("../service-worker-journal-v51052.js?v=51052",{updateViaCache:"none"}).catch(()=>{});
+    navigator.serviceWorker.register("../service-worker-journal-v51053.js?v=51053",{updateViaCache:"none"}).catch(()=>{});
   });
 }
 </script>
