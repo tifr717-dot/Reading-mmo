@@ -15,17 +15,6 @@ self.addEventListener('activate',e=>{
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>(k.startsWith('reading-mmo-')||k.startsWith('reading-journal-'))&&k!==CACHE).map(k=>caches.delete(k)));
     await self.clients.claim();
-    const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
-    await Promise.all(windows.map(client=>{
-      try{
-        const u=new URL(client.url);
-        if(u.origin!==self.location.origin)return Promise.resolve();
-        if(!u.pathname.includes('/reading-hub/')){
-          return client.navigate(new URL('./reading-hub/?appv=51053',self.registration.scope).href).catch(()=>undefined);
-        }
-      }catch(_){}
-      return Promise.resolve();
-    }));
   })());
 });
 
