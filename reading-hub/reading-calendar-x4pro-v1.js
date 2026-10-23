@@ -188,11 +188,16 @@
     const readDates=Object.keys(daily).filter(d=>daily[d].pages>0||daily[d].seconds>0).sort();
     if(readDates.length){
       lastRead=readDates[readDates.length-1];
-      let cursor=new Date(lastRead+'T12:00:00');
-      while(true){
-        const k=isoLocal(cursor);
-        if(!(daily[k]&&(daily[k].pages>0||daily[k].seconds>0)))break;
-        streak++;cursor.setDate(cursor.getDate()-1);
+      const todayDate=new Date();todayDate.setHours(12,0,0,0);
+      const yesterday=new Date(todayDate);yesterday.setDate(yesterday.getDate()-1);
+      const streakIsCurrent=lastRead===isoLocal(todayDate)||lastRead===isoLocal(yesterday);
+      if(streakIsCurrent){
+        let cursor=new Date(lastRead+'T12:00:00');
+        while(true){
+          const k=isoLocal(cursor);
+          if(!(daily[k]&&(daily[k].pages>0||daily[k].seconds>0)))break;
+          streak++;cursor.setDate(cursor.getDate()-1);
+        }
       }
     }
     if($('homeStreak'))$('homeStreak').textContent=streak;
