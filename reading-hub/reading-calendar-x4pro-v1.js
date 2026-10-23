@@ -123,6 +123,110 @@
     }
   }
 
+
+  function estimatePrintDelta(rows,book){
+    const total=Number(book?.pages)||0;
+    if(!total||!rows.length)return 0;
+    return rows.reduce((sum,r)=>{
+      const a=Number(r.startPercent),b=Number(r.endPercent);
+      return sum+(Number.isFinite(a)&&Number.isFinite(b)?Math.max(0,Math.round(total*(b-a)/100)):0);
+    },0);
+  }
+
+  function renderHomeDashboard(){
+    const rows=allLogs();
+    const today=isoLocal(new Date());
+    const dayRows=rows.filter(r=>r.date===today);
+    const currentTitle=(rows[rows.length-1]?.title)||'';
+    const currentBook=findLibraryBook(currentTitle);
+    const todayXte=dayRows.reduce((n,r)=>n+(Number(r.pages)||0),0);
+    const todaySec=dayRows.reduce((n,r)=>n+(Number(r.seconds)||0),0);
+    const todaySessions=dayRows.reduce((n,r)=>n+(Number(r.sessions)||0),0);
+    if($('todayPages'))$('todayPages').textContent=todayXte;
+    if($('todayPrintPages'))$('todayPrintPages').textContent=estimatePrintDelta(dayRows,currentBook);
+    if($('todayMinutes'))$('todayMinutes').textContent=Math.floor(todaySec/60);
+    if($('todaySessions'))$('todaySessions').textContent=todaySessions||0;
+
+    const daily={};
+    rows.forEach(r=>{
+      const d=String(r.date||'');
+      (daily[d]||=( {pages:0,seconds:0,sessions:0} ));
+      daily[d].pages+=Number(r.pages)||0;
+      daily[d].seconds+=Number(r.seconds)||0;
+      daily[d].sessions+=Number(r.sessions)||0;
+    });
+
+    const seven=[];
+    for(let i=6;i>=0;i--){
+      const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);
+      const iso=isoLocal(d),v=daily[iso]||{pages:0,seconds:0};
+      seven.push({date:iso,label:d.toLocaleDateString(undefined,{weekday:'short'}).slice(0,1),pages:v.pages,seconds:v.seconds});
+    }
+    const maxPages=Math.max(1,...seven.map(x=>x.pages));
+    if($('homeActivityBars'))$('homeActivityBars').innerHTML=seven.map(x=>{
+      const h=Math.max(4,Math.round((x.pages/maxPages)*72));
+      return '<div class="activity-day '+(x.pages?'':'zero')+'"><div class="activity-track"><div class="activity-fill" style="height:'+h+'px"></div></div><div class="activity-value">'+(x.pages||'')+'</div><div class="activity-label">'+x.label+'</div></div>';
+    }).join('');
+    const sevenPages=seven.reduce((n,x)=>n+x.pages,0);
+    const sevenMin=Math.floor(seven.reduce((n,x)=>n+x.seconds,0)/60);
+    if($('sevenDayTotal'))$('sevenDayTotal').textContent=sevenPages+' XTE pages';
+    if($('sevenDayMinutes'))$('sevenDayMinutes').textContent=sevenMin+' min';
+
+    const now=new Date(), y=now.getFullYear(),m=now.getMonth();
+    const monthRows=rows.filter(r=>{const d=new Date(r.date+'T12:00:00');return !isNaN(d)&&d.getFullYear()===y&&d.getMonth()===m});
+    const monthGrouped=byDate(monthRows);
+    const monthDays=Object.keys(monthGrouped);
+    const monthPages=monthRows.reduce((n,r)=>n+(Number(r.pages)||0),0);
+    const monthMin=Math.floor(monthRows.reduce((n,r)=>n+(Number(r.seconds)||0),0)/60);
+    const bestDay=Math.max(0,...Object.values(monthGrouped).map(list=>list.reduce((n,r)=>n+(Number(r.pages)||0),0)));
+    if($('homeMonthDays'))$('homeMonthDays').textContent=monthDays.length;
+    if($('homeMonthPages'))$('homeMonthPages').textContent=monthPages;
+    if($('homeMonthMinutes'))$('homeMonthMinutes').textContent=monthMin;
+    if($('homeBestDay'))$('homeBestDay').textContent=bestDay;
+
+    let streak=0,lastRead='';
+    const readDates=Object.keys(daily).filter(d=>daily[d].pages>0||daily[d].seconds>0).sort();
+    if(readDates.length){
+      lastRead=readDates[readDates.length-1];
+      let cursor=new Date(lastRead+'T12:00:00');
+      while(true){
+        const k=isoLocal(cursor);
+        if(!(daily[k]&&(daily[k].pages>0||daily[k].seconds>0)))break;
+        streak++;cursor.setDate(cursor.getDate()-1);
+      }
+    }
+    if($('homeStreak'))$('homeStreak').textContent=streak;
+    if($('homeStreakLabel'))$('homeStreakLabel').textContent=streak===1?'day':'days';
+    if($('homeStreakFoot'))$('homeStreakFoot').textContent=lastRead
+      ? 'Streak through '+new Date(lastRead+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})+'.'
+      : 'Your reading rhythm will build here.';
+
+    const latest=rows[rows.length-1];
+    if(latest&&$('homeLastSession')){
+      const same=rows.filter(r=>r.date===latest.date&&r.title===latest.title);
+      const xte=same.reduce((n,r)=>n+(Number(r.pages)||0),0);
+      const mins=Math.floor(same.reduce((n,r)=>n+(Number(r.seconds)||0),0)/60);
+      const book=findLibraryBook(latest.title);
+      const print=estimatePrintDelta(same,book);
+      const first=same[0],last=same[same.length-1];
+      const gain=(Number.isFinite(Number(first?.startPercent))&&Number.isFinite(Number(last?.endPercent)))?Math.max(0,Number(last.endPercent)-Number(first.startPercent)):null;
+      $('homeLastSession').textContent='Last session · '+xte+' XTE · ~'+print+' print · '+mins+' min'+(gain!=null?' · +'+gain.toFixed(1)+'%':'');
+    }
+
+    const recs=window.READING_HUB_DATA?.recommendations||[];
+    const feedback=(()=>{try{return JSON.parse(localStorage.getItem('readingHubFeedbackV1')||'{}')}catch(_){return{}}})();
+    const rec=recs.find(r=>!feedback[r.title]||feedback[r.title].interest!=='Skip')||recs[0];
+    if(rec){
+      if($('homeRecoTitle'))$('homeRecoTitle').textContent=rec.title||'Recommendation';
+      if($('homeRecoAuthor'))$('homeRecoAuthor').textContent=[rec.author,rec.series].filter(Boolean).join(' · ');
+      if($('homeRecoMatch'))$('homeRecoMatch').textContent=rec.match?Math.round(Number(rec.match)*20)+'% match':'For you';
+      if($('homeRecoChips'))$('homeRecoChips').innerHTML=(rec.tropes||[]).slice(0,3).map(t=>'<span>'+esc(t)+'</span>').join('');
+      const cover=$('homeRecoCover');
+      if(cover&&window.ReadingCovers)window.ReadingCovers.refreshElement(cover,rec.title||'',rec.author||'');
+      document.querySelectorAll('[data-home-feedback]').forEach(b=>b.dataset.title=rec.title||'');
+    }
+  }
+
   function render() {
     const grid = $('readingCalendarGrid');
     if (!grid) return;
@@ -339,6 +443,7 @@
         setSyncStatus('Synced ✓ '+result.count+' '+(result.count===1?'reading-day entry':'reading-day entries')+' imported'+dup+'.','ok');
       }
       updateHomeFromDiary();
+      renderHomeDashboard();
     } catch (err) {
       console.error(err);
       const msg = err?.message || String(err);
@@ -362,7 +467,8 @@
     $('x4SyncButton')?.addEventListener('click',syncX4Pro);
     render();
     updateHomeFromDiary();
-    window.ReadingCalendar = {render, importPayload, readLogs, updateHomeFromDiary};
+    renderHomeDashboard();
+    window.ReadingCalendar = {render, importPayload, readLogs, updateHomeFromDiary, renderHomeDashboard};
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
