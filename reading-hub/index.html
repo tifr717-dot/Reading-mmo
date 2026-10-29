@@ -116,6 +116,18 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 }
 
 </style>
+<style>
+.quick-log-launch{width:100%;border:1px solid #bd8d98;border-radius:15px;padding:13px;background:linear-gradient(110deg,#8b3b62,#5d304d);color:#fff;font-weight:800;text-align:center;margin:12px 0;cursor:pointer}
+#quickLogModal{position:fixed;inset:0;background:#10090be8;z-index:100;display:none;align-items:flex-end;justify-content:center}
+#quickLogModal.open{display:flex}
+.quick-log-panel{width:min(480px,100%);max-height:92vh;overflow:auto;border-radius:23px 23px 0 0;background:#f8e8eb;color:#402435;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
+.quick-log-panel h2{font:700 24px Georgia,serif;margin:0 0 4px}.quick-log-panel p{font-size:12px;color:#785d68;margin:0 0 16px}
+.quick-log-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.quick-log-fields label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700}.quick-log-fields label.wide{grid-column:1/-1}
+.quick-log-fields input,.quick-log-fields select{width:100%;min-width:0;padding:12px;border:1px solid #cdaab6;border-radius:12px;background:white;color:#402435;font:inherit}
+.quick-log-save{margin-top:18px;width:100%;border:0;border-radius:14px;background:#9c4571;color:white;padding:14px;font-weight:800}
+.quick-log-close{float:right;border:0;background:transparent;color:#573447;font-size:26px;cursor:pointer}
+#quickLogMessage{margin-top:10px;font-size:12px;min-height:16px}
+</style>
 </head>
 <body>
 <main class="app">
@@ -652,5 +664,53 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("../service-worker-journal-v51053.js?v=51053",{updateViaCache:"none"}).catch(()=>{});
   });
 }
+</script>
+<div id="quickLogModal" role="dialog" aria-modal="true" aria-labelledby="quickLogHeading">
+<div class="quick-log-panel"><button type="button" class="quick-log-close" id="quickLogClose" aria-label="Close">×</button>
+<h2 id="quickLogHeading">♡ Quick Reading Log</h2><p>Today's little reading adventure 📚</p>
+<form id="quickLogForm"><div class="quick-log-fields">
+<label class="wide">Reading date<input id="quickLogDate" type="date" required></label>
+<label class="wide">Current book<input id="quickLogBook" list="quickLogBookOptions" placeholder="Book title" required><datalist id="quickLogBookOptions"></datalist></label>
+<label>XTE pages read<input id="quickLogPages" type="number" min="0" step="1" required></label>
+<label>Reading minutes<input id="quickLogMinutes" type="number" min="0" step="0.1" required></label>
+<label class="wide">Ending percentage (%)<input id="quickLogPercent" type="number" min="0" max="100" step="0.1" required></label>
+</div><button class="quick-log-save" type="submit">♡ Save Reading Session</button><div id="quickLogMessage" aria-live="polite"></div></form>
+</div></div>
+<script>
+(function(){
+const key='readingHubDailyLogV1', $=id=>document.getElementById(id);
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+function logs(){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v:[]}catch(e){return []}}
+function openQuickLog(date){
+const rows=logs().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+$('quickLogDate').value=date||today();
+$('quickLogBook').value=rows.length?rows[rows.length-1].title||'False Gods':'False Gods';
+$('quickLogPages').value='';$('quickLogMinutes').value='';$('quickLogPercent').value='';
+const last=rows.filter(r=>r.title===$('quickLogBook').value).pop();
+if(last&&Number.isFinite(Number(last.endPercent)))$('quickLogPercent').placeholder='Last: '+last.endPercent+'%';
+$('quickLogMessage').textContent='';
+const options=$('quickLogBookOptions');options.replaceChildren();
+(window.READING_LIBRARY_DATA||[]).filter(b=>b.title).forEach(b=>{const o=document.createElement('option');o.value=b.title;options.appendChild(o)});
+$('quickLogModal').classList.add('open');$('quickLogBook').focus();
+}
+function closeQuickLog(){$('quickLogModal').classList.remove('open')}
+document.addEventListener('DOMContentLoaded',()=>{
+const home=$('home'),cal=$('calendar');
+if(home){const b=document.createElement('button');b.className='quick-log-launch';b.textContent='♡ + Log Reading';b.onclick=()=>openQuickLog();const stats=home.querySelector('.stats');(stats||home).insertAdjacentElement('afterend',b)}
+if(cal){const b=document.createElement('button');b.className='quick-log-launch';b.textContent='♡ + Log Reading Session';b.onclick=()=>openQuickLog();const heading=cal.querySelector('.section-copy');(heading||cal.firstElementChild).insertAdjacentElement('afterend',b)}
+$('quickLogClose').onclick=closeQuickLog;
+$('quickLogModal').addEventListener('click',e=>{if(e.target===$('quickLogModal'))closeQuickLog()});
+$('quickLogForm').addEventListener('submit',e=>{
+e.preventDefault();
+const date=$('quickLogDate').value,title=$('quickLogBook').value.trim(),pages=Number($('quickLogPages').value),minutes=Number($('quickLogMinutes').value),endPercent=Number($('quickLogPercent').value);
+if(!date||!title||!Number.isInteger(pages)||pages<0||!Number.isFinite(minutes)||minutes<0||!Number.isFinite(endPercent)||endPercent<0||endPercent>100){$('quickLogMessage').textContent='Please check the reading details.';return}
+const rows=logs(),prior=rows.filter(r=>r.title===title&&r.date<=date).sort((a,b)=>a.date.localeCompare(b.date)).pop();
+const startPercent=prior&&Number.isFinite(Number(prior.endPercent))?Number(prior.endPercent):null;
+const row={id:'manual-'+Date.now()+'-'+Math.random().toString(36).slice(2),date,title,pages,seconds:Math.round(minutes*60),sessions:1,startPercent,endPercent,source:'manual',importedAt:new Date().toISOString()};
+try{localStorage.setItem(key,JSON.stringify([...rows,row]));window.ReadingCalendar?.render?.();window.ReadingCalendar?.updateHomeFromDiary?.();window.ReadingCalendar?.renderHomeDashboard?.();$('quickLogMessage').textContent='♡ Saved on this device!';$('quickLogForm').reset();$('quickLogDate').value=date;$('quickLogBook').value=title;setTimeout(closeQuickLog,700)}catch(err){$('quickLogMessage').textContent='Could not save: '+err.message}
+});
+});
+window.openQuickLog=openQuickLog;
+})();
 </script>
 </body></html>
