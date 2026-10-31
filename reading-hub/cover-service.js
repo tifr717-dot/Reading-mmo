@@ -9,6 +9,7 @@
   const LOOKUP_GAP_MS=1200;
   let lookups=0, lastLookup=0;
   let lookupQueue=Promise.resolve();
+  let googleLimitedUntil=0;
   let cacheState=null,manualState=null;
   async function paceLookup(){
     const turn=lookupQueue.then(async()=>{
@@ -109,6 +110,7 @@
   }
 
   async function lookupGoogle(title,author){
+    if(Date.now()<googleLimitedUntil)return null;
     async function runQuery(qText){
       const q=new URLSearchParams({q:qText,maxResults:'8',printType:'books'});
       const res=await fetch('https://www.googleapis.com/books/v1/volumes?'+q.toString(),{mode:'cors'});
@@ -131,6 +133,7 @@
       const url=links.thumbnail||links.smallThumbnail||'';
       return url&&scoreGoogle(best,title,author)>=10?{url:String(url).replace(/^http:/,'https:').replace('&edge=curl','')}:null;
     }catch(err){
+      if(/(?:^|\D)429(?:\D|$)/.test(String(err.message||'')))googleLimitedUntil=Date.now()+15*60*1000;
       console.warn('Reading Journal Google cover fallback failed',title,err);
       return null;
     }
@@ -150,7 +153,7 @@
       try{
         if(options.googleOnly){
           const google=await lookupGoogle(title,author);
-          setRef(title,author,google);
+          if(!rateLimited())setRef(title,author,google);
           return google;
         }
         const q=new URLSearchParams({
@@ -300,6 +303,7 @@
     return 'unsearched';
   }
   function remainingLookups(){return Math.max(0,MAX_LOOKUPS_PER_SESSION-lookups)}
+  function rateLimited(){return Date.now()<googleLimitedUntil}
   async function saveUpload(title,author,file){
     if(!file||!String(file.type||'').startsWith('image/'))throw new Error('Choose a JPG, PNG, or WebP image');
     if(file.size>12*1024*1024)throw new Error('Please choose an image under 12 MB');
@@ -389,5 +393,5 @@
     if(event.key===CACHE_KEY)cacheState=null;
     if(event.key===MANUAL_KEY){manualState=null;document.querySelectorAll('[data-book-cover]').forEach(el=>refreshElement(el,el.dataset.coverTitle,el.dataset.coverAuthor))}
   });
-  window.ReadingCovers={hydrate,lookup,refUrl,cachedRef,refreshElement,refreshAll,coverStatus,remainingLookups,saveUpload,saveManual,clearManual,manualRef,findCandidates};
+  window.ReadingCovers={hydrate,lookup,refUrl,cachedRef,refreshElement,refreshAll,coverStatus,remainingLookups,rateLimited,saveUpload,saveManual,clearManual,manualRef,findCandidates};
 })();
