@@ -414,6 +414,21 @@
       return true;
     }finally{URL.revokeObjectURL(src)}
   }
+  function saveAuto(title,author,ref){
+    if(!ref||!(ref.coverId||ref.olid||ref.isbn||ref.url))return false;
+    // Never replace a manual selection, a found cover, or a built-in exact match.
+    if(manualRef(title,author)||cachedRef(title,author))return false;
+    if(ref.url){
+      let parsed;
+      try{parsed=new URL(ref.url)}catch(_){return false}
+      if(parsed.protocol!=='https:')return false;
+      ref={url:parsed.href};
+    }
+    setRef(title,author,ref);
+    refreshAll(title,author);
+    window.dispatchEvent(new CustomEvent('reading-covers-changed',{detail:{title,author}}));
+    return true;
+  }
   function saveManual(title,author,ref){
     if(!ref||!(ref.coverId||ref.olid||ref.isbn||ref.url))throw new Error('Choose a valid cover');
     if(ref.url){
@@ -485,5 +500,5 @@
     if(event.key===CACHE_KEY)cacheState=null;
     if(event.key===MANUAL_KEY){manualState=null;document.querySelectorAll('[data-book-cover]').forEach(el=>refreshElement(el,el.dataset.coverTitle,el.dataset.coverAuthor))}
   });
-  window.ReadingCovers={hydrate,lookup,refUrl,cachedRef,refreshElement,refreshAll,coverStatus,remainingLookups,rateLimited,batchLookup,saveUpload,saveManual,clearManual,manualRef,findCandidates};
+  window.ReadingCovers={hydrate,lookup,refUrl,cachedRef,refreshElement,refreshAll,coverStatus,remainingLookups,rateLimited,batchLookup,saveUpload,saveManual,clearManual,manualRef,findCandidates,saveAuto};
 })();
