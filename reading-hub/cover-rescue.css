@@ -1,0 +1,31 @@
+/* Second-chance cover rescue, Reading Journal v5.10.56 */
+.cover-rescue.card{padding:15px;margin:14px 0;background:linear-gradient(145deg,#fff3d8,#f2dfb9);border:1px solid #ba9668;border-radius:20px}
+.cover-rescue-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.cover-rescue-title{font:700 19px Georgia,serif;color:#4d2c33}
+.cover-rescue-count{font-size:10px;color:#795940;font-weight:800;text-align:right}
+.cover-rescue-intro{font-size:11px;line-height:1.5;margin:8px 0;color:#765b46}
+.cover-rescue-progress{font-size:10px;color:#735640;margin:7px 0;font-weight:700}
+.cover-rescue-status{font-size:11px;line-height:1.4;color:#68452f;min-height:28px;margin:8px 0 0}
+.cover-rescue-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;margin:12px 0 0}
+.cover-rescue-actions button{font-size:11px;font-weight:800;border-radius:11px;min-height:43px;padding:10px;border:1px solid #a7835b;background:#f9edcf;color:#493225}
+.cover-rescue-actions #coverRescueStart{background:#6f2e3c;border-color:#6f2e3c;color:#fff}
+.cover-rescue-actions #coverRescueReview{background:#5e4f67;color:#fff;border-color:#5e4f67}
+.cover-rescue-actions #coverRescueRetry{background:transparent;color:#6c5549}
+.cover-rescue-actions button:disabled{opacity:.48}
+.cover-rescue-review-pane{margin-top:14px;border-top:1px solid #d1b88f;padding-top:12px}
+.cover-rescue-review-pane[hidden]{display:none}
+.cover-rescue-review-heading{display:flex;justify-content:space-between;gap:10px;font:700 16px Georgia,serif;color:#553b31}
+.cover-rescue-review-heading span{font:700 10px system-ui,sans-serif;color:#786151}
+.cover-rescue-book{padding:11px 0;border-bottom:1px solid #d6bf9c}
+.cover-rescue-book-title{font:700 15px Georgia,serif;color:#4b3028}
+.cover-rescue-book-author{font-size:10px;color:#846750;margin-top:3px}
+.cover-rescue-choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}
+.cover-rescue-choice{min-width:0;padding:4px;background:#fff8e7;border:1px solid #bb9c78;border-radius:10px;color:#634b3b;font-size:9px;font-weight:700;text-align:left}
+.cover-rescue-choice img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;background:#e7d5bc}
+.cover-rescue-choice span{display:block;padding:5px 2px 2px;line-height:1.2;min-height:27px;overflow:hidden}
+.cover-rescue-review-tip{font-size:9px;line-height:1.4;color:#826b55;margin-top:6px}
+.cover-rescue-pages{display:flex;justify-content:space-between;gap:10px;margin-top:11px}
+.cover-rescue-pages button{border:1px solid #b99c7d;border-radius:10px;background:#fff8e8;color:#54382e;font-size:11px;padding:9px 12px;font-weight:700}
+.cover-rescue-pages button:disabled{opacity:.4}
+.cover-rescue-empty{color:#7e6758;font-size:11px}
+@media(max-width:360px){.cover-rescue-choices{grid-template-columns:repeat(3,minmax(0,1fr))}.cover-rescue-title{font-size:17px}.cover-rescue-actions button{font-size:10px;padding:8px}}
