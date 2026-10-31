@@ -653,10 +653,15 @@ function bootData(){
  document.getElementById("progressText").textContent=(cur.progress||0)+"% complete";
  document.getElementById("todayPages").textContent=cur.latestPages||0;
  document.getElementById("todayMinutes").textContent=cur.latestMinutes||0;
- document.getElementById("libraryCount").textContent=D.library?.total||0;
+ const libraryCount=document.getElementById("libraryCount");
+ if(libraryCount)libraryCount.textContent=D.library?.total||0;
  document.querySelector("#home .label").textContent="Currently reading · last log "+(cur.latestDate||"");
  const homeCover=document.getElementById("homeCover");
- if(homeCover && window.ReadingCovers) window.ReadingCovers.refreshElement(homeCover,cur.title||"Current book",cur.author||"");
+ if(homeCover && window.ReadingCovers){
+  const normalized=String(cur.title||"").toLowerCase().trim();
+  const row=(window.READING_LIBRARY_DATA||[]).find(b=>String(b.title||"").toLowerCase().replace(/\s*\([^)]*\)\s*$/,"").trim()===normalized);
+  window.ReadingCovers.refreshElement(homeCover,cur.title||"Current book",cur.author||(row&&row.author)||homeCover.dataset.coverAuthor||"");
+ }
  updateLibraryStats();
  renderLibrary();
  document.querySelector("#wrapped .big-number").textContent=D.library.total;
