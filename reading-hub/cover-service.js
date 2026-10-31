@@ -302,6 +302,37 @@
     if(row&&row.checkedAt)return 'missing';
     return 'unsearched';
   }
+
+  async function batchLookup(books){
+    const items=(books||[]).filter(b=>b&&b.title&&b.author).slice(0,5);
+    if(!items.length)return {results:[],limited:false};
+    if(!await paceLookup())return {results:[],limited:true};
+    const terms=items.map(b=>{
+      const title=cleanTitle(b.title).replace(/["\\]/g,' ').slice(0,100).trim();
+      return 'title:"'+title+'"';
+    });
+    const q=new URLSearchParams({
+      q:terms.join(' OR '),
+      fields:'title,author_name,cover_i',
+      limit:'150'
+    });
+    const res=await fetch('https://openlibrary.org/search.json?'+q.toString(),{mode:'cors'});
+    if(!res.ok)throw new Error('Open Library batch search '+res.status);
+    const data=await res.json();
+    const docs=(data.docs||[]).filter(d=>d.cover_i);
+    const results=items.map(b=>{
+      let best=null,bestScore=0;
+      for(const d of docs){
+        const score=scoreDoc(d,b.title,b.author);
+        if(score>bestScore){bestScore=score;best=d}
+      }
+      const ref=best&&bestScore>=12?{coverId:best.cover_i}:null;
+      setRef(b.title,b.author,ref);
+      return {title:b.title,author:b.author,ref,score:bestScore};
+    });
+    return {results,limited:false};
+  }
+
   function remainingLookups(){return Math.max(0,MAX_LOOKUPS_PER_SESSION-lookups)}
   function rateLimited(){return Date.now()<googleLimitedUntil}
   async function saveUpload(title,author,file){
@@ -393,5 +424,5 @@
     if(event.key===CACHE_KEY)cacheState=null;
     if(event.key===MANUAL_KEY){manualState=null;document.querySelectorAll('[data-book-cover]').forEach(el=>refreshElement(el,el.dataset.coverTitle,el.dataset.coverAuthor))}
   });
-  window.ReadingCovers={hydrate,lookup,refUrl,cachedRef,refreshElement,refreshAll,coverStatus,remainingLookups,rateLimited,saveUpload,saveManual,clearManual,manualRef,findCandidates};
+  window.ReadingCovers={hydrate,lookup,refUrl,cachedRef,refreshElement,refreshAll,coverStatus,remainingLookups,rateLimited,batchLookup,saveUpload,saveManual,clearManual,manualRef,findCandidates};
 })();
