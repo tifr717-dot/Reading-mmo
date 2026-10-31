@@ -100,7 +100,7 @@ void X4PageTurnerSettingsActivity::loop() {
 
   const int maxIndex =
 #ifndef SIMULATOR
-      view == View::Scan ? std::max(0, static_cast<int>(BleHid.deviceCount()) - 1) : 4;
+      view == View::Scan ? std::max(0, std::min(5, static_cast<int>(BleHid.deviceCount())) - 1) : 4;
 #else
       4;
 #endif

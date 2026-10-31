@@ -15,6 +15,7 @@ bool pairingOpen = false;
 int cachedEnabled = -1;
 int nextKey = -1;
 int previousKey = -1;
+int cachedBond = -1;
 uint32_t lastStartAttemptMs = 0;
 
 #ifndef SIMULATOR
@@ -32,11 +33,12 @@ void writeByte(const char* key, const uint8_t value) {
   p.end();
 }
 bool hasBond() {
+  if (cachedBond != -1) return cachedBond == 1;
   Preferences p;
   if (!p.begin("freeink-hid", true)) return false;
-  const bool bonded = p.getUChar("n", 0) > 0;
+  cachedBond = p.getUChar("n", 0) > 0 ? 1 : 0;
   p.end();
-  return bonded;
+  return cachedBond == 1;
 }
 #endif
 }
@@ -58,7 +60,12 @@ void setEnabled(const bool on) {
 #endif
 }
 bool pairingScreenOpen() { return pairingOpen; }
-void setPairingScreenOpen(const bool open) { pairingOpen = open; }
+void setPairingScreenOpen(const bool open) {
+#ifndef SIMULATOR
+  if (pairingOpen && !open) cachedBond = -1;
+#endif
+  pairingOpen = open;
+}
 
 uint8_t nextUsage() {
   if (nextKey == -1) {
