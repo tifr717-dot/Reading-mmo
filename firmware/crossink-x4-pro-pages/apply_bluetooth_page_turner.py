@@ -34,7 +34,7 @@ replace_once(
     "  NearbyTransfer=symlink://freeink-sdk/libs/network/NearbyTransfer\n",
     "  SecureNet=symlink://freeink-sdk/libs/network/SecureNet\n"
     "  NearbyTransfer=symlink://freeink-sdk/libs/network/NearbyTransfer\n"
-    "  BleKeyboardHost=symlink://lib/BleKeyboardHost\n"
+    "  BleKeyboardHost=symlink://lib/BleKeyboardHost\n",
     "BLE HID dependencies",
 )
 replace_once(
