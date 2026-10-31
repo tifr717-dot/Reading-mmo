@@ -129,6 +129,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 #quickLogMessage{margin-top:10px;font-size:12px;min-height:16px}
 </style>
 <link rel="stylesheet" href="./cover-manager.css?v=51054">
+<link rel="stylesheet" href="./cover-rescue.css?v=51056">
 </head>
 <body>
 <main class="app">
@@ -245,6 +246,22 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
         <button type="button" id="coverBatchPause" disabled>Pause</button>
         <button type="button" id="coverBatchReset">Retry missing</button>
       </div>
+    </div>
+    <div class="card cover-rescue" id="coverRescuePanel" aria-label="Second-chance cover rescue">
+      <div class="cover-rescue-head">
+        <div class="cover-rescue-title">✧ Second-chance covers</div>
+        <span class="cover-rescue-count" id="coverRescueCount">Ready to search</span>
+      </div>
+      <p class="cover-rescue-intro">Give missing covers another chance with Inventaire, Google Books and alternate Open Library editions. Strong matches save automatically; uncertain covers wait for your approval.</p>
+      <div class="cover-rescue-progress" id="coverRescueProgress">Your selected covers stay safe.</div>
+      <div class="cover-rescue-status" id="coverRescueStatus" role="status" aria-live="polite">Preparing your missing books…</div>
+      <div class="cover-rescue-actions">
+        <button type="button" id="coverRescueStart">✧ Rescue missing covers</button>
+        <button type="button" id="coverRescuePause" disabled>Pause</button>
+        <button type="button" id="coverRescueReview">Review possible covers (0)</button>
+        <button type="button" id="coverRescueRetry">Retry no-match books</button>
+      </div>
+      <div class="cover-rescue-review-pane" id="coverRescueReviewPane" hidden></div>
     </div>
     <div class="library-tools">
       <input id="librarySearch" class="library-search" type="search" placeholder="Search books, authors, series…" autocomplete="off">
@@ -369,6 +386,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./isbn-index.js?v=51055"></script>
 <script src="./cover-service.js?v=51055"></script>
 <script src="./cover-manager.js?v=51055"></script>
+<script src="./cover-rescue.js?v=51056"></script>
 <script src="./reading-calendar-x4pro-v1.js"></script>
 <script>
 const titles={
@@ -706,7 +724,7 @@ bootData();
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("../service-worker-journal-v51055.js?v=51055",{updateViaCache:"none"}).catch(()=>{});
+    navigator.serviceWorker.register("../service-worker-journal-v51056.js?v=51056",{updateViaCache:"none"}).catch(()=>{});
   });
 }
 </script>
