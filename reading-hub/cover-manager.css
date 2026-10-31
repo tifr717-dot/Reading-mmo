@@ -37,3 +37,6 @@
 .cover-choice-meta{display:block;font-size:9px;line-height:1.2;color:#776450;margin-top:3px}
 .reco-mini-cover{float:right;width:60px;height:88px;margin:0 0 8px 12px;border-radius:8px;background:linear-gradient(140deg,#6f374b,#35242a);background-position:center;background-size:cover;display:flex;align-items:center;justify-content:center;color:#fff1d5;text-align:center;font:700 9px Georgia,serif;box-shadow:0 3px 10px #0002}
 @media(max-width:365px){.cover-picker-main{grid-template-columns:76px minmax(0,1fr);gap:9px}.cover-picker-preview{width:76px;height:114px}.cover-picker-actions button{font-size:9px;padding:8px 3px}}
+
+.cover-search-message{grid-column:1/-1;line-height:1.45;padding:5px 0;font-size:11px}
+.cover-picker-actions button{min-height:42px;font-size:11px}
