@@ -128,6 +128,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .quick-log-close{float:right;border:0;background:transparent;color:#573447;font-size:26px;cursor:pointer}
 #quickLogMessage{margin-top:10px;font-size:12px;min-height:16px}
 </style>
+<link rel="stylesheet" href="./cover-manager.css?v=51054">
 </head>
 <body>
 <main class="app">
@@ -233,6 +234,18 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
     <div class="stats" id="libraryStats">
       <div class="stat"><b>592</b>books</div><div class="stat"><b>296</b>read</div><div class="stat"><b>208</b>TBR</div>
     </div>
+    <div class="card cover-batch" id="coverBatchPanel">
+      <div class="cover-batch-top"><div class="cover-batch-title">♡ Your book covers</div><span id="coverBatchCount" class="cover-batch-count">0 / 592 checked</span></div>
+      <p class="cover-batch-intro">Find missing covers through Google Books in small, resumable batches. Your chosen covers are never replaced.</p>
+      <div class="cover-batch-track" role="progressbar" aria-label="Cover import progress"><div id="coverBatchBar" class="cover-batch-fill"></div></div>
+      <div id="coverBatchMeta" class="cover-batch-meta">Checking your library…</div>
+      <div id="coverBatchStatus" class="cover-batch-status" role="status">Ready to import.</div>
+      <div class="cover-batch-actions">
+        <button type="button" id="coverBatchStart">♡ Find Missing Covers</button>
+        <button type="button" id="coverBatchPause" disabled>Pause</button>
+        <button type="button" id="coverBatchReset">Retry missing</button>
+      </div>
+    </div>
     <div class="library-tools">
       <input id="librarySearch" class="library-search" type="search" placeholder="Search books, authors, series…" autocomplete="off">
       <div class="library-filters" id="libraryFilters">
@@ -294,6 +307,28 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
       </div>
       <button class="close-btn" id="closeEditor">×</button>
     </div>
+    <section class="cover-picker" aria-label="Book cover settings">
+      <div class="cover-picker-head">♡ Book cover</div>
+      <div class="cover-picker-main">
+        <div id="editCoverPreview" class="cover-picker-preview book-cover-slot" data-book-cover data-cover-size="L">BOOK</div>
+        <div>
+          <div id="coverPickerCurrent" class="cover-picker-current">Checking cover…</div>
+          <div class="cover-picker-actions">
+            <button type="button" id="coverSearch">⌕ Find covers</button>
+            <button type="button" id="coverUpload">↑ Upload photo</button>
+            <button type="button" id="coverPaste">🔗 Paste URL</button>
+            <button type="button" id="coverReset">↻ Automatic</button>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="coverFile" accept="image/jpeg,image/png,image/webp,image/avif,image/*" hidden>
+      <div class="cover-link-row" id="coverPasteRow" hidden>
+        <input id="coverUrl" type="url" inputmode="url" placeholder="https://example.com/cover.jpg" aria-label="Cover image URL">
+        <button type="button" id="coverSaveUrl">Save link</button>
+      </div>
+      <div id="coverPickerNote" class="cover-picker-note" role="status"></div>
+      <div id="coverResults" class="cover-results" aria-label="Available book covers"></div>
+    </section>
     <div class="form-grid">
       <div class="form-field full"><label>Status</label><select id="editStatus"><option>To-Read</option><option>Currently Reading</option><option>Read</option><option>DNF</option></select></div>
       <div class="form-field"><label>Start date</label><input id="editStart" type="date"></div>
@@ -331,7 +366,8 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 </nav>
 <script src="./data.js"></script>
 <script src="./library-data.js"></script>
-<script src="./cover-service.js?v=51053"></script>
+<script src="./cover-service.js?v=51054"></script>
+<script src="./cover-manager.js?v=51054"></script>
 <script src="./reading-calendar-x4pro-v1.js"></script>
 <script>
 const titles={
@@ -393,7 +429,7 @@ function renderDiscover(){
      const coverClass=i%3===0?'#512a35,#8a5d4d,#25382f':i%3===1?'#312239,#805b78,#533123':'#24363d,#745a3b,#5a2834';
      return '<article class="card reco">'+
       '<div class="reco-cover" style="background:linear-gradient(135deg,'+coverClass+')"><div><span class="match">'+r.match.toFixed(1)+'★ MATCH</span><div style="font:700 26px Georgia,serif;margin-top:12px;max-width:310px">'+esc(r.title)+'</div></div></div>'+
-      '<div class="reco-body"><div class="label">'+esc(r.series)+'</div><div class="book">'+esc(r.title)+'</div>'+
+      '<div class="reco-body"><div class="reco-mini-cover book-cover-slot" data-book-cover data-cover-title="'+esc(r.title)+'" data-cover-author="'+esc(r.author)+'" data-cover-size="M"></div><div class="label">'+esc(r.series)+'</div><div class="book">'+esc(r.title)+'</div>'+
       '<div class="author">'+esc(r.author)+' · '+r.pages+' pages · GR '+r.gr+'★</div>'+
       '<div class="chips">'+r.tropes.slice(0,5).map(function(t){return '<span class="chip">'+esc(t)+'</span>';}).join("")+
         '<span class="chip">Spice '+r.spice+'/5</span><span class="chip">'+esc(r.dark)+'</span></div>'+
@@ -409,6 +445,7 @@ function renderDiscover(){
    }).join("");
  }
  document.getElementById("discover").innerHTML=html;
+ if(window.ReadingCovers)requestAnimationFrame(()=>window.ReadingCovers.hydrate(document.getElementById("discover")));
 }
 
 
@@ -479,11 +516,13 @@ function openBookEditor(index){
  document.getElementById("editFormat").value=b.format||"";
  document.getElementById("editNotes").value=b.notes||"";
  document.getElementById("editGoodreads").href=b.source||"#";
+ if(window.ReadingCoverManager)window.ReadingCoverManager.open(b);
  renderReadingHistory(b);
  document.getElementById("bookEditor").classList.add("show");
  document.getElementById("bookEditor").setAttribute("aria-hidden","false");
 }
 function closeBookEditor(){
+ if(window.ReadingCoverManager)window.ReadingCoverManager.close();
  document.getElementById("bookEditor").classList.remove("show");
  document.getElementById("bookEditor").setAttribute("aria-hidden","true");
  currentBookIndex=null;
@@ -661,7 +700,7 @@ bootData();
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("../service-worker-journal-v51053.js?v=51053",{updateViaCache:"none"}).catch(()=>{});
+    navigator.serviceWorker.register("../service-worker-journal-v51054.js?v=51054",{updateViaCache:"none"}).catch(()=>{});
   });
 }
 </script>
