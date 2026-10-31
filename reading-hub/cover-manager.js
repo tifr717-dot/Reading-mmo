@@ -49,15 +49,15 @@
     if(!current)return;
     const book=current;
     $('coverSearch').disabled=true;
-    $('coverResults').textContent='Searching Open Library and Google Books…';
+    $('coverResults').innerHTML='<div class="cover-search-message">Searching Open Library and Google Books…</div>';
     setNote('Searching for '+current.title+'…');
     try{
       const matches=await covers().findCandidates(book.title,book.author);
       if(current!==book)return;
       choices=matches;
       if(!choices.length){
-        $('coverResults').textContent='No reliable matches found. You can still upload a cover or paste a link.';
-        setNote('No matching covers found.','bad');
+        $('coverResults').innerHTML='<div class="cover-search-message">No reliable matches found. You can still upload a cover or paste a link.</div>';
+        setNote(covers().rateLimited()?'Google Books is temporarily rate-limited. Try again later or upload a cover.':'No matching covers found.','bad');
         return;
       }
       $('coverResults').innerHTML=choices.map((c,i)=>
@@ -69,7 +69,7 @@
       ).join('');
       setNote(choices.length+' possible covers found. Tap the exact edition you want.','ok');
     }catch(err){
-      $('coverResults').textContent='Cover search is unavailable right now. Try again, upload, or paste a link.';
+      $('coverResults').innerHTML='<div class="cover-search-message">Cover search is unavailable right now. Try again, upload, or paste a link.</div>';
       setNote(err.message||'Search failed','bad');
     }finally{$('coverSearch').disabled=false}
   }
