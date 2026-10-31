@@ -37,7 +37,7 @@
     $('coverReset').disabled=status!=='manual';
   }
   function open(book){
-    current={title:book.title||'',author:book.author||''}; choices=[];
+    current={title:book.title||'',author:book.author||'',isbn13:book.isbn13||'',isbn:book.isbn||''}; choices=[];
     $('coverResults').replaceChildren();
     $('coverPasteRow').hidden=true;
     $('coverSearch').disabled=false;
@@ -52,7 +52,7 @@
     $('coverResults').innerHTML='<div class="cover-search-message">Searching Open Library and Google Books…</div>';
     setNote('Searching for '+current.title+'…');
     try{
-      const matches=await covers().findCandidates(book.title,book.author);
+      const matches=await covers().findCandidates(book.title,book.author,book.isbn13,book.isbn);
       if(current!==book)return;
       choices=matches;
       if(!choices.length){
@@ -132,12 +132,13 @@
     const saved=all.filter(b=>['manual','found'].includes(covers().coverStatus(b.title,b.author))).length;
     const unresolved=all.filter(b=>covers().coverStatus(b.title,b.author)==='missing').length;
     const remaining=all.length-done;
+    const withISBN=all.filter(b=>b.isbn13||b.isbn).length;
     $('coverBatchCount').textContent=done+' / '+all.length+' checked';
     $('coverBatchBar').style.width=(all.length?Math.round(done/all.length*100):0)+'%';
     $('coverBatchMeta').textContent=saved+' covers found or selected · '+unresolved+' unresolved';
     $('coverBatchStatus').textContent=message||(
       remaining===0?'Scan complete! You can retry unresolved covers anytime.':
-      'Ready to search '+remaining+' unchecked books in manageable batches.'
+      'Ready to search '+remaining+' unchecked books. '+withISBN+' books have ISBN edition matching available.'
     );
     $('coverBatchStart').textContent=busy?'Importing…':remaining?'♡ Find Missing Covers ('+Math.min(BATCH_SIZE,remaining)+')':'↻ Retry Unresolved Covers';
     $('coverBatchStart').disabled=busy;
@@ -161,7 +162,10 @@
       return;
     }
     // Process current reads first while preserving existing catalog order.
-    queue=queue.sort((a,b)=>Number(b.status==='Currently Reading')-Number(a.status==='Currently Reading')).slice(0,BATCH_SIZE);
+    queue=queue.sort((a,b)=>
+      (Number(b.status==='Currently Reading')-Number(a.status==='Currently Reading'))||
+      (Number(!!(b.isbn13||b.isbn))-Number(!!(a.isbn13||a.isbn)))
+    ).slice(0,BATCH_SIZE);
     busy=true;paused=false;
     let attempts=0,found=0,failure=null,limited=false;
     for(let start=0;start<queue.length;start+=5){
