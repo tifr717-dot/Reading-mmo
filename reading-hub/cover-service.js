@@ -303,32 +303,76 @@
     return 'unsearched';
   }
 
+  function bookISBNs(book){
+    return [...new Set([book.isbn13,book.isbn].map(value=>
+      String(value||'').replace(/[^0-9X]/gi,'').toUpperCase()
+    ).filter(value=>/^(?:[0-9]{13}|[0-9]{9}[0-9X])$/.test(value)))];
+  }
+
+  async function searchBatch(query){
+    if(!await paceLookup())return null;
+    const params=new URLSearchParams({
+      q:query,
+      fields:'title,author_name,cover_i,isbn',
+      limit:'150'
+    });
+    const res=await fetch('https://openlibrary.org/search.json?'+params.toString(),{mode:'cors'});
+    if(!res.ok)throw new Error('Open Library cover search '+res.status);
+    const data=await res.json();
+    return (data.docs||[]).filter(doc=>doc.cover_i);
+  }
+
   async function batchLookup(books){
     const items=(books||[]).filter(b=>b&&b.title&&b.author).slice(0,5);
     if(!items.length)return {results:[],limited:false};
-    if(!await paceLookup())return {results:[],limited:true};
-    const terms=items.map(b=>{
-      const title=cleanTitle(b.title).replace(/["\\]/g,' ').slice(0,100).trim();
-      return 'title:"'+title+'"';
-    });
-    const q=new URLSearchParams({
-      q:terms.join(' OR '),
-      fields:'title,author_name,cover_i',
-      limit:'150'
-    });
-    const res=await fetch('https://openlibrary.org/search.json?'+q.toString(),{mode:'cors'});
-    if(!res.ok)throw new Error('Open Library batch search '+res.status);
-    const data=await res.json();
-    const docs=(data.docs||[]).filter(d=>d.cover_i);
-    const results=items.map(b=>{
-      let best=null,bestScore=0;
-      for(const d of docs){
-        const score=scoreDoc(d,b.title,b.author);
-        if(score>bestScore){bestScore=score;best=d}
+    const pending=items.filter(b=>!cachedRef(b.title,b.author));
+    const matches=new Map();
+    const isbnTerms=[...new Set(pending.flatMap(bookISBNs))];
+
+    // An ISBN identifies an edition even when subtitles and author names vary.
+    if(isbnTerms.length){
+      const docs=await searchBatch('isbn:('+isbnTerms.join(' OR ')+')');
+      if(docs===null)return {results:[],limited:true};
+      for(const book of pending){
+        const requested=new Set(bookISBNs(book));
+        if(!requested.size)continue;
+        let best=null,bestScore=-1;
+        for(const doc of docs){
+          if(!(doc.isbn||[]).some(value=>requested.has(String(value).toUpperCase())))continue;
+          const score=scoreDoc(doc,book.title,book.author);
+          if(score>bestScore){best=doc;bestScore=score}
+        }
+        if(best)matches.set(key(book.title,book.author),{ref:{coverId:best.cover_i},score:bestScore+20,source:'isbn'});
       }
-      const ref=best&&bestScore>=12?{coverId:best.cover_i}:null;
-      setRef(b.title,b.author,ref);
-      return {title:b.title,author:b.author,ref,score:bestScore};
+    }
+
+    // Fall back to the multi-title query for books without a confirmed ISBN cover.
+    const unmatched=pending.filter(book=>!matches.has(key(book.title,book.author)));
+    if(unmatched.length){
+      const terms=[...new Set(unmatched.map(book=>
+        'title:"'+cleanTitle(book.title).replace(/["\\]/g,' ').slice(0,100).trim()+'"'
+      ))];
+      const docs=await searchBatch(terms.join(' OR '));
+      if(docs===null)return {results:[],limited:true};
+      for(const book of unmatched){
+        let best=null,bestScore=0;
+        for(const doc of docs){
+          const score=scoreDoc(doc,book.title,book.author);
+          if(score>bestScore){best=doc;bestScore=score}
+        }
+        if(best&&bestScore>=12){
+          matches.set(key(book.title,book.author),{ref:{coverId:best.cover_i},score:bestScore,source:'title'});
+        }
+      }
+    }
+
+    const results=items.map(book=>{
+      const k=key(book.title,book.author),match=matches.get(k);
+      // Re-read before writing: manual choices or existing covers always win.
+      const saved=cachedRef(book.title,book.author);
+      if(!saved)setRef(book.title,book.author,match?.ref||null);
+      return {title:book.title,author:book.author,ref:saved||match?.ref||null,
+        score:match?.score||0,source:match?.source||''};
     });
     return {results,limited:false};
   }
@@ -381,7 +425,7 @@
     manualWrite(title,author,ref);
   }
   function clearManual(title,author){manualWrite(title,author,null)}
-  async function findCandidates(title,author){
+  async function findCandidates(title,author,isbn13,isbn10){
     const out=[];
     const cleaned=cleanTitle(title);
     if(!cleaned)return [];
@@ -415,6 +459,20 @@
         }
       })()
     ]);
+    const isbnTerms=bookISBNs({isbn13,isbn:isbn10});
+    if(isbnTerms.length){
+      try{
+        const docs=await searchBatch('isbn:('+isbnTerms.join(' OR ')+')');
+        if(docs){
+          for(const doc of docs){
+            if(!(doc.isbn||[]).some(value=>isbnTerms.includes(String(value).toUpperCase())))continue;
+            out.push({ref:{coverId:doc.cover_i},title:doc.title||title,
+              author:(doc.author_name||[]).join(', '),year:doc.first_publish_year||'',
+              source:'Open Library · exact ISBN',score:scoreDoc(doc,title,author)+20});
+          }
+        }
+      }catch(err){console.warn('Exact ISBN cover choices unavailable',err)}
+    }
     const seen=new Set();
     return out.sort((a,b)=>b.score-a.score).filter(item=>{
       const u=refUrl(item.ref,'M');
