@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include "MappedInputManager.h"
+#include "activities/Activity.h"
 #include "activities/ActivityManager.h"
 
 #ifndef SIMULATOR
