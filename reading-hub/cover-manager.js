@@ -156,31 +156,37 @@
       queue=all.filter(b=>!['found','manual'].includes(covers().coverStatus(b.title,b.author)));
     }
     if(!queue.length){renderBatch('Every available book already has a cover!');return}
-    if(covers().rateLimited()){renderBatch('Google Books is temporarily limiting searches. Please try again in about 15 minutes.');return}
     if(covers().remainingLookups()===0){
       renderBatch('This session’s search limit was reached. Reload the app to continue later; completed progress is saved.');
       return;
     }
-    busy=true;paused=false;let attempts=0,found=0,blocked=false;
-    queue=queue.slice(0,BATCH_SIZE);
-    for(const b of queue){
+    // Process current reads first while preserving existing catalog order.
+    queue=queue.sort((a,b)=>Number(b.status==='Currently Reading')-Number(a.status==='Currently Reading')).slice(0,BATCH_SIZE);
+    busy=true;paused=false;
+    let attempts=0,found=0,failure=null,limited=false;
+    for(let start=0;start<queue.length;start+=5){
       if(paused)break;
-      if(!covers().remainingLookups())break;
-      renderBatch('Searching '+(attempts+1)+' of '+queue.length+': '+b.title);
-      let ref=null;
-      try{ref=await covers().lookup(b.title,b.author,{force:true,googleOnly:true})}catch(err){console.warn('Batch cover lookup failed for '+b.title,err)}
-      if(covers().rateLimited()){blocked=true;break}
-      if(ref)found++;
-      state.scanned[bookId(b)]=Date.now();
+      if(covers().remainingLookups()===0){limited=true;break}
+      const group=queue.slice(start,start+5);
+      renderBatch('Matching books '+(start+1)+'–'+(start+group.length)+' of '+queue.length+'…');
+      let outcome;
+      try{outcome=await covers().batchLookup(group)}
+      catch(err){failure=err;console.warn('Reading Journal cover batch failed',err);break}
+      if(outcome.limited){limited=true;break}
+      for(const b of group){
+        const match=(outcome.results||[]).find(x=>x.title===b.title&&x.author===b.author);
+        if(match&&match.ref)found++;
+        state.scanned[bookId(b)]=Date.now();
+      }
       try{batchWrite(state)}catch(err){console.warn('Cover batch progress could not be saved',err)}
-      attempts++;
+      attempts+=group.length;
       renderBatch('Checked '+attempts+' books · '+found+' matches this batch');
     }
     busy=false;
-    if(blocked)renderBatch('Google Books temporarily limited searches. Wait about 15 minutes before retrying; your progress is safe.');
+    if(failure)renderBatch('Cover search is temporarily unavailable ('+failure.message+'). Your completed progress is saved; please try again later.');
     else if(paused)renderBatch('Paused after '+attempts+' books. Tap Find Missing Covers to continue.');
-    else if(!covers().remainingLookups())renderBatch('Session lookup limit reached. Reload the app to continue; your progress is saved.');
-    else renderBatch('Batch finished: '+found+' covers found in '+attempts+' searches. Tap again to continue.');
+    else if(limited)renderBatch('Session lookup limit reached. Reload the app to continue; your progress is saved.');
+    else renderBatch('Batch finished: '+found+' covers found in '+attempts+' checks. Tap again to continue.');
     if(window.ReadingCovers)window.ReadingCovers.hydrate(document.getElementById('library'));
   }
   function init(){
