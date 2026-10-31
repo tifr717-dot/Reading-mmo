@@ -409,7 +409,10 @@
             if(!url||scoreGoogle(item,title,author)<7)continue;
             out.push({ref:{url:String(url).replace(/^http:/,'https:').replace('&edge=curl','')},title:info.title||title,author:(info.authors||[]).join(', '),year:(info.publishedDate||'').slice(0,4),source:'Google Books',score:scoreGoogle(item,title,author)});
           }
-        }catch(err){console.warn('Cover choices from Google Books unavailable',err)}
+        }catch(err){
+          if(/(?:^|\D)429(?:\D|$)/.test(String(err.message||'')))googleLimitedUntil=Date.now()+15*60*1000;
+          console.warn('Cover choices from Google Books unavailable',err)
+        }
       })()
     ]);
     const seen=new Set();
