@@ -35,7 +35,6 @@ replace_once(
     "  SecureNet=symlink://freeink-sdk/libs/network/SecureNet\n"
     "  NearbyTransfer=symlink://freeink-sdk/libs/network/NearbyTransfer\n"
     "  BleKeyboardHost=symlink://lib/BleKeyboardHost\n"
-    "  h2zero/NimBLE-Arduino @ ^2.3.8\n",
     "BLE HID dependencies",
 )
 replace_once(

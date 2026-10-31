@@ -6,9 +6,8 @@
 // role) and exposes translated key events (printable chars + a SpecialKey enum)
 // plus scan/pair/connect controls for a settings UI. One peripheral at a time.
 //
-// Capability-gated: the real NimBLE implementation compiles only when
-// FREEINK_CAP_BLE_HID_HOST is set (and the firmware adds NimBLE-Arduino to its
-// lib_deps); otherwise every method links a stub so callers need no #ifdefs and
+// Capability-gated: the real Arduino-ESP32 BLE implementation compiles only when
+// FREEINK_CAP_BLE_HID_HOST is set (using the Arduino core BLE stack); otherwise every method links a stub so callers need no #ifdefs and
 // no BLE code is pulled in. This header is deliberately NimBLE-free so consumers
 // (and host builds) never include the BLE stack just to see the API.
 //
@@ -87,7 +86,7 @@ class BleKeyboardHost {
   bool begin(const char* hostName = "FreeInk");
 
   // Fully tear down the BLE stack: stop scanning, drop the link, delete the
-  // connection task, and NimBLEDevice::deinit() so the NimBLE host + controller
+  // connection task, and BLEDevice::deinit() so the BLE host + controller
   // RAM (tens of KB) is returned to the heap. Use this — not disconnect() — when
   // the user turns Bluetooth off, so memory-hungry work (e.g. EPUB inflate) can
   // allocate again. Bonds persist in NVS; begin() re-inits cleanly afterwards.
