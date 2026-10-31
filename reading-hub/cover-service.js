@@ -8,7 +8,20 @@
   const MAX_LOOKUPS_PER_SESSION=80;
   const LOOKUP_GAP_MS=1200;
   let lookups=0, lastLookup=0;
+  let lookupQueue=Promise.resolve();
   let cacheState=null,manualState=null;
+  async function paceLookup(){
+    const turn=lookupQueue.then(async()=>{
+      if(lookups>=MAX_LOOKUPS_PER_SESSION)return false;
+      const delay=Math.max(0,LOOKUP_GAP_MS-(Date.now()-lastLookup));
+      if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
+      if(lookups>=MAX_LOOKUPS_PER_SESSION)return false;
+      lookups++;lastLookup=Date.now();
+      return true;
+    });
+    lookupQueue=turn.then(()=>{},()=>{});
+    return turn;
+  }
   const pending=new Map();
 
   const exact={
@@ -133,9 +146,7 @@
     if(lookups>=MAX_LOOKUPS_PER_SESSION)return null;
 
     const p=(async()=>{
-      const wait=Math.max(0,LOOKUP_GAP_MS-(Date.now()-lastLookup));
-      if(wait)await new Promise(r=>setTimeout(r,wait));
-      lookups++;lastLookup=Date.now();
+      if(!await paceLookup()){pending.delete(k);return null}
       try{
         if(options.googleOnly){
           const google=await lookupGoogle(title,author);
