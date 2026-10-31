@@ -236,7 +236,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
     </div>
     <div class="card cover-batch" id="coverBatchPanel">
       <div class="cover-batch-top"><div class="cover-batch-title">♡ Your book covers</div><span id="coverBatchCount" class="cover-batch-count">0 / 592 checked</span></div>
-      <p class="cover-batch-intro">Find missing covers using Open Library's multi-book search in small, resumable batches. Your chosen covers are never replaced.</p>
+      <p class="cover-batch-intro">Find exact editions by ISBN when available, then search by title and author in small, resumable batches. Your chosen covers are never replaced.</p>
       <div class="cover-batch-track" role="progressbar" aria-label="Cover import progress"><div id="coverBatchBar" class="cover-batch-fill"></div></div>
       <div id="coverBatchMeta" class="cover-batch-meta">Checking your library…</div>
       <div id="coverBatchStatus" class="cover-batch-status" role="status">Ready to import.</div>
@@ -366,8 +366,9 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 </nav>
 <script src="./data.js"></script>
 <script src="./library-data.js"></script>
-<script src="./cover-service.js?v=51054"></script>
-<script src="./cover-manager.js?v=51054"></script>
+<script src="./isbn-index.js?v=51055"></script>
+<script src="./cover-service.js?v=51055"></script>
+<script src="./cover-manager.js?v=51055"></script>
 <script src="./reading-calendar-x4pro-v1.js"></script>
 <script>
 const titles={
@@ -705,7 +706,7 @@ bootData();
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("../service-worker-journal-v51054.js?v=51054",{updateViaCache:"none"}).catch(()=>{});
+    navigator.serviceWorker.register("../service-worker-journal-v51055.js?v=51055",{updateViaCache:"none"}).catch(()=>{});
   });
 }
 </script>
