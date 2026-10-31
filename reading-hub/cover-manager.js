@@ -156,11 +156,12 @@
       queue=all.filter(b=>!['found','manual'].includes(covers().coverStatus(b.title,b.author)));
     }
     if(!queue.length){renderBatch('Every available book already has a cover!');return}
+    if(covers().rateLimited()){renderBatch('Google Books is temporarily limiting searches. Please try again in about 15 minutes.');return}
     if(covers().remainingLookups()===0){
       renderBatch('This session’s search limit was reached. Reload the app to continue later; completed progress is saved.');
       return;
     }
-    busy=true;paused=false;let attempts=0,found=0;
+    busy=true;paused=false;let attempts=0,found=0,blocked=false;
     queue=queue.slice(0,BATCH_SIZE);
     for(const b of queue){
       if(paused)break;
@@ -168,6 +169,7 @@
       renderBatch('Searching '+(attempts+1)+' of '+queue.length+': '+b.title);
       let ref=null;
       try{ref=await covers().lookup(b.title,b.author,{force:true,googleOnly:true})}catch(err){console.warn('Batch cover lookup failed for '+b.title,err)}
+      if(covers().rateLimited()){blocked=true;break}
       if(ref)found++;
       state.scanned[bookId(b)]=Date.now();
       try{batchWrite(state)}catch(err){console.warn('Cover batch progress could not be saved',err)}
@@ -175,7 +177,8 @@
       renderBatch('Checked '+attempts+' books · '+found+' matches this batch');
     }
     busy=false;
-    if(paused)renderBatch('Paused after '+attempts+' books. Tap Find Missing Covers to continue.');
+    if(blocked)renderBatch('Google Books temporarily limited searches. Wait about 15 minutes before retrying; your progress is safe.');
+    else if(paused)renderBatch('Paused after '+attempts+' books. Tap Find Missing Covers to continue.');
     else if(!covers().remainingLookups())renderBatch('Session lookup limit reached. Reload the app to continue; your progress is saved.');
     else renderBatch('Batch finished: '+found+' covers found in '+attempts+' searches. Tap again to continue.');
     if(window.ReadingCovers)window.ReadingCovers.hydrate(document.getElementById('library'));
