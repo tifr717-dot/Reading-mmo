@@ -63,7 +63,10 @@ void workStop() { currentWork.store(WorkKind::None); }
 void bluetoothWorker(void*) {
   WorkItem item;
   for (;;) {
-    if (xQueueReceive(workQueue, &item, pdMS_TO_TICKS(60)) == pdTRUE) {
+    // With Bluetooth OFF, sleep until an explicit command. Do not wake the
+    // processor every 60 ms and waste the battery merely because ON was tried.
+    const TickType_t wait = BleHid.isRunning() ? pdMS_TO_TICKS(60) : portMAX_DELAY;
+    if (xQueueReceive(workQueue, &item, wait) == pdTRUE) {
       workStart(item.kind);
       switch (item.kind) {
         case WorkKind::Start:
