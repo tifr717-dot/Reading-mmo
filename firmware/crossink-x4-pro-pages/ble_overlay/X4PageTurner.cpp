@@ -1,6 +1,7 @@
 #include "X4PageTurner.h"
 
 #include <Arduino.h>
+#include <atomic>
 #include "MappedInputManager.h"
 #include "activities/Activity.h"
 #include "activities/ActivityManager.h"
@@ -8,19 +9,35 @@
 #ifndef SIMULATOR
 #include <BleKeyboardHost.h>
 #include <Preferences.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <freertos/task.h>
+#include <cstdio>
+#include <cstring>
 #endif
 
 namespace X4PageTurner {
 namespace {
-bool pairingOpen = false;
-// The radio defaults OFF at EVERY boot, even if the v1 NVS key was ON.
-// A crash must never persist an active BLE host into the next reading session.
-int cachedEnabled = 0;
+// Never persist Bluetooth ON: a stalled BLE stack must not break the next boot.
+std::atomic<bool> cachedEnabled{false};
+std::atomic<bool> pairingOpen{false};
 int nextKey = -1;
 int previousKey = -1;
-uint32_t lastStartAttemptMs = 0;
 
 #ifndef SIMULATOR
+enum class WorkKind : uint8_t { None = 0, Start, Stop, Scan, Connect, ForgetAll, Poll };
+struct WorkItem {
+  WorkKind kind = WorkKind::None;
+  uint32_t durationMs = 0;
+  char address[18] = {};
+};
+std::atomic<BluetoothState> currentState{BluetoothState::Off};
+std::atomic<WorkKind> currentWork{WorkKind::None};
+std::atomic<uint32_t> workStartedAt{0};
+QueueHandle_t workQueue = nullptr;
+TaskHandle_t workTask = nullptr;
+bool requestedOn = false;  // accessed only from the Arduino main input loop
+
 uint8_t readByte(const char* key, const uint8_t defaultValue = 0) {
   Preferences p;
   if (!p.begin("x4-turner", true)) return defaultValue;
@@ -34,17 +51,147 @@ void writeByte(const char* key, const uint8_t value) {
   p.putUChar(key, value);
   p.end();
 }
+void workStart(WorkKind kind) {
+  workStartedAt.store(millis());
+  currentWork.store(kind);
+}
+void workStop() { currentWork.store(WorkKind::None); }
+
+// All potentially blocking Arduino-ESP32 BLE calls run on this dedicated task.
+// BLEDevice::init() in Arduino-ESP32 3.3.7 waits without a timeout for NimBLE
+// sync; doing that in loop() permanently froze ALL e-reader buttons and menus.
+void bluetoothWorker(void*) {
+  WorkItem item;
+  for (;;) {
+    if (xQueueReceive(workQueue, &item, pdMS_TO_TICKS(60)) == pdTRUE) {
+      workStart(item.kind);
+      switch (item.kind) {
+        case WorkKind::Start:
+          currentState.store(BluetoothState::Starting);
+          if (!BleHid.isRunning()) {
+            const bool ok = BleHid.begin("X4 Pro Page Turner");
+            currentState.store(ok ? BluetoothState::Ready : BluetoothState::Failed);
+          } else {
+            currentState.store(BluetoothState::Ready);
+          }
+          break;
+        case WorkKind::Stop:
+          currentState.store(BluetoothState::Stopping);
+          if (BleHid.isRunning()) BleHid.end();
+          currentState.store(BluetoothState::Off);
+          break;
+        case WorkKind::Scan:
+          if (BleHid.isRunning()) BleHid.startScan(item.durationMs);
+          break;
+        case WorkKind::Connect:
+          if (BleHid.isRunning()) BleHid.connect(item.address);
+          break;
+        case WorkKind::ForgetAll:
+          if (BleHid.isRunning()) {
+            while (BleHid.pairedCount()) {
+              char addr[18];
+              snprintf(addr, sizeof(addr), "%s", BleHid.paired(0).addr);
+              BleHid.forget(addr);
+            }
+          }
+          break;
+        case WorkKind::None:
+        case WorkKind::Poll:
+          break;
+      }
+      workStop();
+    }
+
+    if (BleHid.isRunning()) {
+      workStart(WorkKind::Poll);
+      // No automatic reconnect: a remembered sleeping remote must never
+      // silently trigger an unbounded GATT connect. Use Scan & Pair explicitly.
+      BleHid.poll(false);
+      workStop();
+    }
+  }
+}
+
+bool ensureWorker() {
+  if (workQueue && workTask) return true;
+  if (!workQueue) workQueue = xQueueCreate(8, sizeof(WorkItem));
+  if (!workQueue) return false;
+  if (!workTask &&
+      xTaskCreate(bluetoothWorker, "x4-ble-worker", 8192, nullptr, 1, &workTask) != pdPASS) {
+    currentState.store(BluetoothState::Failed);
+    return false;
+  }
+  return true;
+}
+bool queueWork(const WorkItem& item) {
+  return workQueue && xQueueSend(workQueue, &item, 0) == pdTRUE;
+}
+bool queueSimple(WorkKind kind) {
+  WorkItem item{};
+  item.kind = kind;
+  return queueWork(item);
+}
 #endif
 }
 
-bool enabled() { return cachedEnabled == 1; }
-void setEnabled(const bool on) {
-  // Persist the remote bond + learned keys, but intentionally NEVER persist ON.
-  cachedEnabled = on ? 1 : 0;
-  if (!on) lastStartAttemptMs = 0;
+bool enabled() { return cachedEnabled.load(); }
+void setEnabled(bool on) { cachedEnabled.store(on); }
+bool pairingScreenOpen() { return pairingOpen.load(); }
+void setPairingScreenOpen(bool open) { pairingOpen.store(open); }
+
+BluetoothState bluetoothState() {
+#ifndef SIMULATOR
+  return currentState.load();
+#else
+  return BluetoothState::Off;
+#endif
 }
-bool pairingScreenOpen() { return pairingOpen; }
-void setPairingScreenOpen(const bool open) { pairingOpen = open; }
+uint8_t takeLastBluetoothTimeout() {
+#ifndef SIMULATOR
+  const uint8_t code = readByte("ble-stall", 0);
+  if (code) {
+    Preferences p;
+    if (p.begin("x4-turner", false)) {
+      p.remove("ble-stall");
+      p.end();
+    }
+  }
+  return code;
+#else
+  return 0;
+#endif
+}
+bool requestScan(uint32_t durationMs) {
+#ifndef SIMULATOR
+  if (!enabled()) return false;
+  WorkItem item{};
+  item.kind = WorkKind::Scan;
+  item.durationMs = durationMs;
+  return queueWork(item);
+#else
+  (void)durationMs;
+  return false;
+#endif
+}
+bool requestConnect(const char* address) {
+#ifndef SIMULATOR
+  if (!enabled() || !address || !*address) return false;
+  WorkItem item{};
+  item.kind = WorkKind::Connect;
+  snprintf(item.address, sizeof(item.address), "%s", address);
+  return queueWork(item);
+#else
+  (void)address;
+  return false;
+#endif
+}
+bool requestForgetAll() {
+#ifndef SIMULATOR
+  return enabled() && queueSimple(WorkKind::ForgetAll);
+#else
+  return false;
+#endif
+}
 
 uint8_t nextUsage() {
   if (nextKey == -1) {
@@ -66,42 +213,48 @@ uint8_t previousUsage() {
   }
   return static_cast<uint8_t>(previousKey);
 }
-void bindNext(const uint8_t usage) {
+void bindNext(uint8_t usage) {
   nextKey = usage;
 #ifndef SIMULATOR
   writeByte("next", usage);
 #endif
 }
-void bindPrevious(const uint8_t usage) {
+void bindPrevious(uint8_t usage) {
   previousKey = usage;
 #ifndef SIMULATOR
   writeByte("prev", usage);
 #endif
 }
 
-void service(const bool readerInFront, MappedInputManager& input) {
+void service(bool readerInFront, MappedInputManager& input) {
 #ifndef SIMULATOR
-  // OFF deinitialises Bluetooth. ON stays active across menu transitions,
-  // avoiding connection teardown when pressing the reader's Back button.
-  // Bluetooth starts OFF after every reboot; NVS retains only remote mappings.
-  // Reading Journal runs as a separate minimal-network reboot, not concurrently.
-  const bool desired = enabled();
-  if (!desired) {
-    if (BleHid.isRunning()) BleHid.end();
+  // An Arduino BLE call taking too long is never allowed to lock the UI.
+  // A controlled reboot also frees a possibly wedged BLE controller/task.
+  const auto operation = currentWork.load();
+  const uint32_t opSince = workStartedAt.load();
+  if (operation != WorkKind::None && millis() - opSince > 20000) {
+    writeByte("ble-stall", static_cast<uint8_t>(operation));
+    cachedEnabled.store(false);
+    delay(50);
+    ESP.restart();  // Bluetooth always comes back OFF after any restart.
     return;
   }
-  if (!BleHid.isRunning()) {
-    if (lastStartAttemptMs && millis() - lastStartAttemptMs < 5000) return;
-    lastStartAttemptMs = millis();
-    if (!BleHid.begin("X4 Pro Page Turner")) return;
+
+  const bool want = enabled();
+  if (want && !requestedOn) {
+    if (bluetoothState() == BluetoothState::Failed || !ensureWorker() ||
+        !queueSimple(WorkKind::Start)) {
+      cachedEnabled.store(false);
+      return;
+    }
+    requestedOn = true;
+  } else if (!want && requestedOn) {
+    if (queueSimple(WorkKind::Stop)) requestedOn = false;
   }
 
-  // BLE reconnect can block while a remote sleeps. Allow that ONLY inside
-  // this settings screen, never in the EPUB/XTC reading input loop.
-  BleHid.poll(pairingOpen);
-  if (!readerInFront || pairingOpen) {
-    if (!pairingOpen) {
-      // Drop stale remote clicks outside books; settings Learn needs its queue.
+  if (!want || !BleHid.isConnected()) return;
+  if (!readerInFront || pairingScreenOpen()) {
+    if (!pairingScreenOpen()) {
       freeink::KeyEvent ignored;
       while (BleHid.popKey(ignored)) {}
     }
@@ -138,4 +291,4 @@ void service(const bool readerInFront, MappedInputManager& input) {
   (void)input;
 #endif
 }
-}
+}  // namespace X4PageTurner
