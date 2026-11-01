@@ -18,6 +18,8 @@
 void X4PageTurnerSettingsActivity::onEnter() {
   Activity::onEnter();
   X4PageTurner::setPairingScreenOpen(true);
+  if (X4PageTurner::takeLastBluetoothTimeout())
+    notice = "Bluetooth stalled; restarted safely (OFF)";
   requestUpdate();
 }
 
@@ -35,25 +37,21 @@ void X4PageTurnerSettingsActivity::choose() {
   } else if (!X4PageTurner::enabled()) {
     notice = "Turn the page turner on first";
 #ifndef SIMULATOR
-  } else if (selection == 1 && BleHid.isRunning()) {
-    view = View::Scan;
-    scanSelection = 0;
-    scanStartedMs = millis();
-    BleHid.startScan(8000);
+  } else if (selection == 1) {
+    if (X4PageTurner::requestScan(8000)) {
+      view = View::Scan;
+      scanSelection = 0;
+      scanStartedMs = millis();
+    } else notice = "Bluetooth starting. Try Scan again.";
   } else if (selection == 2) {
     view = View::LearnNext;
     notice = "Press the remote button for NEXT";
   } else if (selection == 3) {
     view = View::LearnPrevious;
     notice = "Press the remote button for PREVIOUS";
-  } else if (selection == 4 && BleHid.isRunning()) {
-    for (int i = static_cast<int>(BleHid.pairedCount()) - 1; i >= 0; --i) {
-      const auto& device = BleHid.paired(static_cast<uint8_t>(i));
-      char addr[18];
-      snprintf(addr, sizeof(addr), "%s", device.addr);
-      BleHid.forget(addr);
-    }
-    notice = "Saved pairings removed";
+  } else if (selection == 4) {
+    notice = X4PageTurner::requestForgetAll() ? "Removing saved pairings..."
+                                                : "Bluetooth starting. Try again.";
 #endif
   } else {
     notice = "Bluetooth is starting. Try again.";
@@ -62,6 +60,13 @@ void X4PageTurnerSettingsActivity::choose() {
 }
 
 void X4PageTurnerSettingsActivity::loop() {
+#ifndef SIMULATOR
+  const int liveState = static_cast<int>(X4PageTurner::bluetoothState());
+  if (liveState != lastRuntimeState) {
+    lastRuntimeState = liveState;
+    requestUpdate();
+  }
+#endif
   if (TouchHeaderBackButton::wasTapped(mappedInput, renderer) ||
       mappedInput.wasPressed(MappedInputManager::Button::Back) ||
       mappedInput.wasReleased(MappedInputManager::Button::PageBack)) {
@@ -84,14 +89,22 @@ void X4PageTurnerSettingsActivity::loop() {
         break;
       }
     }
+    char connectionError[48];
+    if (BleHid.takeConnectFailure(connectionError, sizeof(connectionError))) {
+      view = View::Menu;
+      notice = "Connection failed: turn OFF, then ON";
+      requestUpdate();
+    }
     if (view == View::Scan && BleHid.isConnected()) {
       view = View::Menu;
       notice = "Remote connected and saved";
       requestUpdate();
     }
     const int connectionState = BleHid.isConnected() ? 2 : BleHid.isConnecting() ? 1 : 0;
-    if (connectionState != lastConnectionState) {
+    const int runtimeState = static_cast<int>(X4PageTurner::bluetoothState());
+    if (connectionState != lastConnectionState || runtimeState != lastRuntimeState) {
       lastConnectionState = connectionState;
+      lastRuntimeState = runtimeState;
       requestUpdate();
     }
     if (view == View::Scan && millis() - scanStartedMs < 10000 && millis() % 2000 < 40) requestUpdate();
@@ -125,9 +138,14 @@ void X4PageTurnerSettingsActivity::loop() {
     if (view == View::Menu) choose();
 #ifndef SIMULATOR
     else if (BleHid.deviceCount() > 0) {
-      if (!BleHid.connect(BleHid.device(static_cast<uint8_t>(scanSelection)).addr)) {
-        notice = "Connection failed: toggle OFF, then ON";
+      freeink::DiscoveredDevice selected{};
+      if (!BleHid.copyDevice(static_cast<uint8_t>(scanSelection), selected) ||
+          !X4PageTurner::requestConnect(selected.addr)) {
+        notice = "Connection queue unavailable";
         view = View::Menu;
+        requestUpdate();
+      } else {
+        notice = "Connecting in background...";
         requestUpdate();
       }
     }
@@ -139,9 +157,14 @@ void X4PageTurnerSettingsActivity::loop() {
     if (view == View::Menu) choose();
 #ifndef SIMULATOR
     else if (BleHid.deviceCount() > 0) {
-      if (!BleHid.connect(BleHid.device(static_cast<uint8_t>(scanSelection)).addr)) {
-        notice = "Connection failed: toggle OFF, then ON";
+      freeink::DiscoveredDevice selected{};
+      if (!BleHid.copyDevice(static_cast<uint8_t>(scanSelection), selected) ||
+          !X4PageTurner::requestConnect(selected.addr)) {
+        notice = "Connection queue unavailable";
         view = View::Menu;
+        requestUpdate();
+      } else {
+        notice = "Connecting in background...";
         requestUpdate();
       }
     }
@@ -169,11 +192,14 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
       renderer.drawLine(26, y + 37, width - 26, y + 37, true);
     }
 #ifndef SIMULATOR
-    const char* status = !X4PageTurner::enabled() ? "Radio off (pairings saved)" :
-        !BleHid.isRunning() ? "Starting Bluetooth..." :
+    const auto state = X4PageTurner::bluetoothState();
+    const char* status = state == X4PageTurner::BluetoothState::Failed ? "Bluetooth failed: restart device" :
+        !X4PageTurner::enabled() ? "Radio off (pairings saved)" :
+        state == X4PageTurner::BluetoothState::Stopping ? "Stopping Bluetooth..." :
+        !BleHid.isRunning() ? "Starting Bluetooth in background..." :
         BleHid.isConnected() ? "Remote connected" :
         BleHid.isConnecting() ? "Connecting to saved remote..." :
-        BleHid.pairedCount() ? "Saved remote: OFF/ON to retry" : "No remote paired";
+        BleHid.pairedCount() ? "Saved remote: Scan to connect" : "No remote paired";
     renderer.drawCenteredText(SMALL_FONT_ID, 570, status);
     renderer.drawCenteredText(SMALL_FONT_ID, 600, "Starts OFF after every restart");
 #endif
@@ -182,7 +208,8 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     renderer.drawCenteredText(UI_10_FONT_ID, 85, BleHid.isScanning() ? "Searching for Bluetooth remotes..." : "Select a device");
     const int count = std::min(5, static_cast<int>(BleHid.deviceCount()));
     for (int i = 0; i < count; ++i) {
-      const auto& item = BleHid.device(static_cast<uint8_t>(i));
+      freeink::DiscoveredDevice item{};
+      if (!BleHid.copyDevice(static_cast<uint8_t>(i), item)) continue;
       const int y = 128 + i * 82;
       renderer.drawText(UI_12_FONT_ID, 25, y, i == scanSelection ? ">" : " ", true, EpdFontFamily::BOLD);
       renderer.drawText(UI_10_FONT_ID, 58, y, item.name[0] ? item.name : item.addr, true,
