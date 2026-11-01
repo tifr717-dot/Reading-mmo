@@ -80,12 +80,19 @@ void BleKeyboardHost::end() {
   if (!begun_) return;
   // Do not keep a BLE radio or host task alive when the setting is OFF.
   if (scanning_) stopScan();
+  const bool wasConnected = activeClient && activeClient->isConnected();
   disconnect();
-  if (activeClient) {
-    delete activeClient;
-    activeClient = nullptr;
+  if (wasConnected) {
+    // Let the host task process its disconnect event before destroying its
+    // services. This is run only on an explicit OFF, never in book navigation.
+    const uint32_t limit = millis() + 250;
+    while (activeClient->isConnected() && static_cast<int32_t>(millis() - limit) < 0) delay(5);
   }
+  // Arduino-ESP32 BLEDevice owns the client returned by createClient().
+  // Its deinit() deletes that client: deleting it here would double-free the
+  // same allocation and cause multi_heap_free(head != NULL) on menu exit.
   BLEDevice::deinit(false);
+  activeClient = nullptr;
   begun_ = false;
   scanning_ = false;
   connecting_ = false;
@@ -95,11 +102,13 @@ void BleKeyboardHost::end() {
   lastReconnectMs = 0;
 }
 
-void BleKeyboardHost::poll() {
+void BleKeyboardHost::poll(bool allowReconnect) {
   if (!begun_) return;
   if (scanning_ && !BLEDevice::getScan()->isScanning()) scanning_ = false;
   if (connected_ && activeClient && !activeClient->isConnected()) onLinkDown();
-  if (scanning_ || connected_ || connecting_ || bondCount_ == 0) return;
+  // Never run a synchronous BLE connection attempt inside the book reader:
+  // a sleeping/unavailable remote must not freeze physical buttons or touch.
+  if (!allowReconnect || scanning_ || connected_ || connecting_ || bondCount_ == 0) return;
   if (lastReconnectMs && millis() - lastReconnectMs < 12000) return;
   lastReconnectMs = millis();
   connect(bonds_[0].addr);
@@ -152,12 +161,13 @@ bool BleKeyboardHost::connect(const char* addr) {
   if (scanning_) stopScan();
   connecting_ = true;
   connectFailed_ = false;
-  if (activeClient) {
-    activeClient->disconnect();
-    delete activeClient;
-    activeClient = nullptr;
-  }
-  activeClient = BLEDevice::createClient();
+  // Create one core-owned client for the lifetime of this BLE session.
+  // Reuse it on reconnect; BLEDevice::deinit() is its sole destructor.
+  if (!activeClient) activeClient = BLEDevice::createClient();
+  else if (activeClient->isConnected()) {
+    onConnectFailed("Disconnect the current remote first");
+    return false;
+  } else activeClient->clearServices();
   if (!activeClient) {
     onConnectFailed("No BLE client memory");
     return false;
@@ -340,7 +350,7 @@ namespace freeink {
 BleKeyboardHost& BleKeyboardHost::getInstance() { static BleKeyboardHost host; return host; }
 bool BleKeyboardHost::begin(const char*) { return false; }
 void BleKeyboardHost::end() {}
-void BleKeyboardHost::poll() {}
+void BleKeyboardHost::poll(bool) {}
 void BleKeyboardHost::startScan(uint32_t) {}
 void BleKeyboardHost::stopScan() {}
 void BleKeyboardHost::releaseScanResults() {}

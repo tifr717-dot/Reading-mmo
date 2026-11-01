@@ -1,0 +1,200 @@
+name: Build X4 Pro Bluetooth Page Turner v2
+
+on:
+  push:
+    branches:
+      - x4pro-bluetooth-page-turner-v2
+    paths:
+      - ".github/workflows/build-x4pro-bluetooth-page-turner-v2.yml"
+      - "firmware/crossink-x4-pro-pages/apply_pages_x4pro.py"
+      - "firmware/crossink-x4-pro-pages/apply_daily_reading_log.py"
+      - "firmware/crossink-x4-pro-pages/apply_reading_mmo_selective_sync.py"
+      - "firmware/crossink-x4-pro-pages/dashboard_overlay/**"
+      - "firmware/crossink-x4-pro-pages/ble_overlay/**"
+      - "firmware/crossink-x4-pro-pages/apply_bluetooth_page_turner.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CROSSINK_COMMIT: 7a092e8822c9c90e8beecacd317acc13d3e24dfb
+  FREEINK_COMMIT: 9f4d3f9ca675e64cc9d616081f39a33cdefce57e
+  BUILD_VERSION: 1.5.1-dev13-selective-sync-bt-v2
+  BUILD_ENV: x4-pro
+
+jobs:
+  build-dashboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout dashboard inputs
+        uses: actions/checkout@v6
+
+      - name: Fetch pinned CrossInk X4 Pro source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone https://github.com/uxjulia/CrossInk.git crossink
+          cd crossink
+          git checkout --detach "$CROSSINK_COMMIT"
+          git submodule update --init --recursive
+          test "$(git rev-parse HEAD)" = "$CROSSINK_COMMIT"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$FREEINK_COMMIT"
+          grep -q '^\[env:x4-pro\]' platformio.ini
+          grep -q 'FREEINK_DEVICE_X4PRO=1' platformio.ini
+          sha256sum partitions.csv > "$GITHUB_WORKSPACE/protected-x4-pro.sha256"
+
+      - name: Apply Pages and dashboard transforms
+        shell: bash
+        run: |
+          set -euo pipefail
+          python firmware/crossink-x4-pro-pages/apply_pages_x4pro.py
+          python firmware/crossink-x4-pro-pages/apply_daily_reading_log.py
+          python firmware/crossink-x4-pro-pages/apply_reading_mmo_selective_sync.py
+          python firmware/crossink-x4-pro-pages/apply_bluetooth_page_turner.py
+          cd crossink
+          git diff --check
+          grep -q 'STR_STATS_PAGES_LBL: "Pages"' lib/I18n/translations/english.yaml
+          grep -q 'ReadingDailyStats' src/activities/reader/EpubReaderActivity.cpp
+          grep -q 'sessionForwardPages' src/activities/reader/XtcReaderActivity.h
+          test -f src/activities/reader/ReadingDailyStats.cpp
+          test -f src/activities/reader/DailyReadingLog.cpp
+          test -f src/activities/reader/DailyReadingLogView.cpp
+          grep -q 'DRL2' src/activities/reader/DailyReadingLog.cpp
+          grep -q 'startingXtePage' src/activities/reader/DailyReadingLog.h
+          grep -q 'dailyLogSessionDay' src/activities/reader/EpubReaderActivity.cpp
+          grep -q 'DailyReadingLog' src/activities/reader/EpubReaderActivity.cpp
+          grep -q 'DailyReadingLog' src/activities/reader/XtcReaderActivity.cpp
+          test -f src/X4PageTurner.cpp
+          test -f src/activities/settings/X4PageTurnerSettingsActivity.cpp
+          test -f lib/BleKeyboardHost/src/BleKeyboardHost.cpp
+          grep -q 'STR_BLUETOOTH_PAGE_TURNER' lib/I18n/translations/english.yaml
+          test -f src/activities/network/ReadingMmoBleSyncActivity.cpp
+          grep -q 'BLEDevice::startAdvertising()' src/activities/network/ReadingMmoBleSyncActivity.cpp
+          grep -q 'Pick a Range' src/activities/network/ReadingMmoBleSyncActivity.cpp
+          grep -q 'MAX_RANGE_DAYS = 14' src/activities/network/ReadingMmoBleSyncActivity.cpp
+          grep -q 'NetworkBootTarget::READING_MMO_SYNC' src/main.cpp
+          grep -q 'Reading Journal' src/activities/home/HomeActivity.cpp
+          if grep -A2 '^lib_ignore =' platformio.ini | grep -q '^  BLE$'; then
+            echo 'BLE is still ignored in platformio.ini'
+            exit 1
+          fi
+          grep -q 'X4PageTurner::service' src/main.cpp
+          grep -q 'BleHid.poll(pairingOpen)' src/X4PageTurner.cpp
+          grep -q 'int cachedEnabled = 0' src/X4PageTurner.cpp
+          if grep -q 'delete activeClient' lib/BleKeyboardHost/src/BleKeyboardHost.cpp; then
+            echo 'Unsafe BLEClient double deletion detected'
+            exit 1
+          fi
+          git diff --stat
+
+      - name: Verify X4 Pro hardware inputs untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd crossink
+          sha256sum -c "$GITHUB_WORKSPACE/protected-x4-pro.sha256"
+          test "$(git -C freeink-sdk rev-parse HEAD)" = "$FREEINK_COMMIT"
+          git diff --exit-code -- partitions.csv freeink-sdk
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-crossink-x4-pro-selective-sync-${{ env.CROSSINK_COMMIT }}
+          restore-keys: |
+            ${{ runner.os }}-crossink-x4-pro-
+
+      - name: Install PlatformIO Core
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv pip install --system -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.1.19.zip
+          pio --version
+
+      - name: Build X4 Pro selective sync firmware
+        shell: bash
+        env:
+          CROSSINK_RELEASE_VERSION: ${{ env.BUILD_VERSION }}
+        run: |
+          set -euo pipefail
+          cd crossink
+          pio run -j1 -e "$BUILD_ENV" | tee "$GITHUB_WORKSPACE/x4-pro-selective-sync-build.log"
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          mapfile -t versioned < <(find ".pio/build/$BUILD_ENV" -maxdepth 1 -type f -name 'firmware-x4-pro-v*.bin' -print | sort)
+          if [ "${#versioned[@]}" -ne 1 ]; then
+            echo "Expected one versioned X4 Pro firmware, found ${#versioned[@]}"
+            printf '%s\n' "${versioned[@]}"
+            exit 1
+          fi
+          cp "${versioned[0]}" "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.bin"
+          sha256sum "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.bin" > "$GITHUB_WORKSPACE/out/SHA256SUMS.txt"
+          stat -c '%s' "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.bin" > "$GITHUB_WORKSPACE/out/FIRMWARE-SIZE.txt"
+          cp ".pio/build/$BUILD_ENV/firmware.elf" "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.elf"
+          if test -f ".pio/build/$BUILD_ENV/firmware.map"; then
+            cp ".pio/build/$BUILD_ENV/firmware.map" "$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.map"
+          fi
+
+      - name: Write build info
+        shell: bash
+        run: |
+          set -euo pipefail
+          firmware="$GITHUB_WORKSPACE/out/firmware-x4-pro-v${BUILD_VERSION}.bin"
+          {
+            echo "CrossInk X4 Pro Reading Journal selective sync development build"
+            echo "CrossInk commit: $CROSSINK_COMMIT"
+            echo "FreeInk SDK commit: $FREEINK_COMMIT"
+            echo "Build version: $BUILD_VERSION"
+            echo "Firmware bytes: $(stat -c '%s' "$firmware")"
+            echo "Firmware SHA-256: $(sha256sum "$firmware" | awk '{print $1}')"
+            echo
+            echo "Development features:"
+            echo "- current whole-book Pages plumbing"
+            echo "- lifetime Pages restored"
+            echo "- original 14-day analytics store preserved"
+            echo "- per-book/day XTE pages, active minutes, and ending progress"
+            echo "- DEV12 DRL1 read compatibility and safe DRL2 migration"
+            echo "- daily start/end XTE positions, progress gains, and session counts"
+            echo "- improved footer and book-count grammar"
+            echo "- full-screen date browser accessible from Stats pages"
+            echo "- independent recoverable SD reading_log directory"
+            echo "- EPUB/XTC session page and reading-time capture"
+            echo "- global_stats.bin format intentionally unchanged"
+            echo "- Home -> Reading Journal selector"
+            echo "- Today, Yesterday, Pick a Day, and Pick a Range"
+            echo "- protocol 5 compact multi-day diary payload"
+            echo "- 14-day selector safety limit plus payload-size refusal"
+            echo "- BLE starts only after the selected range is confirmed and a minimal network reboot"
+            echo "- BLE host remains active only while explicitly toggled ON (not on menu exit)"
+            echo "- radio always starts OFF after reboot, even after a previous crash"
+            echo "- BLE reconnect is allowed only in Settings, never in the reader event loop"
+            echo "- Arduino BLEDevice owns client cleanup; v1 double-free removed"
+            echo "- firmware ELF and optional map supplied for future crash symbolication"
+            echo "- remote pairing and learned next/previous key usage persist in NVS"
+          } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
+
+      - name: Upload selective sync artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: crossink-x4-pro-dev13-selective-sync-bt-v2
+          path: |
+            out/firmware-x4-pro-v1.5.1-dev13-selective-sync-bt-v2.bin
+            out/firmware-x4-pro-v1.5.1-dev13-selective-sync-bt-v2.elf
+            out/firmware-x4-pro-v1.5.1-dev13-selective-sync-bt-v2.map
+            out/SHA256SUMS.txt
+            out/FIRMWARE-SIZE.txt
+            out/BUILD-INFO.txt
+            x4-pro-selective-sync-build.log
+          if-no-files-found: error
+          retention-days: 14

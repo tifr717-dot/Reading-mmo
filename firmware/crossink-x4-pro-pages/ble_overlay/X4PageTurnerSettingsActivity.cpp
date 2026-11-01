@@ -63,7 +63,8 @@ void X4PageTurnerSettingsActivity::choose() {
 
 void X4PageTurnerSettingsActivity::loop() {
   if (TouchHeaderBackButton::wasTapped(mappedInput, renderer) ||
-      mappedInput.wasPressed(MappedInputManager::Button::Back)) {
+      mappedInput.wasPressed(MappedInputManager::Button::Back) ||
+      mappedInput.wasReleased(MappedInputManager::Button::PageBack)) {
     if (view == View::Menu) close();
     else view = View::Menu;
     requestUpdate();
@@ -162,6 +163,7 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
         BleHid.isConnecting() ? "Connecting to saved remote..." :
         BleHid.pairedCount() ? "Remote saved; reconnecting" : "No remote paired";
     renderer.drawCenteredText(SMALL_FONT_ID, 570, status);
+    renderer.drawCenteredText(SMALL_FONT_ID, 600, "Starts OFF after every restart");
 #endif
   } else if (view == View::Scan) {
 #ifndef SIMULATOR
@@ -181,9 +183,10 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     renderer.drawCenteredText(UI_10_FONT_ID, 215, "Bluetooth unavailable in simulator");
 #endif
   } else {
-    renderer.drawCenteredText(UI_12_FONT_ID, 190, "Press a button on your remote", true, EpdFontFamily::BOLD);
+    renderer.drawCenteredText(UI_12_FONT_ID, 190, "Press a Bluetooth remote button", true, EpdFontFamily::BOLD);
     renderer.drawCenteredText(UI_10_FONT_ID, 245,
                               view == View::LearnNext ? "Assign NEXT page" : "Assign PREVIOUS page");
+    renderer.drawCenteredText(UI_10_FONT_ID, 295, "Press X4 Back or Previous to cancel");
   }
   renderer.drawCenteredText(SMALL_FONT_ID, 630, notice);
   const auto hints = mappedInput.mapLabels(mappedInput.withBackArrow("Back"), "Select", "Up", "Down");

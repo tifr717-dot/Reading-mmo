@@ -13,10 +13,11 @@
 namespace X4PageTurner {
 namespace {
 bool pairingOpen = false;
-int cachedEnabled = -1;
+// The radio defaults OFF at EVERY boot, even if the v1 NVS key was ON.
+// A crash must never persist an active BLE host into the next reading session.
+int cachedEnabled = 0;
 int nextKey = -1;
 int previousKey = -1;
-int cachedBond = -1;
 uint32_t lastStartAttemptMs = 0;
 
 #ifndef SIMULATOR
@@ -33,40 +34,17 @@ void writeByte(const char* key, const uint8_t value) {
   p.putUChar(key, value);
   p.end();
 }
-bool hasBond() {
-  if (cachedBond != -1) return cachedBond == 1;
-  Preferences p;
-  if (!p.begin("freeink-hid", true)) return false;
-  cachedBond = p.getUChar("n", 0) > 0 ? 1 : 0;
-  p.end();
-  return cachedBond == 1;
-}
 #endif
 }
 
-bool enabled() {
-  if (cachedEnabled == -1) {
-#ifdef SIMULATOR
-    cachedEnabled = 0;
-#else
-    cachedEnabled = readByte("enabled", 0) ? 1 : 0;
-#endif
-  }
-  return cachedEnabled == 1;
-}
+bool enabled() { return cachedEnabled == 1; }
 void setEnabled(const bool on) {
+  // Persist the remote bond + learned keys, but intentionally NEVER persist ON.
   cachedEnabled = on ? 1 : 0;
-#ifndef SIMULATOR
-  writeByte("enabled", static_cast<uint8_t>(on));
-#endif
+  if (!on) lastStartAttemptMs = 0;
 }
 bool pairingScreenOpen() { return pairingOpen; }
-void setPairingScreenOpen(const bool open) {
-#ifndef SIMULATOR
-  if (pairingOpen && !open) cachedBond = -1;
-#endif
-  pairingOpen = open;
-}
+void setPairingScreenOpen(const bool open) { pairingOpen = open; }
 
 uint8_t nextUsage() {
   if (nextKey == -1) {
@@ -103,10 +81,11 @@ void bindPrevious(const uint8_t usage) {
 
 void service(const bool readerInFront, MappedInputManager& input) {
 #ifndef SIMULATOR
-  // Off means no scanning, no connection, and a fully deinitialised controller.
-  // A saved bond is retained in NVS for next time. Network-mode Reading Journal
-  // never opens this host, so its existing BLE server has exclusive radio use.
-  const bool desired = enabled() && (pairingOpen || (readerInFront && hasBond()));
+  // OFF deinitialises Bluetooth. ON stays active across menu transitions,
+  // avoiding connection teardown when pressing the reader's Back button.
+  // Bluetooth starts OFF after every reboot; NVS retains only remote mappings.
+  // Reading Journal runs as a separate minimal-network reboot, not concurrently.
+  const bool desired = enabled();
   if (!desired) {
     if (BleHid.isRunning()) BleHid.end();
     return;
@@ -117,8 +96,17 @@ void service(const bool readerInFront, MappedInputManager& input) {
     if (!BleHid.begin("X4 Pro Page Turner")) return;
   }
 
-  BleHid.poll();
-  if (!readerInFront || pairingOpen) return;
+  // BLE reconnect can block while a remote sleeps. Allow that ONLY inside
+  // this settings screen, never in the EPUB/XTC reading input loop.
+  BleHid.poll(pairingOpen);
+  if (!readerInFront || pairingOpen) {
+    if (!pairingOpen) {
+      // Drop stale remote clicks outside books; settings Learn needs its queue.
+      freeink::KeyEvent ignored;
+      while (BleHid.popKey(ignored)) {}
+    }
+    return;
+  }
 
   freeink::KeyEvent key;
   while (BleHid.popKey(key)) {

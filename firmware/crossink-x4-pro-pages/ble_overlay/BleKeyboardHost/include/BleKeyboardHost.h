@@ -95,7 +95,7 @@ class BleKeyboardHost {
 
   // Pump per main-loop iteration: drives auto-reconnect and key auto-repeat.
   // Cheap; never blocks.
-  void poll();
+  void poll(bool allowReconnect);
 
   // True while the NimBLE stack is initialized (between a successful begin() and
   // end()). Lets the app gate CPU-frequency and lifecycle decisions on whether BLE
