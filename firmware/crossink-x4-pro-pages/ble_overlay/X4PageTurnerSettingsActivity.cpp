@@ -18,7 +18,12 @@
 void X4PageTurnerSettingsActivity::onEnter() {
   Activity::onEnter();
   X4PageTurner::setPairingScreenOpen(true);
-  if (X4PageTurner::takeLastBluetoothTimeout())
+  const uint8_t lastStall = X4PageTurner::takeLastBluetoothTimeout();
+  if (lastStall == 12)
+    notice = "BLE controller did not sync (stage 2)";
+  else if (lastStall >= 11 && lastStall <= 15)
+    notice = "Bluetooth startup failed; recovered OFF";
+  else if (lastStall)
     notice = "Bluetooth stalled; restarted safely (OFF)";
   requestUpdate();
 }
@@ -32,8 +37,12 @@ void X4PageTurnerSettingsActivity::close() { finish(); }
 
 void X4PageTurnerSettingsActivity::choose() {
   if (selection == 0) {
-    X4PageTurner::setEnabled(!X4PageTurner::enabled());
-    notice = X4PageTurner::enabled() ? "Enabled: connect a remote" : "Off: no Bluetooth power used";
+    const bool enabling = !X4PageTurner::enabled();
+    X4PageTurner::setEnabled(enabling);
+    notice = enabling
+        ? (X4PageTurner::enableRestartPending() ? "Restarting once to start Bluetooth..."
+                                                : "Could not schedule Bluetooth startup")
+        : "Off: no Bluetooth power used";
   } else if (!X4PageTurner::enabled()) {
     notice = "Turn the page turner on first";
 #ifndef SIMULATOR
@@ -193,7 +202,8 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     }
 #ifndef SIMULATOR
     const auto state = X4PageTurner::bluetoothState();
-    const char* status = state == X4PageTurner::BluetoothState::Failed ? "Bluetooth failed: restart device" :
+    const char* status = X4PageTurner::enableRestartPending() ? "Restarting for early Bluetooth startup..." :
+        state == X4PageTurner::BluetoothState::Failed ? "Bluetooth failed: restart device" :
         !X4PageTurner::enabled() ? "Radio off (pairings saved)" :
         state == X4PageTurner::BluetoothState::Stopping ? "Stopping Bluetooth..." :
         !BleHid.isRunning() ? "Starting Bluetooth in background..." :
@@ -201,7 +211,7 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
         BleHid.isConnecting() ? "Connecting to saved remote..." :
         BleHid.pairedCount() ? "Saved remote: Scan to connect" : "No remote paired";
     renderer.drawCenteredText(SMALL_FONT_ID, 570, status);
-    renderer.drawCenteredText(SMALL_FONT_ID, 600, "Starts OFF after every restart");
+    renderer.drawCenteredText(SMALL_FONT_ID, 600, "ON needs one restart; normal boots start OFF");
 #endif
   } else if (view == View::Scan) {
 #ifndef SIMULATOR
