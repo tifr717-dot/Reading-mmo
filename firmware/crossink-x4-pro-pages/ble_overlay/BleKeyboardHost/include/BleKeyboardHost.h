@@ -108,6 +108,8 @@ class BleKeyboardHost {
   bool isScanning() const { return scanning_; }
   uint8_t deviceCount() const { return deviceCount_; }
   const DiscoveredDevice& device(uint8_t i) const;
+  // Safe snapshot while the BLE callback task updates the scan list.
+  bool copyDevice(uint8_t i, DiscoveredDevice& out) const;
   // Free scan bookkeeping after connecting, to reclaim RAM while writing.
   void releaseScanResults();
 
@@ -168,7 +170,7 @@ class BleKeyboardHost {
   volatile bool connectFailed_ = false;
   volatile bool pairingPasskeyReady_ = false;
   volatile bool scanning_ = false;
-  bool begun_ = false;
+  volatile bool begun_ = false;  // read by the UI, written by BLE worker
 
   // Key auto-repeat: HID delivers one report per state change, so holding a key
   // (backspace, arrows) only sends a single press. The backend records the held
