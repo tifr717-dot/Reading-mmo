@@ -161,13 +161,16 @@ bool BleKeyboardHost::connect(const char* addr) {
   if (scanning_) stopScan();
   connecting_ = true;
   connectFailed_ = false;
-  // Create one core-owned client for the lifetime of this BLE session.
-  // Reuse it on reconnect; BLEDevice::deinit() is its sole destructor.
-  if (!activeClient) activeClient = BLEDevice::createClient();
-  else if (activeClient->isConnected()) {
-    onConnectFailed("Disconnect the current remote first");
+  // Create one core-owned client per explicit ON session.
+  // BLEDevice::deinit() is its sole destructor.
+  if (activeClient) {
+    // The core retains client-owned service maps across a disconnect and
+    // does not expose a safe reset API. Do not reuse stale GATT objects:
+    // require an explicit OFF/ON cycle so BLEDevice::deinit() frees them.
+    onConnectFailed("Turn OFF then ON to retry");
     return false;
-  } else activeClient->clearServices();
+  }
+  activeClient = BLEDevice::createClient();
   if (!activeClient) {
     onConnectFailed("No BLE client memory");
     return false;

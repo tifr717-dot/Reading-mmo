@@ -124,7 +124,13 @@ void X4PageTurnerSettingsActivity::loop() {
     else selection = std::clamp((y - 115) / 82, 0, maxIndex);
     if (view == View::Menu) choose();
 #ifndef SIMULATOR
-    else if (BleHid.deviceCount() > 0) BleHid.connect(BleHid.device(static_cast<uint8_t>(scanSelection)).addr);
+    else if (BleHid.deviceCount() > 0) {
+      if (!BleHid.connect(BleHid.device(static_cast<uint8_t>(scanSelection)).addr)) {
+        notice = "Connection failed: toggle OFF, then ON";
+        view = View::Menu;
+        requestUpdate();
+      }
+    }
 #endif
     return;
   }
@@ -132,7 +138,13 @@ void X4PageTurnerSettingsActivity::loop() {
   if (mappedInput.wasPressed(MappedInputManager::Button::Confirm)) {
     if (view == View::Menu) choose();
 #ifndef SIMULATOR
-    else if (BleHid.deviceCount() > 0) BleHid.connect(BleHid.device(static_cast<uint8_t>(scanSelection)).addr);
+    else if (BleHid.deviceCount() > 0) {
+      if (!BleHid.connect(BleHid.device(static_cast<uint8_t>(scanSelection)).addr)) {
+        notice = "Connection failed: toggle OFF, then ON";
+        view = View::Menu;
+        requestUpdate();
+      }
+    }
 #endif
   }
 }
@@ -161,7 +173,7 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
         !BleHid.isRunning() ? "Starting Bluetooth..." :
         BleHid.isConnected() ? "Remote connected" :
         BleHid.isConnecting() ? "Connecting to saved remote..." :
-        BleHid.pairedCount() ? "Remote saved; reconnecting" : "No remote paired";
+        BleHid.pairedCount() ? "Saved remote: OFF/ON to retry" : "No remote paired";
     renderer.drawCenteredText(SMALL_FONT_ID, 570, status);
     renderer.drawCenteredText(SMALL_FONT_ID, 600, "Starts OFF after every restart");
 #endif
