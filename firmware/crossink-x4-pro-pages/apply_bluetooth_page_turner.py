@@ -146,6 +146,12 @@ replace_once(
     "#ifdef SIMULATOR\n",
     "main remote input service",
 )
+replace_once(
+    main,
+    "  if (userInputReceived || activityManager.preventAutoSleep()) {",
+    "  if (userInputReceived || activityManager.preventAutoSleep() || X4PageTurner::enabled()) {",
+    "keep BLE at normal CPU frequency only while explicitly ON",
+)
 
 assert (dst / "src/BleKeyboardHost.cpp").exists()
 assert "BleKeyboardHost" in pio.read_text()
