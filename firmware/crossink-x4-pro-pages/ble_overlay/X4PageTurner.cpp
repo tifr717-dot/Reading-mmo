@@ -21,6 +21,8 @@ namespace {
 // Never persist Bluetooth ON: a stalled BLE stack must not break the next boot.
 std::atomic<bool> cachedEnabled{false};
 std::atomic<bool> pairingOpen{false};
+// A requested ON safely reboots once, so BLE can claim RAM before the reader.
+std::atomic<uint32_t> enableRestartAt{0};
 int nextKey = -1;
 int previousKey = -1;
 
@@ -37,6 +39,29 @@ std::atomic<uint32_t> workStartedAt{0};
 QueueHandle_t workQueue = nullptr;
 TaskHandle_t workTask = nullptr;
 bool requestedOn = false;  // accessed only from the Arduino main input loop
+
+bool saveEarlyBootRequest() {
+  Preferences p;
+  if (!p.begin("x4-turner", false)) return false;
+  const bool ok = p.putBool("boot-on", true) == 1;
+  p.end();
+  return ok;
+}
+bool consumeEarlyBootRequest() {
+  Preferences p;
+  if (!p.begin("x4-turner", false)) return false;
+  const bool wasRequested = p.getBool("boot-on", false);
+  if (wasRequested) p.remove("boot-on");
+  const bool consumed = !p.getBool("boot-on", false);
+  p.end();
+  return wasRequested && consumed;
+}
+void cancelEarlyBootRequest() {
+  Preferences p;
+  if (!p.begin("x4-turner", false)) return;
+  p.remove("boot-on");
+  p.end();
+}
 
 uint8_t readByte(const char* key, const uint8_t defaultValue = 0) {
   Preferences p;
@@ -137,8 +162,52 @@ bool queueSimple(WorkKind kind) {
 #endif
 }
 
-bool enabled() { return cachedEnabled.load(); }
-void setEnabled(bool on) { cachedEnabled.store(on); }
+bool enabled() { return cachedEnabled.load() || enableRestartPending(); }
+bool enableRestartPending() { return enableRestartAt.load() != 0; }
+void setEnabled(bool on) {
+#ifndef SIMULATOR
+  if (on) {
+    if (cachedEnabled.load() || enableRestartPending()) return;
+    // Never start BLE in a process that already loaded books and menus.
+    if (saveEarlyBootRequest()) enableRestartAt.store(millis() + 1800);
+  } else {
+    enableRestartAt.store(0);
+    cancelEarlyBootRequest();
+    cachedEnabled.store(false);
+  }
+#else
+  cachedEnabled.store(on);
+#endif
+}
+
+void earlyStartIfRequested(bool safeBoot) {
+#ifndef SIMULATOR
+  // Consume before starting: a failure always returns to Bluetooth-OFF.
+  if (!consumeEarlyBootRequest()) return;
+  if (!safeBoot) return;  // Never compete with Reading Journal network BLE.
+  cachedEnabled.store(true);
+  if (!ensureWorker() || !queueSimple(WorkKind::Start)) {
+    cachedEnabled.store(false);
+    writeByte("ble-stall", 1);
+    return;
+  }
+  requestedOn = true;
+  // Initialize before SD, fonts, and reader workspaces consume internal RAM.
+  const uint32_t start = millis();
+  while (millis() - start < 12000) {
+    const auto state = bluetoothState();
+    if (state == BluetoothState::Ready) return;
+    if (state == BluetoothState::Failed) break;
+    delay(20);
+  }
+  writeByte("ble-stall", static_cast<uint8_t>(10 + BleHid.startupStage()));
+  cachedEnabled.store(false);
+  delay(50);
+  ESP.restart();
+#else
+  (void)safeBoot;
+#endif
+}
 bool pairingScreenOpen() { return pairingOpen.load(); }
 void setPairingScreenOpen(bool open) { pairingOpen.store(open); }
 
@@ -231,19 +300,29 @@ void bindPrevious(uint8_t usage) {
 
 void service(bool readerInFront, MappedInputManager& input) {
 #ifndef SIMULATOR
+  // The explicit ON command schedules a clean early-start reboot.
+  const uint32_t restart = enableRestartAt.load();
+  if (restart && static_cast<int32_t>(millis() - restart) >= 0) {
+    enableRestartAt.store(0);
+    delay(50);
+    ESP.restart();
+    return;
+  }
   // An Arduino BLE call taking too long is never allowed to lock the UI.
   // A controlled reboot also frees a possibly wedged BLE controller/task.
   const auto operation = currentWork.load();
   const uint32_t opSince = workStartedAt.load();
   if (operation != WorkKind::None && millis() - opSince > 20000) {
-    writeByte("ble-stall", static_cast<uint8_t>(operation));
+    writeByte("ble-stall", operation == WorkKind::Start
+                               ? static_cast<uint8_t>(10 + BleHid.startupStage())
+                               : static_cast<uint8_t>(operation));
     cachedEnabled.store(false);
     delay(50);
     ESP.restart();  // Bluetooth always comes back OFF after any restart.
     return;
   }
 
-  const bool want = enabled();
+  const bool want = cachedEnabled.load();
   if (want && !requestedOn) {
     if (bluetoothState() == BluetoothState::Failed || !ensureWorker() ||
         !queueSimple(WorkKind::Start)) {
