@@ -23,6 +23,7 @@ class X4PageTurnerSettingsActivity final : public Activity {
   int selection = 0;
   int scanSelection = 0;
   int lastConnectionState = -1;
+  int lastRuntimeState = -1;
   uint32_t scanStartedMs = 0;
   const char* notice = "";
   void choose();
