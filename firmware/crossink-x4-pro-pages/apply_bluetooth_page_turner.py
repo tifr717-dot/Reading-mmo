@@ -148,6 +148,19 @@ replace_once(
 )
 replace_once(
     main,
+    "  if (!isSilentReboot || snapshotTarget != SILENT_REBOOT_TARGET_READER) {\n"
+    "    clearSilentRestartReaderPageBuild();\n"
+    "  }\n\n"
+    "  gpio.begin();",
+    "  if (!isSilentReboot || snapshotTarget != SILENT_REBOOT_TARGET_READER) {\n"
+    "    clearSilentRestartReaderPageBuild();\n"
+    "  }\n\n"
+    "  X4PageTurner::earlyStartIfRequested(!isNetworkResume && !rebootedFromPanic);\n"
+    "  gpio.begin();",
+    "early BLE startup before normal reader heap allocations",
+)
+replace_once(
+    main,
     "  if (userInputReceived || activityManager.preventAutoSleep()) {",
     "  if (userInputReceived || activityManager.preventAutoSleep() || X4PageTurner::enabled()) {",
     "keep BLE at normal CPU frequency only while explicitly ON",
