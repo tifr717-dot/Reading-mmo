@@ -101,6 +101,7 @@ class BleKeyboardHost {
   // end()). Lets the app gate CPU-frequency and lifecycle decisions on whether BLE
   // is actually resident, independent of the user's on/off preference.
   bool isRunning() const { return begun_; }
+  uint8_t startupStage() const { return startupStage_; }
 
   // --- Discovery -------------------------------------------------------------
   void startScan(uint32_t ms = 5000);
@@ -171,6 +172,7 @@ class BleKeyboardHost {
   volatile bool pairingPasskeyReady_ = false;
   volatile bool scanning_ = false;
   volatile bool begun_ = false;  // read by the UI, written by BLE worker
+  volatile uint8_t startupStage_ = 0;  // 1=NVS, 2=NimBLE sync, 3=security, 4=scan, 5=ready
 
   // Key auto-repeat: HID delivers one report per state change, so holding a key
   // (backspace, arrows) only sends a single press. The backend records the held
