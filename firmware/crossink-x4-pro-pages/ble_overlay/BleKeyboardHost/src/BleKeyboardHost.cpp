@@ -60,9 +60,13 @@ BleKeyboardHost& BleKeyboardHost::getInstance() {
 
 bool BleKeyboardHost::begin(const char* hostName) {
   if (begun_) return true;
+  startupStage_ = 1;
   loadBonds();
+  startupStage_ = 2;
   if (!BLEDevice::init(hostName)) return false;
+  startupStage_ = 3;
   BLESecurity::setAuthenticationMode(true, false, true);  // Just Works bonding.
+  startupStage_ = 4;
   BLEScan* scan = BLEDevice::getScan();
   if (!scan) {
     BLEDevice::deinit(false);
@@ -73,6 +77,7 @@ bool BleKeyboardHost::begin(const char* hostName) {
   scan->setWindow(64);
   scan->setAdvertisedDeviceCallbacks(&scanCallbacks);
   begun_ = true;
+  startupStage_ = 5;
   return true;
 }
 
@@ -100,6 +105,7 @@ void BleKeyboardHost::end() {
   ringHead_ = ringTail_ = 0;
   heldUsage_ = 0;
   lastReconnectMs = 0;
+  startupStage_ = 0;
 }
 
 void BleKeyboardHost::poll(bool allowReconnect) {
