@@ -119,7 +119,9 @@ void BleKeyboardHost::startScan(uint32_t ms) {
   BLEScan* scan = BLEDevice::getScan();
   if (!scan) return;
   if (scanning_) scan->stop();
+  portENTER_CRITICAL(&keyMux);
   deviceCount_ = 0;
+  portEXIT_CRITICAL(&keyMux);
   scan->clearResults();
   scanning_ = scan->start(std::max(uint32_t(1), (ms + 999) / 1000), scanComplete);
 }
@@ -131,11 +133,20 @@ void BleKeyboardHost::releaseScanResults() {
   if (!begun_) return;
   if (scanning_) stopScan();
   BLEDevice::getScan()->clearResults();
+  portENTER_CRITICAL(&keyMux);
   deviceCount_ = 0;
+  portEXIT_CRITICAL(&keyMux);
 }
 const DiscoveredDevice& BleKeyboardHost::device(uint8_t i) const {
   static const DiscoveredDevice empty;
   return i < deviceCount_ ? devices_[i] : empty;
+}
+bool BleKeyboardHost::copyDevice(uint8_t i, DiscoveredDevice& out) const {
+  portENTER_CRITICAL(&keyMux);
+  const bool found = i < deviceCount_;
+  if (found) out = devices_[i];
+  portEXIT_CRITICAL(&keyMux);
+  return found;
 }
 
 bool BleKeyboardHost::connect(const char* addr) {
@@ -255,10 +266,17 @@ void BleKeyboardHost::onPairingPasskey(uint32_t) {}
 void BleKeyboardHost::onScanResultIngest(const char* addr, const char* name, int rssi,
                                         uint8_t type, bool hid, bool connectable) {
   if (!scanning_ || !connectable || !addr) return;
+  portENTER_CRITICAL(&keyMux);
   for (uint8_t i = 0; i < deviceCount_; ++i) {
-    if (strcmp(devices_[i].addr, addr) == 0) return;
+    if (strcmp(devices_[i].addr, addr) == 0) {
+      portEXIT_CRITICAL(&keyMux);
+      return;
+    }
   }
-  if (deviceCount_ >= kMaxDiscovered) return;
+  if (deviceCount_ >= kMaxDiscovered) {
+    portEXIT_CRITICAL(&keyMux);
+    return;
+  }
   auto& found = devices_[deviceCount_++];
   snprintf(found.addr, sizeof(found.addr), "%s", addr);
   snprintf(found.name, sizeof(found.name), "%s", name && *name ? name : addr);
@@ -267,6 +285,7 @@ void BleKeyboardHost::onScanResultIngest(const char* addr, const char* name, int
   found.hasName = name && *name;
   found.hid = hid;
   found.connectable = connectable;
+  portEXIT_CRITICAL(&keyMux);
 }
 void BleKeyboardHost::loadBonds() {
   bondCount_ = 0;
@@ -358,6 +377,7 @@ void BleKeyboardHost::startScan(uint32_t) {}
 void BleKeyboardHost::stopScan() {}
 void BleKeyboardHost::releaseScanResults() {}
 const DiscoveredDevice& BleKeyboardHost::device(uint8_t) const { static DiscoveredDevice e; return e; }
+bool BleKeyboardHost::copyDevice(uint8_t, DiscoveredDevice&) const { return false; }
 bool BleKeyboardHost::connect(const char*) { return false; }
 void BleKeyboardHost::disconnect() {}
 const PairedHidDevice& BleKeyboardHost::paired(uint8_t) const { static PairedHidDevice e; return e; }
