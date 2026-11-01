@@ -10,6 +10,9 @@ namespace X4PageTurner {
 // All BLE operations execute on a separate low-priority FreeRTOS task.
 enum class BluetoothState : uint8_t { Off, Starting, Ready, Stopping, Failed };
 BluetoothState bluetoothState();
+// A user ON command requests a one-shot clean reboot for early BLE startup.
+void earlyStartIfRequested(bool safeBoot);
+bool enableRestartPending();
 uint8_t takeLastBluetoothTimeout();
 bool requestScan(uint32_t durationMs = 8000);
 bool requestConnect(const char* address);
