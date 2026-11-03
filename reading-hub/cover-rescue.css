@@ -29,3 +29,5 @@
 .cover-rescue-pages button:disabled{opacity:.4}
 .cover-rescue-empty{color:#7e6758;font-size:11px}
 @media(max-width:360px){.cover-rescue-choices{grid-template-columns:repeat(3,minmax(0,1fr))}.cover-rescue-title{font-size:17px}.cover-rescue-actions button{font-size:10px;padding:8px}}
+.cover-rescue-choice small{display:block;color:#876d5a;font-size:9px;font-weight:600;line-height:1.2;padding:0 2px 4px;word-break:break-word}
+.cover-rescue-dismiss{display:block;border:1px solid #b99c7d;border-radius:9px;background:#fff8e8;color:#694637;padding:8px 11px;margin-top:8px;font-size:10px;font-weight:800}

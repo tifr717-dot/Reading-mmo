@@ -31,6 +31,25 @@
     if(!state.suggestions||typeof state.suggestions!=='object')state.suggestions={};
     if(!Number.isFinite(state.autoFound))state.autoFound=0;
     if(!Number.isFinite(state.approved))state.approved=0;
+    // Version 2 disqualifies same-title books by the wrong author. Recheck
+    // those books without touching covers the reader has already approved.
+    if(state.matchVersion!==2){
+      const catalog=new Map(books().map(book=>[bookId(book),book]));
+      let removed=0;
+      for(const [id,list] of Object.entries(state.suggestions)){
+        const book=catalog.get(id);
+        const safe=book&&Array.isArray(list)?list.map(item=>makeCandidate(book,item)).filter(Boolean):[];
+        if(safe.length)state.suggestions[id]=safe;
+        else{
+          delete state.suggestions[id];
+          delete state.scanned[id];
+          removed++;
+        }
+      }
+      state.filteredWrong=removed;
+      state.matchVersion=2;
+      try{localStorage.setItem(STATE_KEY,JSON.stringify(state))}catch(_){}
+    }
     return state;
   }
   function save(state){localStorage.setItem(STATE_KEY,JSON.stringify(state))}
@@ -53,7 +72,9 @@
     if(!actual)return 0;
     for(const v of variants){
       if(v===actual)return 16;
-      if(v.length>=8&&(actual.startsWith(v+' ')||v.startsWith(actual+' ')))return 13;
+      if(v.length>=8&&actual.length>=8&&
+        Math.min(v.length,actual.length)/Math.max(v.length,actual.length)>=.75&&
+        (actual.startsWith(v+' ')||v.startsWith(actual+' ')))return 13;
     }
     const base=variants[0]||'';
     const a=new Set(base.split(' ').filter(x=>x.length>2));
@@ -67,15 +88,20 @@
     const a=norm(wanted),b=norm(found),desc=norm(description);
     if(!a)return 0;
     if(b===a||desc.includes(a))return 8;
-    const words=a.split(' ').filter(Boolean),surname=words[words.length-1];
-    if(surname&&surname.length>2&&(b.split(' ').includes(surname)||desc.split(' ').includes(surname)))return 5;
+    const words=a.split(' ').filter(Boolean),candidateWords=b.split(' ').filter(Boolean);
+    const surname=words[words.length-1],initial=(words[0]||'')[0];
+    const surnameAtEnd=candidateWords[candidateWords.length-1]===surname;
+    const reversed=candidateWords[0]===surname&&candidateWords.slice(1).some(x=>x[0]===initial);
+    if(surname&&surname.length>2&&initial&&
+      ((surnameAtEnd&&candidateWords[0][0]===initial)||reversed))return 5;
     return 0;
   }
   function candidateScore(book,candidate){
     const title=titleScore(book.title,candidate.title);
     const author=authorScore(book.author,candidate.author,candidate.description);
     if(candidate.isbnMatch)return 40+title+author;
-    if(!title)return 0;
+    // A matching title alone is not evidence of the correct book.
+    if(title<10||author===0)return 0;
     return title+author;
   }
   function imageURL(ref){
@@ -254,9 +280,11 @@
           '<div class="cover-rescue-choices">'+list.map((choice,index)=>
             '<button type="button" class="cover-rescue-choice" data-rescue-pick="'+escapeHtml(id)+'" data-rescue-index="'+index+'" aria-label="Save '+escapeHtml(choice.title)+' from '+escapeHtml(choice.source)+'">'+
             '<img src="'+escapeHtml(imageURL(choice.ref))+'" alt="Potential cover" loading="lazy" referrerpolicy="no-referrer">'+
-            '<span>'+escapeHtml(choice.source)+'</span></button>'
+            '<span>'+escapeHtml(choice.source)+'</span>'+
+            '<small>'+escapeHtml(choice.author||String(choice.description||'').replace(/^.*?\bby\s+/i,''))+'</small></button>'
           ).join('')+'</div>'+
-          '<div class="cover-rescue-review-tip">Tap the cover that matches your edition. Or open this book for upload/link options.</div>'+
+          '<div class="cover-rescue-review-tip">Tap the correct cover, or open this book for upload/link options.</div>'+
+          '<button type="button" class="cover-rescue-dismiss" data-rescue-dismiss="'+escapeHtml(id)+'">None of these covers</button>'+
         '</div>';
       }).join('')+
       '<div class="cover-rescue-pages">'+
@@ -277,6 +305,8 @@
     $('coverRescueReview').disabled=!reviews&&!reviewOpen;
     $('coverRescueRetry').disabled=busy;
     if(message)$('coverRescueStatus').textContent=message;
+    else if(state.filteredWrong>0)$('coverRescueStatus').textContent=
+      'Removed '+state.filteredWrong+' suggestions with unverified authors. Those books are ready to search again.';
     else if(!remaining)$('coverRescueStatus').textContent=reviews?
       'Search complete. Review the possible covers below.':
       'All currently unresolved books have had a second search.';
@@ -333,6 +363,14 @@
       render('♡ '+book.title+' cover saved on this device!');
     }catch(err){render('Could not save this cover: '+(err.message||'storage error'))}
   }
+  function dismiss(id){
+    const state=read(),book=books().find(x=>bookId(x)===id);
+    if(!book||!state.suggestions[id])return;
+    delete state.suggestions[id];
+    state.scanned[id]=Date.now();
+    save(state);
+    render('No cover selected for '+book.title+'. You can choose one manually or retry later.');
+  }
   function reset(){
     if(busy)return;
     const state=read();
@@ -351,6 +389,8 @@
     $('coverRescueReviewPane').addEventListener('click',event=>{
       const choice=event.target.closest('[data-rescue-pick]');
       if(choice){choose(choice.dataset.rescuePick,Number(choice.dataset.rescueIndex));return}
+      const rejected=event.target.closest('[data-rescue-dismiss]');
+      if(rejected){dismiss(rejected.dataset.rescueDismiss);return}
       if(event.target.closest('#coverRescuePrevious')){reviewPage--;render();return}
       if(event.target.closest('#coverRescueNext')){reviewPage++;render()}
     });
