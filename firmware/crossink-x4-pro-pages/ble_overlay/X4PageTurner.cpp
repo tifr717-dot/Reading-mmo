@@ -29,10 +29,11 @@ int nextMods = -1;
 int previousMods = -1;
 
 #ifndef SIMULATOR
-enum class WorkKind : uint8_t { None = 0, Start, Stop, Scan, Connect, ForgetAll, Poll };
+enum class WorkKind : uint8_t { None = 0, Start, Stop, Scan, Connect, ForgetAll, Poll, ProtocolMode };
 struct WorkItem {
   WorkKind kind = WorkKind::None;
   uint32_t durationMs = 0;
+  uint8_t protocolMode = 1;
   char address[18] = {};
 };
 std::atomic<BluetoothState> currentState{BluetoothState::Off};
@@ -115,6 +116,9 @@ void bluetoothWorker(void*) {
           break;
         case WorkKind::Connect:
           if (BleHid.isRunning()) BleHid.connect(item.address);
+          break;
+        case WorkKind::ProtocolMode:
+          if (BleHid.isConnected()) BleHid.setProtocolMode(item.protocolMode);
           break;
         case WorkKind::ForgetAll:
           if (BleHid.isRunning()) {
@@ -256,6 +260,18 @@ bool requestConnect(const char* address) {
   return queueWork(item);
 #else
   (void)address;
+  return false;
+#endif
+}
+bool requestProtocolMode(uint8_t mode) {
+#ifndef SIMULATOR
+  if (!enabled() || mode > 1 || !BleHid.isConnected()) return false;
+  WorkItem item{};
+  item.kind = WorkKind::ProtocolMode;
+  item.protocolMode = mode;
+  return queueWork(item);
+#else
+  (void)mode;
   return false;
 #endif
 }
