@@ -90,6 +90,27 @@ async function loadEditions(workKey){
   title:x.title||'',pages:Number(x.number_of_pages),isbn:(x.isbn_13||[])[0]||'',url:'https://openlibrary.org'+x.key,source:'Open Library',status:'Confirmed print edition'
  }));
 }
+function coverForEdition(title,author,isbn){
+ const svc=window.ReadingCovers;
+ if(!svc)return {status:'unavailable'};
+ const existing=svc.cachedRef(title,author);
+ if(existing)return {status:'preserved'};
+ const clean=safeText(isbn).replace(/[^0-9X]/gi,'');
+ if(!/^(?:[0-9]{13}|[0-9]{9}[0-9X])$/.test(clean))return {status:'no-isbn'};
+ const added=svc.saveAuto(title,author,{isbn:clean});
+ return {status:added?'linked':'preserved'};
+}
+function editionCoverPreview(container,title,author,isbn){
+ container.replaceChildren();
+ const holder=document.createElement('div');holder.style.cssText='display:flex;align-items:center;gap:12px;margin:8px 0';
+ const preview=document.createElement('div');preview.className='book-cover-slot';preview.style.cssText='width:68px;height:100px;flex:0 0 68px;border-radius:8px;background:#593747;color:#fff;display:flex;align-items:center;justify-content:center;font:12px Georgia,serif;text-align:center';preview.textContent='BOOK COVER';
+ const desc=document.createElement('div');desc.style.cssText='font-size:12px;line-height:1.5';desc.textContent='Your existing cover will be preserved. If none is saved, we can use the selected edition ISBN to find one.';holder.append(preview,desc);container.appendChild(holder);
+ const covers=window.ReadingCovers;
+ if(!covers)return;
+ const ref=covers.cachedRef(title,author)||(/^[0-9]{13}$/.test(isbn)?{isbn}:null);
+ const url=covers.refUrl(ref,'M');
+ if(url){const img=new Image();img.onload=()=>{preview.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';preview.style.backgroundSize='cover';preview.textContent=''};img.src=url;}
+}
 function makeSelect(options){const el=document.createElement('select');el.style.cssText='width:100%;max-width:100%;padding:10px;border-radius:9px;background:#382733;color:#fff;margin:6px 0';options.forEach((o,i)=>{const op=document.createElement('option');op.value=String(i);op.textContent=o;el.appendChild(op)});return el}
 function field(label,value){const wrap=document.createElement('label');wrap.style.cssText='display:block;margin:8px 0;color:#f5e6ee';wrap.textContent=label;const input=document.createElement('input');input.value=value||'';input.style.cssText='display:block;width:100%;box-sizing:border-box;padding:10px;border-radius:9px;background:#382733;color:#fff;border:1px solid #95718a';wrap.appendChild(input);return [wrap,input]}
 function createMatcher(container){
@@ -111,6 +132,11 @@ function createMatcher(container){
   const [printWrap,printInput]=field('Print edition pages',edition?.pages||'');printInput.type='number';printInput.min='1';result.appendChild(printWrap);
   const [ebookWrap,ebookInput]=field('Ebook edition pages (optional)', '');ebookInput.type='number';ebookInput.min='1';result.appendChild(ebookWrap);
   const [isbnWrap,isbnInput]=field('ISBN-13 (optional)',edition?.isbn||'');result.appendChild(isbnWrap);
+  const coverBox=document.createElement('div');result.appendChild(coverBox);
+  const previewCover=()=>editionCoverPreview(coverBox,titleInput.value,authorInput.value,isbnInput.value);
+  previewCover();
+  isbnInput.addEventListener('change',previewCover);
+  authorInput.addEventListener('change',previewCover);
   const save=document.createElement('button');save.type='button';save.textContent='♡ Save Edition to Google Sheets';save.style.cssText='padding:12px;border-radius:10px;background:#713e61;color:white;margin-top:8px';result.appendChild(save);
   save.addEventListener('click',async()=>{
    if(!token){notice.textContent='Connect Google Sheets first.';return;}
@@ -118,7 +144,9 @@ function createMatcher(container){
    if(!printPages&&!ebookPages){notice.textContent='Enter at least one page count.';return;}
    if((printPages&&!Number.isInteger(printPages))||(ebookPages&&!Number.isInteger(ebookPages))){notice.textContent='Page counts must be whole numbers.';return;}
    save.disabled=true;notice.textContent='Saving edition and calculating page equivalents…';
-   try{await updateEdition(book({title:bookSelect.value})[0],{title:titleInput.value,author:authorInput.value,printPages,ebookPages,isbn:isbnInput.value,source:edition?.source||'Manual',url:edition?.url||'',status:edition?'Confirmed selected edition':'Manually entered edition'});notice.textContent='♡ Edition saved! Existing session page estimates updated in Google Sheets.';refresh()}
+   try{await updateEdition(book({title:bookSelect.value})[0],{title:titleInput.value,author:authorInput.value,printPages,ebookPages,isbn:isbnInput.value,source:edition?.source||'Manual',url:edition?.url||'',status:edition?'Confirmed selected edition':'Manually entered edition'});const coverResult=coverForEdition(bookSelect.value,authorInput.value,isbnInput.value);
+   previewCover();
+   notice.textContent='♡ Edition saved! Page estimates updated. '+(coverResult.status==='linked'?'Edition cover linked to your existing cover system.':coverResult.status==='preserved'?'Your chosen cover was kept.':'You can still use Find Covers in Library.');refresh()}
    catch(e){notice.textContent='Could not save: '+e.message}
    finally{save.disabled=false}
   });
