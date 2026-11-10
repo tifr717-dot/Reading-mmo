@@ -32,6 +32,8 @@ class X4PageTurnerSettingsActivity final : public Activity {
   uint8_t testerLastModifiers = 0;
   uint8_t testerLastProtocolStatus = 0xFF;
   uint8_t testerLastProtocolMode = 0xFF;
+  uint8_t testerLastProbeCompleted = 0xFF;
+  uint8_t testerLastProbeErrors = 0xFF;
   const char* notice = "";
   void choose();
   void close();
