@@ -85,6 +85,18 @@ struct HidConnectionDiagnostics {
   uint8_t reportReferenceCount = 0;
   uint16_t channelHandles[3] = {0};
   uint32_t channelReports[3] = {0};
+  // Safe one-shot asynchronous GATT readback; 0xFFFF = not read / unknown.
+  uint16_t cccdReadback[3] = {0xFFFF, 0xFFFF, 0xFFFF};
+  uint8_t reportId[3] = {0xFF, 0xFF, 0xFF};
+  uint8_t reportType[3] = {0xFF, 0xFF, 0xFF};
+  uint8_t protocolReadback = 0xFF;
+  uint8_t mapPrefix[12] = {0};
+  uint8_t mapPrefixLength = 0;
+  uint8_t probeRequested = 0;
+  uint8_t probeCompleted = 0;
+  uint8_t probeErrors = 0;
+  uint8_t probeTimeouts = 0;
+  uint16_t probeLastStatus = 0;
 };
 
 // A BLE device seen during a scan.
@@ -181,6 +193,9 @@ class BleKeyboardHost {
   // these plain calls. -------------------------------------------------------
   void onScanResultIngest(const char* addr, const char* name, int rssi, uint8_t type, bool hid, bool connectable);
   void onReportIngest(const uint8_t* data, size_t len, uint16_t handle = 0);
+  // NimBLE GATT completion callback hands plain bytes to our spinlock-safe snapshot.
+  void onDiagnosticReadIngest(uint8_t kind, uint8_t channel, uint16_t status,
+                              const uint8_t* data, size_t length);
   void onLinkUp(const char* addr, const char* name, uint8_t type);
   void onLinkDown();
   void onConnectFailed(const char* reason);
