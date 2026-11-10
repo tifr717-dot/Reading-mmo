@@ -20,6 +20,7 @@
 
   function writeLogs(rows) {
     localStorage.setItem(LOG_KEY, JSON.stringify(rows));
+    window.dispatchEvent(new Event('reading-mmo-log-changed'));
   }
 
   function importedIds() {
