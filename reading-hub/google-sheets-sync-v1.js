@@ -77,9 +77,19 @@ async function updateEdition(bookId,entry){
  const choices=selectedEditions();choices[bookId]=entry;localStorage.setItem(editionCacheKey,JSON.stringify(choices));
 }
 async function lookupBook(title,author){
- const url='https://openlibrary.org/search.json?title='+encodeURIComponent(title)+(author?'&author='+encodeURIComponent(author):'')+'&fields=key,title,author_name&limit=5';
- const res=await fetch(url);if(!res.ok)throw Error('Book search unavailable');
- const data=await res.json();return (data.docs||[]).filter(x=>x.key&&x.title);
+ const clean=safeText(title).replace(/:\s*(a novel|novel)\s*$/i,'').trim();
+ const queries=[{title:clean,author},{title:clean},{q:clean+' '+author},{q:clean}];
+ for(const q of queries){
+  const params=new URLSearchParams({...q,fields:'key,title,author_name',limit:'12'});
+  try{
+   const res=await fetch('https://openlibrary.org/search.json?'+params.toString());
+   if(!res.ok)continue;
+   const data=await res.json();
+   const matches=(data.docs||[]).filter(x=>x.key&&x.title);
+   if(matches.length)return matches.slice(0,8);
+  }catch(_){}
+ }
+ return [];
 }
 async function loadEditions(workKey){
  if(!workKey.startsWith('/works/OL')||!workKey.endsWith('W')||!/^OL[0-9]+W$/.test(workKey.slice(7)))throw Error('Invalid book record');
@@ -115,10 +125,10 @@ function makeSelect(options){const el=document.createElement('select');el.style.
 function field(label,value){const wrap=document.createElement('label');wrap.style.cssText='display:block;margin:8px 0;color:#f5e6ee';wrap.textContent=label;const input=document.createElement('input');input.value=value||'';input.style.cssText='display:block;width:100%;box-sizing:border-box;padding:10px;border-radius:9px;background:#382733;color:#fff;border:1px solid #95718a';wrap.appendChild(input);return [wrap,input]}
 function createMatcher(container){
  const section=document.createElement('section');section.style.cssText='margin-top:16px;padding:14px;border:1px solid #795568;border-radius:14px';
- const heading=document.createElement('div');heading.textContent='♡ Match Book Editions';heading.style.cssText='font-weight:700;margin-bottom:8px';section.appendChild(heading);
- const help=document.createElement('div');help.textContent='Choose a book, search Open Library, then confirm the edition or enter a page count manually.';help.style.cssText='font-size:12px;margin-bottom:8px';section.appendChild(help);
+ const heading=document.createElement('div');heading.textContent='♡ Find Book';heading.style.cssText='font-weight:700;margin-bottom:8px';section.appendChild(heading);
+ const help=document.createElement('div');help.textContent='Find a book once to match its cover, author, ISBN and print or ebook page count. Your chosen covers stay protected.';help.style.cssText='font-size:12px;margin-bottom:8px';section.appendChild(help);
  const bookSelect=makeSelect([]);section.appendChild(bookSelect);
- const search=document.createElement('button');search.type='button';search.textContent='Find Editions';search.style.cssText='padding:10px;border-radius:10px;background:#673b57;color:white;margin:6px 0';section.appendChild(search);
+ const search=document.createElement('button');search.type='button';search.textContent='♡ Find Book';search.style.cssText='padding:10px;border-radius:10px;background:#673b57;color:white;margin:6px 0';section.appendChild(search);
  const result=document.createElement('div');section.appendChild(result);
  const notice=document.createElement('div');notice.style.cssText='font-size:12px;margin-top:6px';section.appendChild(notice);
  function refresh(){
@@ -137,7 +147,7 @@ function createMatcher(container){
   previewCover();
   isbnInput.addEventListener('change',previewCover);
   authorInput.addEventListener('change',previewCover);
-  const save=document.createElement('button');save.type='button';save.textContent='♡ Save Edition to Google Sheets';save.style.cssText='padding:12px;border-radius:10px;background:#713e61;color:white;margin-top:8px';result.appendChild(save);
+  const save=document.createElement('button');save.type='button';save.textContent='♡ Save Book & Edition';save.style.cssText='padding:12px;border-radius:10px;background:#713e61;color:white;margin-top:8px';result.appendChild(save);
   save.addEventListener('click',async()=>{
    if(!token){notice.textContent='Connect Google Sheets first.';return;}
    const printPages=Number(printInput.value)||0,ebookPages=Number(ebookInput.value)||0;
