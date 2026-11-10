@@ -279,13 +279,11 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
   </section>
 
   <section id="calendar" class="screen">
-    <div class="section-title">Reading Calendar</div>
-    <div class="section-copy">Your X4 Pro diary and manual reading logs, organized by day.</div>
     <div class="card dark x4-sync-card">
-      <div class="label" style="color:#c7ad9f">X4 Pro sync</div>
+      
       <div class="x4-sync-row"><button id="x4SyncButton" type="button">🔵 Sync X4 Pro</button></div>
-      <div id="x4SyncStatus" class="x4-sync-status">Choose the day or range on your X4 Pro, then connect here to import it.</div>
-      <div style="margin-top:12px"><button id="readingBackupDownload" type="button" style="padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff;font-weight:700">♡ Backup Reading Data</button><div id="readingBackupStatus" role="status" style="margin-top:6px;font-size:12px;color:#d8c5cf">Download a private JSON backup before enabling cloud sync.</div></div>
+      <div id="x4SyncStatus" class="x4-sync-status" style="font-size:12px;padding:5px 0;background:transparent;border:0">Ready to import from X4 Pro.</div>
+      <div style="margin-top:12px"><button id="readingBackupDownload" type="button" style="padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff;font-weight:700">♡ Backup Reading Data</button><div id="readingBackupStatus" role="status" style="margin-top:6px;font-size:12px;color:#d8c5cf">Keep a copy of your reading history.</div></div>
     </div>
     <div class="calendar-head"><button id="calendarPrev" type="button">‹</button><div id="calendarMonthLabel" class="calendar-month"></div><button id="calendarNext" type="button">›</button></div>
     <div class="stats calendar-stats">
