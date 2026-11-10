@@ -82,7 +82,7 @@ async function lookupBook(title,author){
  const data=await res.json();return (data.docs||[]).filter(x=>x.key&&x.title);
 }
 async function loadEditions(workKey){
- if(!/^\\/works\\/OL\\d+W$/.test(workKey))throw Error('Invalid book record');
+ if(!workKey.startsWith('/works/OL')||!workKey.endsWith('W')||!/^OL[0-9]+W$/.test(workKey.slice(7)))throw Error('Invalid book record');
  const res=await fetch('https://openlibrary.org'+workKey+'/editions.json?limit=100');
  if(!res.ok)throw Error('Edition list unavailable');
  const data=await res.json();
