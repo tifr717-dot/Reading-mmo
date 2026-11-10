@@ -285,6 +285,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
       <div class="label" style="color:#c7ad9f">X4 Pro sync</div>
       <div class="x4-sync-row"><button id="x4SyncButton" type="button">🔵 Sync X4 Pro</button></div>
       <div id="x4SyncStatus" class="x4-sync-status">Choose the day or range on your X4 Pro, then connect here to import it.</div>
+      <div style="margin-top:12px"><button id="readingBackupDownload" type="button" style="padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff;font-weight:700">♡ Backup Reading Data</button><div id="readingBackupStatus" role="status" style="margin-top:6px;font-size:12px;color:#d8c5cf">Download a private JSON backup before enabling cloud sync.</div></div>
     </div>
     <div class="calendar-head"><button id="calendarPrev" type="button">‹</button><div id="calendarMonthLabel" class="calendar-month"></div><button id="calendarNext" type="button">›</button></div>
     <div class="stats calendar-stats">
@@ -774,6 +775,30 @@ try{localStorage.setItem(key,JSON.stringify([...rows,row]));window.ReadingCalend
 });
 });
 window.openQuickLog=openQuickLog;
+})();
+</script>
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded',function(){
+    const button=document.getElementById('readingBackupDownload');
+    if(!button)return;
+    button.addEventListener('click',function(){
+      const status=document.getElementById('readingBackupStatus');
+      try{
+        const keys=['readingHubDailyLogV1','readingHubX4ProImportsV1','readingHubLibraryEditsV1','readingHubReadingHistoryV1'];
+        const stored={};
+        for(const key of keys){const value=localStorage.getItem(key);if(value!==null)stored[key]=JSON.parse(value);}
+        const rows=stored.readingHubDailyLogV1;
+        if(!Array.isArray(rows))throw new Error('Reading sessions not found; nothing downloaded.');
+        const backup={format:'reading-mmo-local-backup',version:1,exportedAt:new Date().toISOString(),storage:stored};
+        const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+        const url=URL.createObjectURL(blob);
+        const link=document.createElement('a');link.href=url;link.download='reading-mmo-backup-'+new Date().toISOString().slice(0,10)+'.json';
+        document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+        status.textContent='♡ Backup prepared: '+rows.length+' sessions. Keep this file private and safe.';
+      }catch(error){status.textContent='Backup failed: '+(error.message||String(error));}
+    });
+  });
 })();
 </script>
 </body></html>
