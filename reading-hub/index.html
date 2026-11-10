@@ -390,7 +390,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./cover-rescue.js?v=51057"></script>
 <script src="./reading-calendar-x4pro-v1.js?v=completion-fix-1"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="./google-sheets-sync-v1.js?v=6"></script>
+<script src="./google-sheets-sync-v1.js?v=7"></script>
 <script>
 const titles={
  home:["Good evening, Tiff ✦","Your reading life, without the spreadsheet look."],
@@ -763,7 +763,7 @@ function closeQuickLog(){$('quickLogModal').classList.remove('open')}
 document.addEventListener('DOMContentLoaded',()=>{
 const home=$('home'),cal=$('calendar');
 if(home){const b=document.createElement('button');b.className='quick-log-launch';b.textContent='♡ + Log Reading';b.onclick=()=>openQuickLog();const stats=home.querySelector('.stats');(stats||home).insertAdjacentElement('afterend',b)}
-if(cal){const b=document.createElement('button');b.className='quick-log-launch';b.textContent='♡ + Log Reading Session';b.onclick=()=>openQuickLog();const heading=cal.querySelector('.section-copy');(heading||cal.firstElementChild).insertAdjacentElement('afterend',b)}
+
 $('quickLogClose').onclick=closeQuickLog;
 $('quickLogModal').addEventListener('click',e=>{if(e.target===$('quickLogModal'))closeQuickLog()});
 $('quickLogForm').addEventListener('submit',e=>{
