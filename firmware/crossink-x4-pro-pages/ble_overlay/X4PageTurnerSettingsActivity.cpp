@@ -80,7 +80,7 @@ void X4PageTurnerSettingsActivity::choose() {
     testerLastReports = report.count;
     testerLastProtocolStatus = 0xFF;
     testerLastProtocolMode = 0xFF;
-    notice = "Tap NEXT/PREV; Confirm changes HID mode";
+    notice = "Tap NEXT/PREV, then switch mode below";
   } else if (selection == 5) {
     notice = X4PageTurner::requestForgetAll() ? "Removing saved pairings..."
                                                 : "Bluetooth starting. Try again.";
@@ -180,7 +180,16 @@ void X4PageTurnerSettingsActivity::loop() {
 #endif
   if (view == View::Tester) {
 #ifndef SIMULATOR
-    if (mappedInput.wasPressed(MappedInputManager::Button::Confirm)) {
+    // X4 Pro is primarily touch-driven: don't require a physical Confirm key.
+    // The visible bottom action has a generous full-width tap target.
+    bool tappedModeSwitch = false;
+#if CROSSINK_APP_CAP_TOUCH
+    int tapX = 0, tapY = 0;
+    tappedModeSwitch = mappedInput.wasScreenTapped(tapX, tapY) &&
+                       tapX >= 30 && tapX < renderer.getScreenWidth() - 30 &&
+                       tapY >= 510 && tapY <= 575;
+#endif
+    if (tappedModeSwitch || mappedInput.wasPressed(MappedInputManager::Button::Confirm)) {
       freeink::HidConnectionDiagnostics diag{};
       BleHid.copyConnectionDiagnostics(diag);
       if (!BleHid.isConnected()) notice = "Connect the remote first";
@@ -334,7 +343,7 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     BleHid.copyConnectionDiagnostics(diag);
     const uint32_t sinceOpen = report.count - testerStartReports;
     char line[96];
-    renderer.drawCenteredText(UI_12_FONT_ID, 102, "Button Input Tester v8", true, EpdFontFamily::BOLD);
+    renderer.drawCenteredText(UI_12_FONT_ID, 102, "Button Input Tester v8.1", true, EpdFontFamily::BOLD);
     const char* security = "Not attempted";
     switch (diag.securityState) {
       case 1: security = "Pairing requested"; break;
@@ -395,7 +404,10 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
                testerLastUsage, testerLastModifiers);
       renderer.drawCenteredText(SMALL_FONT_ID, 505, line);
     } else renderer.drawCenteredText(SMALL_FONT_ID, 505, "No key decoded");
-    renderer.drawCenteredText(UI_10_FONT_ID, 540, "Confirm: switch Boot / Report");
+    // Draw a large, clearly tappable action across the bottom of the tester.
+    renderer.drawLine(30, 518, width - 30, 518, true);
+    renderer.drawCenteredText(UI_10_FONT_ID, 540, "Tap to switch Boot / Report");
+    renderer.drawLine(30, 571, width - 30, 571, true);
     renderer.drawCenteredText(SMALL_FONT_ID, 579,
                               BleHid.isConnected() ? "Link: connected" : "Link: not connected");
 #else
