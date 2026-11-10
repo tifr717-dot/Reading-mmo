@@ -236,8 +236,15 @@ function boot(){
  const syncBtn=document.createElement('button');syncBtn.type='button';syncBtn.textContent='↻ Sync Now';syncBtn.style.cssText='margin-left:8px;padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff';
  syncBtn.addEventListener('click',()=>{if(!token)connect();else sync();});wrap.appendChild(syncBtn);
  const status=document.createElement('div');status.id='readingGoogleStatus';status.setAttribute('role','status');status.style.cssText='margin-top:8px;font-size:12px;color:#d8c5cf';status.textContent='Connect once per authorization session to upload your reading history.';wrap.appendChild(status);
- container.appendChild(wrap);
- createMatcher(container);
+ const toolsPanel=document.createElement('details');
+ toolsPanel.style.cssText='margin-top:14px;border:1px solid #795568;border-radius:14px;padding:12px';
+ const toolsTitle=document.createElement('summary');toolsTitle.textContent='♡ Reading Tools · Find Book, Google Sheets & Backup';toolsTitle.style.cssText='cursor:pointer;font-weight:700;padding:4px 0';
+ toolsPanel.appendChild(toolsTitle);
+ const backup=document.getElementById('readingBackupDownload')?.parentElement;
+ if(backup)toolsPanel.appendChild(backup);
+ toolsPanel.appendChild(wrap);
+ createMatcher(toolsPanel);
+ container.appendChild(toolsPanel);
  window.addEventListener('reading-mmo-log-changed',()=>{if(token)sync();});
  window.addEventListener('online',()=>{if(token)sync();});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&token)sync();});
