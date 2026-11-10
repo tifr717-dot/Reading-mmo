@@ -294,10 +294,14 @@
         const minutes=Math.floor(entries.reduce((n,r)=>n+(Number(r.seconds)||0),0)/60);
         const dates=[...new Set(entries.map(r=>r.date))].sort();
         const start=dates[0],end=dates[dates.length-1];
-        const label=dates.length===1?start:start+' – '+end;
+        const prettyDate=d=>new Date(d+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',...(d.slice(0,4)===String(viewDate.getFullYear())?{}:{year:'numeric'})});
+        const label=dates.length===1?prettyDate(start):prettyDate(start)+' – '+prettyDate(end);
         const latest=entries.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
-        const pct=Number(latest?.endPercent);
-        return '<button class="journal-book-card" data-journal-book="'+esc(title)+'">'+coverMarkup(title,'M')+'<span class="journal-book-meta"><strong>'+esc(title)+'</strong><small>'+esc(label)+' · '+dates.length+' reading '+(dates.length===1?'day':'days')+'</small><span>'+pages+' XTE pages · '+minutes+' min</span>'+(Number.isFinite(pct)?'<small>'+pct.toFixed(1)+'% complete</small>':'')+'</span></button>';
+        // A completion marker can share a date with an X4 Pro reading entry.
+        // Preserve the 100% finish even if the earlier diary entry sorts last.
+        const completed=entries.some(r=>r.endPercent!==null&&r.endPercent!==''&&Number(r.endPercent)>=100);
+        const pct=completed?100:(latest?.endPercent==null||latest.endPercent===''?NaN:Number(latest.endPercent));
+        return '<button class="journal-book-card" data-journal-book="'+esc(title)+'">'+coverMarkup(title,'M')+'<span class="journal-book-meta"><strong>'+esc(title)+'</strong><small>'+esc(label)+' · '+dates.length+' reading '+(dates.length===1?'day':'days')+'</small><span>'+pages+' XTE pages · '+minutes+' min</span>'+(Number.isFinite(pct)?'<small>'+(completed?'✓ Finished · 100%':pct.toFixed(1)+'% complete')+'</small>':'')+'</span></button>';
       }).join(''):'<p class="journal-empty">No books logged this month yet.</p>';
     }
     if(window.ReadingCovers)requestAnimationFrame(()=>window.ReadingCovers.hydrate(grid));
