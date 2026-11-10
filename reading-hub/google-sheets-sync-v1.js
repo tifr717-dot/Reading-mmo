@@ -112,14 +112,50 @@ function coverForEdition(title,author,isbn){
 }
 function editionCoverPreview(container,title,author,isbn){
  container.replaceChildren();
- const holder=document.createElement('div');holder.style.cssText='display:flex;align-items:center;gap:12px;margin:8px 0';
- const preview=document.createElement('div');preview.className='book-cover-slot';preview.style.cssText='width:68px;height:100px;flex:0 0 68px;border-radius:8px;background:#593747;color:#fff;display:flex;align-items:center;justify-content:center;font:12px Georgia,serif;text-align:center';preview.textContent='BOOK COVER';
- const desc=document.createElement('div');desc.style.cssText='font-size:12px;line-height:1.5';desc.textContent='Your existing cover will be preserved. If none is saved, we can use the selected edition ISBN to find one.';holder.append(preview,desc);container.appendChild(holder);
  const covers=window.ReadingCovers;
- if(!covers)return;
- const ref=covers.cachedRef(title,author)||(/^[0-9]{13}$/.test(isbn)?{isbn}:null);
- const url=covers.refUrl(ref,'M');
- if(url){const img=new Image();img.onload=()=>{preview.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';preview.style.backgroundSize='cover';preview.textContent=''};img.src=url;}
+ const holder=document.createElement('div');holder.style.cssText='display:flex;align-items:center;gap:12px;margin:8px 0';
+ const preview=document.createElement('div');preview.style.cssText='width:80px;height:118px;flex:0 0 80px;border-radius:8px;background:#593747;color:#fff;display:flex;align-items:center;justify-content:center;font:12px Georgia,serif;text-align:center';preview.textContent='BOOK COVER';
+ const desc=document.createElement('div');desc.style.cssText='font-size:12px;line-height:1.5';desc.textContent='Search covers separately from editions. Your selected print page count will not change.';holder.append(preview,desc);container.appendChild(holder);
+ const status=document.createElement('div');status.style.cssText='font-size:12px;margin:8px 0';container.appendChild(status);
+ const choices=document.createElement('div');choices.style.cssText='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px';container.appendChild(choices);
+ function show(ref){
+  if(!covers||!ref)return;
+  const url=covers.refUrl(ref,'M');if(!url)return;
+  const img=new Image();
+  img.onload=()=>{preview.style.backgroundImage='url("'+url.replace(/"/g,'%22')+'")';preview.style.backgroundSize='cover';preview.style.backgroundPosition='center';preview.textContent=''};
+  img.onerror=()=>{preview.style.backgroundImage='none';preview.textContent='BOOK COVER'};
+  img.src=url;
+ }
+ if(covers)show(covers.cachedRef(title,author));
+ const button=document.createElement('button');button.type='button';button.textContent='♡ Find / Change Cover';button.style.cssText='padding:10px;border-radius:9px;background:#673b57;color:white;margin:6px 0';container.appendChild(button);
+ button.addEventListener('click',async()=>{
+  if(!covers){status.textContent='Cover service is unavailable. Try reopening the app.';return}
+  button.disabled=true;status.textContent='Searching Open Library and Google Books for covers…';choices.replaceChildren();
+  try{
+   const normalized=title.replace(/:\\s*(a novel|novel)\\s*$/i,'').trim();
+   let found=await covers.findCandidates(normalized,author,isbn);
+   if(!found.length&&normalized!==title)found=await covers.findCandidates(title,author,isbn);
+   if(!found.length){status.textContent='No cover images found yet. You can still use the Library manual cover picker.';return}
+   status.textContent='Tap the cover you want. Your edition and page count stay unchanged.';
+   for(const item of found){
+    const url=covers.refUrl(item.ref,'M');if(!url)continue;
+    const option=document.createElement('button');option.type='button';option.style.cssText='border:1px solid #896078;background:#382733;border-radius:8px;padding:5px;color:white;min-height:112px';
+    const img=document.createElement('img');img.alt=item.title+' cover';img.style.cssText='width:100%;height:108px;object-fit:contain';
+    img.onerror=()=>option.remove();img.src=url;
+    const caption=document.createElement('div');caption.textContent=item.source;caption.style.cssText='font-size:10px';option.append(img,caption);
+    option.addEventListener('click',()=>{
+     try{
+      covers.saveManual(title,author,item.ref);
+      // The XTE title can contain a subtitle, while book metadata can omit it.
+      if(normalized!==title)covers.saveManual(normalized,author,item.ref);
+      show(item.ref);status.textContent='♡ Cover selected! It will be preserved separately from your edition.';choices.replaceChildren();
+     }catch(e){status.textContent='Unable to save cover: '+e.message}
+    });
+    choices.appendChild(option);
+   }
+  }catch(e){status.textContent='Cover search unavailable: '+e.message}
+  finally{button.disabled=false}
+ });
 }
 function makeSelect(options){const el=document.createElement('select');el.style.cssText='width:100%;max-width:100%;padding:10px;border-radius:9px;background:#382733;color:#fff;margin:6px 0';options.forEach((o,i)=>{const op=document.createElement('option');op.value=String(i);op.textContent=o;el.appendChild(op)});return el}
 function field(label,value){const wrap=document.createElement('label');wrap.style.cssText='display:block;margin:8px 0;color:#f5e6ee';wrap.textContent=label;const input=document.createElement('input');input.value=value||'';input.style.cssText='display:block;width:100%;box-sizing:border-box;padding:10px;border-radius:9px;background:#382733;color:#fff;border:1px solid #95718a';wrap.appendChild(input);return [wrap,input]}
