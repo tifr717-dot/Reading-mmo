@@ -69,6 +69,17 @@ void X4PageTurnerSettingsActivity::choose() {
     view = View::LearnPrevious;
     notice = "Press the remote button for PREVIOUS";
   } else if (selection == 4) {
+    view = View::Tester;
+    testerLastUsage = 0;
+    testerLastModifiers = 0;
+    freeink::KeyEvent ignored;
+    while (BleHid.popKey(ignored)) {}
+    freeink::HidReportSnapshot report{};
+    BleHid.copyLastReport(report);
+    testerStartReports = report.count;
+    testerLastReports = report.count;
+    notice = "Tap the clicker; watch the report count";
+  } else if (selection == 5) {
     notice = X4PageTurner::requestForgetAll() ? "Removing saved pairings..."
                                                 : "Bluetooth starting. Try again.";
 #endif
@@ -101,13 +112,28 @@ void X4PageTurnerSettingsActivity::loop() {
     if (view == View::LearnNext || view == View::LearnPrevious) {
       freeink::KeyEvent ev;
       while (BleHid.popKey(ev)) {
-        if (!ev.pressed || ev.keycode == 0 || ev.mods) continue;
-        if (view == View::LearnNext) X4PageTurner::bindNext(ev.keycode);
-        else X4PageTurner::bindPrevious(ev.keycode);
+        if (!ev.pressed || ev.keycode == 0) continue;
+        if (view == View::LearnNext) X4PageTurner::bindNext(ev.keycode, ev.mods);
+        else X4PageTurner::bindPrevious(ev.keycode, ev.mods);
         notice = "Button learned and saved";
         view = View::Menu;
         requestUpdate();
         break;
+      }
+    }
+    if (view == View::Tester) {
+      // The tester consumes decoded key events without injecting page turns.
+      freeink::HidReportSnapshot report{};
+      if (BleHid.copyLastReport(report) && report.count != testerLastReports) {
+        testerLastReports = report.count;
+        requestUpdate();
+      }
+      freeink::KeyEvent ev;
+      while (BleHid.popKey(ev)) {
+        if (!ev.pressed) continue;
+        testerLastUsage = ev.keycode;
+        testerLastModifiers = ev.mods;
+        requestUpdate();
       }
     }
     char connectionError[48];
@@ -136,13 +162,13 @@ void X4PageTurnerSettingsActivity::loop() {
     if (view == View::Scan && millis() - scanStartedMs < 10000 && millis() % 2000 < 40) requestUpdate();
   }
 #endif
-  if (view == View::LearnNext || view == View::LearnPrevious) return;
+  if (view == View::LearnNext || view == View::LearnPrevious || view == View::Tester) return;
 
   const int maxIndex =
 #ifndef SIMULATOR
-      view == View::Scan ? std::max(0, std::min(5, static_cast<int>(BleHid.deviceCount())) - 1) : 4;
+      view == View::Scan ? std::max(0, std::min(5, static_cast<int>(BleHid.deviceCount())) - 1) : 5;
 #else
-      4;
+      5;
 #endif
   if (mappedInput.wasPressed(MappedInputManager::Button::Up)) {
     if (view == View::Scan) scanSelection = std::max(0, scanSelection - 1);
@@ -158,12 +184,15 @@ void X4PageTurnerSettingsActivity::loop() {
   }
 #if CROSSINK_APP_CAP_TOUCH
   int x = 0, y = 0;
-  if (mappedInput.wasScreenTapped(x, y) && y >= 115 && y < 115 + 5 * 82) {
-    if (view == View::Scan) scanSelection = std::clamp((y - 115) / 82, 0, maxIndex);
-    else selection = std::clamp((y - 115) / 82, 0, maxIndex);
+  const int tapTop = view == View::Menu ? 108 : 115;
+  const int tapRow = view == View::Menu ? 72 : 82;
+  const int tapCount = view == View::Menu ? 6 : 5;
+  if (mappedInput.wasScreenTapped(x, y) && y >= tapTop && y < tapTop + tapCount * tapRow) {
+    if (view == View::Scan) scanSelection = std::clamp((y - tapTop) / tapRow, 0, maxIndex);
+    else selection = std::clamp((y - tapTop) / tapRow, 0, maxIndex);
     if (view == View::Menu) choose();
 #ifndef SIMULATOR
-    else if (BleHid.deviceCount() > 0) {
+    else if (view == View::Scan && BleHid.deviceCount() > 0) {
       freeink::DiscoveredDevice selected{};
       if (!BleHid.copyDevice(static_cast<uint8_t>(scanSelection), selected) ||
           !X4PageTurner::requestConnect(selected.addr)) {
@@ -182,7 +211,7 @@ void X4PageTurnerSettingsActivity::loop() {
   if (mappedInput.wasPressed(MappedInputManager::Button::Confirm)) {
     if (view == View::Menu) choose();
 #ifndef SIMULATOR
-    else if (BleHid.deviceCount() > 0) {
+    else if (view == View::Scan && BleHid.deviceCount() > 0) {
       freeink::DiscoveredDevice selected{};
       if (!BleHid.copyDevice(static_cast<uint8_t>(scanSelection), selected) ||
           !X4PageTurner::requestConnect(selected.addr)) {
@@ -207,12 +236,14 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
   else GUI.drawHeader(renderer, header, "Bluetooth Page Turner");
 
   if (view == View::Menu) {
-    const char* rows[] = {"", "Scan & Pair Remote", "Learn Next Button", "Learn Previous Button", "Forget Paired Remotes"};
+    const char* rows[] = {"", "Scan & Pair Remote", "Learn Next Button",
+                          "Learn Previous Button", "Button Input Tester",
+                          "Forget Paired Remotes"};
     char first[56];
     snprintf(first, sizeof(first), "Page Turner: %s", X4PageTurner::enabled() ? "ON" : "OFF");
     rows[0] = first;
-    for (int i = 0; i < 5; ++i) {
-      const int y = 128 + i * 82;
+    for (int i = 0; i < 6; ++i) {
+      const int y = 120 + i * 72;
       renderer.drawText(UI_12_FONT_ID, 25, y, i == selection ? ">" : " ", true, EpdFontFamily::BOLD);
       renderer.drawText(UI_10_FONT_ID, 58, y, rows[i], true, i == selection ? EpdFontFamily::BOLD : EpdFontFamily::REGULAR);
       renderer.drawLine(26, y + 37, width - 26, y + 37, true);
@@ -258,6 +289,41 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     }
 #else
     renderer.drawCenteredText(UI_10_FONT_ID, 215, "Bluetooth unavailable in simulator");
+#endif
+  } else if (view == View::Tester) {
+#ifndef SIMULATOR
+    freeink::HidReportSnapshot report{};
+    BleHid.copyLastReport(report);
+    const uint32_t sinceOpen = report.count - testerStartReports;
+    char line[96];
+    renderer.drawCenteredText(UI_12_FONT_ID, 150, "Button Input Tester", true, EpdFontFamily::BOLD);
+    snprintf(line, sizeof(line), "HID reports since opening: %lu", static_cast<unsigned long>(sinceOpen));
+    renderer.drawCenteredText(UI_10_FONT_ID, 215, line);
+    if (sinceOpen > 0) {
+      snprintf(line, sizeof(line), "Report length: %u   Handle: 0x%04X",
+               static_cast<unsigned int>(report.length), static_cast<unsigned int>(report.handle));
+      renderer.drawCenteredText(UI_10_FONT_ID, 270, line);
+      char hex[48] = {0};
+      const size_t displayed = std::min(static_cast<size_t>(report.length), sizeof(report.bytes));
+      size_t pos = 0;
+      for (size_t i = 0; i < displayed && pos + 4 < sizeof(hex); ++i) {
+        pos += snprintf(hex + pos, sizeof(hex) - pos, "%02X ", report.bytes[i]);
+      }
+      renderer.drawCenteredText(UI_10_FONT_ID, 320, "Raw notification bytes (hex):");
+      renderer.drawCenteredText(SMALL_FONT_ID, 350, hex);
+    } else {
+      renderer.drawCenteredText(UI_10_FONT_ID, 270, "No Bluetooth button reports received");
+    }
+    if (testerLastUsage) {
+      snprintf(line, sizeof(line), "Keyboard key: 0x%02X   Modifiers: 0x%02X",
+               testerLastUsage, testerLastModifiers);
+      renderer.drawCenteredText(UI_10_FONT_ID, 425, line);
+    } else {
+      renderer.drawCenteredText(UI_10_FONT_ID, 425, "No keyboard code decoded");
+    }
+    renderer.drawCenteredText(UI_10_FONT_ID, 520, "Press NEXT/PREVIOUS, then take a photo");
+#else
+    renderer.drawCenteredText(UI_10_FONT_ID, 250, "Input tester needs real Bluetooth hardware");
 #endif
   } else {
     renderer.drawCenteredText(UI_12_FONT_ID, 190, "Press a Bluetooth remote button", true, EpdFontFamily::BOLD);
