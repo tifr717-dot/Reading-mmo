@@ -389,6 +389,8 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./cover-manager.js?v=51055"></script>
 <script src="./cover-rescue.js?v=51057"></script>
 <script src="./reading-calendar-x4pro-v1.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="./google-sheets-sync-v1.js?v=1"></script>
 <script>
 const titles={
  home:["Good evening, Tiff ✦","Your reading life, without the spreadsheet look."],
@@ -771,7 +773,7 @@ if(!date||!title||!Number.isInteger(pages)||pages<0||!Number.isFinite(minutes)||
 const rows=logs(),prior=rows.filter(r=>r.title===title&&r.date<=date).sort((a,b)=>a.date.localeCompare(b.date)).pop();
 const startPercent=prior&&Number.isFinite(Number(prior.endPercent))?Number(prior.endPercent):null;
 const row={id:'manual-'+Date.now()+'-'+Math.random().toString(36).slice(2),date,title,pages,seconds:Math.round(minutes*60),sessions:1,startPercent,endPercent,source:'manual',importedAt:new Date().toISOString()};
-try{localStorage.setItem(key,JSON.stringify([...rows,row]));window.ReadingCalendar?.render?.();window.ReadingCalendar?.updateHomeFromDiary?.();window.ReadingCalendar?.renderHomeDashboard?.();$('quickLogMessage').textContent='♡ Saved on this device!';$('quickLogForm').reset();$('quickLogDate').value=date;$('quickLogBook').value=title;setTimeout(closeQuickLog,700)}catch(err){$('quickLogMessage').textContent='Could not save: '+err.message}
+try{localStorage.setItem(key,JSON.stringify([...rows,row]));window.dispatchEvent(new Event('reading-mmo-log-changed'));window.ReadingCalendar?.render?.();window.ReadingCalendar?.updateHomeFromDiary?.();window.ReadingCalendar?.renderHomeDashboard?.();$('quickLogMessage').textContent='♡ Saved on this device!';$('quickLogForm').reset();$('quickLogDate').value=date;$('quickLogBook').value=title;setTimeout(closeQuickLog,700)}catch(err){$('quickLogMessage').textContent='Could not save: '+err.message}
 });
 });
 window.openQuickLog=openQuickLog;
