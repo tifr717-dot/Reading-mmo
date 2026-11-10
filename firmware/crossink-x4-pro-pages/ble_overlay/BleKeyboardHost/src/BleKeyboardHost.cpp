@@ -47,8 +47,8 @@ void scanComplete(BLEScanResults) {
   // The main loop checks BLEScan::isScanning() and clears the UI flag.
 }
 
-void notifyReport(BLERemoteCharacteristic*, uint8_t* value, size_t len, bool) {
-  BleHid.onReportIngest(value, len);
+void notifyReport(BLERemoteCharacteristic* characteristic, uint8_t* value, size_t len, bool) {
+  BleHid.onReportIngest(value, len, characteristic ? characteristic->getHandle() : 0);
 }
 }
 
@@ -219,8 +219,14 @@ bool BleKeyboardHost::connect(const char* addr) {
   if (characteristics) {
     for (const auto& item : *characteristics) {
       BLERemoteCharacteristic* chr = item.second;
-      if (chr && chr->getUUID().equals(BLEUUID(uint16_t(0x2A4D))) && chr->canNotify()) {
-        // Unlike registerForNotify(void), subscribe() reports CCCD failure.
+      if (!chr || !chr->canNotify()) continue;
+      // Input Report (2A4D), Boot Keyboard Input (2A22), and Boot Mouse Input
+      // (2A33). The tester records every notification even if we cannot yet
+      // translate that report's HID format into a keyboard usage.
+      const BLEUUID uuid = chr->getUUID();
+      if (uuid.equals(BLEUUID(uint16_t(0x2A4D))) ||
+          uuid.equals(BLEUUID(uint16_t(0x2A22))) ||
+          uuid.equals(BLEUUID(uint16_t(0x2A33)))) {
         if (chr->subscribe(true, notifyReport)) subscribed = true;
       }
     }
@@ -356,6 +362,12 @@ bool BleKeyboardHost::popKey(KeyEvent& out) {
   portEXIT_CRITICAL(&keyMux);
   return true;
 }
+bool BleKeyboardHost::copyLastReport(HidReportSnapshot& out) const {
+  portENTER_CRITICAL(&keyMux);
+  out = lastReport_;
+  portEXIT_CRITICAL(&keyMux);
+  return out.count != 0;
+}
 void BleKeyboardHost::emitUsage(uint8_t usage, uint8_t mods) {
   KeyEvent ev;
   ev.keycode = usage;
@@ -364,8 +376,18 @@ void BleKeyboardHost::emitUsage(uint8_t usage, uint8_t mods) {
   hidTranslate(usage, mods, ev.ch, ev.special);
   enqueue(ev);
 }
-void BleKeyboardHost::onReportIngest(const uint8_t* data, size_t len) {
-  if (!connected_ || !data || len < 8) return;
+void BleKeyboardHost::onReportIngest(const uint8_t* data, size_t len, uint16_t handle) {
+  if (!data || len == 0) return;
+  // Record every notification first. Many programmable clickers send a
+  // non-8-byte report, which the normal keyboard decoder cannot understand.
+  portENTER_CRITICAL(&keyMux);
+  ++lastReport_.count;
+  lastReport_.handle = handle;
+  lastReport_.length = static_cast<uint16_t>(std::min(len, static_cast<size_t>(UINT16_MAX)));
+  memset(lastReport_.bytes, 0, sizeof(lastReport_.bytes));
+  memcpy(lastReport_.bytes, data, std::min(len, sizeof(lastReport_.bytes)));
+  portEXIT_CRITICAL(&keyMux);
+  if (!connected_ || len < 8) return;
   // Standard keyboard input: modifiers, reserved, six usages. A report ID
   // can precede the 8-byte report on composite HID keyboard peripherals.
   const size_t offset = len > 8 ? len - 8 : 0;
@@ -397,10 +419,11 @@ void BleKeyboardHost::disconnect() {}
 const PairedHidDevice& BleKeyboardHost::paired(uint8_t) const { static PairedHidDevice e; return e; }
 void BleKeyboardHost::forget(const char*) {}
 bool BleKeyboardHost::popKey(KeyEvent&) { return false; }
+bool BleKeyboardHost::copyLastReport(HidReportSnapshot&) const { return false; }
 bool BleKeyboardHost::takeConnectFailure(char*, size_t) { return false; }
 bool BleKeyboardHost::takePairingPasskey(uint32_t&) { return false; }
 void BleKeyboardHost::onScanResultIngest(const char*, const char*, int, uint8_t, bool, bool) {}
-void BleKeyboardHost::onReportIngest(const uint8_t*, size_t) {}
+void BleKeyboardHost::onReportIngest(const uint8_t*, size_t, uint16_t) {}
 void BleKeyboardHost::onLinkUp(const char*, const char*, uint8_t) {}
 void BleKeyboardHost::onLinkDown() {}
 void BleKeyboardHost::onConnectFailed(const char*) {}
