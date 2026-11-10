@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <GfxRenderer.h>
 #include <algorithm>
+#include <cstring>
 
 #include "X4PageTurner.h"
 #include "MappedInputManager.h"
@@ -19,7 +20,16 @@ void X4PageTurnerSettingsActivity::onEnter() {
   Activity::onEnter();
   X4PageTurner::setPairingScreenOpen(true);
   const uint8_t lastStall = X4PageTurner::takeLastBluetoothTimeout();
-  if (lastStall == 12)
+  if (lastStall >= 0x40 && lastStall <= 0x45) {
+    switch (lastStall - 0x40) {
+      case 1: notice = "Pairing stalled: stopping scan (OFF)"; break;
+      case 2: notice = "Pairing stalled: BLE link (OFF)"; break;
+      case 3: notice = "Pairing stalled: HID discovery (OFF)"; break;
+      case 4: notice = "Pairing stalled: HID reports (OFF)"; break;
+      case 5: notice = "Pairing stalled after link setup (OFF)"; break;
+      default: notice = "Pairing stalled before starting (OFF)"; break;
+    }
+  } else if (lastStall == 12)
     notice = "BLE controller did not sync (stage 2)";
   else if (lastStall >= 11 && lastStall <= 15)
     notice = "Bluetooth startup failed; recovered OFF";
@@ -71,8 +81,10 @@ void X4PageTurnerSettingsActivity::choose() {
 void X4PageTurnerSettingsActivity::loop() {
 #ifndef SIMULATOR
   const int liveState = static_cast<int>(X4PageTurner::bluetoothState());
-  if (liveState != lastRuntimeState) {
+  const int liveStage = static_cast<int>(BleHid.connectionStage());
+  if (liveState != lastRuntimeState || liveStage != lastConnectionStage) {
     lastRuntimeState = liveState;
+    lastConnectionStage = liveStage;
     requestUpdate();
   }
 #endif
@@ -101,7 +113,12 @@ void X4PageTurnerSettingsActivity::loop() {
     char connectionError[48];
     if (BleHid.takeConnectFailure(connectionError, sizeof(connectionError))) {
       view = View::Menu;
-      notice = "Connection failed: turn OFF, then ON";
+      if (std::strcmp(connectionError, "Remote unavailable") == 0)
+        notice = "Remote unavailable: turn OFF then ON";
+      else if (std::strcmp(connectionError, "No HID input report") == 0)
+        notice = "No HID input: check remote keyboard mode";
+      else
+        notice = "Pairing failed: turn OFF then ON";
       requestUpdate();
     }
     if (view == View::Scan && BleHid.isConnected()) {
@@ -227,7 +244,18 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
       renderer.drawLine(26, y + 37, width - 26, y + 37, true);
     }
     if (count == 0) renderer.drawCenteredText(UI_10_FONT_ID, 215, "Hold remote pairing button for 3 sec");
-    if (BleHid.isConnecting()) renderer.drawCenteredText(UI_10_FONT_ID, 570, "Pairing...");
+    if (BleHid.isConnecting()) {
+      const char* stageLabel = "Starting connection...";
+      switch (BleHid.connectionStage()) {
+        case 1: stageLabel = "Stopping Bluetooth scan..."; break;
+        case 2: stageLabel = "Connecting Bluetooth link..."; break;
+        case 3: stageLabel = "Finding keyboard service..."; break;
+        case 4: stageLabel = "Subscribing to button reports..."; break;
+        case 5: stageLabel = "Finishing connection..."; break;
+        default: break;
+      }
+      renderer.drawCenteredText(UI_10_FONT_ID, 570, stageLabel);
+    }
 #else
     renderer.drawCenteredText(UI_10_FONT_ID, 215, "Bluetooth unavailable in simulator");
 #endif
