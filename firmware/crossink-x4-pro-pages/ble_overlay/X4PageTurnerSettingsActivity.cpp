@@ -78,7 +78,9 @@ void X4PageTurnerSettingsActivity::choose() {
     BleHid.copyLastReport(report);
     testerStartReports = report.count;
     testerLastReports = report.count;
-    notice = "Tap the clicker; watch the report count";
+    testerLastProtocolStatus = 0xFF;
+    testerLastProtocolMode = 0xFF;
+    notice = "Tap NEXT/PREV; Confirm changes HID mode";
   } else if (selection == 5) {
     notice = X4PageTurner::requestForgetAll() ? "Removing saved pairings..."
                                                 : "Bluetooth starting. Try again.";
@@ -128,6 +130,14 @@ void X4PageTurnerSettingsActivity::loop() {
         testerLastReports = report.count;
         requestUpdate();
       }
+      freeink::HidConnectionDiagnostics diag{};
+      if (BleHid.copyConnectionDiagnostics(diag) &&
+          (diag.protocolModeStatus != testerLastProtocolStatus ||
+           diag.protocolMode != testerLastProtocolMode)) {
+        testerLastProtocolStatus = diag.protocolModeStatus;
+        testerLastProtocolMode = diag.protocolMode;
+        requestUpdate();
+      }
       freeink::KeyEvent ev;
       while (BleHid.popKey(ev)) {
         if (!ev.pressed) continue;
@@ -168,7 +178,27 @@ void X4PageTurnerSettingsActivity::loop() {
     if (view == View::Scan && millis() - scanStartedMs < 10000 && millis() % 2000 < 40) requestUpdate();
   }
 #endif
-  if (view == View::LearnNext || view == View::LearnPrevious || view == View::Tester) return;
+  if (view == View::Tester) {
+#ifndef SIMULATOR
+    if (mappedInput.wasPressed(MappedInputManager::Button::Confirm)) {
+      freeink::HidConnectionDiagnostics diag{};
+      BleHid.copyConnectionDiagnostics(diag);
+      if (!BleHid.isConnected()) notice = "Connect the remote first";
+      else if (diag.protocolModeStatus == 0) notice = "No HID Protocol Mode characteristic";
+      else if (diag.protocolModeStatus == 1)
+        notice = "Mode needs response-write; skipped safely";
+      else {
+        const uint8_t newMode = diag.protocolMode == 1 ? 0 : 1;
+        notice = X4PageTurner::requestProtocolMode(newMode)
+            ? (newMode == 0 ? "Requesting Boot mode..." : "Requesting Report mode...")
+            : "Mode switch queue unavailable";
+      }
+      requestUpdate();
+    }
+#endif
+    return;
+  }
+  if (view == View::LearnNext || view == View::LearnPrevious) return;
 
   const int maxIndex =
 #ifndef SIMULATOR
@@ -304,7 +334,7 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     BleHid.copyConnectionDiagnostics(diag);
     const uint32_t sinceOpen = report.count - testerStartReports;
     char line[96];
-    renderer.drawCenteredText(UI_12_FONT_ID, 115, "Button Input Tester v7", true, EpdFontFamily::BOLD);
+    renderer.drawCenteredText(UI_12_FONT_ID, 102, "Button Input Tester v8", true, EpdFontFamily::BOLD);
     const char* security = "Not attempted";
     switch (diag.securityState) {
       case 1: security = "Pairing requested"; break;
@@ -314,38 +344,59 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
       default: break;
     }
     snprintf(line, sizeof(line), "Security: %s (code %d)", security, static_cast<int>(diag.securityResult));
-    renderer.drawCenteredText(UI_10_FONT_ID, 160, line);
-    snprintf(line, sizeof(line), "HID inputs: %u   CCCD found: %u   Enabled: %u",
+    renderer.drawCenteredText(SMALL_FONT_ID, 145, line);
+    snprintf(line, sizeof(line), "HID inputs %u   CCCD %u   subscribed %u",
              diag.inputChannels, diag.cccdChannels, diag.subscriptions);
-    renderer.drawCenteredText(UI_10_FONT_ID, 205, line);
-    snprintf(line, sizeof(line), "No CCCD: %u   Write failures: %u   Handle: %04X",
-             diag.missingCccd, diag.subscriptionFailures, diag.firstInputHandle);
-    renderer.drawCenteredText(SMALL_FONT_ID, 238, line);
+    renderer.drawCenteredText(UI_10_FONT_ID, 184, line);
+    snprintf(line, sizeof(line), "Channel reports: %lu / %lu / %lu",
+             static_cast<unsigned long>(diag.channelReports[0]),
+             static_cast<unsigned long>(diag.channelReports[1]),
+             static_cast<unsigned long>(diag.channelReports[2]));
+    renderer.drawCenteredText(UI_10_FONT_ID, 224, line);
+    snprintf(line, sizeof(line), "Handles: %04X / %04X / %04X",
+             diag.channelHandles[0], diag.channelHandles[1], diag.channelHandles[2]);
+    renderer.drawCenteredText(SMALL_FONT_ID, 258, line);
+    const char* mode = "Not exposed";
+    switch (diag.protocolModeStatus) {
+      case 1: mode = "Needs response write (skipped)"; break;
+      case 2: mode = "Report requested"; break;
+      case 3: mode = "Boot requested"; break;
+      case 4: mode = "Write failed"; break;
+      default: break;
+    }
+    snprintf(line, sizeof(line), "HID mode: %s", mode);
+    renderer.drawCenteredText(UI_10_FONT_ID, 300, line);
+    const char* wake = diag.exitSuspendStatus == 2 ? "sent" :
+                       diag.exitSuspendStatus == 1 ? "write unsupported" :
+                       diag.exitSuspendStatus == 3 ? "failed" : "not exposed";
+    snprintf(line, sizeof(line), "Exit Suspend: %s", wake);
+    renderer.drawCenteredText(SMALL_FONT_ID, 338, line);
+    snprintf(line, sizeof(line), "Report map: %s   Ref descriptors: %u",
+             diag.reportMapPresent ? "found" : "missing", diag.reportReferenceCount);
+    renderer.drawCenteredText(SMALL_FONT_ID, 376, line);
     snprintf(line, sizeof(line), "Button reports after opening: %lu",
              static_cast<unsigned long>(sinceOpen));
-    renderer.drawCenteredText(UI_10_FONT_ID, 290, line);
+    renderer.drawCenteredText(UI_10_FONT_ID, 414, line);
     if (sinceOpen > 0) {
-      snprintf(line, sizeof(line), "Length: %u   Last handle: 0x%04X",
+      snprintf(line, sizeof(line), "Last: %u bytes at %04X",
                static_cast<unsigned int>(report.length), static_cast<unsigned int>(report.handle));
-      renderer.drawCenteredText(UI_10_FONT_ID, 335, line);
+      renderer.drawCenteredText(SMALL_FONT_ID, 447, line);
       char hex[48] = {0};
       const size_t displayed = std::min(static_cast<size_t>(report.length), sizeof(report.bytes));
       size_t pos = 0;
       for (size_t i = 0; i < displayed && pos + 4 < sizeof(hex); ++i)
         pos += snprintf(hex + pos, sizeof(hex) - pos, "%02X ", report.bytes[i]);
-      renderer.drawCenteredText(SMALL_FONT_ID, 375, hex);
+      renderer.drawCenteredText(SMALL_FONT_ID, 477, hex);
     } else {
-      renderer.drawCenteredText(UI_10_FONT_ID, 345, "No input notifications received yet");
+      renderer.drawCenteredText(SMALL_FONT_ID, 463, "No notifications yet");
     }
     if (testerLastUsage) {
-      snprintf(line, sizeof(line), "Keyboard key: 0x%02X   Modifiers: 0x%02X",
+      snprintf(line, sizeof(line), "Key: 0x%02X   Mods: 0x%02X",
                testerLastUsage, testerLastModifiers);
-      renderer.drawCenteredText(UI_10_FONT_ID, 435, line);
-    } else {
-      renderer.drawCenteredText(UI_10_FONT_ID, 435, "No keyboard key decoded");
-    }
-    renderer.drawCenteredText(UI_10_FONT_ID, 510, "Press NEXT/PREV, then take a photo");
-    renderer.drawCenteredText(SMALL_FONT_ID, 548,
+      renderer.drawCenteredText(SMALL_FONT_ID, 505, line);
+    } else renderer.drawCenteredText(SMALL_FONT_ID, 505, "No key decoded");
+    renderer.drawCenteredText(UI_10_FONT_ID, 540, "Confirm: switch Boot / Report");
+    renderer.drawCenteredText(SMALL_FONT_ID, 579,
                               BleHid.isConnected() ? "Link: connected" : "Link: not connected");
 #else
     renderer.drawCenteredText(UI_10_FONT_ID, 250, "Input tester needs real Bluetooth hardware");
