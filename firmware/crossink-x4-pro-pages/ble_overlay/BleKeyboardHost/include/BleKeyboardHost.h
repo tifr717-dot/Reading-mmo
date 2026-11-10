@@ -62,6 +62,20 @@ struct HidReportSnapshot {
   uint8_t bytes[12] = {0};
 };
 
+// Snapshot of the HID notification channels and pairing state. These are
+// diagnostics, not proof that the remote has transmitted a key event.
+struct HidConnectionDiagnostics {
+  uint8_t inputChannels = 0;       // HID characteristics with Notify
+  uint8_t cccdChannels = 0;        // input channels exposing descriptor 0x2902
+  uint8_t subscriptions = 0;       // CCCD writes confirmed by subscribe()
+  uint8_t missingCccd = 0;        // subscribe() can otherwise falsely succeed
+  uint8_t subscriptionFailures = 0;
+  // 0=unknown, 1=requested, 2=encrypted, 3=timed out, 4=initiation failed
+  uint8_t securityState = 0;
+  int16_t securityResult = 0;
+  uint16_t firstInputHandle = 0;
+};
+
 // A BLE device seen during a scan.
 struct DiscoveredDevice {
   char addr[18] = {0};  // "AA:BB:CC:DD:EE:FF"
@@ -147,6 +161,7 @@ class BleKeyboardHost {
   bool popKey(KeyEvent& out);
   // Non-destructive diagnostic snapshot (no heap allocation in callbacks).
   bool copyLastReport(HidReportSnapshot& out) const;
+  bool copyConnectionDiagnostics(HidConnectionDiagnostics& out) const;
 
   // --- Internal: called by the NimBLE backend (not for app use). These keep the
   // public header free of NimBLE types — the .cpp translates BLE objects into
@@ -159,6 +174,7 @@ class BleKeyboardHost {
   void onPairingPasskey(uint32_t passkey);
 
  private:
+  void setConnectionDiagnostics(const HidConnectionDiagnostics& state);
   void enqueue(const KeyEvent& ev);    // ring push (spinlock-guarded)
   void emitUsage(uint8_t usage, uint8_t mods);  // translate + enqueue
   void persistBonds();
@@ -176,6 +192,7 @@ class BleKeyboardHost {
   uint8_t bondCount_ = 0;
   KeyEvent ring_[kKeyQueueLen];
   HidReportSnapshot lastReport_;
+  HidConnectionDiagnostics connectionDiagnostics_;
   volatile uint8_t ringHead_ = 0;  // next write
   volatile uint8_t ringTail_ = 0;  // next read
   char connName_[32] = {0};
