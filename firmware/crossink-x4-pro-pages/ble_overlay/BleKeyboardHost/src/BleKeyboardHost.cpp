@@ -10,6 +10,7 @@
 #include <BLEClient.h>
 #include <BLEDevice.h>
 #include <BLERemoteCharacteristic.h>
+#include <BLERemoteDescriptor.h>
 #include <BLERemoteService.h>
 #include <BLEScan.h>
 #include <BLESecurity.h>
@@ -17,11 +18,14 @@
 // encryption state; do not use BLEClient::secureConnection() (infinite wait).
 #if defined(CONFIG_NIMBLE_ENABLED)
 #include <host/ble_gap.h>
+#include <host/ble_gatt.h>
+#include <os/os_mbuf.h>
 #endif
 #include <Preferences.h>
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
+#include <atomic>
 
 namespace {
 BLEClient* activeClient = nullptr;
@@ -29,6 +33,90 @@ BLEClient* activeClient = nullptr;
 BLERemoteCharacteristic* hidProtocolCharacteristic = nullptr;
 uint32_t lastReconnectMs = 0;
 portMUX_TYPE keyMux = portMUX_INITIALIZER_UNLOCKED;
+
+#if defined(CONFIG_NIMBLE_ENABLED)
+// A bounded, asynchronous inspection of the remote's *real* GATT values.
+// Never use the Arduino synchronous readValue() path (infinite wait on errors).
+struct ProbeRequest {
+  uint16_t handle = 0;
+  uint8_t kind = 0;     // 1=CCCD, 2=Report Reference, 3=Protocol, 4=Map prefix
+  uint8_t channel = 0;  // 0, 1, 2 for the first three input channels
+};
+ProbeRequest probeQueue[8];
+uint8_t probeCount = 0;
+uint8_t probeNext = 0;
+uint32_t probeStartedMs = 0;  // BLE worker task only
+std::atomic<bool> probePending{false};
+std::atomic<bool> refreshProtocolRequested{false};
+std::atomic<uint16_t> probeConn{UINT16_MAX};
+std::atomic<uint32_t> probeGeneration{1};
+
+void resetProbes() {
+  probeGeneration.fetch_add(1);
+  probePending.store(false);
+  refreshProtocolRequested.store(false);
+  probeConn.store(UINT16_MAX);
+  probeCount = 0;
+  probeNext = 0;
+}
+void addProbe(uint16_t handle, uint8_t kind, uint8_t channel = 0) {
+  if (handle && probeCount < 8) probeQueue[probeCount++] = {handle, kind, channel};
+}
+int probeReadComplete(uint16_t connHandle, const ble_gatt_error* error,
+                      ble_gatt_attr* attr, void* opaque) {
+  const uintptr_t token = reinterpret_cast<uintptr_t>(opaque);
+  const uint8_t ordinal = static_cast<uint8_t>(token & 0xFF);
+  const uint32_t generation = static_cast<uint32_t>(token >> 8);
+  if (ordinal == 0 || generation != probeGeneration.load() ||
+      connHandle != probeConn.load() || ordinal > probeCount) return 0;
+  if (!probePending.exchange(false)) return 0;  // late response after timeout
+  uint16_t status = error ? error->status : 0xFFFE;
+  uint8_t data[32] = {0};
+  size_t length = 0;
+  if (status == 0 && attr && attr->om) {
+    length = std::min(static_cast<size_t>(OS_MBUF_PKTLEN(attr->om)), sizeof(data));
+    if (length && os_mbuf_copydata(attr->om, 0, length, data) != 0)
+      status = 0xFFFE;
+  } else if (status == 0) {
+    status = 0xFFFE;
+  }
+  const ProbeRequest& request = probeQueue[ordinal - 1];
+  BleHid.onDiagnosticReadIngest(request.kind, request.channel, status,
+                                data, status == 0 ? length : 0);
+  return 0;
+}
+void pumpProbes(BLERemoteCharacteristic* protocolMode) {
+  if (!activeClient || !activeClient->isConnected() ||
+      probeConn.load() != activeClient->getConnId()) return;
+  if (probePending.load()) {
+    if (millis() - probeStartedMs < 2500) return;
+    if (probePending.exchange(false)) {
+      BleHid.onDiagnosticReadIngest(0, 0, 0xFFFF, nullptr, 0);
+      // Do not issue more procedures against a potentially wedged GATT client.
+      probeNext = probeCount;
+    }
+    return;
+  }
+  if (probeNext >= probeCount && refreshProtocolRequested.exchange(false) &&
+      protocolMode && protocolMode->canRead()) {
+    probeCount = 1;
+    probeNext = 0;
+    probeQueue[0] = {protocolMode->getHandle(), 3, 0};
+  }
+  if (probeNext >= probeCount) return;
+  const uint8_t ordinal = probeNext++;
+  probeStartedMs = millis();
+  probePending.store(true);
+  const uintptr_t token = (static_cast<uintptr_t>(probeGeneration.load()) << 8) |
+                          static_cast<uintptr_t>(ordinal + 1);
+  const int rc = ble_gattc_read(probeConn.load(), probeQueue[ordinal].handle,
+                                probeReadComplete, reinterpret_cast<void*>(token));
+  if (rc != 0 && probePending.exchange(false))
+    BleHid.onDiagnosticReadIngest(probeQueue[ordinal].kind,
+                                  probeQueue[ordinal].channel,
+                                  static_cast<uint16_t>(rc), nullptr, 0);
+}
+#endif
 
 #if defined(CONFIG_NIMBLE_ENABLED)
 bool isLinkEncrypted() {
@@ -115,6 +203,9 @@ void BleKeyboardHost::end() {
   BLEDevice::deinit(false);
   activeClient = nullptr;
   hidProtocolCharacteristic = nullptr;
+#if defined(CONFIG_NIMBLE_ENABLED)
+  resetProbes();
+#endif
   begun_ = false;
   scanning_ = false;
   connecting_ = false;
@@ -130,6 +221,11 @@ void BleKeyboardHost::poll(bool allowReconnect) {
   if (!begun_) return;
   if (scanning_ && !BLEDevice::getScan()->isScanning()) scanning_ = false;
   if (connected_ && activeClient && !activeClient->isConnected()) onLinkDown();
+  // Run one asynchronous, time-bounded descriptor inspection on the worker.
+#if defined(CONFIG_NIMBLE_ENABLED)
+  if (connected_ && activeClient && activeClient->isConnected())
+    pumpProbes(hidProtocolCharacteristic);
+#endif
   // Never run a synchronous BLE connection attempt inside the book reader:
   // a sleeping/unavailable remote must not freeze physical buttons or touch.
   if (!allowReconnect || scanning_ || connected_ || connecting_ || bondCount_ == 0) return;
@@ -177,6 +273,9 @@ bool BleKeyboardHost::connect(const char* addr) {
   if (!begun_ || connecting_ || !addr || !*addr) return false;
   connectionStage_ = 0;
   hidProtocolCharacteristic = nullptr;
+#if defined(CONFIG_NIMBLE_ENABLED)
+  resetProbes();
+#endif
   HidConnectionDiagnostics diagnostic{};
   setConnectionDiagnostics(diagnostic);
   uint8_t addressType = 0;
@@ -262,6 +361,7 @@ bool BleKeyboardHost::connect(const char* addr) {
 
   auto* characteristics = hid->getCharacteristics();
   BLERemoteCharacteristic* controlPoint = nullptr;
+  BLERemoteCharacteristic* reportMap = nullptr;
   if (characteristics) {
     // Inspect discovered descriptors only. A GATT read()/response-write() on
     // Arduino-ESP32 3.3.7 can wait FOREVER, so this experiment never does one.
@@ -271,7 +371,10 @@ bool BleKeyboardHost::connect(const char* addr) {
       const BLEUUID uuid = chr->getUUID();
       if (uuid.equals(BLEUUID(uint16_t(0x2A4E)))) hidProtocolCharacteristic = chr;
       if (uuid.equals(BLEUUID(uint16_t(0x2A4C)))) controlPoint = chr;
-      if (uuid.equals(BLEUUID(uint16_t(0x2A4B)))) diagnostic.reportMapPresent = 1;
+      if (uuid.equals(BLEUUID(uint16_t(0x2A4B)))) {
+        reportMap = chr;
+        diagnostic.reportMapPresent = 1;
+      }
     }
     // Try Report Protocol first, identical to the mode most hosts use.
     // writeValue(false) is a no-response GATT write only if this property is set.
@@ -293,14 +396,23 @@ bool BleKeyboardHost::connect(const char* addr) {
         diagnostic.firstInputHandle = chr->getHandle();
       if (diagnostic.inputChannels <= 3)
         diagnostic.channelHandles[diagnostic.inputChannels - 1] = chr->getHandle();
-      if (chr->getDescriptor(BLEUUID(uint16_t(0x2908))))
+      const uint8_t channel = diagnostic.inputChannels - 1;
+      BLERemoteDescriptor* reference = chr->getDescriptor(BLEUUID(uint16_t(0x2908)));
+      if (reference) {
         ++diagnostic.reportReferenceCount;
-
-      // Check the real CCCD before treating subscribe() success as input-ready.
-      if (!chr->getDescriptor(BLEUUID(uint16_t(0x2902)))) {
+#if defined(CONFIG_NIMBLE_ENABLED)
+        if (channel < 3) addProbe(reference->getHandle(), 2, channel);
+#endif
+      }
+      // Reading 2902 after subscribe confirms the remote's actual setting.
+      BLERemoteDescriptor* cccd = chr->getDescriptor(BLEUUID(uint16_t(0x2902)));
+      if (!cccd) {
         ++diagnostic.missingCccd;
         continue;
       }
+#if defined(CONFIG_NIMBLE_ENABLED)
+      if (channel < 3) addProbe(cccd->getHandle(), 1, channel);
+#endif
       ++diagnostic.cccdChannels;
       if (chr->subscribe(true, notifyReport)) ++diagnostic.subscriptions;
       else ++diagnostic.subscriptionFailures;
@@ -313,6 +425,14 @@ bool BleKeyboardHost::connect(const char* addr) {
         diagnostic.exitSuspendStatus = controlPoint->writeValue(uint8_t(1), false) ? 2 : 3;
     }
   }
+#if defined(CONFIG_NIMBLE_ENABLED)
+  if (hidProtocolCharacteristic && hidProtocolCharacteristic->canRead())
+    addProbe(hidProtocolCharacteristic->getHandle(), 3);
+  if (reportMap && reportMap->canRead())
+    addProbe(reportMap->getHandle(), 4);
+  diagnostic.probeRequested = probeCount;
+  probeConn.store(activeClient->getConnId());
+#endif
   setConnectionDiagnostics(diagnostic);
   if (diagnostic.subscriptions == 0) {
     activeClient->disconnect();
@@ -330,6 +450,9 @@ bool BleKeyboardHost::connect(const char* addr) {
 }
 
 void BleKeyboardHost::disconnect() {
+#if defined(CONFIG_NIMBLE_ENABLED)
+  resetProbes();
+#endif
   hidProtocolCharacteristic = nullptr;
   connected_ = false;
   connecting_ = false;
@@ -352,6 +475,9 @@ void BleKeyboardHost::onLinkUp(const char* addr, const char* name, uint8_t type)
   persistBonds();
 }
 void BleKeyboardHost::onLinkDown() {
+#if defined(CONFIG_NIMBLE_ENABLED)
+  resetProbes();
+#endif
   hidProtocolCharacteristic = nullptr;
   connected_ = false;
   connecting_ = false;
@@ -475,6 +601,9 @@ bool BleKeyboardHost::setProtocolMode(uint8_t mode) {
   connectionDiagnostics_.protocolMode = mode;
   connectionDiagnostics_.protocolModeStatus = status;
   portEXIT_CRITICAL(&keyMux);
+#if defined(CONFIG_NIMBLE_ENABLED)
+  if (ok) refreshProtocolRequested.store(true);
+#endif
   return ok;
 }
 bool BleKeyboardHost::copyLastReport(HidReportSnapshot& out) const {
@@ -490,6 +619,36 @@ void BleKeyboardHost::emitUsage(uint8_t usage, uint8_t mods) {
   ev.pressed = true;
   hidTranslate(usage, mods, ev.ch, ev.special);
   enqueue(ev);
+}
+void BleKeyboardHost::onDiagnosticReadIngest(uint8_t kind, uint8_t channel,
+                                            uint16_t status, const uint8_t* data,
+                                            size_t length) {
+  portENTER_CRITICAL(&keyMux);
+  auto& diag = connectionDiagnostics_;
+  if (diag.probeCompleted >= diag.probeRequested && diag.probeRequested < UINT8_MAX)
+    ++diag.probeRequested;  // a later on-demand protocol-mode recheck
+  if (diag.probeCompleted < UINT8_MAX) ++diag.probeCompleted;
+  if (status == 0) {
+    const bool valid = data && ((kind == 1 || kind == 2) ? length >= 2 : length >= 1);
+    if (!valid) status = 0xFFFE;
+    else if (kind == 1 && channel < 3)
+      diag.cccdReadback[channel] = static_cast<uint16_t>(data[0]) |
+                                   (static_cast<uint16_t>(data[1]) << 8);
+    else if (kind == 2 && channel < 3) {
+      diag.reportId[channel] = data[0];
+      diag.reportType[channel] = data[1];
+    } else if (kind == 3) diag.protocolReadback = data[0];
+    else if (kind == 4) {
+      diag.mapPrefixLength = static_cast<uint8_t>(std::min(length, sizeof(diag.mapPrefix)));
+      memcpy(diag.mapPrefix, data, diag.mapPrefixLength);
+    }
+  }
+  if (status != 0) {
+    if (diag.probeErrors < UINT8_MAX) ++diag.probeErrors;
+    if (status == 0xFFFF && diag.probeTimeouts < UINT8_MAX) ++diag.probeTimeouts;
+  }
+  diag.probeLastStatus = status;
+  portEXIT_CRITICAL(&keyMux);
 }
 void BleKeyboardHost::onReportIngest(const uint8_t* data, size_t len, uint16_t handle) {
   if (!data || len == 0) return;
@@ -547,6 +706,7 @@ bool BleKeyboardHost::takeConnectFailure(char*, size_t) { return false; }
 bool BleKeyboardHost::takePairingPasskey(uint32_t&) { return false; }
 void BleKeyboardHost::onScanResultIngest(const char*, const char*, int, uint8_t, bool, bool) {}
 void BleKeyboardHost::onReportIngest(const uint8_t*, size_t, uint16_t) {}
+void BleKeyboardHost::onDiagnosticReadIngest(uint8_t, uint8_t, uint16_t, const uint8_t*, size_t) {}
 void BleKeyboardHost::onLinkUp(const char*, const char*, uint8_t) {}
 void BleKeyboardHost::onLinkDown() {}
 void BleKeyboardHost::onConnectFailed(const char*) {}
