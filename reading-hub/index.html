@@ -155,6 +155,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .quick-log-save{margin-top:18px;width:100%;border:0;border-radius:14px;background:#9c4571;color:white;padding:14px;font-weight:800}
 .quick-log-close{float:right;border:0;background:transparent;color:#573447;font-size:26px;cursor:pointer}
 #quickLogMessage{margin-top:10px;font-size:12px;min-height:16px}
+.quick-log-home{display:block;width:auto;margin:12px 0 18px auto;padding:9px 18px;font-size:13px;border-radius:12px}.quick-log-calendar{margin:12px 0 0;padding:11px;font-size:14px;border-radius:12px}
 </style>
 <link rel="stylesheet" href="./cover-manager.css?v=51054">
 <link rel="stylesheet" href="./cover-rescue.css?v=51057">
@@ -789,7 +790,8 @@ $('quickLogModal').classList.add('open');$('quickLogBook').focus();
 function closeQuickLog(){$('quickLogModal').classList.remove('open')}
 document.addEventListener('DOMContentLoaded',()=>{
 const home=$('home'),cal=$('calendar');
-if(home){const b=document.createElement('button');b.className='quick-log-launch';b.textContent='♡ + Log Reading';b.onclick=()=>openQuickLog();const stats=home.querySelector('.stats');(stats||home).insertAdjacentElement('afterend',b)}
+if(home){const b=document.createElement('button');b.className='quick-log-launch quick-log-home';b.textContent='♡ + Log';b.onclick=()=>openQuickLog();const stats=home.querySelector('.today-grid');if(stats)stats.insertAdjacentElement('afterend',b);else home.appendChild(b)}
+if(cal){const b=document.createElement('button');b.className='quick-log-launch quick-log-calendar';b.textContent='♡ + Log Reading';b.onclick=()=>openQuickLog();const tools=cal.querySelector('.x4-sync-card');if(tools)tools.appendChild(b);else cal.insertAdjacentElement('afterbegin',b)}
 
 $('quickLogClose').onclick=closeQuickLog;
 $('quickLogModal').addEventListener('click',e=>{if(e.target===$('quickLogModal'))closeQuickLog()});
