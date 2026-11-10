@@ -166,12 +166,16 @@ function createMatcher(container){
  const bookSelect=makeSelect([]);section.appendChild(bookSelect);
  const search=document.createElement('button');search.type='button';search.textContent='♡ Find Book';search.style.cssText='padding:10px;border-radius:10px;background:#673b57;color:white;margin:6px 0';section.appendChild(search);
  const result=document.createElement('div');section.appendChild(result);
+ bookSelect.addEventListener('change',()=>{result.replaceChildren();notice.textContent='Tap Find Book to load the selected book.';});
  const notice=document.createElement('div');notice.style.cssText='font-size:12px;margin-top:6px';section.appendChild(notice);
  function refresh(){
+  const selected=bookSelect.value;
   const books=[...new Map(getRows().filter(r=>r.title).map(r=>[normalize(r.title),r.title])).values()];
   bookSelect.replaceChildren(...books.map(t=>{const o=document.createElement('option');o.value=t;o.textContent=t+(selectedEditions()[book({title:t})[0]]?' ✓':'');return o}));
+  if(books.includes(selected))bookSelect.value=selected;
  }
  async function renderForm(title,author,edition){
+  const selectedBook=bookSelect.value;
   result.replaceChildren();
   const [titleWrap,titleInput]=field('Book title',title);result.appendChild(titleWrap);
   const [authorWrap,authorInput]=field('Author',author);result.appendChild(authorWrap);
@@ -185,12 +189,13 @@ function createMatcher(container){
   authorInput.addEventListener('change',previewCover);
   const save=document.createElement('button');save.type='button';save.textContent='♡ Save Book & Edition';save.style.cssText='padding:12px;border-radius:10px;background:#713e61;color:white;margin-top:8px';result.appendChild(save);
   save.addEventListener('click',async()=>{
+   if(bookSelect.value!==selectedBook){notice.textContent='The selected book changed. Tap Find Book again before saving.';return;}
    if(!token){notice.textContent='Connect Google Sheets first.';return;}
    const printPages=Number(printInput.value)||0,ebookPages=Number(ebookInput.value)||0;
    if(!printPages&&!ebookPages){notice.textContent='Enter at least one page count.';return;}
    if((printPages&&!Number.isInteger(printPages))||(ebookPages&&!Number.isInteger(ebookPages))){notice.textContent='Page counts must be whole numbers.';return;}
    save.disabled=true;notice.textContent='Saving edition and calculating page equivalents…';
-   try{await updateEdition(book({title:bookSelect.value})[0],{title:titleInput.value,author:authorInput.value,printPages,ebookPages,isbn:isbnInput.value,source:edition?.source||'Manual',url:edition?.url||'',status:edition?'Confirmed selected edition':'Manually entered edition'});const coverResult=coverForEdition(bookSelect.value,authorInput.value,isbnInput.value);
+   try{await updateEdition(book({title:selectedBook})[0],{title:titleInput.value,author:authorInput.value,printPages,ebookPages,isbn:isbnInput.value,source:edition?.source||'Manual',url:edition?.url||'',status:edition?'Confirmed selected edition':'Manually entered edition'});const coverResult=coverForEdition(selectedBook,authorInput.value,isbnInput.value);
    previewCover();
    notice.textContent='♡ Edition saved! Page estimates updated. '+(coverResult.status==='linked'?'Edition cover linked to your existing cover system.':coverResult.status==='preserved'?'Your chosen cover was kept.':'You can still use Find Covers in Library.');refresh()}
    catch(e){notice.textContent='Could not save: '+e.message}
