@@ -126,6 +126,23 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .cal-cover-stack.multi:has(.cal-cover:nth-child(3)) .cal-cover{width:calc((100% - 4px)/3);height:42px}
 .cal-pages{font-size:9px;bottom:3px}
 @media(min-width:650px){.cal-day{min-height:120px}.cal-cover-stack .cal-cover{height:79px;width:min(80%,56px)}.cal-cover-stack.multi .cal-cover{height:72px}.cal-cover-stack.multi:has(.cal-cover:nth-child(3)) .cal-cover{height:65px}}
+
+/* Three reading journal views */
+.journal-view-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:14px 0 10px}
+.journal-view-tabs button{background:#30201f;border:1px solid #795567;color:#e8d6cc;border-radius:12px;padding:11px 4px;font-weight:750;font-size:13px}
+.journal-view-tabs button.active{background:#793e5d;color:#fff;border-color:#d8a6c1}
+.cal-weekdays[hidden]{display:none}
+.calendar-grid.journal-list{display:flex;flex-direction:column;gap:10px}
+.journal-day-card,.journal-book-card{width:100%;display:flex;align-items:center;gap:12px;min-height:118px;text-align:left;border:1px solid #916c63;border-radius:16px;background:linear-gradient(115deg,#432526,#251817);color:#f8eadb;padding:12px;overflow:hidden}
+.journal-day-meta{width:102px;flex:none;display:flex;flex-direction:column;gap:8px}
+.journal-day-meta strong,.journal-book-meta strong{font-family:Georgia,serif;font-size:17px}
+.journal-day-meta span,.journal-book-meta span{font-size:13px;color:#f0d2a1;font-weight:700}
+.journal-day-meta small,.journal-book-meta small{font-size:11px;color:#c9b3a7}
+.journal-day-covers{display:flex;align-items:center;gap:8px;overflow-x:auto;flex:1;min-width:0}
+.journal-cover{display:flex;align-items:center;justify-content:center;flex:none;width:62px;height:91px;border-radius:7px;background:linear-gradient(140deg,#7c4859,#352329);color:#fff4e7;font:700 11px Georgia,serif;overflow:hidden;background-position:center;background-size:cover;box-shadow:0 3px 8px #0006}
+.journal-book-card>.journal-cover{width:74px;height:108px}
+.journal-book-meta{min-width:0;display:flex;flex-direction:column;gap:7px}
+.journal-empty{padding:24px;text-align:center;color:#dbc4bc}
 </style>
 <style>
 .quick-log-launch{width:100%;border:1px solid #bd8d98;border-radius:15px;padding:13px;background:linear-gradient(110deg,#8b3b62,#5d304d);color:#fff;font-weight:800;text-align:center;margin:12px 0;cursor:pointer}
@@ -303,6 +320,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
       <div class="stat"><b id="calendarMinutes">0</b>minutes</div>
       <div class="stat"><b id="calendarBooks">0</b>books</div>
     </div>
+    <div class="journal-view-tabs" role="group" aria-label="Reading journal view"><button type="button" data-journal-view="calendar">Calendar</button><button type="button" data-journal-view="day">By Day</button><button type="button" data-journal-view="book">By Book</button></div>
     <div class="cal-weekdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
     <div id="readingCalendarGrid" class="calendar-grid"></div>
   </section>
@@ -397,7 +415,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./cover-service.js?v=51058"></script>
 <script src="./cover-manager.js?v=51055"></script>
 <script src="./cover-rescue.js?v=51057"></script>
-<script src="./reading-calendar-x4pro-v1.js?v=multi-covers-2"></script>
+<script src="./reading-calendar-x4pro-v1.js?v=journal-views-1"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="./google-sheets-sync-v1.js?v=8"></script>
 <script>
