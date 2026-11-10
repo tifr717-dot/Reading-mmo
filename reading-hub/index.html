@@ -115,6 +115,17 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
  .home-reco{grid-template-columns:78px 1fr}.home-reco-cover{width:78px;height:117px}
 }
 
+
+/* Cover-first calendar: larger day tiles and multiple visible book jackets */
+.calendar-grid{gap:4px}
+.cal-day{min-height:100px;padding:4px}
+.cal-num{font-size:11px}
+.cal-cover-stack{position:absolute;inset:22px 3px 17px;display:flex;align-items:center;justify-content:center;gap:2px}
+.cal-cover-stack .cal-cover{position:relative;left:auto;top:auto;transform:none;flex:0 1 auto;width:min(82%,43px);height:62px;min-width:0;border-radius:4px;background-size:cover;background-position:center;overflow:hidden}
+.cal-cover-stack.multi .cal-cover{width:calc((100% - 2px)/2);height:49px}
+.cal-cover-stack.multi:has(.cal-cover:nth-child(3)) .cal-cover{width:calc((100% - 4px)/3);height:42px}
+.cal-pages{font-size:9px;bottom:3px}
+@media(min-width:650px){.cal-day{min-height:120px}.cal-cover-stack .cal-cover{height:79px;width:min(80%,56px)}.cal-cover-stack.multi .cal-cover{height:72px}.cal-cover-stack.multi:has(.cal-cover:nth-child(3)) .cal-cover{height:65px}}
 </style>
 <style>
 .quick-log-launch{width:100%;border:1px solid #bd8d98;border-radius:15px;padding:13px;background:linear-gradient(110deg,#8b3b62,#5d304d);color:#fff;font-weight:800;text-align:center;margin:12px 0;cursor:pointer}
@@ -386,7 +397,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./cover-service.js?v=51058"></script>
 <script src="./cover-manager.js?v=51055"></script>
 <script src="./cover-rescue.js?v=51057"></script>
-<script src="./reading-calendar-x4pro-v1.js?v=completion-fix-1"></script>
+<script src="./reading-calendar-x4pro-v1.js?v=multi-covers-2"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="./google-sheets-sync-v1.js?v=8"></script>
 <script>
