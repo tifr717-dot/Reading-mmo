@@ -416,13 +416,13 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
       size_t pos = 0;
       for (size_t i = 0; i < displayed && pos + 4 < sizeof(hex); ++i)
         pos += snprintf(hex + pos, sizeof(hex) - pos, "%02X ", report.bytes[i]);
-      renderer.drawCenteredText(SMALL_FONT_ID, 499, hex);
+      renderer.drawCenteredText(SMALL_FONT_ID, 488, hex);
     } else {
       renderer.drawCenteredText(SMALL_FONT_ID, 471, "No notifications yet");
-      renderer.drawCenteredText(SMALL_FONT_ID, 499, "No key decoded");
+      renderer.drawCenteredText(SMALL_FONT_ID, 488, "No key decoded");
     }
     // Lower button boundary clears both notification rows and the key label.
-    renderer.drawLine(30, 519, width - 30, 519, true);
+    renderer.drawLine(30, 527, width - 30, 527, true);
     renderer.drawCenteredText(UI_10_FONT_ID, 544, "Tap to switch Boot / Report");
     renderer.drawLine(30, 575, width - 30, 575, true);
     renderer.drawCenteredText(SMALL_FONT_ID, 591,
