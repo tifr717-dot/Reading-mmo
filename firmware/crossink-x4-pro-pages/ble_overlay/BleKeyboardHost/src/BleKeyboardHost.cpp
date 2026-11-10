@@ -25,6 +25,8 @@
 
 namespace {
 BLEClient* activeClient = nullptr;
+// Borrowed from activeClient's GATT service; invalid after disconnect/deinit.
+BLERemoteCharacteristic* hidProtocolCharacteristic = nullptr;
 uint32_t lastReconnectMs = 0;
 portMUX_TYPE keyMux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -112,6 +114,7 @@ void BleKeyboardHost::end() {
   // same allocation and cause multi_heap_free(head != NULL) on menu exit.
   BLEDevice::deinit(false);
   activeClient = nullptr;
+  hidProtocolCharacteristic = nullptr;
   begun_ = false;
   scanning_ = false;
   connecting_ = false;
@@ -173,6 +176,7 @@ bool BleKeyboardHost::copyDevice(uint8_t i, DiscoveredDevice& out) const {
 bool BleKeyboardHost::connect(const char* addr) {
   if (!begun_ || connecting_ || !addr || !*addr) return false;
   connectionStage_ = 0;
+  hidProtocolCharacteristic = nullptr;
   HidConnectionDiagnostics diagnostic{};
   setConnectionDiagnostics(diagnostic);
   uint8_t addressType = 0;
@@ -257,7 +261,26 @@ bool BleKeyboardHost::connect(const char* addr) {
   }
 
   auto* characteristics = hid->getCharacteristics();
+  BLERemoteCharacteristic* controlPoint = nullptr;
   if (characteristics) {
+    // Inspect discovered descriptors only. A GATT read()/response-write() on
+    // Arduino-ESP32 3.3.7 can wait FOREVER, so this experiment never does one.
+    for (const auto& item : *characteristics) {
+      BLERemoteCharacteristic* chr = item.second;
+      if (!chr) continue;
+      const BLEUUID uuid = chr->getUUID();
+      if (uuid.equals(BLEUUID(uint16_t(0x2A4E)))) hidProtocolCharacteristic = chr;
+      if (uuid.equals(BLEUUID(uint16_t(0x2A4C)))) controlPoint = chr;
+      if (uuid.equals(BLEUUID(uint16_t(0x2A4B)))) diagnostic.reportMapPresent = 1;
+    }
+    // Try Report Protocol first, identical to the mode most hosts use.
+    // writeValue(false) is a no-response GATT write only if this property is set.
+    if (hidProtocolCharacteristic) {
+      diagnostic.protocolModeStatus = 1;
+      if (hidProtocolCharacteristic->canWriteNoResponse()) {
+        diagnostic.protocolModeStatus = hidProtocolCharacteristic->writeValue(uint8_t(1), false) ? 2 : 4;
+      }
+    }
     for (const auto& item : *characteristics) {
       BLERemoteCharacteristic* chr = item.second;
       if (!chr || !chr->canNotify()) continue;
@@ -268,10 +291,12 @@ bool BleKeyboardHost::connect(const char* addr) {
       ++diagnostic.inputChannels;
       if (diagnostic.firstInputHandle == 0)
         diagnostic.firstInputHandle = chr->getHandle();
+      if (diagnostic.inputChannels <= 3)
+        diagnostic.channelHandles[diagnostic.inputChannels - 1] = chr->getHandle();
+      if (chr->getDescriptor(BLEUUID(uint16_t(0x2908))))
+        ++diagnostic.reportReferenceCount;
 
-      // Arduino-ESP32 subscribe() returns TRUE even when the Client
-      // Characteristic Configuration Descriptor (0x2902) is absent. Treat
-      // only real descriptor-backed writes as a valid input subscription.
+      // Check the real CCCD before treating subscribe() success as input-ready.
       if (!chr->getDescriptor(BLEUUID(uint16_t(0x2902)))) {
         ++diagnostic.missingCccd;
         continue;
@@ -279,6 +304,13 @@ bool BleKeyboardHost::connect(const char* addr) {
       ++diagnostic.cccdChannels;
       if (chr->subscribe(true, notifyReport)) ++diagnostic.subscriptions;
       else ++diagnostic.subscriptionFailures;
+    }
+    // Some clickers remain suspended until the host sends HID Exit Suspend.
+    // This is also strictly write-without-response to avoid a stalled reader.
+    if (controlPoint) {
+      diagnostic.exitSuspendStatus = 1;
+      if (controlPoint->canWriteNoResponse())
+        diagnostic.exitSuspendStatus = controlPoint->writeValue(uint8_t(1), false) ? 2 : 3;
     }
   }
   setConnectionDiagnostics(diagnostic);
@@ -298,6 +330,7 @@ bool BleKeyboardHost::connect(const char* addr) {
 }
 
 void BleKeyboardHost::disconnect() {
+  hidProtocolCharacteristic = nullptr;
   connected_ = false;
   connecting_ = false;
   if (activeClient && activeClient->isConnected()) activeClient->disconnect();
@@ -319,6 +352,7 @@ void BleKeyboardHost::onLinkUp(const char* addr, const char* name, uint8_t type)
   persistBonds();
 }
 void BleKeyboardHost::onLinkDown() {
+  hidProtocolCharacteristic = nullptr;
   connected_ = false;
   connecting_ = false;
   heldUsage_ = 0;
@@ -428,6 +462,21 @@ bool BleKeyboardHost::copyConnectionDiagnostics(HidConnectionDiagnostics& out) c
   portEXIT_CRITICAL(&keyMux);
   return true;
 }
+bool BleKeyboardHost::setProtocolMode(uint8_t mode) {
+  if (mode > 1 || !activeClient || !activeClient->isConnected() ||
+      !hidProtocolCharacteristic) return false;
+  bool ok = false;
+  uint8_t status = 1;
+  if (hidProtocolCharacteristic->canWriteNoResponse()) {
+    ok = hidProtocolCharacteristic->writeValue(mode, false);
+    status = ok ? (mode ? 2 : 3) : 4;
+  }
+  portENTER_CRITICAL(&keyMux);
+  connectionDiagnostics_.protocolMode = mode;
+  connectionDiagnostics_.protocolModeStatus = status;
+  portEXIT_CRITICAL(&keyMux);
+  return ok;
+}
 bool BleKeyboardHost::copyLastReport(HidReportSnapshot& out) const {
   portENTER_CRITICAL(&keyMux);
   out = lastReport_;
@@ -448,6 +497,12 @@ void BleKeyboardHost::onReportIngest(const uint8_t* data, size_t len, uint16_t h
   // non-8-byte report, which the normal keyboard decoder cannot understand.
   portENTER_CRITICAL(&keyMux);
   ++lastReport_.count;
+  for (uint8_t i = 0; i < 3; ++i) {
+    if (connectionDiagnostics_.channelHandles[i] == handle && handle != 0) {
+      ++connectionDiagnostics_.channelReports[i];
+      break;
+    }
+  }
   lastReport_.handle = handle;
   lastReport_.length = static_cast<uint16_t>(std::min(len, static_cast<size_t>(UINT16_MAX)));
   memset(lastReport_.bytes, 0, sizeof(lastReport_.bytes));
@@ -487,6 +542,7 @@ void BleKeyboardHost::forget(const char*) {}
 bool BleKeyboardHost::popKey(KeyEvent&) { return false; }
 bool BleKeyboardHost::copyLastReport(HidReportSnapshot&) const { return false; }
 bool BleKeyboardHost::copyConnectionDiagnostics(HidConnectionDiagnostics&) const { return false; }
+bool BleKeyboardHost::setProtocolMode(uint8_t) { return false; }
 bool BleKeyboardHost::takeConnectFailure(char*, size_t) { return false; }
 bool BleKeyboardHost::takePairingPasskey(uint32_t&) { return false; }
 void BleKeyboardHost::onScanResultIngest(const char*, const char*, int, uint8_t, bool, bool) {}
