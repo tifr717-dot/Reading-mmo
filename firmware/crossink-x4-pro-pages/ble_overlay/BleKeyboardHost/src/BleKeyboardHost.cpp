@@ -106,6 +106,7 @@ void BleKeyboardHost::end() {
   heldUsage_ = 0;
   lastReconnectMs = 0;
   startupStage_ = 0;
+  connectionStage_ = 0;
 }
 
 void BleKeyboardHost::poll(bool allowReconnect) {
@@ -157,6 +158,7 @@ bool BleKeyboardHost::copyDevice(uint8_t i, DiscoveredDevice& out) const {
 
 bool BleKeyboardHost::connect(const char* addr) {
   if (!begun_ || connecting_ || !addr || !*addr) return false;
+  connectionStage_ = 0;
   uint8_t addressType = 0;
   char name[32] = {0};
   for (uint8_t i = 0; i < deviceCount_; ++i) {
@@ -175,6 +177,7 @@ bool BleKeyboardHost::connect(const char* addr) {
       }
     }
   }
+  connectionStage_ = 1;
   if (scanning_) stopScan();
   connecting_ = true;
   connectFailed_ = false;
@@ -195,26 +198,30 @@ bool BleKeyboardHost::connect(const char* addr) {
   activeClient->setClientCallbacks(&connectionCallbacks);
   // Time-bounded connect; the user can continue reading if a remote is absent.
   const BLEAddress peer(String(addr), addressType);
+  connectionStage_ = 2;
   if (!activeClient->connect(peer, addressType, 3000)) {
     onConnectFailed("Remote unavailable");
     return false;
   }
+  connectionStage_ = 3;
   BLERemoteService* hid = activeClient->getService(BLEUUID(uint16_t(0x1812)));
   if (!hid) {
     activeClient->disconnect();
     onConnectFailed("Device is not a BLE keyboard");
     return false;
   }
-  // Just Works BLE HID pairing: a peripheral may require encryption to notify.
-  activeClient->secureConnection();
+  // Arduino-ESP32 3.3.7's NimBLE secureConnection() waits FOREVER for
+  // security completion. Do not force it before subscribing. Encrypted HID
+  // characteristics can request security when the CCCD is accessed instead.
+  connectionStage_ = 4;
   bool subscribed = false;
   auto* characteristics = hid->getCharacteristics();
   if (characteristics) {
     for (const auto& item : *characteristics) {
       BLERemoteCharacteristic* chr = item.second;
       if (chr && chr->getUUID().equals(BLEUUID(uint16_t(0x2A4D))) && chr->canNotify()) {
-        chr->registerForNotify(notifyReport);
-        subscribed = true;
+        // Unlike registerForNotify(void), subscribe() reports CCCD failure.
+        if (chr->subscribe(true, notifyReport)) subscribed = true;
       }
     }
   }
@@ -223,6 +230,7 @@ bool BleKeyboardHost::connect(const char* addr) {
     onConnectFailed("No HID input report");
     return false;
   }
+  connectionStage_ = 5;
   onLinkUp(addr, name[0] ? name : addr, addressType);
   releaseScanResults();
   return true;
