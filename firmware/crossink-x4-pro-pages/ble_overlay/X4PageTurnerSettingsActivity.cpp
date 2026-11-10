@@ -143,6 +143,12 @@ void X4PageTurnerSettingsActivity::loop() {
         notice = "Remote unavailable: turn OFF then ON";
       else if (std::strcmp(connectionError, "No HID input report") == 0)
         notice = "No HID input: check remote keyboard mode";
+      else if (std::strcmp(connectionError, "No HID CCCD descriptors") == 0 ||
+               std::strcmp(connectionError, "HID subscription write failed") == 0 ||
+               std::strcmp(connectionError, "No HID notify characteristics") == 0)
+        notice = "Input setup failed; open Button Input Tester";
+      else if (std::strcmp(connectionError, "Remote dropped during pairing") == 0)
+        notice = "Remote dropped during security handshake";
       else
         notice = "Pairing failed: turn OFF then ON";
       requestUpdate();
@@ -293,35 +299,54 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
   } else if (view == View::Tester) {
 #ifndef SIMULATOR
     freeink::HidReportSnapshot report{};
+    freeink::HidConnectionDiagnostics diag{};
     BleHid.copyLastReport(report);
+    BleHid.copyConnectionDiagnostics(diag);
     const uint32_t sinceOpen = report.count - testerStartReports;
     char line[96];
-    renderer.drawCenteredText(UI_12_FONT_ID, 150, "Button Input Tester", true, EpdFontFamily::BOLD);
-    snprintf(line, sizeof(line), "HID reports since opening: %lu", static_cast<unsigned long>(sinceOpen));
-    renderer.drawCenteredText(UI_10_FONT_ID, 215, line);
+    renderer.drawCenteredText(UI_12_FONT_ID, 115, "Button Input Tester v7", true, EpdFontFamily::BOLD);
+    const char* security = "Not attempted";
+    switch (diag.securityState) {
+      case 1: security = "Pairing requested"; break;
+      case 2: security = "Link encrypted"; break;
+      case 3: security = "Pairing timed out"; break;
+      case 4: security = "Pairing request failed"; break;
+      default: break;
+    }
+    snprintf(line, sizeof(line), "Security: %s (code %d)", security, static_cast<int>(diag.securityResult));
+    renderer.drawCenteredText(UI_10_FONT_ID, 160, line);
+    snprintf(line, sizeof(line), "HID inputs: %u   CCCD found: %u   Enabled: %u",
+             diag.inputChannels, diag.cccdChannels, diag.subscriptions);
+    renderer.drawCenteredText(UI_10_FONT_ID, 205, line);
+    snprintf(line, sizeof(line), "No CCCD: %u   Write failures: %u   Handle: %04X",
+             diag.missingCccd, diag.subscriptionFailures, diag.firstInputHandle);
+    renderer.drawCenteredText(SMALL_FONT_ID, 238, line);
+    snprintf(line, sizeof(line), "Button reports after opening: %lu",
+             static_cast<unsigned long>(sinceOpen));
+    renderer.drawCenteredText(UI_10_FONT_ID, 290, line);
     if (sinceOpen > 0) {
-      snprintf(line, sizeof(line), "Report length: %u   Handle: 0x%04X",
+      snprintf(line, sizeof(line), "Length: %u   Last handle: 0x%04X",
                static_cast<unsigned int>(report.length), static_cast<unsigned int>(report.handle));
-      renderer.drawCenteredText(UI_10_FONT_ID, 270, line);
+      renderer.drawCenteredText(UI_10_FONT_ID, 335, line);
       char hex[48] = {0};
       const size_t displayed = std::min(static_cast<size_t>(report.length), sizeof(report.bytes));
       size_t pos = 0;
-      for (size_t i = 0; i < displayed && pos + 4 < sizeof(hex); ++i) {
+      for (size_t i = 0; i < displayed && pos + 4 < sizeof(hex); ++i)
         pos += snprintf(hex + pos, sizeof(hex) - pos, "%02X ", report.bytes[i]);
-      }
-      renderer.drawCenteredText(UI_10_FONT_ID, 320, "Raw notification bytes (hex):");
-      renderer.drawCenteredText(SMALL_FONT_ID, 350, hex);
+      renderer.drawCenteredText(SMALL_FONT_ID, 375, hex);
     } else {
-      renderer.drawCenteredText(UI_10_FONT_ID, 270, "No Bluetooth button reports received");
+      renderer.drawCenteredText(UI_10_FONT_ID, 345, "No input notifications received yet");
     }
     if (testerLastUsage) {
       snprintf(line, sizeof(line), "Keyboard key: 0x%02X   Modifiers: 0x%02X",
                testerLastUsage, testerLastModifiers);
-      renderer.drawCenteredText(UI_10_FONT_ID, 425, line);
+      renderer.drawCenteredText(UI_10_FONT_ID, 435, line);
     } else {
-      renderer.drawCenteredText(UI_10_FONT_ID, 425, "No keyboard code decoded");
+      renderer.drawCenteredText(UI_10_FONT_ID, 435, "No keyboard key decoded");
     }
-    renderer.drawCenteredText(UI_10_FONT_ID, 520, "Press NEXT/PREVIOUS, then take a photo");
+    renderer.drawCenteredText(UI_10_FONT_ID, 510, "Press NEXT/PREV, then take a photo");
+    renderer.drawCenteredText(SMALL_FONT_ID, 548,
+                              BleHid.isConnected() ? "Link: connected" : "Link: not connected");
 #else
     renderer.drawCenteredText(UI_10_FONT_ID, 250, "Input tester needs real Bluetooth hardware");
 #endif
