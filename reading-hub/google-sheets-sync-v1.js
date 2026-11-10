@@ -66,7 +66,7 @@ async function updateEdition(bookId,entry){
  const valuesRows=sessions.values||[];
  const requests=[];
  valuesRows.forEach((row,i)=>{
-  if(book(row)[0]!==bookId&&row[2]!==bookId)return;
+  if(book({title:row[3]})[0]!==bookId&&row[2]!==bookId)return;
   const x=Array.from({length:14},(_,j)=>row[j]??'');
   x[2]=bookId;x[4]=entry.author;
   x[9]=entry.ebookPages?percentPages(x,Number(entry.ebookPages)):'';
