@@ -124,7 +124,7 @@ jobs:
           enable-cache: true
 
       - name: Cache PlatformIO packages
-        uses: actions/cache@v6
+        uses: actions/cache@v5
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-crossink-x4-pro-selective-sync-${{ env.CROSSINK_COMMIT }}
@@ -203,7 +203,7 @@ jobs:
             echo "- Arduino BLEDevice owns client cleanup; v1 double-free removed"
             echo "- firmware ELF and optional map supplied for future crash symbolication"
             echo "- remote pairing and learned next/previous key usage persist in NVS"
-            echo "- v6 removes the unconditional unbounded BLE secureConnection() call"
+            echo "- v5 removed the unconditional unbounded BLE secureConnection() call (still absent in v6)"
             echo "- connection stage breadcrumbs identify link, service discovery, or subscription stalls"
            echo "- v6 Button Input Tester displays raw BLE input notifications, length and characteristic handle"
            echo "- boot keyboard and mouse input notifications are observed in addition to HID report input"
@@ -212,7 +212,7 @@ jobs:
           } > "$GITHUB_WORKSPACE/out/BUILD-INFO.txt"
 
       - name: Upload selective sync artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v5
         with:
           name: crossink-x4-pro-dev13-selective-sync-bt-v6
           path: |
