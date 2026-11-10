@@ -24,6 +24,8 @@ void setPairingScreenOpen(bool open);
 void service(bool readerInFront, MappedInputManager& input);
 uint8_t nextUsage();
 uint8_t previousUsage();
-void bindNext(uint8_t usage);
-void bindPrevious(uint8_t usage);
+uint8_t nextModifiers();
+uint8_t previousModifiers();
+void bindNext(uint8_t usage, uint8_t modifiers = 0);
+void bindPrevious(uint8_t usage, uint8_t modifiers = 0);
 }
