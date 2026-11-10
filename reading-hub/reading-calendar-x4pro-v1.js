@@ -256,6 +256,53 @@
     }
   }
 
+
+  const VIEW_KEY='readingMmoCalendarViewV1';
+  let displayMode=(()=>{try{return localStorage.getItem(VIEW_KEY)||'calendar'}catch(_){return 'calendar'}})();
+  function coverMarkup(title,size='M'){
+    const match=findLibraryBook(title);
+    const initials=String(title||'').split(/\\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+    return '<span class="journal-cover book-cover-slot" data-book-cover data-cover-title="'+esc(title)+'" data-cover-author="'+esc(match?.author||'')+'" data-cover-size="'+size+'">'+esc(initials||'📖')+'</span>';
+  }
+  function renderAlternateViews(rows){
+    const grid=$('readingCalendarGrid');
+    const weekdays=document.querySelector('.cal-weekdays');
+    if(!grid)return;
+    const tabs=document.querySelectorAll('[data-journal-view]');
+    tabs.forEach(b=>{const active=b.dataset.journalView===displayMode;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+    if(weekdays)weekdays.hidden=displayMode!=='calendar';
+    grid.classList.toggle('journal-list',displayMode!=='calendar');
+    if(displayMode==='calendar')return;
+    if(displayMode==='day'){
+      const grouped=byDate(rows);
+      const dates=Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+      grid.innerHTML=dates.length?dates.map(date=>{
+        const entries=grouped[date];
+        const titles=[...new Set(entries.map(r=>r.title).filter(Boolean))];
+        const pages=entries.reduce((n,r)=>n+(Number(r.pages)||0),0);
+        const minutes=Math.floor(entries.reduce((n,r)=>n+(Number(r.seconds)||0),0)/60);
+        const label=new Date(date+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+        return '<button class="journal-day-card" data-cal-date="'+esc(date)+'"><span class="journal-day-meta"><strong>'+esc(label)+'</strong><span>'+pages+' XTE pages</span><small>'+minutes+' min</small></span><span class="journal-day-covers">'+titles.map(t=>coverMarkup(t)).join('')+'</span></button>';
+      }).join(''):'<p class="journal-empty">No reading logged this month yet.</p>';
+    }else{
+      const grouped={};
+      rows.forEach(r=>{const title=String(r.title||'Unknown book').trim();(grouped[title] ||= []).push(r);});
+      const titles=Object.keys(grouped).sort((a,b)=>String(grouped[b].map(r=>r.date).sort().at(-1)||'').localeCompare(String(grouped[a].map(r=>r.date).sort().at(-1)||'')));
+      grid.innerHTML=titles.length?titles.map(title=>{
+        const entries=grouped[title];
+        const pages=entries.reduce((n,r)=>n+(Number(r.pages)||0),0);
+        const minutes=Math.floor(entries.reduce((n,r)=>n+(Number(r.seconds)||0),0)/60);
+        const dates=[...new Set(entries.map(r=>r.date))].sort();
+        const start=dates[0],end=dates[dates.length-1];
+        const label=dates.length===1?start:start+' – '+end;
+        const latest=entries.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
+        const pct=Number(latest?.endPercent);
+        return '<button class="journal-book-card" data-journal-book="'+esc(title)+'">'+coverMarkup(title,'M')+'<span class="journal-book-meta"><strong>'+esc(title)+'</strong><small>'+esc(label)+' · '+dates.length+' reading '+(dates.length===1?'day':'days')+'</small><span>'+pages+' XTE pages · '+minutes+' min</span>'+(Number.isFinite(pct)?'<small>'+pct.toFixed(1)+'% complete</small>':'')+'</span></button>';
+      }).join(''):'<p class="journal-empty">No books logged this month yet.</p>';
+    }
+    if(window.ReadingCovers)requestAnimationFrame(()=>window.ReadingCovers.hydrate(grid));
+  }
+
   function render() {
     const grid = $('readingCalendarGrid');
     if (!grid) return;
@@ -302,6 +349,7 @@
     }
     grid.innerHTML = cells.join('');
     if (window.ReadingCovers) requestAnimationFrame(()=>window.ReadingCovers.hydrate(grid));
+    renderAlternateViews(rows);
   }
 
   function openDay(date) {
@@ -494,6 +542,8 @@
 
   function boot() {
     correctFalseGodsCompletion();
+    document.querySelectorAll('[data-journal-view]').forEach(b=>b.addEventListener('click',()=>{displayMode=b.dataset.journalView;try{localStorage.setItem(VIEW_KEY,displayMode)}catch(_){}render();}));
+    $('readingCalendarGrid')?.addEventListener('click',e=>{const b=e.target.closest('[data-journal-book]');if(!b)return;const title=b.dataset.journalBook;const dates=[...new Set(monthRows().filter(r=>r.title===title).map(r=>r.date))].sort().reverse();if(dates.length)openDay(dates[0]);});
     $('calendarPrev')?.addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()-1);render();});
     $('calendarNext')?.addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()+1);render();});
     $('readingCalendarGrid')?.addEventListener('click',e=>{const b=e.target.closest('[data-cal-date]'); if(b) openDay(b.dataset.calDate);});
