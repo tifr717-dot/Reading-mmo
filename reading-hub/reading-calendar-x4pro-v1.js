@@ -289,8 +289,13 @@
       cells.push(
         '<button class="cal-day '+(date===today?'today ':'')+(dayRows.length?'has-reading':'')+'" data-cal-date="'+date+'">'+
           '<span class="cal-num">'+day+'</span>'+
-          (dayRows.length ? '<span class="cal-cover book-cover-slot" data-book-cover data-cover-title="'+esc(titles[0]||'')+'" data-cover-author="'+esc(coverAuthor)+'" data-cover-size="S">'+esc(coverLabel||'📖')+'</span>' : '')+
-          (titles.length>1 ? '<span class="cal-plus">+'+(titles.length-1)+'</span>' : '')+
+          (dayRows.length ? '<span class="cal-cover-stack '+(titles.length>1?'multi':'')+'">'+titles.slice(0,3).map((title,idx)=>{
+            const match=findLibraryBook(title);
+            const author=match?.author||'';
+            const initials=title.split(/\\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+            return '<span class="cal-cover book-cover-slot" data-book-cover data-cover-title="'+esc(title)+'" data-cover-author="'+esc(author)+'" data-cover-size="S">'+esc(initials||'📖')+'</span>';
+          }).join('')+'</span>' : '')+
+          (titles.length>3 ? '<span class="cal-plus">+'+(titles.length-3)+'</span>' : '')+
           (totalPages ? '<span class="cal-pages">'+totalPages+'p</span>' : '')+
         '</button>'
       );
