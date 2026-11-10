@@ -17,7 +17,7 @@ class X4PageTurnerSettingsActivity final : public Activity {
   bool preventAutoSleep() override { return true; }
 
  private:
-  enum class View : uint8_t { Menu, Scan, LearnNext, LearnPrevious };
+  enum class View : uint8_t { Menu, Scan, LearnNext, LearnPrevious, Tester };
   View view = View::Menu;
   ScreenTransitionRefresh transition;
   int selection = 0;
@@ -26,6 +26,10 @@ class X4PageTurnerSettingsActivity final : public Activity {
   int lastRuntimeState = -1;
   int lastConnectionStage = -1;
   uint32_t scanStartedMs = 0;
+  uint32_t testerStartReports = 0;
+  uint32_t testerLastReports = 0;
+  uint8_t testerLastUsage = 0;
+  uint8_t testerLastModifiers = 0;
   const char* notice = "";
   void choose();
   void close();
