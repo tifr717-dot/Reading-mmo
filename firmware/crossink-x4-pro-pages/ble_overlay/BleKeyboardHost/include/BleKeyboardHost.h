@@ -102,6 +102,9 @@ class BleKeyboardHost {
   // is actually resident, independent of the user's on/off preference.
   bool isRunning() const { return begun_; }
   uint8_t startupStage() const { return startupStage_; }
+  // Stages of the explicit connection attempt (0=idle, 1=stop scan,
+  // 2=link, 3=HID service discovery, 4=HID reports, 5=ready).
+  uint8_t connectionStage() const { return connectionStage_; }
 
   // --- Discovery -------------------------------------------------------------
   void startScan(uint32_t ms = 5000);
@@ -115,8 +118,8 @@ class BleKeyboardHost {
   void releaseScanResults();
 
   // --- Connection ------------------------------------------------------------
-  // Begin an async connect to a scanned/bonded address. isConnected() flips once
-  // the link is encrypted and the HID input report is subscribed.
+  // Connect to a scanned/bonded address on the dedicated BLE worker.
+  // isConnected() flips only after an HID input report is subscribed.
   bool connect(const char* addr);
   void disconnect();
   bool isConnected() const { return connected_; }
@@ -173,6 +176,7 @@ class BleKeyboardHost {
   volatile bool scanning_ = false;
   volatile bool begun_ = false;  // read by the UI, written by BLE worker
   volatile uint8_t startupStage_ = 0;  // 1=NVS, 2=NimBLE sync, 3=security, 4=scan, 5=ready
+  volatile uint8_t connectionStage_ = 0;  // persisted as a stage-specific watchdog error
 
   // Key auto-repeat: HID delivers one report per state change, so holding a key
   // (backspace, arrows) only sends a single press. The backend records the held
