@@ -74,6 +74,17 @@ struct HidConnectionDiagnostics {
   uint8_t securityState = 0;
   int16_t securityResult = 0;
   uint16_t firstInputHandle = 0;
+  // HID 2A4E/2A4C presence and strictly nonblocking write results.
+  // Mode: 0=absent, 1=write-without-response unsupported,
+  // 2=Report requested, 3=Boot requested, 4=write failed.
+  uint8_t protocolModeStatus = 0;
+  uint8_t protocolMode = 1;
+  // Wake: 0=absent, 1=write-without-response unsupported, 2=sent, 3=failed.
+  uint8_t exitSuspendStatus = 0;
+  uint8_t reportMapPresent = 0;
+  uint8_t reportReferenceCount = 0;
+  uint16_t channelHandles[3] = {0};
+  uint32_t channelReports[3] = {0};
 };
 
 // A BLE device seen during a scan.
@@ -162,6 +173,8 @@ class BleKeyboardHost {
   // Non-destructive diagnostic snapshot (no heap allocation in callbacks).
   bool copyLastReport(HidReportSnapshot& out) const;
   bool copyConnectionDiagnostics(HidConnectionDiagnostics& out) const;
+  // Called on the BLE worker only; never uses a blocking GATT response wait.
+  bool setProtocolMode(uint8_t mode);
 
   // --- Internal: called by the NimBLE backend (not for app use). These keep the
   // public header free of NimBLE types — the .cpp translates BLE objects into
