@@ -75,7 +75,23 @@
     const chosen=manualRef(title,author);
     if(chosen)return chosen;
     const row=cacheRead()[k];
-    return (row&&row.ref)||exact[k]||null;
+    const found=(row&&row.ref)||exact[k]||null;
+    if(found)return found;
+    // XTE diary rows can omit author. Reuse the confirmed edition's cover
+    // without replacing any manually chosen cover for this title.
+    if(!String(author||'').trim()){
+      try{
+        const choices=JSON.parse(localStorage.getItem('readingMmoEditionChoicesV1')||'{}');
+        const match=Object.values(choices).find(e=>norm(e.title)===norm(title)&&e.author);
+        if(match){
+          const altKey=key(title,match.author);
+          const chosen=manualRead()[altKey];
+          const altRow=cacheRead()[altKey];
+          return chosen||(altRow&&altRow.ref)||exact[altKey]||null;
+        }
+      }catch(_){}
+    }
+    return null;
   }
   function setRef(title,author,ref){
     const map=cacheRead(),k=key(title,author);
