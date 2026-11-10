@@ -25,6 +25,8 @@ std::atomic<bool> pairingOpen{false};
 std::atomic<uint32_t> enableRestartAt{0};
 int nextKey = -1;
 int previousKey = -1;
+int nextMods = -1;
+int previousMods = -1;
 
 #ifndef SIMULATOR
 enum class WorkKind : uint8_t { None = 0, Start, Stop, Scan, Connect, ForgetAll, Poll };
@@ -285,16 +287,40 @@ uint8_t previousUsage() {
   }
   return static_cast<uint8_t>(previousKey);
 }
-void bindNext(uint8_t usage) {
+uint8_t nextModifiers() {
+  if (nextMods == -1) {
+#ifdef SIMULATOR
+    nextMods = 0;
+#else
+    nextMods = readByte("nextmods", 0);
+#endif
+  }
+  return static_cast<uint8_t>(nextMods);
+}
+uint8_t previousModifiers() {
+  if (previousMods == -1) {
+#ifdef SIMULATOR
+    previousMods = 0;
+#else
+    previousMods = readByte("prevmods", 0);
+#endif
+  }
+  return static_cast<uint8_t>(previousMods);
+}
+void bindNext(uint8_t usage, uint8_t modifiers) {
   nextKey = usage;
+  nextMods = modifiers;
 #ifndef SIMULATOR
   writeByte("next", usage);
+  writeByte("nextmods", modifiers);
 #endif
 }
-void bindPrevious(uint8_t usage) {
+void bindPrevious(uint8_t usage, uint8_t modifiers) {
   previousKey = usage;
+  previousMods = modifiers;
 #ifndef SIMULATOR
   writeByte("prev", usage);
+  writeByte("prevmods", modifiers);
 #endif
 }
 
@@ -347,20 +373,24 @@ void service(bool readerInFront, MappedInputManager& input) {
 
   freeink::KeyEvent key;
   while (BleHid.popKey(key)) {
-    if (!key.pressed || key.mods != 0) continue;
+    if (!key.pressed) continue;
     const uint8_t usage = key.keycode;
     const uint8_t prev = previousUsage();
     const uint8_t next = nextUsage();
-    bool back = prev != 0 ? usage == prev
-                          : (key.special == freeink::SpecialKey::Left ||
-                             key.special == freeink::SpecialKey::PageUp ||
-                             key.special == freeink::SpecialKey::Up ||
-                             key.special == freeink::SpecialKey::Backspace);
-    bool forward = next != 0 ? usage == next
-                             : (key.special == freeink::SpecialKey::Right ||
-                                key.special == freeink::SpecialKey::PageDown ||
-                                key.special == freeink::SpecialKey::Down ||
-                                key.ch == ' ');
+    // Learned bindings include modifiers, but fallback shortcuts only match
+    // unmodified keys to avoid turning pages when Ctrl/Alt is held.
+    bool back = prev != 0 ? (usage == prev && key.mods == previousModifiers())
+                          : (key.mods == 0 &&
+                             (key.special == freeink::SpecialKey::Left ||
+                              key.special == freeink::SpecialKey::PageUp ||
+                              key.special == freeink::SpecialKey::Up ||
+                              key.special == freeink::SpecialKey::Backspace));
+    bool forward = next != 0 ? (usage == next && key.mods == nextModifiers())
+                             : (key.mods == 0 &&
+                                (key.special == freeink::SpecialKey::Right ||
+                                 key.special == freeink::SpecialKey::PageDown ||
+                                 key.special == freeink::SpecialKey::Down ||
+                                 key.ch == ' '));
     if (back && forward) continue;
     if (back) {
       input.injectRemoteTap(MappedInputManager::Button::PageBack);
