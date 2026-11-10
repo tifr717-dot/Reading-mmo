@@ -80,6 +80,8 @@ void X4PageTurnerSettingsActivity::choose() {
     testerLastReports = report.count;
     testerLastProtocolStatus = 0xFF;
     testerLastProtocolMode = 0xFF;
+    testerLastProbeCompleted = 0xFF;
+    testerLastProbeErrors = 0xFF;
     notice = "Tap NEXT/PREV, then switch mode below";
   } else if (selection == 5) {
     notice = X4PageTurner::requestForgetAll() ? "Removing saved pairings..."
@@ -133,9 +135,13 @@ void X4PageTurnerSettingsActivity::loop() {
       freeink::HidConnectionDiagnostics diag{};
       if (BleHid.copyConnectionDiagnostics(diag) &&
           (diag.protocolModeStatus != testerLastProtocolStatus ||
-           diag.protocolMode != testerLastProtocolMode)) {
+           diag.protocolMode != testerLastProtocolMode ||
+           diag.probeCompleted != testerLastProbeCompleted ||
+           diag.probeErrors != testerLastProbeErrors)) {
         testerLastProtocolStatus = diag.protocolModeStatus;
         testerLastProtocolMode = diag.protocolMode;
+        testerLastProbeCompleted = diag.probeCompleted;
+        testerLastProbeErrors = diag.probeErrors;
         requestUpdate();
       }
       freeink::KeyEvent ev;
@@ -343,7 +349,7 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     BleHid.copyConnectionDiagnostics(diag);
     const uint32_t sinceOpen = report.count - testerStartReports;
     char line[96];
-    renderer.drawCenteredText(UI_12_FONT_ID, 102, "Button Input Tester v8.1", true, EpdFontFamily::BOLD);
+    renderer.drawCenteredText(UI_12_FONT_ID, 96, "Button Input Tester v9", true, EpdFontFamily::BOLD);
     const char* security = "Not attempted";
     switch (diag.securityState) {
       case 1: security = "Pairing requested"; break;
@@ -352,63 +358,74 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
       case 4: security = "Pairing request failed"; break;
       default: break;
     }
-    snprintf(line, sizeof(line), "Security: %s (code %d)", security, static_cast<int>(diag.securityResult));
-    renderer.drawCenteredText(SMALL_FONT_ID, 145, line);
-    snprintf(line, sizeof(line), "HID inputs %u   CCCD %u   subscribed %u",
+    snprintf(line, sizeof(line), "Security: %s (code %d)",
+             security, static_cast<int>(diag.securityResult));
+    renderer.drawCenteredText(SMALL_FONT_ID, 134, line);
+    snprintf(line, sizeof(line), "HID %u   CCCD %u   subscribed %u",
              diag.inputChannels, diag.cccdChannels, diag.subscriptions);
-    renderer.drawCenteredText(UI_10_FONT_ID, 184, line);
+    renderer.drawCenteredText(UI_10_FONT_ID, 171, line);
     snprintf(line, sizeof(line), "Channel reports: %lu / %lu / %lu",
              static_cast<unsigned long>(diag.channelReports[0]),
              static_cast<unsigned long>(diag.channelReports[1]),
              static_cast<unsigned long>(diag.channelReports[2]));
-    renderer.drawCenteredText(UI_10_FONT_ID, 224, line);
-    snprintf(line, sizeof(line), "Handles: %04X / %04X / %04X",
-             diag.channelHandles[0], diag.channelHandles[1], diag.channelHandles[2]);
-    renderer.drawCenteredText(SMALL_FONT_ID, 258, line);
-    const char* mode = "Not exposed";
-    switch (diag.protocolModeStatus) {
-      case 1: mode = "Needs response write (skipped)"; break;
-      case 2: mode = "Report requested"; break;
-      case 3: mode = "Boot requested"; break;
-      case 4: mode = "Write failed"; break;
-      default: break;
-    }
-    snprintf(line, sizeof(line), "HID mode: %s", mode);
-    renderer.drawCenteredText(UI_10_FONT_ID, 300, line);
-    const char* wake = diag.exitSuspendStatus == 2 ? "sent" :
-                       diag.exitSuspendStatus == 1 ? "write unsupported" :
-                       diag.exitSuspendStatus == 3 ? "failed" : "not exposed";
-    snprintf(line, sizeof(line), "Exit Suspend: %s", wake);
-    renderer.drawCenteredText(SMALL_FONT_ID, 338, line);
-    snprintf(line, sizeof(line), "Report map: %s   Ref descriptors: %u",
-             diag.reportMapPresent ? "found" : "missing", diag.reportReferenceCount);
-    renderer.drawCenteredText(SMALL_FONT_ID, 376, line);
-    snprintf(line, sizeof(line), "Button reports after opening: %lu",
-             static_cast<unsigned long>(sinceOpen));
-    renderer.drawCenteredText(UI_10_FONT_ID, 414, line);
+    renderer.drawCenteredText(UI_10_FONT_ID, 205, line);
+    snprintf(line, sizeof(line), "CCCD readback: %04X / %04X / %04X",
+             diag.cccdReadback[0], diag.cccdReadback[1], diag.cccdReadback[2]);
+    renderer.drawCenteredText(SMALL_FONT_ID, 238, line);
+    snprintf(line, sizeof(line), "Report IDs: %02X / %02X / %02X",
+             diag.reportId[0], diag.reportId[1], diag.reportId[2]);
+    renderer.drawCenteredText(SMALL_FONT_ID, 267, line);
+    snprintf(line, sizeof(line), "Ref types: %02X / %02X / %02X",
+             diag.reportType[0], diag.reportType[1], diag.reportType[2]);
+    renderer.drawCenteredText(SMALL_FONT_ID, 294, line);
+    const char* mode = diag.protocolModeStatus == 2 ? "Report requested" :
+                       diag.protocolModeStatus == 3 ? "Boot requested" :
+                       diag.protocolModeStatus == 1 ? "Write unsupported" :
+                       diag.protocolModeStatus == 4 ? "Write failed" : "Absent";
+    snprintf(line, sizeof(line), "HID: %s   readback: %02X",
+             mode, diag.protocolReadback);
+    renderer.drawCenteredText(SMALL_FONT_ID, 327, line);
+    snprintf(line, sizeof(line), "Map found: %s   refs: %u   wake: %u",
+             diag.reportMapPresent ? "yes" : "no",
+             diag.reportReferenceCount, diag.exitSuspendStatus);
+    renderer.drawCenteredText(SMALL_FONT_ID, 354, line);
+    char mapHex[50] = {0};
+    size_t mapPos = 0;
+    for (uint8_t i = 0; i < diag.mapPrefixLength &&
+         mapPos + 4 < sizeof(mapHex); ++i)
+      mapPos += snprintf(mapHex + mapPos, sizeof(mapHex) - mapPos,
+                         "%02X ", diag.mapPrefix[i]);
+    snprintf(line, sizeof(line), "Map prefix: %s",
+             diag.mapPrefixLength ? mapHex : "(not read)");
+    renderer.drawCenteredText(SMALL_FONT_ID, 384, line);
+    snprintf(line, sizeof(line), "Reads: %u/%u   errors: %u   timeouts: %u",
+             diag.probeCompleted, diag.probeRequested,
+             diag.probeErrors, diag.probeTimeouts);
+    renderer.drawCenteredText(SMALL_FONT_ID, 415, line);
+    snprintf(line, sizeof(line), "Last GATT status: %04X   buttons: %lu",
+             diag.probeLastStatus, static_cast<unsigned long>(sinceOpen));
+    renderer.drawCenteredText(SMALL_FONT_ID, 445, line);
     if (sinceOpen > 0) {
-      snprintf(line, sizeof(line), "Last: %u bytes at %04X",
-               static_cast<unsigned int>(report.length), static_cast<unsigned int>(report.handle));
-      renderer.drawCenteredText(SMALL_FONT_ID, 447, line);
+      snprintf(line, sizeof(line), "Notification: %u bytes at %04X",
+               static_cast<unsigned int>(report.length),
+               static_cast<unsigned int>(report.handle));
+      renderer.drawCenteredText(SMALL_FONT_ID, 470, line);
       char hex[48] = {0};
-      const size_t displayed = std::min(static_cast<size_t>(report.length), sizeof(report.bytes));
+      const size_t displayed = std::min(static_cast<size_t>(report.length),
+                                        sizeof(report.bytes));
       size_t pos = 0;
       for (size_t i = 0; i < displayed && pos + 4 < sizeof(hex); ++i)
         pos += snprintf(hex + pos, sizeof(hex) - pos, "%02X ", report.bytes[i]);
-      renderer.drawCenteredText(SMALL_FONT_ID, 477, hex);
+      renderer.drawCenteredText(SMALL_FONT_ID, 499, hex);
     } else {
-      renderer.drawCenteredText(SMALL_FONT_ID, 463, "No notifications yet");
+      renderer.drawCenteredText(SMALL_FONT_ID, 471, "No notifications yet");
+      renderer.drawCenteredText(SMALL_FONT_ID, 499, "No key decoded");
     }
-    if (testerLastUsage) {
-      snprintf(line, sizeof(line), "Key: 0x%02X   Mods: 0x%02X",
-               testerLastUsage, testerLastModifiers);
-      renderer.drawCenteredText(SMALL_FONT_ID, 505, line);
-    } else renderer.drawCenteredText(SMALL_FONT_ID, 505, "No key decoded");
-    // Draw a large, clearly tappable action across the bottom of the tester.
-    renderer.drawLine(30, 518, width - 30, 518, true);
-    renderer.drawCenteredText(UI_10_FONT_ID, 540, "Tap to switch Boot / Report");
-    renderer.drawLine(30, 571, width - 30, 571, true);
-    renderer.drawCenteredText(SMALL_FONT_ID, 579,
+    // Lower button boundary clears both notification rows and the key label.
+    renderer.drawLine(30, 519, width - 30, 519, true);
+    renderer.drawCenteredText(UI_10_FONT_ID, 544, "Tap to switch Boot / Report");
+    renderer.drawLine(30, 575, width - 30, 575, true);
+    renderer.drawCenteredText(SMALL_FONT_ID, 591,
                               BleHid.isConnected() ? "Link: connected" : "Link: not connected");
 #else
     renderer.drawCenteredText(UI_10_FONT_ID, 250, "Input tester needs real Bluetooth hardware");
