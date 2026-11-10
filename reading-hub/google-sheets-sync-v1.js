@@ -115,7 +115,7 @@ function editionCoverPreview(container,title,author,isbn){
  const covers=window.ReadingCovers;
  const holder=document.createElement('div');holder.style.cssText='display:flex;align-items:center;gap:12px;margin:8px 0';
  const preview=document.createElement('div');preview.style.cssText='width:80px;height:118px;flex:0 0 80px;border-radius:8px;background:#593747;color:#fff;display:flex;align-items:center;justify-content:center;font:12px Georgia,serif;text-align:center';preview.textContent='BOOK COVER';
- const desc=document.createElement('div');desc.style.cssText='font-size:12px;line-height:1.5';desc.textContent='Search covers separately from editions. Your selected print page count will not change.';holder.append(preview,desc);container.appendChild(holder);
+ const desc=document.createElement('div');desc.style.cssText='font-size:12px;line-height:1.5';desc.textContent='Choose a cover without changing your edition.';holder.append(preview,desc);container.appendChild(holder);
  const status=document.createElement('div');status.style.cssText='font-size:12px;margin:8px 0';container.appendChild(status);
  const choices=document.createElement('div');choices.style.cssText='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px';container.appendChild(choices);
  function show(ref){
@@ -162,7 +162,7 @@ function field(label,value){const wrap=document.createElement('label');wrap.styl
 function createMatcher(container){
  const section=document.createElement('section');section.style.cssText='margin-top:16px;padding:14px;border:1px solid #795568;border-radius:14px';
  const heading=document.createElement('div');heading.textContent='♡ Find Book';heading.style.cssText='font-weight:700;margin-bottom:8px';section.appendChild(heading);
- const help=document.createElement('div');help.textContent='Find a book once to match its cover, author, ISBN and print or ebook page count. Your chosen covers stay protected.';help.style.cssText='font-size:12px;margin-bottom:8px';section.appendChild(help);
+ const help=document.createElement('div');help.textContent='Find covers, editions and page counts together.';help.style.cssText='font-size:12px;margin-bottom:8px';section.appendChild(help);
  const bookSelect=makeSelect([]);section.appendChild(bookSelect);
  const search=document.createElement('button');search.type='button';search.textContent='♡ Find Book';search.style.cssText='padding:10px;border-radius:10px;background:#673b57;color:white;margin:6px 0';section.appendChild(search);
  const result=document.createElement('div');section.appendChild(result);
@@ -235,10 +235,10 @@ function boot(){
  btn.addEventListener('click',connect);wrap.appendChild(btn);
  const syncBtn=document.createElement('button');syncBtn.type='button';syncBtn.textContent='↻ Sync Now';syncBtn.style.cssText='margin-left:8px;padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff';
  syncBtn.addEventListener('click',()=>{if(!token)connect();else sync();});wrap.appendChild(syncBtn);
- const status=document.createElement('div');status.id='readingGoogleStatus';status.setAttribute('role','status');status.style.cssText='margin-top:8px;font-size:12px;color:#d8c5cf';status.textContent='Connect once per authorization session to upload your reading history.';wrap.appendChild(status);
+ const status=document.createElement('div');status.id='readingGoogleStatus';status.setAttribute('role','status');status.style.cssText='margin-top:8px;font-size:12px;color:#d8c5cf';status.textContent='Connect to sync your reading history.';wrap.appendChild(status);
  const toolsPanel=document.createElement('details');
  toolsPanel.style.cssText='margin-top:14px;border:1px solid #795568;border-radius:14px;padding:12px';
- const toolsTitle=document.createElement('summary');toolsTitle.textContent='♡ Reading Tools · Find Book, Google Sheets & Backup';toolsTitle.style.cssText='cursor:pointer;font-weight:700;padding:4px 0';
+ const toolsTitle=document.createElement('summary');toolsTitle.textContent='♡ Reading Tools';toolsTitle.style.cssText='cursor:pointer;font-weight:700;padding:4px 0';
  toolsPanel.appendChild(toolsTitle);
  const backup=document.getElementById('readingBackupDownload')?.parentElement;
  if(backup)toolsPanel.appendChild(backup);
