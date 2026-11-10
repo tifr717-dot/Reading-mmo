@@ -315,7 +315,9 @@ void service(bool readerInFront, MappedInputManager& input) {
   if (operation != WorkKind::None && millis() - opSince > 20000) {
     writeByte("ble-stall", operation == WorkKind::Start
                                ? static_cast<uint8_t>(10 + BleHid.startupStage())
-                               : static_cast<uint8_t>(operation));
+                               : operation == WorkKind::Connect
+                                     ? static_cast<uint8_t>(0x40 + BleHid.connectionStage())
+                                     : static_cast<uint8_t>(operation));
     cachedEnabled.store(false);
     delay(50);
     ESP.restart();  // Bluetooth always comes back OFF after any restart.
