@@ -53,6 +53,15 @@ struct KeyEvent {
   bool pressed = true;
 };
 
+// Last raw HID notification, including unsupported consumer or mouse reports.
+// Copied under the BLE callback spinlock for the on-device input tester.
+struct HidReportSnapshot {
+  uint32_t count = 0;
+  uint16_t handle = 0;
+  uint16_t length = 0;
+  uint8_t bytes[12] = {0};
+};
+
 // A BLE device seen during a scan.
 struct DiscoveredDevice {
   char addr[18] = {0};  // "AA:BB:CC:DD:EE:FF"
@@ -136,12 +145,14 @@ class BleKeyboardHost {
   // --- Translated input ------------------------------------------------------
   // Pop the next key event. Returns false when the queue is empty.
   bool popKey(KeyEvent& out);
+  // Non-destructive diagnostic snapshot (no heap allocation in callbacks).
+  bool copyLastReport(HidReportSnapshot& out) const;
 
   // --- Internal: called by the NimBLE backend (not for app use). These keep the
   // public header free of NimBLE types — the .cpp translates BLE objects into
   // these plain calls. -------------------------------------------------------
   void onScanResultIngest(const char* addr, const char* name, int rssi, uint8_t type, bool hid, bool connectable);
-  void onReportIngest(const uint8_t* data, size_t len);
+  void onReportIngest(const uint8_t* data, size_t len, uint16_t handle = 0);
   void onLinkUp(const char* addr, const char* name, uint8_t type);
   void onLinkDown();
   void onConnectFailed(const char* reason);
@@ -164,6 +175,7 @@ class BleKeyboardHost {
   PairedHidDevice bonds_[kMaxBonds];
   uint8_t bondCount_ = 0;
   KeyEvent ring_[kKeyQueueLen];
+  HidReportSnapshot lastReport_;
   volatile uint8_t ringHead_ = 0;  // next write
   volatile uint8_t ringTail_ = 0;  // next read
   char connName_[32] = {0};
