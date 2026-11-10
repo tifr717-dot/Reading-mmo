@@ -23,6 +23,29 @@
     window.dispatchEvent(new Event('reading-mmo-log-changed'));
   }
 
+  // One-time correction: the 1,078-page False Gods entry was a book-total
+  // completion marker, not 1,078 pages read on November 9.
+  function correctFalseGodsCompletion() {
+    const marker='readingMmoFalseGodsCompletionCorrectionV1';
+    if(localStorage.getItem(marker)==='done')return;
+    const rows=readLogs();
+    let changed=false;
+    const fixed=rows.map(r=>{
+      if(r.date!=='2026-11-09'||String(r.title||'').trim().toLowerCase()!=='false gods'
+         ||r.source!=='manual'||Number(r.pages)!==1078||Number(r.endPercent)!==100)return r;
+      changed=true;
+      return {...r,pages:0,bookTotalXtePages:1078,
+        pagesReadPending:true,completionNote:'Finished book: 1,078 total XTE pages; daily pages read not supplied'};
+    });
+    if(changed){
+      // Keep a separate copy of the exact original entry for recovery.
+      const original=rows.filter(r=>r.date==='2026-11-09'&&String(r.title||'').trim().toLowerCase()==='false gods'&&r.source==='manual'&&Number(r.pages)===1078);
+      localStorage.setItem('readingMmoFalseGodsCompletionOriginalV1',JSON.stringify(original));
+      writeLogs(fixed);
+    }
+    localStorage.setItem(marker,'done');
+  }
+
   function importedIds() {
     try {
       const v = JSON.parse(localStorage.getItem(IMPORT_KEY) || '[]');
@@ -465,6 +488,7 @@
   }
 
   function boot() {
+    correctFalseGodsCompletion();
     $('calendarPrev')?.addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()-1);render();});
     $('calendarNext')?.addEventListener('click',()=>{viewDate.setMonth(viewDate.getMonth()+1);render();});
     $('readingCalendarGrid')?.addEventListener('click',e=>{const b=e.target.closest('[data-cal-date]'); if(b) openDay(b.dataset.calDate);});
