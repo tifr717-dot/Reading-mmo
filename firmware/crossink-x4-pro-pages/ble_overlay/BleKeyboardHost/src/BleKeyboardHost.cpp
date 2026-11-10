@@ -13,6 +13,11 @@
 #include <BLERemoteService.h>
 #include <BLEScan.h>
 #include <BLESecurity.h>
+// The Arduino-ESP32 NimBLE API exposes asynchronous security initiation and
+// encryption state; do not use BLEClient::secureConnection() (infinite wait).
+#if defined(CONFIG_NIMBLE_ENABLED)
+#include <host/ble_gap.h>
+#endif
 #include <Preferences.h>
 #include <cstdio>
 #include <cstring>
@@ -22,6 +27,15 @@ namespace {
 BLEClient* activeClient = nullptr;
 uint32_t lastReconnectMs = 0;
 portMUX_TYPE keyMux = portMUX_INITIALIZER_UNLOCKED;
+
+#if defined(CONFIG_NIMBLE_ENABLED)
+bool isLinkEncrypted() {
+  if (!activeClient || !activeClient->isConnected()) return false;
+  struct ble_gap_conn_desc desc{};
+  if (ble_gap_conn_find(activeClient->getConnId(), &desc) != 0) return false;
+  return desc.sec_state.encrypted != 0;
+}
+#endif
 
 class HidScanCallbacks : public BLEAdvertisedDeviceCallbacks {
  public:
@@ -159,6 +173,8 @@ bool BleKeyboardHost::copyDevice(uint8_t i, DiscoveredDevice& out) const {
 bool BleKeyboardHost::connect(const char* addr) {
   if (!begun_ || connecting_ || !addr || !*addr) return false;
   connectionStage_ = 0;
+  HidConnectionDiagnostics diagnostic{};
+  setConnectionDiagnostics(diagnostic);
   uint8_t addressType = 0;
   char name[32] = {0};
   for (uint8_t i = 0; i < deviceCount_; ++i) {
@@ -210,30 +226,69 @@ bool BleKeyboardHost::connect(const char* addr) {
     onConnectFailed("Device is not a BLE keyboard");
     return false;
   }
-  // Arduino-ESP32 3.3.7's NimBLE secureConnection() waits FOREVER for
-  // security completion. Do not force it before subscribing. Encrypted HID
-  // characteristics can request security when the CCCD is accessed instead.
   connectionStage_ = 4;
-  bool subscribed = false;
+  // Arduino-ESP32 3.3.7's BLEClient::secureConnection() waits FOREVER.
+  // Initiate Just Works bonding asynchronously, then poll encryption for at
+  // most 2.5 seconds on the dedicated BLE worker (never the UI thread).
+#if defined(CONFIG_NIMBLE_ENABLED)
+  BLESecurity::resetSecurity();
+  if (isLinkEncrypted()) {
+    diagnostic.securityState = 2;
+  } else {
+    int securityRc = 0;
+    const bool initiated = BLESecurity::startSecurity(activeClient->getConnId(), &securityRc);
+    diagnostic.securityResult = static_cast<int16_t>(securityRc);
+    diagnostic.securityState = initiated ? 1 : 4;
+    setConnectionDiagnostics(diagnostic);
+    if (initiated) {
+      const uint32_t startMs = millis();
+      while (activeClient->isConnected() && !isLinkEncrypted() &&
+             millis() - startMs < 2500) {
+        delay(40);
+      }
+      diagnostic.securityState = isLinkEncrypted() ? 2 : 3;
+    }
+  }
+#endif
+  setConnectionDiagnostics(diagnostic);
+  if (!activeClient->isConnected()) {
+    onConnectFailed("Remote dropped during pairing");
+    return false;
+  }
+
   auto* characteristics = hid->getCharacteristics();
   if (characteristics) {
     for (const auto& item : *characteristics) {
       BLERemoteCharacteristic* chr = item.second;
       if (!chr || !chr->canNotify()) continue;
-      // Input Report (2A4D), Boot Keyboard Input (2A22), and Boot Mouse Input
-      // (2A33). The tester records every notification even if we cannot yet
-      // translate that report's HID format into a keyboard usage.
       const BLEUUID uuid = chr->getUUID();
-      if (uuid.equals(BLEUUID(uint16_t(0x2A4D))) ||
-          uuid.equals(BLEUUID(uint16_t(0x2A22))) ||
-          uuid.equals(BLEUUID(uint16_t(0x2A33)))) {
-        if (chr->subscribe(true, notifyReport)) subscribed = true;
+      if (!uuid.equals(BLEUUID(uint16_t(0x2A4D))) &&
+          !uuid.equals(BLEUUID(uint16_t(0x2A22))) &&
+          !uuid.equals(BLEUUID(uint16_t(0x2A33)))) continue;
+      ++diagnostic.inputChannels;
+      if (diagnostic.firstInputHandle == 0)
+        diagnostic.firstInputHandle = chr->getHandle();
+
+      // Arduino-ESP32 subscribe() returns TRUE even when the Client
+      // Characteristic Configuration Descriptor (0x2902) is absent. Treat
+      // only real descriptor-backed writes as a valid input subscription.
+      if (!chr->getDescriptor(BLEUUID(uint16_t(0x2902)))) {
+        ++diagnostic.missingCccd;
+        continue;
       }
+      ++diagnostic.cccdChannels;
+      if (chr->subscribe(true, notifyReport)) ++diagnostic.subscriptions;
+      else ++diagnostic.subscriptionFailures;
     }
   }
-  if (!subscribed) {
+  setConnectionDiagnostics(diagnostic);
+  if (diagnostic.subscriptions == 0) {
     activeClient->disconnect();
-    onConnectFailed("No HID input report");
+    onConnectFailed(diagnostic.inputChannels == 0
+                        ? "No HID notify characteristics"
+                        : diagnostic.cccdChannels == 0
+                            ? "No HID CCCD descriptors"
+                            : "HID subscription write failed");
     return false;
   }
   connectionStage_ = 5;
@@ -362,6 +417,17 @@ bool BleKeyboardHost::popKey(KeyEvent& out) {
   portEXIT_CRITICAL(&keyMux);
   return true;
 }
+void BleKeyboardHost::setConnectionDiagnostics(const HidConnectionDiagnostics& state) {
+  portENTER_CRITICAL(&keyMux);
+  connectionDiagnostics_ = state;
+  portEXIT_CRITICAL(&keyMux);
+}
+bool BleKeyboardHost::copyConnectionDiagnostics(HidConnectionDiagnostics& out) const {
+  portENTER_CRITICAL(&keyMux);
+  out = connectionDiagnostics_;
+  portEXIT_CRITICAL(&keyMux);
+  return true;
+}
 bool BleKeyboardHost::copyLastReport(HidReportSnapshot& out) const {
   portENTER_CRITICAL(&keyMux);
   out = lastReport_;
@@ -420,6 +486,7 @@ const PairedHidDevice& BleKeyboardHost::paired(uint8_t) const { static PairedHid
 void BleKeyboardHost::forget(const char*) {}
 bool BleKeyboardHost::popKey(KeyEvent&) { return false; }
 bool BleKeyboardHost::copyLastReport(HidReportSnapshot&) const { return false; }
+bool BleKeyboardHost::copyConnectionDiagnostics(HidConnectionDiagnostics&) const { return false; }
 bool BleKeyboardHost::takeConnectFailure(char*, size_t) { return false; }
 bool BleKeyboardHost::takePairingPasskey(uint32_t&) { return false; }
 void BleKeyboardHost::onScanResultIngest(const char*, const char*, int, uint8_t, bool, bool) {}
@@ -428,6 +495,7 @@ void BleKeyboardHost::onLinkUp(const char*, const char*, uint8_t) {}
 void BleKeyboardHost::onLinkDown() {}
 void BleKeyboardHost::onConnectFailed(const char*) {}
 void BleKeyboardHost::onPairingPasskey(uint32_t) {}
+void BleKeyboardHost::setConnectionDiagnostics(const HidConnectionDiagnostics&) {}
 void BleKeyboardHost::enqueue(const KeyEvent&) {}
 void BleKeyboardHost::emitUsage(uint8_t, uint8_t) {}
 void BleKeyboardHost::persistBonds() {}
