@@ -82,6 +82,36 @@ replace_once(
     "remote release routing",
 )
 
+# EPUB checks any input before individual page-turn buttons.  Synthetic
+# Bluetooth taps must appear in both APIs, not only wasPressed/wasReleased.
+replace_once(
+    keyboard_cpp,
+    "bool MappedInputManager::wasAnyPressed() const {\n",
+    "bool MappedInputManager::wasAnyPressed() const {\n"
+    "  if (std::any_of(remotePressed.begin(), remotePressed.end(), [](bool pressed) { return pressed; })) return true;\n",
+    "remote any-press routing",
+)
+replace_once(
+    keyboard_cpp,
+    "bool MappedInputManager::wasAnyReleased() const {\n",
+    "bool MappedInputManager::wasAnyReleased() const {\n"
+    "  if (std::any_of(remoteReleased.begin(), remoteReleased.end(), [](bool released) { return released; })) return true;\n",
+    "remote any-release routing",
+)
+# Synthetic taps should not accidentally trigger the reader's long-press
+# chapter-skip or font-size shortcuts via a previous GPIO hold duration.
+replace_once(
+    keyboard_cpp,
+    "unsigned long MappedInputManager::getHeldTime() const {\n",
+    "unsigned long MappedInputManager::getHeldTime() const {\n"
+    "  if (!gpio.wasAnyPressed() && !gpio.wasAnyReleased() &&\n"
+    "      (remotePressed[static_cast<size_t>(Button::PageBack)] ||\n"
+    "       remotePressed[static_cast<size_t>(Button::PageForward)] ||\n"
+    "       remoteReleased[static_cast<size_t>(Button::PageBack)] ||\n"
+    "       remoteReleased[static_cast<size_t>(Button::PageForward)])) return 0;\n",
+    "remote tap hold duration",
+)
+
 settings_h = root / "src/activities/settings/SettingsActivity.h"
 replace_once(
     settings_h,
