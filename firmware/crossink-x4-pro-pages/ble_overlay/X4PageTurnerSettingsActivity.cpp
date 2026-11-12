@@ -63,9 +63,13 @@ void X4PageTurnerSettingsActivity::choose() {
       scanStartedMs = millis();
     } else notice = "Bluetooth starting. Try Scan again.";
   } else if (selection == 2) {
+    freeink::KeyEvent stale{};
+    while (BleHid.popKey(stale)) {}  // Learn only a NEW remote press.
     view = View::LearnNext;
     notice = "Press the remote button for NEXT";
   } else if (selection == 3) {
+    freeink::KeyEvent stale{};
+    while (BleHid.popKey(stale)) {}  // Learn only a NEW remote press.
     view = View::LearnPrevious;
     notice = "Press the remote button for PREVIOUS";
   } else if (selection == 4) {
@@ -309,6 +313,15 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
         BleHid.isConnected() ? "Remote connected" :
         BleHid.isConnecting() ? "Connecting to saved remote..." :
         BleHid.pairedCount() ? "Saved remote: Scan to connect" : "No remote paired";
+    char bindingLine[80];
+    snprintf(bindingLine, sizeof(bindingLine), "Next %02X/%02X   Prev %02X/%02X",
+             X4PageTurner::nextUsage(), X4PageTurner::nextModifiers(),
+             X4PageTurner::previousUsage(), X4PageTurner::previousModifiers());
+    renderer.drawCenteredText(SMALL_FONT_ID, 534, bindingLine);
+    snprintf(bindingLine, sizeof(bindingLine), "Sent to reader: next %lu / prev %lu",
+             static_cast<unsigned long>(X4PageTurner::forwardedNextCount()),
+             static_cast<unsigned long>(X4PageTurner::forwardedPreviousCount()));
+    renderer.drawCenteredText(SMALL_FONT_ID, 552, bindingLine);
     renderer.drawCenteredText(SMALL_FONT_ID, 570, status);
     renderer.drawCenteredText(SMALL_FONT_ID, 600, "ON needs one restart; normal boots start OFF");
 #endif
@@ -349,7 +362,7 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     BleHid.copyConnectionDiagnostics(diag);
     const uint32_t sinceOpen = report.count - testerStartReports;
     char line[96];
-    renderer.drawCenteredText(UI_12_FONT_ID, 96, "Button Input Tester v10", true, EpdFontFamily::BOLD);
+    renderer.drawCenteredText(UI_12_FONT_ID, 96, "Button Input Tester v11", true, EpdFontFamily::BOLD);
     const char* security = "Not attempted";
     switch (diag.securityState) {
       case 1: security = "Pairing requested"; break;
