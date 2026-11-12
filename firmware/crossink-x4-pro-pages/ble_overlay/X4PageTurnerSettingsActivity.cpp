@@ -349,7 +349,7 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     BleHid.copyConnectionDiagnostics(diag);
     const uint32_t sinceOpen = report.count - testerStartReports;
     char line[96];
-    renderer.drawCenteredText(UI_12_FONT_ID, 96, "Button Input Tester v9", true, EpdFontFamily::BOLD);
+    renderer.drawCenteredText(UI_12_FONT_ID, 96, "Button Input Tester v10", true, EpdFontFamily::BOLD);
     const char* security = "Not attempted";
     switch (diag.securityState) {
       case 1: security = "Pairing requested"; break;
@@ -364,31 +364,41 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
     snprintf(line, sizeof(line), "HID %u   CCCD %u   subscribed %u",
              diag.inputChannels, diag.cccdChannels, diag.subscriptions);
     renderer.drawCenteredText(UI_10_FONT_ID, 171, line);
-    snprintf(line, sizeof(line), "Channel reports: %lu / %lu / %lu",
+    snprintf(line, sizeof(line), "Reports 1-3: %lu / %lu / %lu",
              static_cast<unsigned long>(diag.channelReports[0]),
              static_cast<unsigned long>(diag.channelReports[1]),
              static_cast<unsigned long>(diag.channelReports[2]));
-    renderer.drawCenteredText(UI_10_FONT_ID, 205, line);
-    snprintf(line, sizeof(line), "CCCD readback: %04X / %04X / %04X",
+    renderer.drawCenteredText(SMALL_FONT_ID, 196, line);
+    snprintf(line, sizeof(line), "Reports 4-6: %lu / %lu / %lu",
+             static_cast<unsigned long>(diag.channelReports[3]),
+             static_cast<unsigned long>(diag.channelReports[4]),
+             static_cast<unsigned long>(diag.channelReports[5]));
+    renderer.drawCenteredText(SMALL_FONT_ID, 218, line);
+    snprintf(line, sizeof(line), "CCCD 1-3: %04X / %04X / %04X",
              diag.cccdReadback[0], diag.cccdReadback[1], diag.cccdReadback[2]);
-    renderer.drawCenteredText(SMALL_FONT_ID, 238, line);
-    snprintf(line, sizeof(line), "Report IDs: %02X / %02X / %02X",
-             diag.reportId[0], diag.reportId[1], diag.reportId[2]);
-    renderer.drawCenteredText(SMALL_FONT_ID, 267, line);
-    snprintf(line, sizeof(line), "Ref types: %02X / %02X / %02X",
-             diag.reportType[0], diag.reportType[1], diag.reportType[2]);
-    renderer.drawCenteredText(SMALL_FONT_ID, 294, line);
+    renderer.drawCenteredText(SMALL_FONT_ID, 242, line);
+    snprintf(line, sizeof(line), "CCCD 4-6: %04X / %04X / %04X",
+             diag.cccdReadback[3], diag.cccdReadback[4], diag.cccdReadback[5]);
+    renderer.drawCenteredText(SMALL_FONT_ID, 265, line);
+    snprintf(line, sizeof(line), "Report IDs: %02X %02X %02X | %02X %02X %02X",
+             diag.reportId[0], diag.reportId[1], diag.reportId[2],
+             diag.reportId[3], diag.reportId[4], diag.reportId[5]);
+    renderer.drawCenteredText(SMALL_FONT_ID, 289, line);
+    snprintf(line, sizeof(line), "Ref types: %02X %02X %02X | %02X %02X %02X",
+             diag.reportType[0], diag.reportType[1], diag.reportType[2],
+             diag.reportType[3], diag.reportType[4], diag.reportType[5]);
+    renderer.drawCenteredText(SMALL_FONT_ID, 312, line);
     const char* mode = diag.protocolModeStatus == 2 ? "Report requested" :
                        diag.protocolModeStatus == 3 ? "Boot requested" :
                        diag.protocolModeStatus == 1 ? "Write unsupported" :
                        diag.protocolModeStatus == 4 ? "Write failed" : "Absent";
     snprintf(line, sizeof(line), "HID: %s   readback: %02X",
              mode, diag.protocolReadback);
-    renderer.drawCenteredText(SMALL_FONT_ID, 327, line);
+    renderer.drawCenteredText(SMALL_FONT_ID, 338, line);
     snprintf(line, sizeof(line), "Map found: %s   refs: %u   wake: %u",
              diag.reportMapPresent ? "yes" : "no",
              diag.reportReferenceCount, diag.exitSuspendStatus);
-    renderer.drawCenteredText(SMALL_FONT_ID, 354, line);
+    renderer.drawCenteredText(SMALL_FONT_ID, 360, line);
     char mapHex[50] = {0};
     size_t mapPos = 0;
     for (uint8_t i = 0; i < diag.mapPrefixLength &&
@@ -397,29 +407,29 @@ void X4PageTurnerSettingsActivity::render(RenderLock&&) {
                          "%02X ", diag.mapPrefix[i]);
     snprintf(line, sizeof(line), "Map prefix: %s",
              diag.mapPrefixLength ? mapHex : "(not read)");
-    renderer.drawCenteredText(SMALL_FONT_ID, 384, line);
+    renderer.drawCenteredText(SMALL_FONT_ID, 382, line);
     snprintf(line, sizeof(line), "Reads: %u/%u   errors: %u   timeouts: %u",
              diag.probeCompleted, diag.probeRequested,
              diag.probeErrors, diag.probeTimeouts);
-    renderer.drawCenteredText(SMALL_FONT_ID, 415, line);
+    renderer.drawCenteredText(SMALL_FONT_ID, 410, line);
     snprintf(line, sizeof(line), "Last GATT status: %04X   buttons: %lu",
              diag.probeLastStatus, static_cast<unsigned long>(sinceOpen));
-    renderer.drawCenteredText(SMALL_FONT_ID, 445, line);
+    renderer.drawCenteredText(SMALL_FONT_ID, 440, line);
     if (sinceOpen > 0) {
       snprintf(line, sizeof(line), "Notification: %u bytes at %04X",
                static_cast<unsigned int>(report.length),
                static_cast<unsigned int>(report.handle));
-      renderer.drawCenteredText(SMALL_FONT_ID, 470, line);
+      renderer.drawCenteredText(SMALL_FONT_ID, 465, line);
       char hex[48] = {0};
       const size_t displayed = std::min(static_cast<size_t>(report.length),
                                         sizeof(report.bytes));
       size_t pos = 0;
       for (size_t i = 0; i < displayed && pos + 4 < sizeof(hex); ++i)
         pos += snprintf(hex + pos, sizeof(hex) - pos, "%02X ", report.bytes[i]);
-      renderer.drawCenteredText(SMALL_FONT_ID, 488, hex);
+      renderer.drawCenteredText(SMALL_FONT_ID, 487, hex);
     } else {
-      renderer.drawCenteredText(SMALL_FONT_ID, 471, "No notifications yet");
-      renderer.drawCenteredText(SMALL_FONT_ID, 488, "No key decoded");
+      renderer.drawCenteredText(SMALL_FONT_ID, 465, "No notifications yet");
+      renderer.drawCenteredText(SMALL_FONT_ID, 487, "No key decoded");
     }
     // Lower button boundary clears both notification rows and the key label.
     renderer.drawLine(30, 527, width - 30, 527, true);
