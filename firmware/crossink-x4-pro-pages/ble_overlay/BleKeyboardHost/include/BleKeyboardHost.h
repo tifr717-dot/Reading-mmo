@@ -83,12 +83,13 @@ struct HidConnectionDiagnostics {
   uint8_t exitSuspendStatus = 0;
   uint8_t reportMapPresent = 0;
   uint8_t reportReferenceCount = 0;
-  uint16_t channelHandles[3] = {0};
-  uint32_t channelReports[3] = {0};
+  // Track the first six distinct characteristic handles; count all discovered inputs.
+  uint16_t channelHandles[6] = {0};
+  uint32_t channelReports[6] = {0};
   // Safe one-shot asynchronous GATT readback; 0xFFFF = not read / unknown.
-  uint16_t cccdReadback[3] = {0xFFFF, 0xFFFF, 0xFFFF};
-  uint8_t reportId[3] = {0xFF, 0xFF, 0xFF};
-  uint8_t reportType[3] = {0xFF, 0xFF, 0xFF};
+  uint16_t cccdReadback[6] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+  uint8_t reportId[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+  uint8_t reportType[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   uint8_t protocolReadback = 0xFF;
   uint8_t mapPrefix[12] = {0};
   uint8_t mapPrefixLength = 0;
