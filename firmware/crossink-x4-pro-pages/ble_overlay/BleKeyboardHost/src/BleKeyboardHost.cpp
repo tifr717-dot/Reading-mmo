@@ -654,13 +654,17 @@ void BleKeyboardHost::onDiagnosticReadIngest(uint8_t kind, uint8_t channel,
 }
 void BleKeyboardHost::onReportIngest(const uint8_t* data, size_t len, uint16_t handle) {
   if (!data || len == 0) return;
-  // Record every notification first. Many programmable clickers send a
-  // non-8-byte report, which the normal keyboard decoder cannot understand.
+  // Keep a raw report count for every HID channel, including mouse/consumer
+  // input. Decode only the report identified by the remote as its keyboard.
+  uint8_t reportId = 0xFF;
+  uint8_t reportType = 0xFF;
   portENTER_CRITICAL(&keyMux);
   ++lastReport_.count;
   for (uint8_t i = 0; i < 6; ++i) {
     if (connectionDiagnostics_.channelHandles[i] == handle && handle != 0) {
       ++connectionDiagnostics_.channelReports[i];
+      reportId = connectionDiagnostics_.reportId[i];
+      reportType = connectionDiagnostics_.reportType[i];
       break;
     }
   }
@@ -669,20 +673,32 @@ void BleKeyboardHost::onReportIngest(const uint8_t* data, size_t len, uint16_t h
   memset(lastReport_.bytes, 0, sizeof(lastReport_.bytes));
   memcpy(lastReport_.bytes, data, std::min(len, sizeof(lastReport_.bytes)));
   portEXIT_CRITICAL(&keyMux);
-  if (!connected_ || len < 8) return;
-  // Standard keyboard input: modifiers, reserved, six usages. A report ID
-  // can precede the 8-byte report on composite HID keyboard peripherals.
-  const size_t offset = len > 8 ? len - 8 : 0;
+
+  if (!connected_) return;
+  // The MK321BT's Report Map identifies keyboard Report ID 01. GATT Report
+  // characteristic notifications normally omit that ID; it is provided by
+  // the Report Reference descriptor. Never decode a mouse/consumer packet as
+  // a keyboard press just because it contains non-zero bytes.
+  const bool isKeyboard = reportType == 1 && reportId == 1;
+  const bool unidentifiedStandardKeyboard = reportId == 0xFF && len == 8;
+  if (!isKeyboard && !unidentifiedStandardKeyboard) return;
+
+  size_t offset = 0;
+  if (len == 9 && data[0] == 1) offset = 1;  // optional Report ID prefix
+  const size_t payloadLength = len - offset;
+  if (payloadLength < 3 || payloadLength > 8) return;
   const uint8_t mods = data[offset];
-  const uint8_t* usages = data + offset + 2;
-  for (size_t i = 0; i < 6; ++i) {
-    const uint8_t usage = usages[i];
+  const size_t keyCount = std::min(static_cast<size_t>(6), payloadLength - 2);
+  uint8_t currentKeys[6] = {0};
+  memcpy(currentKeys, data + offset + 2, keyCount);
+  for (size_t i = 0; i < keyCount; ++i) {
+    const uint8_t usage = currentKeys[i];
     if (!usage || usage >= 0xE0) continue;
     bool seen = false;
     for (uint8_t prev : prevKeys_) if (prev == usage) seen = true;
     if (!seen) emitUsage(usage, mods);
   }
-  memcpy(prevKeys_, usages, 6);
+  memcpy(prevKeys_, currentKeys, sizeof(prevKeys_));
 }
 }  // namespace freeink
 #else
