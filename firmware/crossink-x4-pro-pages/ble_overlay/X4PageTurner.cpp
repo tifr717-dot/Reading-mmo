@@ -21,6 +21,8 @@ namespace {
 // Never persist Bluetooth ON: a stalled BLE stack must not break the next boot.
 std::atomic<bool> cachedEnabled{false};
 std::atomic<bool> pairingOpen{false};
+std::atomic<uint32_t> forwardedNext{0};
+std::atomic<uint32_t> forwardedPrevious{0};
 // A requested ON safely reboots once, so BLE can claim RAM before the reader.
 std::atomic<uint32_t> enableRestartAt{0};
 int nextKey = -1;
@@ -214,6 +216,8 @@ void earlyStartIfRequested(bool safeBoot) {
   (void)safeBoot;
 #endif
 }
+uint32_t forwardedNextCount() { return forwardedNext.load(); }
+uint32_t forwardedPreviousCount() { return forwardedPrevious.load(); }
 bool pairingScreenOpen() { return pairingOpen.load(); }
 void setPairingScreenOpen(bool open) { pairingOpen.store(open); }
 
@@ -410,9 +414,11 @@ void service(bool readerInFront, MappedInputManager& input) {
     if (back && forward) continue;
     if (back) {
       input.injectRemoteTap(MappedInputManager::Button::PageBack);
+      ++forwardedPrevious;
       activityManager.notifyUserInput();
     } else if (forward) {
       input.injectRemoteTap(MappedInputManager::Button::PageForward);
+      ++forwardedNext;
       activityManager.notifyUserInput();
     }
   }
