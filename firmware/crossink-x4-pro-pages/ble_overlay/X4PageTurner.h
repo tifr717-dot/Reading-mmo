@@ -30,4 +30,7 @@ uint8_t nextModifiers();
 uint8_t previousModifiers();
 void bindNext(uint8_t usage, uint8_t modifiers = 0);
 void bindPrevious(uint8_t usage, uint8_t modifiers = 0);
+// Diagnostic counters: button presses routed into the book reader since boot.
+uint32_t forwardedNextCount();
+uint32_t forwardedPreviousCount();
 }
