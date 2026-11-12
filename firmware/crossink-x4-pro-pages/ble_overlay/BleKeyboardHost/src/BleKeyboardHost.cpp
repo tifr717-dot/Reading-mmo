@@ -42,7 +42,7 @@ struct ProbeRequest {
   uint8_t kind = 0;     // 1=CCCD, 2=Report Reference, 3=Protocol, 4=Map prefix
   uint8_t channel = 0;  // 0, 1, 2 for the first three input channels
 };
-ProbeRequest probeQueue[8];
+ProbeRequest probeQueue[16];
 uint8_t probeCount = 0;
 uint8_t probeNext = 0;
 uint32_t probeStartedMs = 0;  // BLE worker task only
@@ -60,7 +60,7 @@ void resetProbes() {
   probeNext = 0;
 }
 void addProbe(uint16_t handle, uint8_t kind, uint8_t channel = 0) {
-  if (handle && probeCount < 8) probeQueue[probeCount++] = {handle, kind, channel};
+  if (handle && probeCount < 16) probeQueue[probeCount++] = {handle, kind, channel};
 }
 int probeReadComplete(uint16_t connHandle, const ble_gatt_error* error,
                       ble_gatt_attr* attr, void* opaque) {
@@ -359,7 +359,9 @@ bool BleKeyboardHost::connect(const char* addr) {
     return false;
   }
 
-  auto* characteristics = hid->getCharacteristics();
+  // Preserve repeated HID Report (0x2A4D) UUIDs: the UUID-keyed map loses them.
+  // The handle-keyed map includes every input characteristic separately.
+  auto* characteristics = hid->getCharacteristicsByHandle();
   BLERemoteCharacteristic* controlPoint = nullptr;
   BLERemoteCharacteristic* reportMap = nullptr;
   if (characteristics) {
@@ -394,14 +396,14 @@ bool BleKeyboardHost::connect(const char* addr) {
       ++diagnostic.inputChannels;
       if (diagnostic.firstInputHandle == 0)
         diagnostic.firstInputHandle = chr->getHandle();
-      if (diagnostic.inputChannels <= 3)
+      if (diagnostic.inputChannels <= 6)
         diagnostic.channelHandles[diagnostic.inputChannels - 1] = chr->getHandle();
       const uint8_t channel = diagnostic.inputChannels - 1;
       BLERemoteDescriptor* reference = chr->getDescriptor(BLEUUID(uint16_t(0x2908)));
       if (reference) {
         ++diagnostic.reportReferenceCount;
 #if defined(CONFIG_NIMBLE_ENABLED)
-        if (channel < 3) addProbe(reference->getHandle(), 2, channel);
+        if (channel < 6) addProbe(reference->getHandle(), 2, channel);
 #endif
       }
       // Reading 2902 after subscribe confirms the remote's actual setting.
@@ -411,7 +413,7 @@ bool BleKeyboardHost::connect(const char* addr) {
         continue;
       }
 #if defined(CONFIG_NIMBLE_ENABLED)
-      if (channel < 3) addProbe(cccd->getHandle(), 1, channel);
+      if (channel < 6) addProbe(cccd->getHandle(), 1, channel);
 #endif
       ++diagnostic.cccdChannels;
       if (chr->subscribe(true, notifyReport)) ++diagnostic.subscriptions;
@@ -631,10 +633,10 @@ void BleKeyboardHost::onDiagnosticReadIngest(uint8_t kind, uint8_t channel,
   if (status == 0) {
     const bool valid = data && ((kind == 1 || kind == 2) ? length >= 2 : length >= 1);
     if (!valid) status = 0xFFFE;
-    else if (kind == 1 && channel < 3)
+    else if (kind == 1 && channel < 6)
       diag.cccdReadback[channel] = static_cast<uint16_t>(data[0]) |
                                    (static_cast<uint16_t>(data[1]) << 8);
-    else if (kind == 2 && channel < 3) {
+    else if (kind == 2 && channel < 6) {
       diag.reportId[channel] = data[0];
       diag.reportType[channel] = data[1];
     } else if (kind == 3) diag.protocolReadback = data[0];
@@ -656,7 +658,7 @@ void BleKeyboardHost::onReportIngest(const uint8_t* data, size_t len, uint16_t h
   // non-8-byte report, which the normal keyboard decoder cannot understand.
   portENTER_CRITICAL(&keyMux);
   ++lastReport_.count;
-  for (uint8_t i = 0; i < 3; ++i) {
+  for (uint8_t i = 0; i < 6; ++i) {
     if (connectionDiagnostics_.channelHandles[i] == handle && handle != 0) {
       ++connectionDiagnostics_.channelReports[i];
       break;
