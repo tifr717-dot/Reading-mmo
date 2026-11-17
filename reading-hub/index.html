@@ -191,6 +191,16 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 </style>
 <link rel="stylesheet" href="./cover-manager.css?v=51054">
 <link rel="stylesheet" href="./cover-rescue.css?v=51057">
+
+<style>
+.reading-restore-btn{display:inline-flex;align-items:center;justify-content:center;margin:9px 0 0 8px;padding:11px 14px;border-radius:12px;border:1px solid #ad8a9f;background:#3a2835;color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.reading-restore-review{margin-top:12px;border:1px solid #8f6980;background:#30212b;padding:13px;border-radius:13px;color:#f5e7ee;line-height:1.45}
+.reading-restore-review[hidden]{display:none}
+.reading-restore-review strong{display:block;font-size:14px;color:#ffdded}
+.reading-restore-review p{font-size:12px;color:#e5d2dc}
+.reading-restore-apply{width:100%;background:#854662;color:#fff;border:1px solid #af7e96;border-radius:10px;padding:12px;font-weight:800;cursor:pointer}
+@media(max-width:400px){.reading-restore-btn{display:flex;width:100%;margin:10px 0 0}.reading-restore-review{padding:10px}}
+</style>
 </head>
 <body>
 <main class="app">
@@ -344,7 +354,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
       
       <div class="x4-sync-row"><button id="x4SyncButton" type="button">🔵 Sync X4 Pro</button></div>
       <div id="x4SyncStatus" class="x4-sync-status" style="font-size:12px;padding:5px 0;background:transparent;border:0">Ready to import from X4 Pro.</div>
-      <div style="margin-top:12px"><button id="readingBackupDownload" type="button" style="padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff;font-weight:700">♡ Backup Reading Data</button><div id="readingBackupStatus" role="status" style="margin-top:6px;font-size:12px;color:#d8c5cf">Keep a copy of your reading history.</div></div>
+      <div style="margin-top:12px"><button id="readingBackupDownload" type="button" style="padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff;font-weight:700">♡ Backup Reading Data</button><div id="readingBackupStatus" role="status" style="margin-top:6px;font-size:12px;color:#d8c5cf">Download a full backup before switching phones or restoring data.</div></div>
     </div>
     <div class="calendar-head"><button id="calendarPrev" type="button">‹</button><div id="calendarMonthLabel" class="calendar-month"></div><button id="calendarNext" type="button">›</button></div>
     <div class="stats calendar-stats">
@@ -458,7 +468,8 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./book-completion-v1.js?v=1"></script>
 <script src="./reading-calendar-x4pro-v1.js?v=finish-book-1"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="./google-sheets-sync-v1.js?v=8"></script>
+<script src="./google-sheets-sync-v1.js?v=9"></script>
+<script src="./reading-backup-restore-v2.js?v=1"></script>
 <script>
 const titles={
  home:["Good evening, Tiff ✦","Your reading life, without the spreadsheet look."],
@@ -870,28 +881,5 @@ try{localStorage.setItem(key,JSON.stringify([...rows,row]));window.dispatchEvent
 window.openQuickLog=openQuickLog;
 })();
 </script>
-<script>
-(function(){
-  document.addEventListener('DOMContentLoaded',function(){
-    const button=document.getElementById('readingBackupDownload');
-    if(!button)return;
-    button.addEventListener('click',function(){
-      const status=document.getElementById('readingBackupStatus');
-      try{
-        const keys=['readingHubDailyLogV1','readingHubX4ProImportsV1','readingHubLibraryEditsV1','readingHubReadingHistoryV1','readingMmoPageEquivalentsByDayV1','readingMmoPageEditionOverridesV1','readingMmoEditionChoicesV1','readingMmoAdditionalBooksV1'];
-        const stored={};
-        for(const key of keys){const value=localStorage.getItem(key);if(value!==null)stored[key]=JSON.parse(value);}
-        const rows=stored.readingHubDailyLogV1;
-        if(!Array.isArray(rows))throw new Error('Reading sessions not found; nothing downloaded.');
-        const backup={format:'reading-mmo-local-backup',version:1,exportedAt:new Date().toISOString(),storage:stored};
-        const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
-        const url=URL.createObjectURL(blob);
-        const link=document.createElement('a');link.href=url;link.download='reading-mmo-backup-'+new Date().toISOString().slice(0,10)+'.json';
-        document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
-        status.textContent='♡ Backup prepared: '+rows.length+' sessions. Keep this file private and safe.';
-      }catch(error){status.textContent='Backup failed: '+(error.message||String(error));}
-    });
-  });
-})();
-</script>
+
 </body></html>

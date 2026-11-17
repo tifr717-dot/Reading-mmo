@@ -271,9 +271,9 @@ function boot(){
  const wrap=document.createElement('div');wrap.style.marginTop='12px';
  const btn=document.createElement('button');btn.type='button';btn.textContent='♡ Connect Google Sheets';btn.style.cssText='padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff;font-weight:700';
  btn.addEventListener('click',connect);wrap.appendChild(btn);
- const syncBtn=document.createElement('button');syncBtn.type='button';syncBtn.textContent='↻ Sync Now';syncBtn.style.cssText='margin-left:8px;padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff';
+ const syncBtn=document.createElement('button');syncBtn.type='button';syncBtn.textContent='↑ Upload Sessions';syncBtn.style.cssText='margin-left:8px;padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff';
  syncBtn.addEventListener('click',()=>{if(!token)connect();else sync();});wrap.appendChild(syncBtn);
- const status=document.createElement('div');status.id='readingGoogleStatus';status.setAttribute('role','status');status.style.cssText='margin-top:8px;font-size:12px;color:#d8c5cf';status.textContent='Connect to sync your reading history.';wrap.appendChild(status);
+ const status=document.createElement('div');status.id='readingGoogleStatus';status.setAttribute('role','status');status.style.cssText='margin-top:8px;font-size:12px;color:#d8c5cf';status.textContent='Google Sheets currently uploads reading sessions and page counts; it does not yet download edits or fully sync book status across devices.';wrap.appendChild(status);
  const toolsPanel=document.createElement('details');
  toolsPanel.style.cssText='margin-top:14px;border:1px solid #795568;border-radius:14px;padding:12px';
  const toolsTitle=document.createElement('summary');toolsTitle.textContent='♡ Reading Tools';toolsTitle.style.cssText='cursor:pointer;font-weight:700;padding:4px 0';
