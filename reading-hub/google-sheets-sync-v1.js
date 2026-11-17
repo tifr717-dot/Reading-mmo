@@ -13,9 +13,28 @@ function getRows(){try{const r=JSON.parse(localStorage.getItem(LOG_KEY)||'[]');r
 function identity(r){return safeText(r.importId||r.id||['manual',r.date,r.title,r.pages,r.seconds,r.importedAt].join('|'));}
 const normalize=x=>safeText(x).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 function book(r){const title=normalize(r.title);const preset={'false gods':['false-gods-graham-mcneill','Graham McNeill'],'blood over bright haven a novel':['blood-over-bright-haven-ml-wang','M. L. Wang'],'blood over bright haven':['blood-over-bright-haven-ml-wang','M. L. Wang'],'galaxy in flames':['galaxy-in-flames-ben-counter','Ben Counter']};return preset[title]||['book-'+title.replace(/ /g,'-'),''];}
-function sheetRow(r){const b=book(r);const suspect=r.source==='manual'&&Number(r.pages)>=1000;
- const pages=suspect?'':Number(r.pages)||0;
- return [identity(r),r.date||'',b[0],r.title||'',b[1],r.startPercent??'',r.endPercent??'',pages,Math.round((Number(r.seconds)||0)/60*100)/100,'','',r.source||'manual',r.importedAt||'',suspect?'Review: total XTE book pages, not daily reading':'Imported from Reading MMO'];
+function equivalentValues(r,all){
+ const service=window.ReadingPageEquivalents;
+ if(!service)return {ebook:'',print:'',explicitEbook:false,explicitPrint:false};
+ const peers=all.filter(row=>row.date===r.date&&row.title===r.title);
+ const first=peers[0]===r||identity(peers[0]||{})===identity(r);
+ const manual=service.dailyValues(r.date,r.title);
+ const metrics=service.forBook(r.date,r.title,[r]);
+ const read=field=>{
+  const override=manual[field+'Pages'];
+  if(service.valid(override))return {value:first?Number(override):0,explicit:true};
+  const direct=r[field+'Pages'];
+  if(service.valid(direct))return {value:Number(direct),explicit:true};
+  return {value:metrics[field].value??'',explicit:false};
+ };
+ const ebook=read('ebook'),print=read('print');
+ return {ebook:ebook.value,print:print.value,explicitEbook:ebook.explicit,explicitPrint:print.explicit};
+}
+function sheetRow(r,all){const b=book(r);const suspect=r.source==='manual'&&Number(r.pages)>=1000;
+ const pages=suspect?'':Number(r.pages)||0,eq=equivalentValues(r,all);
+ return [identity(r),r.date||'',b[0],r.title||'',b[1],r.startPercent??'',r.endPercent??'',pages,
+  Math.round((Number(r.seconds)||0)/60*100)/100,eq.ebook,eq.print,
+  r.source||'manual',r.importedAt||'',suspect?'Review: total XTE book pages, not daily reading':'Imported from Reading MMO'];
 }
 async function api(path,options={}){
  if(!token||Date.now()>expiresAt)throw Error('Google authorization expired. Tap Connect Google again.');
@@ -31,13 +50,32 @@ async function sync(){
  busy=true;
  try{
   setStatus('Checking Google Sheets for existing sessions…');
-  const current=await api('/values/'+encodeURIComponent("'Reading Sessions'!A2:A1000"));
-  const known=new Set((current.values||[]).map(row=>safeText(row[0])));
-  const missing=getRows().filter(r=>!known.has(identity(r)));
-  if(!missing.length){setStatus('♡ Up to date — all local sessions are in Google Sheets.');return;}
-  const payload={values:missing.map(sheetRow)};
-  await api('/values/'+encodeURIComponent("'Reading Sessions'!A:N")+':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS',{method:'POST',body:JSON.stringify(payload)});
-  setStatus('♡ Uploaded '+missing.length+' session'+(missing.length===1?'':'s')+' to Google Sheets!');
+  const current=await api('/values/'+encodeURIComponent("'Reading Sessions'!A2:K1000"));
+  const known=new Map((current.values||[]).map((row,index)=>[safeText(row[0]),{row,index}]));
+  const all=getRows(),missing=all.filter(r=>!known.has(identity(r)));
+  if(missing.length){
+   const payload={values:missing.map(r=>sheetRow(r,all))};
+   await api('/values/'+encodeURIComponent("'Reading Sessions'!A:N")+':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS',{method:'POST',body:JSON.stringify(payload)});
+  }
+  // Keep saved print/ebook counts in the existing J/K columns without rewriting
+  // user-edited cells, XTE diary pages, or unrelated spreadsheet columns.
+  const updates=[];
+  all.forEach(r=>{
+   const existing=known.get(identity(r));if(!existing)return;
+   const eq=equivalentValues(r,all),row=existing.row;
+   const changes=[
+    {index:9,value:eq.ebook,explicit:eq.explicitEbook,column:'J'},
+    {index:10,value:eq.print,explicit:eq.explicitPrint,column:'K'}
+   ];
+   changes.forEach(c=>{
+    const old=row[c.index]??'';
+    if(c.value===''||(!c.explicit&&old!=='')||String(old)===String(c.value))return;
+    updates.push({range:"'Reading Sessions'!"+c.column+(existing.index+2),values:[[c.value]]});
+   });
+  });
+  if(updates.length)await api('/values:batchUpdate',{method:'POST',body:JSON.stringify({valueInputOption:'RAW',data:updates})});
+  setStatus(!missing.length&&!updates.length?'♡ Up to date — all local sessions are in Google Sheets.':
+   '♡ Synced '+missing.length+' new session'+(missing.length===1?'':'s')+' and '+updates.length+' page-count update'+(updates.length===1?'':'s')+'.');
  }catch(error){setStatus('Google sync: '+error.message+' Your sessions remain saved on this phone.');}
  finally{busy=false;}
 }

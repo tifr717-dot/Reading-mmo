@@ -143,6 +143,23 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .journal-book-card>.journal-cover{width:74px;height:108px}
 .journal-book-meta{min-width:0;display:flex;flex-direction:column;gap:7px}
 .journal-empty{padding:24px;text-align:center;color:#dbc4bc}
+.journal-day-meta{width:128px;gap:6px}
+.journal-eq{color:#e3bbd2!important;font-size:11px!important;line-height:1.4;font-style:normal}
+.calendar-edition-totals{margin:9px 1px 14px;padding:9px 12px;border-radius:12px;background:#332021;border:1px solid #765363;color:#f1d1e0;font-size:12px;line-height:1.4}
+.day-eq{font-weight:750;color:#7c415e!important;margin:6px 0!important}
+.day-eq-edit{display:block;border:1px solid #b58d96;border-radius:10px;background:#fff0f2;color:#6f2e3c;padding:8px 11px;margin:7px 0 0;font-weight:750;font-size:12px}
+.calendar-day-eq-summary{margin:7px 0;padding:11px 13px;border-radius:12px;border:1px solid #c9a9b3;background:#fae9ed;color:#743a55;font-size:12px;font-weight:750}
+.page-eq-editor{margin:15px 0 6px;padding:15px;background:#fff8eb;border-radius:16px;border:1px solid #c7a5ac}
+.page-eq-editor h3{font:700 18px Georgia,serif;margin:0 0 6px}
+.page-eq-editor p{font-size:12px;color:#725c56;line-height:1.45}
+.page-eq-inputs{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.page-eq-inputs label{font-size:12px;font-weight:750;display:flex;flex-direction:column;gap:5px}
+.page-eq-inputs input{min-width:0;width:100%;border:1px solid #b99a9f;border-radius:11px;background:white;color:#38272b;padding:11px 8px;font-size:14px}
+.page-eq-editor details{margin:14px 0}.page-eq-editor summary{cursor:pointer;font-weight:750;color:#743a55}
+.page-eq-actions{display:flex;gap:8px;margin:12px 0}
+.page-eq-actions button{flex:1;border:0;border-radius:11px;padding:11px 8px;font-size:12px;font-weight:800;background:#6f2e3c;color:white}
+.page-eq-actions button[data-page-eq-cancel]{background:#eee0cf;color:#553f36;border:1px solid #c4ae91}
+.page-eq-editor small{display:block;font-size:11px;color:#80695b;line-height:1.4}
 </style>
 <style>
 .quick-log-launch{width:100%;border:1px solid #bd8d98;border-radius:15px;padding:13px;background:linear-gradient(110deg,#8b3b62,#5d304d);color:#fff;font-weight:800;text-align:center;margin:12px 0;cursor:pointer}
@@ -321,6 +338,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
       <div class="stat"><b id="calendarMinutes">0</b>minutes</div>
       <div class="stat"><b id="calendarBooks">0</b>books</div>
     </div>
+    <div id="calendarEditionTotals" class="calendar-edition-totals" aria-live="polite">Tap a reading day to add print / ebook pages.</div>
     <div class="journal-view-tabs" role="group" aria-label="Reading journal view"><button type="button" data-journal-view="calendar">Calendar</button><button type="button" data-journal-view="day">By Day</button><button type="button" data-journal-view="book">By Book</button></div>
     <div class="cal-weekdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
     <div id="readingCalendarGrid" class="calendar-grid"></div>
@@ -398,8 +416,10 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
   <div class="sheet-panel">
     <div class="sheet-head"><div><div class="label">Reading day</div><div class="sheet-title" id="calendarDayTitle">Day</div><div class="edit-badge" id="calendarDayTotals"></div></div><button class="close-btn" id="calendarDayClose">×</button></div>
     <div id="calendarDaySummary" class="day-summary"></div>
+    <div id="calendarDayEquivalentSummary" class="calendar-day-eq-summary"></div>
     <div id="calendarDayProgress"></div>
     <div id="calendarDayBody"></div>
+    <div id="calendarDayEquivalentEditor"></div>
   </div>
 </div>
 
@@ -416,7 +436,8 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./cover-service.js?v=51058"></script>
 <script src="./cover-manager.js?v=51055"></script>
 <script src="./cover-rescue.js?v=51057"></script>
-<script src="./reading-calendar-x4pro-v1.js?v=journal-views-1"></script>
+<script src="./page-equivalents-v1.js?v=1"></script>
+<script src="./reading-calendar-x4pro-v1.js?v=print-ebook-1"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="./google-sheets-sync-v1.js?v=8"></script>
 <script>
@@ -768,6 +789,8 @@ if ("serviceWorker" in navigator) {
 <label>XTE pages read<input id="quickLogPages" type="number" min="0" step="1" required></label>
 <label>Reading minutes<input id="quickLogMinutes" type="number" min="0" step="0.1" required></label>
 <label class="wide">Ending percentage (%)<input id="quickLogPercent" type="number" min="0" max="100" step="0.1" required></label>
+<label>Print pages read (optional)<input id="quickLogPrintPages" type="number" min="0" step="1" placeholder="e.g. 12"></label>
+<label>Ebook pages read (optional)<input id="quickLogEbookPages" type="number" min="0" step="1" placeholder="e.g. 15"></label>
 </div><button class="quick-log-save" type="submit">♡ Save Reading Session</button><div id="quickLogMessage" aria-live="polite"></div></form>
 </div></div>
 <script>
@@ -779,7 +802,7 @@ function openQuickLog(date){
 const rows=logs().sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
 $('quickLogDate').value=date||today();
 $('quickLogBook').value=rows.length?rows[rows.length-1].title||'False Gods':'False Gods';
-$('quickLogPages').value='';$('quickLogMinutes').value='';$('quickLogPercent').value='';
+$('quickLogPages').value='';$('quickLogMinutes').value='';$('quickLogPercent').value='';$('quickLogPrintPages').value='';$('quickLogEbookPages').value='';
 const last=rows.filter(r=>r.title===$('quickLogBook').value).pop();
 if(last&&Number.isFinite(Number(last.endPercent)))$('quickLogPercent').placeholder='Last: '+last.endPercent+'%';
 $('quickLogMessage').textContent='';
@@ -799,9 +822,13 @@ $('quickLogForm').addEventListener('submit',e=>{
 e.preventDefault();
 const date=$('quickLogDate').value,title=$('quickLogBook').value.trim(),pages=Number($('quickLogPages').value),minutes=Number($('quickLogMinutes').value),endPercent=Number($('quickLogPercent').value);
 if(!date||!title||!Number.isInteger(pages)||pages<0||!Number.isFinite(minutes)||minutes<0||!Number.isFinite(endPercent)||endPercent<0||endPercent>100){$('quickLogMessage').textContent='Please check the reading details.';return}
+const printRaw=$('quickLogPrintPages').value.trim(),ebookRaw=$('quickLogEbookPages').value.trim();
+if([printRaw,ebookRaw].some(x=>x!==''&&(!/^\\d+$/.test(x)||!Number.isSafeInteger(Number(x))))){$('quickLogMessage').textContent='Print and ebook counts must be whole numbers.';return}
 const rows=logs(),prior=rows.filter(r=>r.title===title&&r.date<=date).sort((a,b)=>a.date.localeCompare(b.date)).pop();
 const startPercent=prior&&Number.isFinite(Number(prior.endPercent))?Number(prior.endPercent):null;
 const row={id:'manual-'+Date.now()+'-'+Math.random().toString(36).slice(2),date,title,pages,seconds:Math.round(minutes*60),sessions:1,startPercent,endPercent,source:'manual',importedAt:new Date().toISOString()};
+if(printRaw!=='')row.printPages=Number(printRaw);
+if(ebookRaw!=='')row.ebookPages=Number(ebookRaw);
 try{localStorage.setItem(key,JSON.stringify([...rows,row]));window.dispatchEvent(new Event('reading-mmo-log-changed'));window.ReadingCalendar?.render?.();window.ReadingCalendar?.updateHomeFromDiary?.();window.ReadingCalendar?.renderHomeDashboard?.();$('quickLogMessage').textContent='♡ Saved on this device!';$('quickLogForm').reset();$('quickLogDate').value=date;$('quickLogBook').value=title;setTimeout(closeQuickLog,700)}catch(err){$('quickLogMessage').textContent='Could not save: '+err.message}
 });
 });
@@ -816,7 +843,7 @@ window.openQuickLog=openQuickLog;
     button.addEventListener('click',function(){
       const status=document.getElementById('readingBackupStatus');
       try{
-        const keys=['readingHubDailyLogV1','readingHubX4ProImportsV1','readingHubLibraryEditsV1','readingHubReadingHistoryV1'];
+        const keys=['readingHubDailyLogV1','readingHubX4ProImportsV1','readingHubLibraryEditsV1','readingHubReadingHistoryV1','readingMmoPageEquivalentsByDayV1','readingMmoPageEditionOverridesV1','readingMmoEditionChoicesV1'];
         const stored={};
         for(const key of keys){const value=localStorage.getItem(key);if(value!==null)stored[key]=JSON.parse(value);}
         const rows=stored.readingHubDailyLogV1;
