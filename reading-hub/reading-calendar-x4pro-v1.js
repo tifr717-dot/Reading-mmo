@@ -133,12 +133,16 @@
       if ($('homeXtePage')) $('homeXtePage').textContent = endXte;
       const startPct = Number(sameBook[0]?.startPercent);
       const startXte = Number(sameBook[0]?.startXte);
-      const printDelta = Number.isFinite(startPct) ? Math.max(0,Math.round(totalPrint*(pct-startPct)/100)) : null;
+      // Use the same per-book daily calculation (and any manual page override)
+      // as Calendar / By Day / Today's stat tile, avoiding rounding drift.
+      const equivalentPrint = window.ReadingPageEquivalents?.forBook(last.date,last.title,sameBook).print;
+      const printDelta = equivalentPrint?.value ?? null;
+      const printPrefix = equivalentPrint?.source === 'estimate' ? '≈' : '';
       const xteDelta = startXte>0 ? Math.max(0,endXte-startXte) : null;
       if ($('homePageCompareNote')) {
         $('homePageCompareNote').textContent =
           printDelta!=null && xteDelta!=null
-            ? 'Last synced session: ~'+printDelta+' print pages · '+xteDelta+' XTE pages · +'+Math.max(0,pct-startPct).toFixed(1)+'%'
+            ? 'Last synced session: '+printPrefix+printDelta+' print pages · '+xteDelta+' XTE pages · +'+Math.max(0,pct-startPct).toFixed(1)+'%'
             : 'Print '+estimatedPrint+' · XTE '+endXte;
       }
       compare.hidden = false;
