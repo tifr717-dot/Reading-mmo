@@ -141,6 +141,21 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .journal-day-covers{display:flex;align-items:center;gap:8px;overflow-x:auto;flex:1;min-width:0}
 .journal-cover{display:flex;align-items:center;justify-content:center;flex:none;width:62px;height:91px;border-radius:7px;background:linear-gradient(140deg,#7c4859,#352329);color:#fff4e7;font:700 11px Georgia,serif;overflow:hidden;background-position:center;background-size:cover;box-shadow:0 3px 8px #0006}
 .journal-book-card>.journal-cover{width:74px;height:108px}
+.journal-finished{color:#b4dfb7!important;font-weight:800!important}
+.day-finish-btn{display:block;width:100%;margin-top:9px;padding:10px;border-radius:11px;background:#6f2e3c;border:1px solid #9a6677;color:#fff;font-weight:800;font-size:12px}
+.day-finish-btn.is-finished{background:#fff4de;color:#764452;border-color:#b79490}
+.cal-finished{position:absolute;top:3px;right:4px;color:#b3dfad;font-size:13px;font-weight:900}
+.reading-finish-form{background:#fff8e8;border:1px solid #c0a3ad;padding:14px;border-radius:15px;margin:12px 0;color:#3e292b}
+.reading-finish-form h3{font:700 18px Georgia,serif;margin:0 0 8px}
+.reading-finish-form p,.reading-finish-form small{font-size:11px;color:#755f57;line-height:1.5}
+.reading-finish-form label{display:flex;flex-direction:column;gap:6px;margin:12px 0;font-size:12px;font-weight:800}
+.reading-finish-form input{padding:12px;border:1px solid #b99a9f;border-radius:11px;background:white;color:#38272b;font-size:15px}
+.reading-finish-actions{display:flex;gap:8px;margin:12px 0}
+.reading-finish-actions button{flex:1;border:0;border-radius:10px;background:#6f2e3c;color:#fff;font-size:12px;padding:11px 6px;font-weight:800}
+.reading-finish-actions button[data-finish-cancel]{border:1px solid #bea890;background:#eee1ce;color:#513b35}
+#calendarFinishNotice{color:#326545;background:#ecf4e6;border:1px solid #a4bc9d;border-radius:12px;margin-top:10px;padding:12px;font-size:12px;font-weight:800}
+#calendarFinishNotice[hidden]{display:none}
+#markFinishedBook{display:block;width:100%;margin:10px 0;padding:11px;border:1px solid #9d7981;border-radius:12px;background:#fff4e3;color:#713b4d;font-weight:800}
 .journal-book-meta{min-width:0;display:flex;flex-direction:column;gap:7px}
 .journal-empty{padding:24px;text-align:center;color:#dbc4bc}
 .journal-day-meta{width:128px;gap:6px}
@@ -403,6 +418,7 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
       <div class="form-field"><label>Format</label><input id="editFormat" type="text" placeholder="Hardcover, Kindle…"></div>
       <div class="form-field full"><label>Notes</label><textarea id="editNotes" placeholder="What did you think? Anything to remember?"></textarea></div>
     </div>
+    <button type="button" id="markFinishedBook">✓ Mark as Finished</button>
     <div class="save-row">
       <button class="save-local" id="saveBookEdit">Save changes</button>
       <button class="mark-reread" id="markReread">↻ Log reread</button>
@@ -420,6 +436,8 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
     <div id="calendarDayProgress"></div>
     <div id="calendarDayBody"></div>
     <div id="calendarDayEquivalentEditor"></div>
+    <div id="calendarDayFinishEditor"></div>
+    <div id="calendarFinishNotice" role="status" hidden></div>
   </div>
 </div>
 
@@ -437,7 +455,8 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./cover-manager.js?v=51055"></script>
 <script src="./cover-rescue.js?v=51057"></script>
 <script src="./page-equivalents-v1.js?v=1"></script>
-<script src="./reading-calendar-x4pro-v1.js?v=print-ebook-1"></script>
+<script src="./book-completion-v1.js?v=1"></script>
+<script src="./reading-calendar-x4pro-v1.js?v=finish-book-1"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="./google-sheets-sync-v1.js?v=8"></script>
 <script>
@@ -587,6 +606,9 @@ function openBookEditor(index){
  document.getElementById("editFormat").value=b.format||"";
  document.getElementById("editNotes").value=b.notes||"";
  document.getElementById("editGoodreads").href=b.source||"#";
+ document.getElementById("editGoodreads").hidden=!b.source;
+ const finishButton=document.getElementById("markFinishedBook");
+ if(finishButton)finishButton.textContent=b.status==="Read"?"✓ Finished — update finish date":"✓ Mark as Finished";
  if(window.ReadingCoverManager)window.ReadingCoverManager.open(b);
  renderReadingHistory(b);
  document.getElementById("bookEditor").classList.add("show");
@@ -630,7 +652,7 @@ function saveBookEdit(){
      map[key]=next; localStorage.setItem(editKey,JSON.stringify(map));
    }
  }
- renderLibrary(); closeBookEditor(); toast("Saved ✓");
+ renderLibrary(); updateLibraryStats(); closeBookEditor(); window.dispatchEvent(new Event("reading-mmo-library-changed")); toast("Saved ✓");
 }
 function logReread(){
  const base=(window.READING_LIBRARY_DATA||[])[currentBookIndex]; if(!base)return;
@@ -708,7 +730,7 @@ function renderLibrary(){
  if(window.ReadingCovers) requestAnimationFrame(()=>window.ReadingCovers.hydrate(result));
 }
 function updateLibraryStats(){
- const all=window.READING_LIBRARY_DATA||[];
+ const all=(window.READING_LIBRARY_DATA||[]).map(mergedBook);
  const counts={Read:0,"To-Read":0,"Currently Reading":0,DNF:0};
  all.forEach(function(b){if(counts[b.status]!=null) counts[b.status]++;});
  const el=document.getElementById("libraryStats");
@@ -735,7 +757,7 @@ function bootData(){
  }
  updateLibraryStats();
  renderLibrary();
- document.querySelector("#wrapped .big-number").textContent=D.library.total;
+ document.querySelector("#wrapped .big-number").textContent=(window.READING_LIBRARY_DATA||[]).length;
  renderDiscover();
 }
 document.querySelector(".nav").addEventListener("click",function(e){
@@ -771,6 +793,19 @@ document.getElementById("bookEditor").addEventListener("click",function(e){if(e.
 document.getElementById("saveBookEdit").addEventListener("click",saveBookEdit);
 document.getElementById("editStatus").addEventListener("change",handleStatusChange);
 document.getElementById("markReread").addEventListener("click",logReread);
+document.getElementById("markFinishedBook").addEventListener("click",function(){
+  const index=currentBookIndex;
+  if(index==null)return;
+  const date=document.getElementById("editFinish");
+  if(!date.value)date.value=todayIso();
+  document.getElementById("editStatus").value="Read";
+  document.getElementById("editReadCount").value=Math.max(1,Number(document.getElementById("editReadCount").value)||0);
+  saveBookEdit();
+});
+window.addEventListener("reading-mmo-book-finished",function(){
+  updateLibraryStats();renderLibrary();
+  document.querySelector("#wrapped .big-number").textContent=(window.READING_LIBRARY_DATA||[]).length;
+});
 bootData();
 </script>
 <script>
@@ -843,7 +878,7 @@ window.openQuickLog=openQuickLog;
     button.addEventListener('click',function(){
       const status=document.getElementById('readingBackupStatus');
       try{
-        const keys=['readingHubDailyLogV1','readingHubX4ProImportsV1','readingHubLibraryEditsV1','readingHubReadingHistoryV1','readingMmoPageEquivalentsByDayV1','readingMmoPageEditionOverridesV1','readingMmoEditionChoicesV1'];
+        const keys=['readingHubDailyLogV1','readingHubX4ProImportsV1','readingHubLibraryEditsV1','readingHubReadingHistoryV1','readingMmoPageEquivalentsByDayV1','readingMmoPageEditionOverridesV1','readingMmoEditionChoicesV1','readingMmoAdditionalBooksV1'];
         const stored={};
         for(const key of keys){const value=localStorage.getItem(key);if(value!==null)stored[key]=JSON.parse(value);}
         const rows=stored.readingHubDailyLogV1;

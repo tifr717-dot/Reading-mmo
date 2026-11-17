@@ -287,7 +287,8 @@
         const minutes=Math.floor(entries.reduce((n,r)=>n+(Number(r.seconds)||0),0)/60);
         const label=new Date(date+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
         const equivalent=window.ReadingPageEquivalents?.label(window.ReadingPageEquivalents.aggregateRows(entries))||'Tap to add print / ebook pages';
-        return '<button class="journal-day-card" data-cal-date="'+esc(date)+'"><span class="journal-day-meta"><strong>'+esc(label)+'</strong><span>'+pages+' XTE pages</span><small>'+minutes+' min</small><small class="journal-eq">'+esc(equivalent)+'</small></span><span class="journal-day-covers">'+titles.map(t=>coverMarkup(t)).join('')+'</span></button>';
+        const finished=titles.some(t=>window.ReadingCompletion?.finished(t)&&window.ReadingCompletion.finishDate(t)===date);
+        return '<button class="journal-day-card" data-cal-date="'+esc(date)+'"><span class="journal-day-meta"><strong>'+esc(label)+'</strong><span>'+pages+' XTE pages</span><small>'+minutes+' min</small><small class="journal-eq">'+esc(equivalent)+'</small>'+(finished?'<small class="journal-finished">✓ Book finished</small>':'')+'</span><span class="journal-day-covers">'+titles.map(t=>coverMarkup(t)).join('')+'</span></button>';
       }).join(''):'<p class="journal-empty">No reading logged this month yet.</p>';
     }else{
       const grouped={};
@@ -305,9 +306,11 @@
         const latest=entries.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
         // A completion marker can share a date with an X4 Pro reading entry.
         // Preserve the 100% finish even if the earlier diary entry sorts last.
-        const completed=entries.some(r=>r.endPercent!==null&&r.endPercent!==''&&Number(r.endPercent)>=100);
+        const savedFinished=!!window.ReadingCompletion?.finished(title);
+        const finishedOn=savedFinished?window.ReadingCompletion.finishDate(title):'';
+        const completed=savedFinished||entries.some(r=>r.endPercent!==null&&r.endPercent!==''&&Number(r.endPercent)>=100);
         const pct=completed?100:(latest?.endPercent==null||latest.endPercent===''?NaN:Number(latest.endPercent));
-        return '<button class="journal-book-card" data-journal-book="'+esc(title)+'">'+coverMarkup(title,'M')+'<span class="journal-book-meta"><strong>'+esc(title)+'</strong><small>'+esc(label)+' · '+dates.length+' reading '+(dates.length===1?'day':'days')+'</small><span>'+pages+' XTE pages · '+minutes+' min</span>'+(equivalent?'<small class="journal-eq">'+esc(equivalent)+'</small>':'')+(Number.isFinite(pct)?'<small>'+(completed?'✓ Finished · 100%':pct.toFixed(1)+'% complete')+'</small>':'')+'</span></button>';
+        return '<button class="journal-book-card" data-journal-book="'+esc(title)+'">'+coverMarkup(title,'M')+'<span class="journal-book-meta"><strong>'+esc(title)+'</strong><small>'+esc(label)+' · '+dates.length+' reading '+(dates.length===1?'day':'days')+'</small><span>'+pages+' XTE pages · '+minutes+' min</span>'+(equivalent?'<small class="journal-eq">'+esc(equivalent)+'</small>':'')+(Number.isFinite(pct)?'<small>'+(completed?('✓ Finished'+(finishedOn?' · '+esc(finishedOn):'')+' · 100%'):pct.toFixed(1)+'% complete')+'</small>':'')+'</span></button>';
       }).join(''):'<p class="journal-empty">No books logged this month yet.</p>';
     }
     if(window.ReadingCovers)requestAnimationFrame(()=>window.ReadingCovers.hydrate(grid));
@@ -342,12 +345,13 @@
       const dayRows = grouped[date] || [];
       const titles = [...new Set(dayRows.map(r=>r.title).filter(Boolean))];
       const totalPages = dayRows.reduce((s,r)=>s+(Number(r.pages)||0),0);
+      const finishedToday=titles.some(t=>window.ReadingCompletion?.finished(t)&&window.ReadingCompletion.finishDate(t)===date);
       const coverLabel = titles[0] ? titles[0].split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase() : '';
       const coverBook = titles[0] ? findLibraryBook(titles[0]) : null;
       const coverAuthor = coverBook?.author || '';
       cells.push(
         '<button class="cal-day '+(date===today?'today ':'')+(dayRows.length?'has-reading':'')+'" data-cal-date="'+date+'">'+
-          '<span class="cal-num">'+day+'</span>'+
+          '<span class="cal-num">'+day+'</span>'+(finishedToday?'<span class="cal-finished" aria-label="Book finished">✓</span>':'')+
           (dayRows.length ? '<span class="cal-cover-stack '+(titles.length>1?'multi':'')+'">'+titles.slice(0,3).map((title,idx)=>{
             const match=findLibraryBook(title);
             const author=match?.author||'';
@@ -366,6 +370,8 @@
 
   function openDay(date) {
     if($('calendarDayEquivalentEditor'))$('calendarDayEquivalentEditor').innerHTML='';
+    if($('calendarDayFinishEditor'))$('calendarDayFinishEditor').innerHTML='';
+    if($('calendarFinishNotice'))$('calendarFinishNotice').hidden=true;
     const rows = readLogs().filter(r=>r.date===date);
     if (!rows.length) return;
     const panel = $('calendarDayBody');
@@ -391,7 +397,9 @@
       const coverBook = findLibraryBook(title);
       const coverAuthor = coverBook?.author || '';
       const equivalent=window.ReadingPageEquivalents?.label(window.ReadingPageEquivalents.forBook(date,title,list))||'Print / ebook pages not added yet';
-      return '<div class="cal-detail-book"><div class="cal-detail-cover book-cover-slot" data-book-cover data-cover-title="'+esc(title)+'" data-cover-author="'+esc(coverAuthor)+'" data-cover-size="M">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.floor(seconds/60)+' min · '+sessionText+'</div><small class="day-eq">'+esc(equivalent)+'</small><button type="button" class="day-eq-edit" data-page-eq-edit="'+esc(title)+'" data-page-eq-date="'+esc(date)+'">♡ Edit page counts</button>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'<span class="calendar-source">X4 Pro diary</span></div></div>';
+      const finished=!!window.ReadingCompletion?.finished(title);
+      const finishDate=finished?window.ReadingCompletion.finishDate(title):'';
+      return '<div class="cal-detail-book"><div class="cal-detail-cover book-cover-slot" data-book-cover data-cover-title="'+esc(title)+'" data-cover-author="'+esc(coverAuthor)+'" data-cover-size="M">📖</div><div><b>'+esc(title)+'</b><div>'+pages+' XTE pages · '+Math.floor(seconds/60)+' min · '+sessionText+'</div><small class="day-eq">'+esc(equivalent)+'</small><button type="button" class="day-eq-edit" data-page-eq-edit="'+esc(title)+'" data-page-eq-date="'+esc(date)+'">♡ Edit page counts</button>'+(pct?'<small>'+esc(pct)+'</small>':'')+(xte?'<small>'+esc(xte)+'</small>':'')+'<span class="calendar-source">X4 Pro diary</span>'+(finished?'<small class="journal-finished">✓ Finished '+esc(finishDate)+'</small>':'')+'<button type="button" class="day-finish-btn '+(finished?'is-finished':'')+'" data-finish-title="'+esc(title)+'" data-finish-date="'+esc(date)+'">'+(finished?'✎ Change finish date':'✓ Mark as Finished')+'</button></div></div>';
     }).join('');
     const totalPages = rows.reduce((s,r)=>s+(Number(r.pages)||0),0);
     const totalSeconds = rows.reduce((s,r)=>s+(Number(r.seconds)||0),0);
@@ -566,6 +574,8 @@
     $('calendarDayClose')?.addEventListener('click',()=>$('calendarDayModal')?.classList.remove('show'));
     $('calendarDayModal')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('show');});
     $('x4SyncButton')?.addEventListener('click',syncX4Pro);
+    window.addEventListener('reading-mmo-book-finished',()=>{render();renderHomeDashboard();});
+    window.addEventListener('reading-mmo-library-changed',()=>{render();renderHomeDashboard();});
     render();
     updateHomeFromDiary();
     renderHomeDashboard();
