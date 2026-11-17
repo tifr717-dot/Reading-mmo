@@ -823,7 +823,7 @@ e.preventDefault();
 const date=$('quickLogDate').value,title=$('quickLogBook').value.trim(),pages=Number($('quickLogPages').value),minutes=Number($('quickLogMinutes').value),endPercent=Number($('quickLogPercent').value);
 if(!date||!title||!Number.isInteger(pages)||pages<0||!Number.isFinite(minutes)||minutes<0||!Number.isFinite(endPercent)||endPercent<0||endPercent>100){$('quickLogMessage').textContent='Please check the reading details.';return}
 const printRaw=$('quickLogPrintPages').value.trim(),ebookRaw=$('quickLogEbookPages').value.trim();
-if([printRaw,ebookRaw].some(x=>x!==''&&(!/^\\d+$/.test(x)||!Number.isSafeInteger(Number(x))))){$('quickLogMessage').textContent='Print and ebook counts must be whole numbers.';return}
+if([printRaw,ebookRaw].some(x=>x!==''&&(!/^\d+$/.test(x)||!Number.isSafeInteger(Number(x))))){$('quickLogMessage').textContent='Print and ebook counts must be whole numbers.';return}
 const rows=logs(),prior=rows.filter(r=>r.title===title&&r.date<=date).sort((a,b)=>a.date.localeCompare(b.date)).pop();
 const startPercent=prior&&Number.isFinite(Number(prior.endPercent))?Number(prior.endPercent):null;
 const row={id:'manual-'+Date.now()+'-'+Math.random().toString(36).slice(2),date,title,pages,seconds:Math.round(minutes*60),sessions:1,startPercent,endPercent,source:'manual',importedAt:new Date().toISOString()};
