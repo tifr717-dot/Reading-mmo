@@ -4,6 +4,7 @@
 (() => {
   'use strict';
   const SPEC = Object.freeze({
+    readingMmoGoogleSyncShadowV2:'object',
     readingHubDailyLogV1:'array',
     readingHubX4ProImportsV1:'array',
     readingHubLibraryEditsV1:'object',

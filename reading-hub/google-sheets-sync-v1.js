@@ -49,42 +49,20 @@ async function sync(){
  if(busy||!token)return;
  busy=true;
  try{
-  setStatus('Checking Google Sheets for existing sessions…');
-  const current=await api('/values/'+encodeURIComponent("'Reading Sessions'!A2:K1000"));
-  const known=new Map((current.values||[]).map((row,index)=>[safeText(row[0]),{row,index}]));
-  const all=getRows(),missing=all.filter(r=>!known.has(identity(r)));
-  if(missing.length){
-   const payload={values:missing.map(r=>sheetRow(r,all))};
-   await api('/values/'+encodeURIComponent("'Reading Sessions'!A:N")+':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS',{method:'POST',body:JSON.stringify(payload)});
-  }
-  // Keep saved print/ebook counts in the existing J/K columns without rewriting
-  // user-edited cells, XTE diary pages, or unrelated spreadsheet columns.
-  const updates=[];
-  all.forEach(r=>{
-   const existing=known.get(identity(r));if(!existing)return;
-   const eq=equivalentValues(r,all),row=existing.row;
-   const changes=[
-    {index:9,value:eq.ebook,explicit:eq.explicitEbook,column:'J'},
-    {index:10,value:eq.print,explicit:eq.explicitPrint,column:'K'}
-   ];
-   changes.forEach(c=>{
-    const old=row[c.index]??'';
-    if(c.value===''||(!c.explicit&&old!=='')||String(old)===String(c.value))return;
-    updates.push({range:"'Reading Sessions'!"+c.column+(existing.index+2),values:[[c.value]]});
-   });
-  });
-  if(updates.length)await api('/values:batchUpdate',{method:'POST',body:JSON.stringify({valueInputOption:'RAW',data:updates})});
-  setStatus(!missing.length&&!updates.length?'♡ Up to date — all local sessions are in Google Sheets.':
-   '♡ Synced '+missing.length+' new session'+(missing.length===1?'':'s')+' and '+updates.length+' page-count update'+(updates.length===1?'':'s')+'.');
- }catch(error){setStatus('Google sync: '+error.message+' Your sessions remain saved on this phone.');}
- finally{busy=false;}
+  const engine=window.ReadingTwoWaySync;
+  if(!engine)throw Error('The two-way sync module did not load. Refresh the app.');
+  await engine.sync({api,toSheetRow:sheetRow,identity,setStatus});
+ }catch(error){
+  setStatus('Google sync: '+(error.message||String(error))+' Your existing local data was not deleted.');
+ }finally{busy=false;}
 }
+
 function connect(){
  if(!window.google?.accounts?.oauth2){setStatus('Google sign-in is still loading. Try again in a moment.');return;}
  if(!tokenClient)tokenClient=google.accounts.oauth2.initTokenClient({client_id:CLIENT_ID,scope:SCOPE,callback:response=>{
   if(response.error){setStatus('Google authorization failed: '+response.error);return;}
   token=response.access_token;expiresAt=Date.now()+(Number(response.expires_in)||3500)*1000-60000;
-  setStatus('Connected to Google. Syncing sessions…');sync();
+  setStatus('Connected to Google. Checking both sides…');sync();
  }});
  tokenClient.requestAccessToken({prompt:token?'':'consent'});
 }
@@ -271,9 +249,20 @@ function boot(){
  const wrap=document.createElement('div');wrap.style.marginTop='12px';
  const btn=document.createElement('button');btn.type='button';btn.textContent='♡ Connect Google Sheets';btn.style.cssText='padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff;font-weight:700';
  btn.addEventListener('click',connect);wrap.appendChild(btn);
- const syncBtn=document.createElement('button');syncBtn.type='button';syncBtn.textContent='↑ Upload Sessions';syncBtn.style.cssText='margin-left:8px;padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff';
+ const syncBtn=document.createElement('button');syncBtn.type='button';syncBtn.textContent='↻ Sync Both Ways';syncBtn.style.cssText='margin-left:8px;padding:11px 14px;border-radius:12px;border:1px solid #a47c94;background:#432a3c;color:#fff';
  syncBtn.addEventListener('click',()=>{if(!token)connect();else sync();});wrap.appendChild(syncBtn);
- const status=document.createElement('div');status.id='readingGoogleStatus';status.setAttribute('role','status');status.style.cssText='margin-top:8px;font-size:12px;color:#d8c5cf';status.textContent='Google Sheets currently uploads reading sessions and page counts; it does not yet download edits or fully sync book status across devices.';wrap.appendChild(status);
+ const status=document.createElement('div');status.id='readingGoogleStatus';status.setAttribute('role','status');status.style.cssText='margin-top:8px;font-size:12px;color:#d8c5cf';status.textContent='Two-way Google sync: sessions, book details, reading history and page preferences. Manual photo uploads stay on this device; use Backup Reading Data to protect them.';wrap.appendChild(status);
+ const cloudNote=document.createElement('div');
+ cloudNote.textContent='Changes sync while Reading Journal is open and connected. Back up your phone before the first sync. Uploaded cover photos remain local.';
+ cloudNote.style.cssText='font-size:11px;color:#d8bfcc;margin:10px 0;line-height:1.5';
+ wrap.appendChild(cloudNote);
+ const sheetLink=document.createElement('a');
+ sheetLink.href='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/edit';
+ sheetLink.target='_blank';sheetLink.rel='noopener noreferrer';
+ sheetLink.textContent='Open The Reading Room ♡ Statistics in Google Sheets';
+ sheetLink.style.cssText='color:#f2ccd9;font-size:12px;text-decoration:underline;display:inline-block;margin:0 0 10px';
+ wrap.appendChild(sheetLink);
+ if(window.ReadingTwoWaySync)window.ReadingTwoWaySync.attachConflictPanel(wrap);
  const toolsPanel=document.createElement('details');
  toolsPanel.style.cssText='margin-top:14px;border:1px solid #795568;border-radius:14px;padding:12px';
  const toolsTitle=document.createElement('summary');toolsTitle.textContent='♡ Reading Tools';toolsTitle.style.cssText='cursor:pointer;font-weight:700;padding:4px 0';
@@ -284,6 +273,8 @@ function boot(){
  createMatcher(toolsPanel);
  container.appendChild(toolsPanel);
  window.addEventListener('reading-mmo-log-changed',()=>{if(token)sync();});
+ window.addEventListener('reading-mmo-library-changed',()=>{if(token)sync();});
+ window.addEventListener('reading-mmo-book-finished',()=>{if(token)sync();});
  window.addEventListener('online',()=>{if(token)sync();});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&token)sync();});
 }

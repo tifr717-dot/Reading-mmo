@@ -201,6 +201,19 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 .reading-restore-apply{width:100%;background:#854662;color:#fff;border:1px solid #af7e96;border-radius:10px;padding:12px;font-weight:800;cursor:pointer}
 @media(max-width:400px){.reading-restore-btn{display:flex;width:100%;margin:10px 0 0}.reading-restore-review{padding:10px}}
 </style>
+
+<style>
+.reading-google-conflicts{margin:12px 0;border:1px solid #bd8b9c;background:#382430;border-radius:14px;padding:12px;color:#fbe9f1;line-height:1.45}
+.reading-google-conflicts[hidden]{display:none}
+.reading-google-conflicts>strong{font:700 15px Georgia,serif;color:#ffe8d2}
+.reading-google-conflicts p{font-size:12px;margin:8px 0;color:#e3cbd7}
+.reading-conflict-item{background:#472f3d;border-radius:11px;padding:10px;margin-top:10px;border:1px solid #74516a;font-size:12px}
+.reading-conflict-values{display:flex;flex-direction:column;gap:4px;margin-top:8px;padding:7px 9px;border-radius:8px;background:#261a23}
+.reading-conflict-values small{display:block;color:#ecd3dc;font-size:11px;line-height:1.35;overflow-wrap:anywhere}
+.reading-conflict-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.reading-conflict-actions button{border:1px solid #b4889d;border-radius:9px;padding:8px 7px;background:#75435f;color:#fff;font-size:11px;font-weight:800}
+.reading-conflict-actions button:last-child{background:#3b5661;border-color:#718d95}
+</style>
 </head>
 <body>
 <main class="app">
@@ -468,8 +481,9 @@ button{font:inherit}.app{max-width:480px;margin:auto;min-height:100vh;padding:en
 <script src="./book-completion-v1.js?v=1"></script>
 <script src="./reading-calendar-x4pro-v1.js?v=finish-book-1"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="./google-sheets-sync-v1.js?v=9"></script>
-<script src="./reading-backup-restore-v2.js?v=1"></script>
+<script src="./reading-two-way-sync-v1.js?v=2"></script>
+<script src="./google-sheets-sync-v1.js?v=11"></script>
+<script src="./reading-backup-restore-v2.js?v=2"></script>
 <script>
 const titles={
  home:["Good evening, Tiff ✦","Your reading life, without the spreadsheet look."],
