@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="The Reading Journal — an enchanted open book beneath a golden crescent">
+<defs>
+  <radialGradient id="bg" cx="49%" cy="42%" r="74%"><stop stop-color="#693047"/><stop offset=".47" stop-color="#3c162b"/><stop offset="1" stop-color="#170b17"/></radialGradient>
+  <radialGradient id="aura" cx="50%" cy="52%" r="50%"><stop stop-color="#e09c8e" stop-opacity=".56"/><stop offset=".45" stop-color="#ad527d" stop-opacity=".19"/><stop offset="1" stop-color="#6e234b" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#ffefbb"/><stop offset=".24" stop-color="#dba55b"/><stop offset=".52" stop-color="#fff1b2"/><stop offset=".78" stop-color="#bc774e"/><stop offset="1" stop-color="#f0d291"/></linearGradient>
+  <linearGradient id="paperL" x1="0" x2=".9" y1=".1" y2=".9"><stop stop-color="#fff2d7"/><stop offset=".47" stop-color="#eed2ae"/><stop offset="1" stop-color="#c99683"/></linearGradient>
+  <linearGradient id="paperR" x1=".8" x2=".05" y1="0" y2=".95"><stop stop-color="#fff4dc"/><stop offset=".48" stop-color="#f0cfae"/><stop offset="1" stop-color="#bc8390"/></linearGradient>
+  <linearGradient id="cover" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#99445e"/><stop offset=".6" stop-color="#651d42"/><stop offset="1" stop-color="#37102d"/></linearGradient>
+  <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+</defs>
+<rect width="512" height="512" rx="104" fill="url(#bg)"/>
+<circle cx="256" cy="248" r="214" fill="url(#aura)"/>
+<rect x="17" y="17" width="478" height="478" rx="92" fill="none" stroke="#ba7b59" stroke-opacity=".58" stroke-width="2"/>
+<rect x="27" y="27" width="458" height="458" rx="84" fill="none" stroke="#ffe0ae" stroke-opacity=".21" stroke-width="1"/>
+<path d="M88 205 Q104 102 214 75 M298 75 Q406 105 424 205" fill="none" stroke="url(#gold)" stroke-width="3" stroke-linecap="round"/>
+<path d="M90 214 Q77 248 90 271 M422 214 Q435 248 422 271" fill="none" stroke="#d49b71" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>
+<path d="M256 75 C215 75 200 116 213 142 C224 164 263 173 289 139 C263 157 231 142 229 116 C227 98 238 82 256 75Z" fill="url(#gold)"/>
+<path d="M254 80 C220 87 213 120 227 139" fill="none" stroke="#fff2c8" stroke-width="2" opacity=".6"/>
+<g fill="url(#gold)">
+ <path d="M161 114 L166 128 L180 133 L166 138 L161 152 L156 138 L142 133 L156 128Z"/>
+ <path d="M349 105 L353 117 L365 121 L353 125 L349 138 L345 125 L333 121 L345 117Z"/>
+ <path d="M305 171 L309 182 L320 186 L309 190 L305 202 L301 190 L290 186 L301 182Z"/>
+ <path d="M114 181 L117 189 L125 192 L117 195 L114 203 L111 195 L103 192 L111 189Z"/>
+ <path d="M393 182 L396 190 L404 193 L396 196 L393 204 L390 196 L382 193 L390 190Z"/>
+ <circle cx="201" cy="177" r="3"/><circle cx="334" cy="160" r="3"/><circle cx="255" cy="184" r="2"/><circle cx="125" cy="235" r="2.5"/><circle cx="386" cy="228" r="2.5"/>
+</g>
+<g stroke="#e7a690" stroke-opacity=".6" stroke-width="3" fill="none" stroke-linecap="round">
+ <path d="M238 274 C211 252 213 229 240 211 C247 201 243 194 234 190"/>
+ <path d="M275 271 C300 251 300 225 276 207 C270 198 275 194 283 187"/>
+ <path d="M255 267 C247 244 257 222 262 209"/>
+</g>
+<ellipse cx="256" cy="392" rx="167" ry="23" fill="#0d0715" opacity=".7" filter="url(#shadow)"/>
+<!-- leather binding and broad cover silhouette -->
+<path d="M71 279 Q142 260 218 289 Q241 298 256 318 Q271 298 294 289 Q370 260 441 279 L431 402 Q333 391 256 426 Q179 391 81 402Z" fill="#321023" stroke="url(#gold)" stroke-width="6" stroke-linejoin="round"/>
+<path d="M80 280 Q164 255 240 304 L256 318 Q348 255 432 280 L423 394 Q325 382 256 420 Q187 382 89 394Z" fill="url(#cover)" stroke="#d99670" stroke-width="3"/>
+<!-- paper edges -->
+<path d="M85 278 Q171 249 256 314 L256 409 Q198 366 92 385Z" fill="#d4a28c"/>
+<path d="M427 278 Q341 249 256 314 L256 409 Q314 366 420 385Z" fill="#c58a7d"/>
+<path d="M92 270 Q177 243 256 310 L256 402 Q192 352 96 372Z" fill="url(#paperL)" stroke="#ffdeac" stroke-width="3"/>
+<path d="M420 270 Q335 243 256 310 L256 402 Q320 352 416 372Z" fill="url(#paperR)" stroke="#ffe0b5" stroke-width="3"/>
+<!-- turning pages -->
+<path d="M101 266 Q174 240 246 291 L256 308 Q194 275 116 285" fill="none" stroke="#ad6a66" stroke-opacity=".5" stroke-width="3"/>
+<path d="M411 266 Q338 240 266 291 L256 308 Q318 275 396 285" fill="none" stroke="#ad6a66" stroke-opacity=".5" stroke-width="3"/>
+<path d="M101 299 Q176 282 241 327 M106 324 Q174 312 243 348 M112 348 Q175 345 240 371" fill="none" stroke="#b47e6e" stroke-opacity=".48" stroke-width="3" stroke-linecap="round"/>
+<path d="M411 299 Q336 282 271 327 M406 324 Q338 312 269 348 M400 348 Q337 345 272 371" fill="none" stroke="#a87076" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>
+<path d="M256 309 L256 417" stroke="#9a5264" stroke-width="7"/>
+<path d="M256 320 L256 407" stroke="#fff1cd" stroke-opacity=".8" stroke-width="3"/>
+<!-- filigree along lower leather cover -->
+<path d="M113 397 Q180 389 233 414 M399 397 Q332 389 279 414" fill="none" stroke="url(#gold)" stroke-width="3"/>
+<path d="M149 403 Q153 391 164 395 M362 403 Q359 391 348 395" fill="none" stroke="#e6b57a" stroke-width="2"/>
+<path d="M256 403 L266 415 L256 428 L246 415Z" fill="#aa3b65" stroke="#f8dcaa" stroke-width="4"/>
+<path d="M256 409 L261 415 L256 421 L251 415Z" fill="#f5b6ba"/>
+<path d="M256 450 L260 460 L270 464 L260 468 L256 479 L252 468 L242 464 L252 460Z" fill="url(#gold)" opacity=".83"/>
+<!-- restrained rose-like corner ornaments -->
+<path d="M66 331 C49 324 45 300 59 295 C73 291 80 304 75 311 C65 321 57 303 65 306 M446 331 C463 324 467 300 453 295 C439 291 432 304 437 311 C447 321 455 303 447 306" stroke="#cc7b8b" fill="none" stroke-width="4" stroke-linecap="round"/>
+</svg>

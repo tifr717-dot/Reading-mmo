@@ -1,0 +1,57 @@
+name: Build Reading Journal app icons
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app-icon.svg'
+      - '.github/workflows/build-reading-journal-icons.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image renderer
+        run: python -m pip install --disable-pip-version-check cairosvg pillow
+      - name: Render app icons from the source artwork
+        run: |
+          python - <<'PY'
+          from io import BytesIO
+          from pathlib import Path
+          import cairosvg
+          from PIL import Image
+          root = Path('app-icon.svg')
+          for size in (192, 512):
+              png = cairosvg.svg2png(url=str(root), output_width=size, output_height=size)
+              image = Image.open(BytesIO(png)).convert('RGBA')
+              image.save(f'icon-journal-{size}.png', optimize=True)
+          original = Image.open('icon-journal-512.png').convert('RGBA')
+          background = Image.new('RGBA', (512,512), (26, 10, 23, 255))
+          inner = original.resize((390,390), Image.Resampling.LANCZOS)
+          background.alpha_composite(inner, (61,61))
+          background.save('icon-journal-maskable-512.png', optimize=True)
+          for path in ('icon-journal-192.png','icon-journal-512.png','icon-journal-maskable-512.png'):
+              image = Image.open(path)
+              print(path, image.size, Path(path).stat().st_size, 'bytes')
+          PY
+      - name: Commit rendered icons
+        run: |
+          git add icon-journal-192.png icon-journal-512.png icon-journal-maskable-512.png
+          if git diff --cached --quiet; then
+            echo "Icon files are already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Render new Reading Journal app icons [skip ci]"
+          git push origin HEAD:main
