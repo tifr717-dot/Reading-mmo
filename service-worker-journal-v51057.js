@@ -1,4 +1,4 @@
-const CACHE='reading-journal-v51064';
+const CACHE='reading-journal-v51065';
 const CORE=[
   './manifest.webmanifest','./icon-journal-192.png','./icon-journal-512.png','./icon-journal-maskable-512.png',
   './reading-hub/','./reading-hub/index.html',
@@ -42,7 +42,11 @@ self.addEventListener('fetch',e=>{
     return;
   }
 
-  const networkFirst=r.destination==='script'||r.destination==='style'||u.searchParams.has('v');
+  // Installed Android apps must revalidate the manifest at its original URL.
+  // Avoid serving stale manifest metadata or launcher artwork from Cache Storage.
+  const networkFirst=r.destination==='script'||r.destination==='style'||
+    r.destination==='manifest'||u.pathname.endsWith('/manifest.webmanifest')||
+    (u.pathname.includes('/icon-')&&u.pathname.endsWith('.png'))||u.searchParams.has('v');
   if(networkFirst){
     e.respondWith(fetch(r,{cache:'no-store'}).then(x=>{
       const y=x.clone();caches.open(CACHE).then(c=>c.put(r,y));return x;
