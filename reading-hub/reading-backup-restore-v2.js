@@ -4,6 +4,9 @@
 (() => {
   'use strict';
   const SPEC = Object.freeze({
+    // Preserve saves from the original Reading MMO launcher as well.
+    readingMMO_save_v2:'object',
+    readingMMO_save:'object',
     readingMmoGoogleSyncShadowV2:'object',
     readingHubDailyLogV1:'array',
     readingHubX4ProImportsV1:'array',
