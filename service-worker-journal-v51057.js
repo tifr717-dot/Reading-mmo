@@ -1,6 +1,6 @@
-const CACHE='reading-journal-v51065';
+const CACHE='reading-journal-v51068';
 const CORE=[
-  './manifest.webmanifest','./icon-journal-192.png','./icon-journal-512.png','./icon-journal-maskable-512.png',
+  './manifest.webmanifest','./journal-icon-20261120-192.png','./journal-icon-20261120-512.png','./journal-icon-20261120-maskable-512.png',
   './reading-hub/','./reading-hub/index.html',
   './reading-hub/data.js','./reading-hub/library-data.js','./reading-hub/isbn-index.js',
   './reading-hub/reading-calendar-x4pro-v1.js','./reading-hub/cover-service.js',
