@@ -25,6 +25,7 @@
   const VIEWS = new Set(['calendar','day','book']);
   const $ = id => document.getElementById(id);
   let selected = null;
+  let selectedImages = [];
   const clean = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   const isObj = x => x!==null && typeof x==='object' && !Array.isArray(x);
   const safeProps = obj => Object.fromEntries(Object.entries(obj).filter(([k]) =>
@@ -90,7 +91,7 @@
   }
   function validateSnapshot(payload){
     if(!isObj(payload)||payload.format!=='reading-mmo-local-backup'
-       ||![1,2].includes(payload.version)||!isObj(payload.storage))
+       ||![1,2,3].includes(payload.version)||!isObj(payload.storage))
       throw Error('That file is not a recognized Reading Journal backup.');
     const selectedData={};
     for(const [key,value] of Object.entries(payload.storage)){
@@ -117,6 +118,109 @@
     return {format:'reading-mmo-local-backup',version:2,
       exportedAt:new Date().toISOString(),storage:data};
   }
+
+  // Uploaded cover photos are stored as Blobs in IndexedDB rather than
+  // localStorage. Export the bytes, not just their localKey references.
+  function coverKeys(data){
+    const refs=data.readingJournalManualCoversV1;
+    return !isObj(refs)?[]:[...new Set(Object.values(refs).filter(isObj)
+      .map(ref=>ref.localKey).filter(key=>typeof key==='string'&&key.length))];
+  }
+  function openCoverDB(){
+    return new Promise((resolve,reject)=>{
+      if(!('indexedDB' in window))return reject(new Error('Cover-photo storage is unavailable.'));
+      const request=indexedDB.open('readingJournalCoverImagesV1',1);
+      request.onupgradeneeded=()=>{
+        if(!request.result.objectStoreNames.contains('images'))request.result.createObjectStore('images');
+      };
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>reject(request.error||new Error('Unable to open saved cover storage.'));
+    });
+  }
+  function photoURL(blob){
+    return new Promise((resolve,reject)=>{
+      const fr=new FileReader();
+      fr.onload=()=>resolve(String(fr.result||''));
+      fr.onerror=()=>reject(fr.error||new Error('Cannot read a saved cover photo.'));
+      fr.readAsDataURL(blob);
+    });
+  }
+  function getPhoto(db,key){
+    return new Promise((resolve,reject)=>{
+      const req=db.transaction('images','readonly').objectStore('images').get(key);
+      req.onsuccess=()=>resolve(req.result||null);
+      req.onerror=()=>reject(req.error||new Error('Cannot read cover photo.'));
+    });
+  }
+  async function readCoverImages(data){
+    const keys=coverKeys(data);if(!keys.length)return [];
+    const db=await openCoverDB();
+    try{
+      const images=[];
+      for(const key of keys){
+        const blob=await getPhoto(db,key);
+        if(!(blob instanceof Blob))
+          throw new Error('A selected cover photo is missing ('+key+'). Backup not marked complete.');
+        const dataUrl=await photoURL(blob);
+        if(!/^data:image\/(jpeg|png|webp);base64,/i.test(dataUrl))
+          throw new Error('Unsupported cover photo format ('+key+').');
+        images.push({key,dataUrl});
+      }
+      return images;
+    }finally{db.close()}
+  }
+  function validateImages(payload){
+    if(payload.version<3)return [];
+    if(!Array.isArray(payload.coverImages))throw new Error('Backup is missing its cover-photo section.');
+    if(payload.coverImages.length>3000)throw new Error('Unexpected number of cover photos.');
+    const seen=new Set();
+    return payload.coverImages.map(image=>{
+      if(!isObj(image)||typeof image.key!=='string'||!image.key||image.key.length>600||
+        seen.has(image.key)||typeof image.dataUrl!=='string'||
+        !/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/i.test(image.dataUrl)||
+        image.dataUrl.length>20*1024*1024)
+        throw new Error('The backup has an invalid or oversized cover photo.');
+      seen.add(image.key);
+      return {key:image.key,dataUrl:image.dataUrl};
+    });
+  }
+  function decodePhoto(item){
+    const comma=item.dataUrl.indexOf(',');
+    const mime=item.dataUrl.slice(5,item.dataUrl.indexOf(';'));
+    const raw=atob(item.dataUrl.slice(comma+1));
+    const bytes=new Uint8Array(raw.length);
+    for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+    return new Blob([bytes],{type:mime});
+  }
+  async function restoreCoverImages(items){
+    if(!items.length)return {added:0,kept:0};
+    const db=await openCoverDB();
+    try{
+      return await new Promise((resolve,reject)=>{
+        const tx=db.transaction('images','readwrite'),store=tx.objectStore('images');
+        let added=0,kept=0;
+        for(const item of items){
+          const request=store.get(item.key);
+          request.onsuccess=()=>{
+            if(request.result){kept++;return}
+            try{store.put(decodePhoto(item),item.key);added++}
+            catch(_){tx.abort()}
+          };
+          request.onerror=()=>tx.abort();
+        }
+        tx.oncomplete=()=>resolve({added,kept});
+        tx.onerror=()=>reject(tx.error||new Error('Unable to restore cover photos.'));
+        tx.onabort=()=>reject(tx.error||new Error('Cover-photo restore was interrupted.'));
+      });
+    }finally{db.close()}
+  }
+  async function snapshotComplete(){
+    const payload=snapshot();
+    payload.version=3;
+    payload.coverImages=await readCoverImages(payload.storage);
+    return payload;
+  }
+
   const stats=data=>({
     sessions:Array.isArray(data.readingHubDailyLogV1)?data.readingHubDailyLogV1.length:0,
     books:Array.isArray(data.readingMmoAdditionalBooksV1)?data.readingMmoAdditionalBooksV1.length:0,
@@ -138,8 +242,8 @@
     }
     return {operations,summary};
   }
-  function downloadData(){
-    const payload=snapshot();
+  async function downloadData(){
+    const payload=await snapshotComplete();
     if(!Object.keys(payload.storage).length)throw Error('No locally saved data to back up yet.');
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
     const url=URL.createObjectURL(blob);
@@ -148,7 +252,7 @@
       link.href=url;link.download='reading-journal-backup-'+new Date().toISOString().slice(0,10)+'.json';
       document.body.appendChild(link);link.click();link.remove();
     }finally{setTimeout(()=>URL.revokeObjectURL(url),60000)}
-    return stats(payload.storage);
+    return {...stats(payload.storage),coverImages:payload.coverImages.length};
   }
   function restoreData(data) {
     const plan=prepareRestore(data);
@@ -184,39 +288,53 @@
     review.hidden=true;
     panel.appendChild(restore);panel.appendChild(select);panel.appendChild(review);
     const say=(message,isError=false)=>{notice.textContent=message;notice.style.color=isError?'#ffb5ad':'#d8c5cf'};
-    button.addEventListener('click',()=>{
-      try{const n=downloadData();say('♡ Backup downloaded: '+n.sessions+' sessions, '+n.manualCovers+' chosen covers, '+n.books+' additional books. Keep the file somewhere safe.');}
-      catch(error){say('Backup failed: '+error.message,true)}
+    button.addEventListener('click',async()=>{
+      button.disabled=true;
+      say('♡ Preparing a full backup, including saved cover photos…');
+      try{
+        const n=await downloadData();
+        say('♡ Full backup downloaded: '+n.sessions+' sessions, '+n.manualCovers+
+          ' selected covers, '+n.coverImages+' uploaded cover photos and '+n.books+
+          ' additional books. Keep the file somewhere safe.');
+      }catch(error){say('Backup failed: '+error.message,true)}
+      finally{button.disabled=false}
     });
     restore.addEventListener('click',()=>select.click());
     select.addEventListener('change',async()=>{
       const file=select.files?.[0];if(!file)return;
-      selected=null;review.hidden=true;review.replaceChildren();
+      selected=null;selectedImages=[];review.hidden=true;review.replaceChildren();
       try{
-        if(file.size>25*1024*1024)throw Error('This backup exceeds the 25 MB safety limit.');
+        if(file.size>200*1024*1024)throw Error('This backup exceeds the 200 MB safety limit.');
         const content=JSON.parse(await file.text());
         const data=validateSnapshot(content);
+        const images=validateImages(content);
         const source=stats(data);
         const plan=prepareRestore(data);
         selected=data;
+        selectedImages=images;
         const heading=document.createElement('strong');heading.textContent='Review backup before restoring';
         const details=document.createElement('p');
         details.textContent=source.sessions+' sessions · '+source.manualCovers+' chosen covers · '+
-          source.books+' added books · '+source.sections+' sections. '+
+          source.books+' added books · '+images.length+' uploaded cover photos · '+source.sections+' sections. '+
           plan.summary.newEntries+' missing items can be added; '+
           plan.summary.conflicts+' differences will keep the copy already on this phone.';
         const warning=document.createElement('p');
-        warning.textContent='Safe merge only: nothing is deleted. Current phone data wins on conflicts. You can download a backup of the current phone before continuing.';
+        warning.textContent='Safe merge only: current phone data and uploaded cover photos win on conflicts. Download a backup of this phone before continuing.';
         const apply=document.createElement('button');apply.type='button';apply.className='reading-restore-apply';
         apply.textContent='♡ Merge backup into this phone';
-        apply.addEventListener('click',()=>{
+        apply.addEventListener('click',async()=>{
           if(!selected)return;
           if(!confirm('Merge the selected backup into this phone? Existing entries will be kept when they differ.'))return;
+          apply.disabled=true;
+          say('♡ Restoring cover photos and reading history…');
           try{
+            const photos=await restoreCoverImages(selectedImages);
             const result=restoreData(selected);
-            say('♡ Restore complete: '+result.newEntries+' missing items added. Reloading…');
-            selected=null;setTimeout(()=>location.reload(),500);
-          }catch(error){say('Restore failed: '+error.message,true)}
+            say('♡ Restore complete: '+result.newEntries+' missing items and '+photos.added+
+              ' uploaded photos restored. Reloading…');
+            selected=null;selectedImages=[];
+            setTimeout(()=>location.reload(),500);
+          }catch(error){say('Restore failed: '+error.message,true);apply.disabled=false}
         });
         review.append(heading,details,warning,apply);
         review.hidden=false;
@@ -225,7 +343,7 @@
       finally{select.value=''}
     });
   }
-  window.ReadingBackupTools={snapshot,validateSnapshot,prepareRestore,restoreData,stats};
+  window.ReadingBackupTools={snapshot,snapshotComplete,validateSnapshot,validateImages,prepareRestore,restoreData,restoreCoverImages,readCoverImages,stats};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
   else boot();
 })();
