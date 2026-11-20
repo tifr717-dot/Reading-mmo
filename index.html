@@ -1,7 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script id="reading-journal-launch-51053">
+
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#341426"/>
+<link rel="manifest" href="./manifest.webmanifest"/>
+<script id="reading-journal-launch-51067">
 (() => {
   try {
     const u = new URL(location.href);
@@ -10,15 +15,17 @@
       window.navigator.standalone === true;
     const installedLaunch = standalone || u.searchParams.has('appv');
     if (installedLaunch && !u.pathname.includes('/reading-hub/')) {
-      location.replace('./reading-hub/?appv=51053');
+      // The root URL is the originally installed WebAPK start URL.
+      // The old immediate redirect interrupted WebAPK manifest detection.
+      // Allow the manifest and page load to complete before navigation.
+      document.documentElement.style.visibility = 'hidden';
+      window.addEventListener('load', () => {
+        window.setTimeout(() => location.replace('./reading-hub/?appv=51067'), 1200);
+      }, {once:true});
     }
   } catch (_) {}
 })();
 </script>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#341426"/>
-<link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="apple-touch-icon" href="./icon-journal-192.png?v=51064"/>
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-journal-192.png?v=51064"/>
 <meta name="mobile-web-app-capable" content="yes"/>
